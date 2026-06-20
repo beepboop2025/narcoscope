@@ -1,3 +1,8 @@
+<!-- textura-banner -->
+<div align="center">
+  <a href="https://github.com/beepboop2025/drug-price-observatory"><img src="./banner.svg" width="100%" alt="drug-price-observatory" /></a>
+</div>
+
 # 🌍 Global Drug Price Observatory
 
 An educational, public-good **data explorer** that makes the world's drug-trade
