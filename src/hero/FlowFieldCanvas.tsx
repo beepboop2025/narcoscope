@@ -4,7 +4,7 @@ import { HERO_NODES, HERO_ARCS, COLOR_HOT, COLOR_COOL } from './heroData'
 /**
  * 2D fallback for mobile / no-WebGL. Same nodes and corridors as the globe,
  * flattened with an equirectangular projection, with pulses drifting along each
- * arc — the textura /projects-page trick (a plain <canvas>, no 3D dependency).
+ * arc — a lightweight canvas trick (a plain <canvas>, no 3D dependency).
  */
 export default function FlowFieldCanvas() {
   const ref = useRef<HTMLCanvasElement>(null)

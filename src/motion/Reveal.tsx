@@ -13,7 +13,7 @@ interface RevealProps {
 
 /**
  * Springs a block from (transparent, offset-down) to (opaque, in place) the
- * first time it scrolls into view. The workhorse for textura's "content
+ * first time it scrolls into view. The workhorse for the "content
  * arrives as you reach it" feel. One IntersectionObserver per block, disconnected
  * after firing so it never re-runs or leaks.
  */

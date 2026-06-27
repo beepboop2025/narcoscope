@@ -12,7 +12,7 @@ createRoot(rootEl).render(
   </StrictMode>,
 )
 
-// Preloader reveal (textura trick): the document starts at opacity 0 with a
+// Preloader reveal: the document starts at opacity 0 with a
 // black background to avoid a flash of unstyled, unfonted content. Once fonts
 // are ready (or after a safety timeout) we fade the whole page in via CSS.
 const reveal = () => {
