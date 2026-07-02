@@ -12,6 +12,8 @@ intelligence workflow. The design is based on recent literature patterns:
 | Supply-chain visibility via KGs | Supply-chain KG + LLM paper (arXiv:2408.07705); GNN/federated supply-chain analytics (arXiv:2503.07231) | Country-to-region precursor inflow records can be fused with conflict pressure and outbound seizure records to surface hidden dependency risk. |
 | Provenance and crawler governance | Blockchain/federated provenance architecture (arXiv:2505.24675); crawler policy study (arXiv:2411.15091); SSRF taint-analysis work (arXiv:2502.21026) | The scraper has a source manifest, host allowlist, DNS/private-IP refusal, robots.txt checks, per-host rate budgets, cache, and hash-chained JSONL audit logs. |
 | Crawler resilience & idempotency | Crawler policy study (arXiv:2411.15091); large-scale web-crawl reliability practice | Transient failures (network errors, timeouts, 5xx) are retried with exponential backoff + jitter; policy failures (blocked address, robots disallow, host not allowlisted, 4xx) never retry. Repeat scrapes can dedupe against a prior observation CSV so re-running the same manifest doesn't grow the review queue with identical rows. |
+| Temporal trend / momentum signal | Time-series risk-trajectory practice in OSINT triage tooling | `src/lib/intelligence.ts` computes a `trajectory` (`rising`/`falling`/`stable`/`insufficient-data`) per region from a momentum index (cultivation + synthetic-drug activity + outbound seizures) versus the nearest earlier data year, so two regions with the same point-in-time score can still be ranked by whether pressure is climbing or easing. |
+| Geographic spillover / contagion risk | Spatiotemporal spillover & carryover causal inference for conflict data (arXiv:2504.03464); grid-resolution neural conflict forecasting learning spatial contagion (arXiv:2506.14817) | `src/lib/intelligence.ts` runs a second pass over already-scored regions using a public administrative-adjacency map (`MM_REGION_ADJACENCY` in `src/data/myanmar.ts`) to flag `spilloverWatch`: a region whose own evidence looks calm but borders a high-risk region, per research finding conflict spillover concentrated at shared borders. Never affects a region's own `riskScore` — it's a distinct early-warning signal. |
 
 ## Enterprise Intel tab
 
@@ -38,6 +40,14 @@ The tab computes deterministic, explainable profiles per Myanmar region:
 - **Evidence graph ledger** lists the strongest event/entity relations so an
   analyst can trace why a score changed, and now tags each cited source with
   its reliability tier (`high` / `medium` / `low`) directly in the ledger.
+- **Risk trajectory** (`rising` / `falling` / `stable` / `insufficient-data`)
+  shows whether a region's momentum is climbing or easing versus the nearest
+  earlier year with data, so two regions tied on point-in-time score can still
+  be prioritized by trend.
+- **Spillover watch** flags a region whose own evidence is currently calm but
+  whose administrative neighbor has crossed the high-risk threshold, using a
+  public region-adjacency map — a distinct early-warning signal from the
+  region's own `riskScore`, grounded in conflict spatial-diffusion research.
 
 Scores are triage indicators, not ground truth. They prioritize analyst review
 and preserve the evidence trail needed to challenge or revise a claim.

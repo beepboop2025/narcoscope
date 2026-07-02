@@ -294,4 +294,76 @@ describe('buildMyanmarIntelligenceBriefing', () => {
     assert.ok(shan.avgSourceReliability > 0)
     assert.equal(kachin.avgSourceReliability, 0)
   })
+
+  describe('spillover watch', () => {
+    const adjacency = { shan_north: ['kachin'], kachin: ['shan_north'] }
+
+    it('flags a calm region bordering a high-risk region', () => {
+      const briefing = buildMyanmarIntelligenceBriefing({
+        year: 2024,
+        regions,
+        regionRecords: [
+          { region: 'shan_north', year: 2024, opiumHa: 20000, methIndex: 95 },
+          { region: 'kachin', year: 2024, opiumHa: 500, methIndex: 5 },
+        ],
+        conflictEvents: [
+          {
+            region: 'shan_north', year: 2024, actor: 'Border militia', actorType: 'militia',
+            eventType: 'clash', intensity: 90, sourceName: 'ACLED', sourceUrl: 'https://example.org/acled',
+          },
+        ],
+        precursorFlows: [
+          {
+            originCountry: 'China', transitCountry: null, to: 'shan_north', year: 2024,
+            precursor: 'meth_precursors', quantityKg: 5000, confidence: 'official',
+            sourceName: 'INCB', sourceUrl: 'https://www.incb.org/incb/en/precursors/',
+          },
+        ],
+        outflows: [],
+        regionAdjacency: adjacency,
+      })
+
+      const shan = briefing.profiles.find((p) => p.region === 'shan_north')
+      const kachin = briefing.profiles.find((p) => p.region === 'kachin')
+      assert.ok(shan.riskScore >= 70, 'shan_north should be high risk in this fixture')
+      assert.equal(shan.spilloverWatch, false, 'a region is never its own spillover watch')
+      assert.equal(kachin.neighborRiskScore, shan.riskScore)
+      assert.equal(kachin.neighborRegion, 'shan_north')
+      assert.equal(kachin.spilloverWatch, true)
+      assert.equal(briefing.enterpriseReadiness.spilloverWatchRegions, 1)
+    })
+
+    it('does not flag spillover when neighbors are also calm', () => {
+      const briefing = buildMyanmarIntelligenceBriefing({
+        year: 2024,
+        regions,
+        regionRecords: [
+          { region: 'shan_north', year: 2024, opiumHa: 500, methIndex: 5 },
+          { region: 'kachin', year: 2024, opiumHa: 500, methIndex: 5 },
+        ],
+        conflictEvents: [],
+        precursorFlows: [],
+        outflows: [],
+        regionAdjacency: adjacency,
+      })
+
+      assert.ok(briefing.profiles.every((p) => !p.spilloverWatch))
+      assert.equal(briefing.enterpriseReadiness.spilloverWatchRegions, 0)
+    })
+
+    it('defaults to inert spillover fields when no adjacency map is provided', () => {
+      const briefing = buildMyanmarIntelligenceBriefing({
+        year: 2024,
+        regions,
+        regionRecords: [
+          { region: 'shan_north', year: 2024, opiumHa: 20000, methIndex: 95 },
+        ],
+        conflictEvents: [],
+        precursorFlows: [],
+        outflows: [],
+      })
+
+      assert.ok(briefing.profiles.every((p) => p.neighborRiskScore === 0 && p.neighborRegion === null && !p.spilloverWatch))
+    })
+  })
 })

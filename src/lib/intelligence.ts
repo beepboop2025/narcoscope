@@ -73,6 +73,18 @@ export interface RegionRiskProfile {
   trajectoryChangePct: number | null
   /** Nearest earlier year used for the trajectory comparison; null when none exists. */
   trajectoryBaselineYear: number | null
+  /** Highest riskScore among administratively adjacent regions (0 if none/no adjacency data). */
+  neighborRiskScore: number
+  /** The adjacent region id driving `neighborRiskScore`; null when no neighbors have data. */
+  neighborRegion: string | null
+  /**
+   * True when this region's own risk score is not yet "high" but a bordering
+   * region is, per armed-conflict spatial-diffusion research (spillover/
+   * contagion effects decay with distance but are strongest at shared
+   * borders — arXiv:2504.03464, arXiv:2506.14817). An early-warning signal
+   * distinct from the region's own evidence-driven riskScore.
+   */
+  spilloverWatch: boolean
 }
 
 export interface IntelligenceBriefing {
@@ -87,6 +99,7 @@ export interface IntelligenceBriefing {
     evidenceRecords: number
     conflictedRegions: number
     risingRegions: number
+    spilloverWatchRegions: number
   }
 }
 
@@ -98,6 +111,11 @@ export interface IntelligenceBriefing {
  */
 const CONFLICT_RELATIVE_DEVIATION = 0.5
 const SOURCE_CONFLICT_PENALTY = 15
+
+/** riskScore at/above this level counts as "high risk" for spillover comparison. */
+const SPILLOVER_HIGH_RISK_THRESHOLD = 70
+/** Minimum gap between a region's own score and its highest-risk neighbor to flag spillover watch. */
+const SPILLOVER_GAP_THRESHOLD = 15
 
 function detectPrecursorConflicts(
   precursorFlows: MmPrecursorFlowRecord[],
@@ -221,6 +239,8 @@ export function buildMyanmarIntelligenceBriefing(input: {
   conflictEvents: MmConflictEventRecord[]
   precursorFlows: MmPrecursorFlowRecord[]
   outflows: MmFlowRecord[]
+  /** Region-id -> bordering region-ids. Optional; spillover fields default to inert when omitted. */
+  regionAdjacency?: Record<string, string[]>
 }): IntelligenceBriefing {
   const { year, regions } = input
   const regionRecords = input.regionRecords.filter((r) => r.year === year)
@@ -340,12 +360,47 @@ export function buildMyanmarIntelligenceBriefing(input: {
       trajectory,
       trajectoryChangePct,
       trajectoryBaselineYear,
+      // Filled in below, once every region's own riskScore is known.
+      neighborRiskScore: 0,
+      neighborRegion: null as string | null,
+      spilloverWatch: false,
     }
-  }).sort((a, b) => b.riskScore - a.riskScore)
+  })
+
+  // Spillover pass: a region's own evidence can look calm while a bordering
+  // region is hot. Spatial-diffusion research on armed conflict finds spread
+  // effects concentrated at shared borders and decaying with distance
+  // (arXiv:2504.03464 spatiotemporal spillover/carryover causal inference;
+  // arXiv:2506.14817 grid-resolution conflict forecasting that jointly learns
+  // spatial contagion). This is a second pass over already-scored regions —
+  // it never affects a region's own riskScore, only an explicit watch flag.
+  const riskByRegion = new Map(profiles.map((p) => [p.region, p.riskScore]))
+  const adjacency = input.regionAdjacency ?? {}
+  for (const profile of profiles) {
+    const neighbors = adjacency[profile.region] ?? []
+    let neighborRiskScore = 0
+    let neighborRegion: string | null = null
+    for (const neighborId of neighbors) {
+      const score = riskByRegion.get(neighborId)
+      if (score !== undefined && score > neighborRiskScore) {
+        neighborRiskScore = score
+        neighborRegion = neighborId
+      }
+    }
+    profile.neighborRiskScore = neighborRiskScore
+    profile.neighborRegion = neighborRegion
+    profile.spilloverWatch =
+      neighborRiskScore >= SPILLOVER_HIGH_RISK_THRESHOLD &&
+      profile.riskScore < SPILLOVER_HIGH_RISK_THRESHOLD &&
+      neighborRiskScore - profile.riskScore >= SPILLOVER_GAP_THRESHOLD
+  }
+
+  profiles.sort((a, b) => b.riskScore - a.riskScore)
 
   const { nodes, edges } = buildEvidenceGraph({ regions, conflictEvents, precursorFlows, outflows })
   const regionsWithProvenance = profiles.filter((p) => p.evidenceCount > 1 && p.sourceDiversity > 0).length
   const conflictedRegions = profiles.filter((p) => p.hasSourceConflict).length
+  const spilloverWatchRegions = profiles.filter((p) => p.spilloverWatch).length
 
   return {
     year,
@@ -359,6 +414,7 @@ export function buildMyanmarIntelligenceBriefing(input: {
       evidenceRecords: conflictEvents.length + precursorFlows.length + outflows.length + regionRecords.length,
       conflictedRegions,
       risingRegions: profiles.filter((p) => p.trajectory === 'rising').length,
+      spilloverWatchRegions,
     },
   }
 }

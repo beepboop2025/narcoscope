@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import { MM_REGION_ADJACENCY } from '../data/myanmar'
 import { useData } from '../lib/dataStore'
 import { buildMyanmarIntelligenceBriefing } from '../lib/intelligence'
 
@@ -58,6 +59,7 @@ export default function IntelligenceBriefing() {
       conflictEvents: mmConflictEvents,
       precursorFlows: mmPrecursorFlows,
       outflows: mmFlowRecords,
+      regionAdjacency: MM_REGION_ADJACENCY,
     }),
     [latestYear, mmRegions, mmRegionRecords, mmConflictEvents, mmPrecursorFlows, mmFlowRecords],
   )
@@ -98,6 +100,10 @@ export default function IntelligenceBriefing() {
           <span className="stat-value">{briefing.enterpriseReadiness.risingRegions}</span>
           <span className="stat-label">Regions trending upward</span>
         </div>
+        <div className="stat">
+          <span className="stat-value">{briefing.enterpriseReadiness.spilloverWatchRegions}</span>
+          <span className="stat-label">Regions on spillover watch</span>
+        </div>
       </div>
 
       <div className="intel-grid">
@@ -130,6 +136,16 @@ export default function IntelligenceBriefing() {
             {profile.hasSourceConflict && (
               <p className="conflict-flag" title={profile.conflictNotes.join('; ')}>
                 ⚠ Cross-source conflict: {profile.conflictNotes[0]}
+              </p>
+            )}
+            {profile.spilloverWatch && (
+              <p
+                className="spillover-flag"
+                title={`Highest bordering risk score: ${profile.neighborRiskScore} (${
+                  briefing.profiles.find((p) => p.region === profile.neighborRegion)?.label ?? profile.neighborRegion
+                })`}
+              >
+                ⇄ Spillover watch: borders a high-risk region
               </p>
             )}
             <div className="driver-list">

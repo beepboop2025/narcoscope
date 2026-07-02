@@ -44,6 +44,21 @@ export const mmCoord = (id: string): [number, number] | null => {
 }
 export const mmLabel = (id: string): string => NODE[id]?.label ?? id
 
+// Administrative-unit adjacency only (which region shares a border with which),
+// sourced from public administrative maps of Shan/Kachin/Kayah States — no
+// operational or sub-region-of-region granularity. Used to model geographic
+// spillover risk: a region with calm current indicators but a high-risk
+// neighbor deserves an early-warning flag, per spatial-diffusion conflict
+// research (armed-conflict spillover/contagion literature).
+export const MM_REGION_ADJACENCY: Record<string, string[]> = {
+  shan_north: ['shan_east', 'kachin'],
+  shan_east: ['shan_north', 'shan_south', 'wa'],
+  shan_south: ['shan_east', 'kayah'],
+  wa: ['shan_east'],
+  kachin: ['shan_north'],
+  kayah: ['shan_south'],
+}
+
 // opiumHa = opium poppy cultivation (hectares);
 // methIndex = relative synthetic-drug activity indicator (0–100, not a volume).
 export const MM_REGION_RECORDS: MmRegionRecord[] = [

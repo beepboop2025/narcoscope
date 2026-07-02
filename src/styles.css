@@ -377,6 +377,15 @@ h3 { font-family: var(--font-display); font-weight: 400; font-size: 1.2rem; lett
 .trajectory-tag.trend-falling { color: #7fe0a8; }
 .trajectory-tag.trend-stable { color: var(--muted); }
 .trajectory-tag.trend-insufficient-data { color: var(--muted); opacity: 0.7; }
+.spillover-flag {
+  color: #e0c37f;
+  font-size: 0.78rem;
+  margin: 0 0 0.65rem;
+  border: 1px solid rgba(224, 195, 127, 0.4);
+  border-radius: 0.5rem;
+  padding: 0.35rem 0.5rem;
+  background: rgba(224, 195, 127, 0.08);
+}
 
 /* ---- footer -------------------------------------------------------------- */
 .app-footer { margin-top: 2.5rem; border-top: 1px solid var(--border); padding-top: 1.25rem; }
