@@ -39,7 +39,7 @@ export default function App() {
   useSmoothScroll()
 
   return (
-    <div className="app">
+    <div className="app tk">
       <header className="app-header">
         <HeroScene />
         <div className="hero-inner">
@@ -55,7 +55,7 @@ export default function App() {
               />
               <p className="tagline">Making the world&rsquo;s drug-trade data legible.</p>
             </div>
-            <span className={`data-badge ${isSample ? 'sample' : 'live'}`}>
+            <span className={`data-badge tk-chip ${isSample ? 'tk-chip--warning' : 'tk-chip--ok'}`}>
               {isSample ? 'Sample data' : 'Live data'}
             </span>
           </div>
@@ -71,7 +71,8 @@ export default function App() {
           {TABS.map((t) => (
             <button
               key={t.id}
-              className={tab === t.id ? 'active' : ''}
+              type="button"
+              className={`tab-btn ${tab === t.id ? 'active' : ''}`}
               onClick={() => setTab(t.id)}
             >
               {t.label}
@@ -92,9 +93,9 @@ export default function App() {
       </main>
 
       <Reveal>
-        <footer className="app-footer">
+        <footer className="app-footer tk-card tk-card--watch">
           <DataLoader />
-          <p className="disclaimer">
+          <p className="disclaimer tk-degraded">
             ⚠️ {isSample
               ? 'Showing sample/illustrative figures pending replacement with official data. '
               : 'Showing loaded data — verify against the cited official sources. '}
@@ -103,12 +104,13 @@ export default function App() {
             point-of-sale, real-time, or navigable location information, and is not a
             guide to obtaining any substance.
           </p>
-          <div className="sources">
-            <strong>Sources:</strong>{' '}
+          <div className="sources tk-trust">
+            <span className="tk-trust__item"><b>Sources</b></span>
+            <span className="tk-trust__sep" />
             {SOURCES.map((s, i) => (
-              <span key={s.url}>
+              <span key={s.url} className="tk-trust__item">
                 <a href={s.url} target="_blank" rel="noreferrer">{s.name}</a>
-                {i < SOURCES.length - 1 ? ' · ' : ''}
+                {i < SOURCES.length - 1 ? <span className="tk-trust__sep" /> : null}
               </span>
             ))}
           </div>

@@ -6,31 +6,27 @@
    ============================================================================= */
 
 :root {
-  /* design tokens, retuned for a data tool */
-  --black: #000;
-  --black-200: #353535;
-  --black-300: #050505;
-  --white: #fafafa;
-  --grey: #c7c7c7;
+  --black: var(--tk-void);
+  --black-200: var(--tk-line-2);
+  --black-300: var(--tk-surface-1);
+  --white: var(--tk-text-0);
+  --grey: var(--tk-text-2);
 
-  /* surfaces */
-  --bg: #000;
-  --panel: #0b0e14;
-  --panel-2: #11151f;
-  --border: #1d2433;
-  --border-soft: #141a26;
+  --bg: var(--tk-void);
+  --panel: var(--tk-surface-1);
+  --panel-2: var(--tk-surface-2);
+  --border: var(--tk-line-2);
+  --border-soft: var(--tk-line-1);
 
-  /* type */
-  --text: #fafafa;
-  --muted: #9aa6bd;
+  --text: var(--tk-text-1);
+  --muted: var(--tk-text-3);
 
-  /* accents (semantic) */
-  --accent: #a1ecff;        /* cyan — transit / destination / interactive */
-  --hot: #ffab98;           /* coral — SOURCE countries (the point of the tool) */
-  --accent-grad: linear-gradient(241deg, #ffab98 -68.52%, #a1ecff 155.56%);
+  --accent: var(--tk-live);
+  --hot: var(--tk-warning);
+  --accent-grad: linear-gradient(241deg, var(--tk-warning) -68.52%, var(--tk-live) 155.56%);
 
-  --font-display: 'Gilda Display', Georgia, 'Times New Roman', serif;
-  --font-body: 'Lato', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-display: var(--tk-font-display);
+  --font-body: var(--tk-font-display);
 
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -45,12 +41,12 @@ html { font-size: 16px; }
 
 * { box-sizing: border-box; }
 
-html { background: var(--black); transition: opacity 0.6s var(--ease); }
+html { background: var(--bg); transition: opacity 0.6s var(--ease); }
 
 body {
   margin: 0;
   font-family: var(--font-body);
-  font-weight: 300;
+  font-weight: 400;
   background: var(--bg);
   color: var(--text);
   line-height: 1.5;
@@ -65,9 +61,9 @@ body::before {
   inset: 0;
   z-index: -1;
   background:
-    radial-gradient(60rem 40rem at 78% -10%, rgba(161, 236, 255, 0.07), transparent 60%),
-    radial-gradient(55rem 38rem at 8% 8%, rgba(255, 171, 152, 0.06), transparent 60%),
-    var(--black);
+    radial-gradient(60rem 40rem at 78% -10%, rgba(6, 214, 224, 0.07), transparent 60%),
+    radial-gradient(55rem 38rem at 8% 8%, rgba(255, 176, 32, 0.06), transparent 60%),
+    var(--bg);
   pointer-events: none;
 }
 
@@ -146,12 +142,9 @@ a:hover { text-decoration: underline; }
 
 .data-badge {
   margin-left: auto;
-  font-size: 0.66rem; font-weight: 700; letter-spacing: 0.08em;
-  text-transform: uppercase; padding: 0.3rem 0.75rem; border-radius: 999px; white-space: nowrap;
+  padding: 0.3rem 0.75rem;
   backdrop-filter: blur(6px);
 }
-.data-badge.sample { background: rgba(255, 171, 152, 0.12); color: var(--hot); border: 1px solid rgba(255, 171, 152, 0.35); }
-.data-badge.live   { background: rgba(161, 236, 255, 0.12); color: var(--accent); border: 1px solid rgba(161, 236, 255, 0.35); }
 
 .lede {
   margin: 1.25rem 0 1.75rem;
@@ -168,22 +161,22 @@ a:hover { text-decoration: underline; }
   display: flex; gap: 0.1rem; overflow-x: auto;
   border-bottom: 1px solid var(--border);
 }
-.tabs button {
+.tabs .tab-btn {
   background: none; border: none; color: var(--muted);
   padding: 0.85rem 1rem; cursor: pointer; font-family: var(--font-body);
   font-size: 0.95rem; font-weight: 400; white-space: nowrap; letter-spacing: 0.01em;
   border-bottom: 2px solid transparent;
   transition: color 0.25s var(--ease);
 }
-.tabs button:hover { color: var(--text); }
-.tabs button.active { color: var(--white); }
+.tabs .tab-btn:hover { color: var(--text); }
+.tabs .tab-btn.active { color: var(--white); }
 /* animated underline that uses the brand gradient */
-.tabs button.active::after {
+.tabs .tab-btn.active::after {
   content: '';
   position: absolute; bottom: -1px; left: 0; right: 0;
   height: 2px; background: var(--accent-grad);
 }
-.tabs button { position: relative; }
+.tabs .tab-btn { position: relative; }
 
 main { padding-top: 1.75rem; }
 .map-loading { text-align: center; padding: 3rem 1.25rem; color: var(--muted); }
@@ -274,11 +267,11 @@ h3 { font-family: var(--font-display); font-weight: 400; font-size: 1.2rem; lett
 .intro { color: var(--muted); font-size: 0.9rem; margin: 0 0 0.9rem; }
 
 .explainer {
-  background: linear-gradient(180deg, rgba(161,236,255,0.06), rgba(161,236,255,0.02));
-  border: 1px solid rgba(161, 236, 255, 0.18);
+  background: linear-gradient(180deg, rgba(6, 214, 224, 0.08), rgba(6, 214, 224, 0.03));
+  border: 1px solid rgba(6, 214, 224, 0.25);
   border-left: 3px solid var(--accent);
   border-radius: 0.5rem; padding: 0.8rem 0.9rem; margin: 0 0 1.1rem;
-  font-size: 0.95rem; line-height: 1.55; color: #d9e9f7;
+  font-size: 0.95rem; line-height: 1.55; color: var(--tk-text-1);
 }
 .explainer-tag {
   display: inline-block; text-transform: uppercase; letter-spacing: 0.08em;
@@ -313,8 +306,8 @@ h3 { font-family: var(--font-display); font-weight: 400; font-size: 1.2rem; lett
   border: 1px solid rgba(255, 171, 152, 0.3); color: #f2cdbf;
   padding: 0.8rem 0.9rem; border-radius: 0.5rem; font-size: 0.82rem;
 }
-.sources { color: var(--muted); font-size: 0.82rem; margin-top: 0.65rem; }
-.sources a { color: var(--accent); }
+.sources { margin-top: 0.65rem; }
+.sources a { color: var(--tk-text-1); }
 
 /* ---- data loader --------------------------------------------------------- */
 .loader { margin-bottom: 1rem; }

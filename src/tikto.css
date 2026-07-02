@@ -1,0 +1,291 @@
+/* ============================================================================
+   TIKTO - temporal-spatial interface system
+   Reusable system tokens and primitives (namespaced with --tk-* / .tk-*).
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
+
+:root {
+  --tk-void: #000000;
+  --tk-surface-1: #080808;
+  --tk-surface-2: #0e0e0e;
+  --tk-surface-3: #151515;
+  --tk-surface-4: #1d1d1d;
+  --tk-hover: #262626;
+
+  --tk-line-1: #1a1a1a;
+  --tk-line-2: #272727;
+  --tk-line-3: #383838;
+
+  --tk-text-0: #ffffff;
+  --tk-text-1: #e2e8f0;
+  --tk-text-2: #94a3b8;
+  --tk-text-3: #64748b;
+  --tk-text-4: #475569;
+
+  --tk-live: #06d6e0;
+  --tk-live-dim: #0891a2;
+  --tk-live-glow: rgba(6, 214, 224, 0.35);
+
+  --tk-critical: #ff5b52;
+  --tk-critical-bg: rgba(239, 68, 68, 0.13);
+  --tk-critical-line: rgba(239, 68, 68, 0.5);
+  --tk-warning: #ffb020;
+  --tk-warning-bg: rgba(245, 158, 11, 0.13);
+  --tk-warning-line: rgba(245, 158, 11, 0.45);
+  --tk-watch: #4aa3ff;
+  --tk-watch-bg: rgba(59, 130, 246, 0.13);
+  --tk-watch-line: rgba(59, 130, 246, 0.42);
+  --tk-ok: #19c393;
+  --tk-ok-bg: rgba(16, 185, 129, 0.13);
+  --tk-ok-line: rgba(16, 185, 129, 0.42);
+  --tk-stale: #8593a8;
+  --tk-stale-bg: rgba(100, 116, 139, 0.16);
+  --tk-stale-line: rgba(100, 116, 139, 0.45);
+
+  --tk-font-display: 'Outfit', system-ui, -apple-system, sans-serif;
+  --tk-font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  --tk-label-size: 10px;
+  --tk-label-tracking: 0.08em;
+
+  --tk-radius-sm: 8px;
+  --tk-radius-md: 11px;
+  --tk-radius-lg: 14px;
+  --tk-radius-xl: 18px;
+
+  --tk-dur-fast: 0.15s;
+  --tk-dur: 0.25s;
+  --tk-dur-slow: 0.45s;
+  --tk-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --tk-ease-spring: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --tk-shadow-md: 0 6px 20px rgba(0, 0, 0, 0.6);
+  --tk-shadow-lg: 0 14px 36px rgba(0, 0, 0, 0.7);
+  color-scheme: dark;
+}
+
+[data-tk-theme='light'] {
+  --tk-void: #f7f8fa;
+  --tk-surface-1: #ffffff;
+  --tk-surface-2: #f3f5f8;
+  --tk-surface-3: #ecf0f4;
+  --tk-surface-4: #e2e8f0;
+  --tk-hover: #dbe2ea;
+  --tk-line-1: #e6eaef;
+  --tk-line-2: #d5dce4;
+  --tk-line-3: #c2cbd6;
+  --tk-text-0: #0a1322;
+  --tk-text-1: #1c2738;
+  --tk-text-2: #45556b;
+  --tk-text-3: #66758c;
+  --tk-text-4: #8a98ac;
+  --tk-live: #0892b8;
+  --tk-live-dim: #0b6e8c;
+  --tk-live-glow: rgba(8, 146, 184, 0.22);
+  --tk-shadow-md: 0 6px 20px rgba(20, 30, 50, 0.1);
+  --tk-shadow-lg: 0 14px 36px rgba(20, 30, 50, 0.14);
+  color-scheme: light;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+.tk, .tk * {
+  margin: 0;
+}
+
+.tk {
+  background: var(--tk-void);
+  color: var(--tk-text-1);
+  font-family: var(--tk-font-display);
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: 'ss01';
+}
+
+.tk-mono {
+  font-family: var(--tk-font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.tk-num {
+  font-family: var(--tk-font-mono);
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.tk-label {
+  font-size: var(--tk-label-size);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: var(--tk-label-tracking);
+  color: var(--tk-text-4);
+}
+
+.tk-trust {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  padding: 9px 16px;
+  border-radius: var(--tk-radius-md);
+  background: var(--tk-surface-2);
+  border: 1px solid var(--tk-line-1);
+  font-size: 11px;
+  font-family: var(--tk-font-mono);
+}
+
+.tk-trust__item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--tk-text-3);
+}
+
+.tk-trust__item b {
+  color: var(--tk-text-1);
+  font-weight: 600;
+}
+
+.tk-trust__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+  box-shadow: 0 0 8px currentColor;
+}
+
+.tk-trust__sep {
+  width: 1px;
+  height: 13px;
+  background: var(--tk-line-2);
+}
+
+.tk-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  font-family: var(--tk-font-mono);
+}
+
+.tk-chip--ok {
+  color: var(--tk-ok);
+  background: var(--tk-ok-bg);
+  border-color: var(--tk-ok-line);
+}
+
+.tk-chip--watch {
+  color: var(--tk-watch);
+  background: var(--tk-watch-bg);
+  border-color: var(--tk-watch-line);
+}
+
+.tk-chip--warning {
+  color: var(--tk-warning);
+  background: var(--tk-warning-bg);
+  border-color: var(--tk-warning-line);
+}
+
+.tk-chip--critical {
+  color: var(--tk-critical);
+  background: var(--tk-critical-bg);
+  border-color: var(--tk-critical-line);
+}
+
+.tk-chip--stale {
+  color: var(--tk-stale);
+  background: var(--tk-stale-bg);
+  border-color: var(--tk-stale-line);
+}
+
+.tk-card {
+  position: relative;
+  background: linear-gradient(180deg, var(--tk-surface-1), var(--tk-void));
+  border: 1px solid var(--tk-line-2);
+  border-left: 3px solid var(--tk-line-3);
+  border-radius: var(--tk-radius-lg);
+  padding: 20px 22px;
+  transition: border-color var(--tk-dur) var(--tk-ease);
+}
+
+.tk-card--ok {
+  border-left-color: var(--tk-ok);
+}
+
+.tk-card--watch {
+  border-left-color: var(--tk-watch);
+}
+
+.tk-card--warning {
+  border-left-color: var(--tk-warning);
+}
+
+.tk-card--critical {
+  border-left-color: var(--tk-critical);
+}
+
+.tk-degraded {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 13px;
+  padding: 10px 13px;
+  border-radius: var(--tk-radius-md);
+  background: var(--tk-critical-bg);
+  border: 1px solid var(--tk-critical-line);
+  color: var(--tk-critical);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.tk-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 9px 15px;
+  border-radius: var(--tk-radius-md);
+  background: var(--tk-surface-3);
+  border: 1px solid var(--tk-line-3);
+  color: var(--tk-text-1);
+  font-family: var(--tk-font-display);
+  font-weight: 600;
+  font-size: 12.5px;
+  transition: all var(--tk-dur-fast) var(--tk-ease);
+}
+
+.tk-btn:hover {
+  background: var(--tk-hover);
+  border-color: var(--tk-line-3);
+}
+
+.tk-btn--live {
+  background: var(--tk-live);
+  border-color: var(--tk-live);
+  color: #00141a;
+}
+
+.tk-btn--live:hover {
+  box-shadow: 0 0 0 3px var(--tk-live-glow);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+.tk :where(button, a, [tabindex]):focus-visible {
+  outline: 2px solid var(--tk-live);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
