@@ -396,6 +396,16 @@ h3 { font-family: var(--font-display); font-weight: 400; font-size: 1.2rem; lett
 .staleness-tag.staleness-aging { color: #e0c37f; }
 .staleness-tag.staleness-stale { color: #ffab98; }
 .staleness-tag.staleness-no-data { color: var(--muted); opacity: 0.7; }
+.corridor-tag {
+  font-size: 0.72rem;
+  margin: 0 0 0.5rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: capitalize;
+}
+.corridor-tag.corridor-diversified { color: #7fe0a8; }
+.corridor-tag.corridor-moderate { color: #e0c37f; }
+.corridor-tag.corridor-concentrated { color: #ffab98; }
 .export-actions {
   display: flex;
   gap: 0.6rem;

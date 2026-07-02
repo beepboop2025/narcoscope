@@ -50,6 +50,23 @@ const stalenessLabel = (
   return `Most recent evidence is ${mostRecentEvidenceYear} (${evidenceAgeYears} yr${evidenceAgeYears === 1 ? '' : 's'} old)`
 }
 
+const corridorIcon: Record<string, string> = {
+  diversified: '◇',
+  moderate: '◆',
+  concentrated: '⬛',
+  'insufficient-data': '·',
+}
+
+const corridorLabel = (
+  tier: string,
+  hhi: number | null,
+  dominantCorridor: string | null,
+  dominantSharePct: number | null,
+): string => {
+  if (tier === 'insufficient-data') return 'No precursor-corridor data on file'
+  return `HHI ${hhi} — ${dominantSharePct}% via ${dominantCorridor}`
+}
+
 export default function IntelligenceBriefing() {
   const {
     mmRegions,
@@ -126,6 +143,10 @@ export default function IntelligenceBriefing() {
           <span className="stat-value">{briefing.enterpriseReadiness.staleRegions}</span>
           <span className="stat-label">Regions with stale evidence (3+ yrs)</span>
         </div>
+        <div className="stat">
+          <span className="stat-value">{briefing.enterpriseReadiness.concentratedCorridorRegions}</span>
+          <span className="stat-label">Regions with concentrated precursor corridor</span>
+        </div>
       </div>
 
       <div className="export-actions">
@@ -193,6 +214,19 @@ export default function IntelligenceBriefing() {
             >
               {stalenessIcon[profile.evidenceStaleness]} {profile.evidenceStaleness === 'no-data' ? 'No dated evidence' : `Evidence: ${profile.evidenceStaleness}`}
             </p>
+            {profile.precursorCorridorTier !== 'insufficient-data' && (
+              <p
+                className={`corridor-tag corridor-${profile.precursorCorridorTier}`}
+                title={corridorLabel(
+                  profile.precursorCorridorTier,
+                  profile.precursorCorridorHHI,
+                  profile.dominantPrecursorCorridor,
+                  profile.dominantPrecursorCorridorSharePct,
+                )}
+              >
+                {corridorIcon[profile.precursorCorridorTier]} Precursor corridor: {profile.precursorCorridorTier}
+              </p>
+            )}
             <div className="driver-list">
               {profile.drivers.map((driver) => <span key={driver}>{driver}</span>)}
             </div>

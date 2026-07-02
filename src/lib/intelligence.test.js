@@ -599,4 +599,111 @@ describe('buildMyanmarIntelligenceBriefing', () => {
       assert.equal(shan.evidenceStaleness, 'aging')
     })
   })
+
+  describe('precursor corridor concentration', () => {
+    it('flags a single-corridor region as concentrated with a 10000 HHI', () => {
+      const briefing = buildMyanmarIntelligenceBriefing({
+        year: 2024,
+        regions,
+        regionRecords: [],
+        conflictEvents: [],
+        precursorFlows: [
+          {
+            originCountry: 'China', transitCountry: null, to: 'shan_north', year: 2024,
+            precursor: 'meth_precursors', quantityKg: 4000, confidence: 'official',
+            sourceName: 'INCB', sourceUrl: 'https://example.org/incb',
+          },
+        ],
+        outflows: [],
+      })
+      const shan = briefing.profiles.find((p) => p.region === 'shan_north')
+      assert.equal(shan.precursorCorridorHHI, 10000)
+      assert.equal(shan.precursorCorridorTier, 'concentrated')
+      assert.equal(shan.dominantPrecursorCorridor, 'China')
+      assert.equal(shan.dominantPrecursorCorridorSharePct, 100)
+      assert.equal(briefing.enterpriseReadiness.concentratedCorridorRegions, 1)
+    })
+
+    it('rates an eight-way even split as diversified per DOJ/FTC HHI thresholds', () => {
+      const origins = ['China', 'Thailand', 'India', 'Laos', 'Vietnam', 'Cambodia', 'Bangladesh', 'Nepal']
+      const briefing = buildMyanmarIntelligenceBriefing({
+        year: 2024,
+        regions,
+        regionRecords: [],
+        conflictEvents: [],
+        precursorFlows: origins.map((originCountry) => ({
+          originCountry, transitCountry: null, to: 'shan_north', year: 2024,
+          precursor: 'meth_precursors', quantityKg: 1000, confidence: 'official',
+          sourceName: 'INCB', sourceUrl: 'https://example.org/incb',
+        })),
+        outflows: [],
+      })
+      const shan = briefing.profiles.find((p) => p.region === 'shan_north')
+      // 8 equal-share corridors: HHI = 8 * (1/8)^2 * 10000 = 1250.
+      assert.equal(shan.precursorCorridorHHI, 1250)
+      assert.equal(shan.precursorCorridorTier, 'diversified')
+      assert.equal(shan.dominantPrecursorCorridorSharePct, 12.5)
+    })
+
+    it('rates a five-way even split as moderate per DOJ/FTC HHI thresholds', () => {
+      const origins = ['China', 'Thailand', 'India', 'Laos', 'Vietnam']
+      const briefing = buildMyanmarIntelligenceBriefing({
+        year: 2024,
+        regions,
+        regionRecords: [],
+        conflictEvents: [],
+        precursorFlows: origins.map((originCountry) => ({
+          originCountry, transitCountry: null, to: 'shan_north', year: 2024,
+          precursor: 'meth_precursors', quantityKg: 1000, confidence: 'official',
+          sourceName: 'INCB', sourceUrl: 'https://example.org/incb',
+        })),
+        outflows: [],
+      })
+      const shan = briefing.profiles.find((p) => p.region === 'shan_north')
+      // 5 equal-share corridors: HHI = 5 * (1/5)^2 * 10000 = 2000.
+      assert.equal(shan.precursorCorridorHHI, 2000)
+      assert.equal(shan.precursorCorridorTier, 'moderate')
+    })
+
+    it('reports insufficient-data when a region has no precursor-flow records', () => {
+      const briefing = buildMyanmarIntelligenceBriefing({
+        year: 2024,
+        regions,
+        regionRecords: [],
+        conflictEvents: [],
+        precursorFlows: [],
+        outflows: [],
+      })
+      const kachin = briefing.profiles.find((p) => p.region === 'kachin')
+      assert.equal(kachin.precursorCorridorHHI, null)
+      assert.equal(kachin.precursorCorridorTier, 'insufficient-data')
+      assert.equal(kachin.dominantPrecursorCorridor, null)
+    })
+
+    it('rates a 60/40 split as concentrated per DOJ/FTC HHI thresholds', () => {
+      const briefing = buildMyanmarIntelligenceBriefing({
+        year: 2024,
+        regions,
+        regionRecords: [],
+        conflictEvents: [],
+        precursorFlows: [
+          {
+            originCountry: 'China', transitCountry: null, to: 'shan_north', year: 2024,
+            precursor: 'meth_precursors', quantityKg: 6000, confidence: 'official',
+            sourceName: 'INCB', sourceUrl: 'https://example.org/incb',
+          },
+          {
+            originCountry: 'Thailand', transitCountry: null, to: 'shan_north', year: 2024,
+            precursor: 'meth_precursors', quantityKg: 4000, confidence: 'official',
+            sourceName: 'UNODC', sourceUrl: 'https://example.org/unodc',
+          },
+        ],
+        outflows: [],
+      })
+      const shan = briefing.profiles.find((p) => p.region === 'shan_north')
+      // 60/40 split: HHI = 6000^2 + 4000^2 = 5200 (concentrated per DOJ/FTC thresholds).
+      assert.equal(shan.precursorCorridorHHI, 5200)
+      assert.equal(shan.precursorCorridorTier, 'concentrated')
+    })
+  })
 })

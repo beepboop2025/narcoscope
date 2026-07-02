@@ -48,6 +48,16 @@ describe('exportBriefing', () => {
       assert.ok(csv.includes('trajectory'))
     })
 
+    it('includes precursor-corridor concentration fields for downstream audit', () => {
+      const csv = riskProfilesToCsv(briefing)
+      assert.ok(csv.includes('precursorCorridorHHI'))
+      assert.ok(csv.includes('precursorCorridorTier'))
+      assert.ok(csv.includes('dominantPrecursorCorridor'))
+      const dataLine = csv.split('\r\n').find((line) => line.startsWith('shan_north,'))
+      assert.ok(dataLine.includes('10000'))
+      assert.ok(dataLine.includes('concentrated'))
+    })
+
     it('quotes fields containing commas per RFC 4180', () => {
       const csv = riskProfilesToCsv(briefing)
       // "INCB, precursors report" flows into a source name referenced by the

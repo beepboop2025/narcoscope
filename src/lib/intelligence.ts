@@ -68,6 +68,71 @@ const AGING_EVIDENCE_AGE_YEARS = 1
 const STALE_EVIDENCE_CONFIDENCE_PENALTY = 12
 const AGING_EVIDENCE_CONFIDENCE_PENALTY = 4
 
+/**
+ * Corridor-concentration signal: how dependent a region's *inbound* precursor
+ * supply is on a single origin/transit corridor, measured with the
+ * Herfindahl-Hirschman Index (HHI) — the standard concentration metric from
+ * antitrust/supply-chain-risk analysis (US DOJ/FTC Horizontal Merger
+ * Guidelines thresholds: <1500 unconcentrated, 1500-2500 moderately
+ * concentrated, >2500 highly concentrated on a 0-10000 scale). Applied here to
+ * trafficking corridors rather than market share: a region sourcing
+ * precursors from one corridor is both more fragile (a single seizure or
+ * border closure can choke its supply) and a sharper interdiction target than
+ * one with diversified sourcing. Deliberately computed on raw reported
+ * quantities (not reliability- or confidence-weighted) since concentration is
+ * a property of the reported trade pattern itself, not of how much we trust
+ * any one report.
+ */
+export type CorridorConcentrationTier = 'diversified' | 'moderate' | 'concentrated' | 'insufficient-data'
+
+const HHI_MODERATE_THRESHOLD = 1500
+const HHI_CONCENTRATED_THRESHOLD = 2500
+
+function corridorConcentrationTier(hhi: number | null): CorridorConcentrationTier {
+  if (hhi === null) return 'insufficient-data'
+  if (hhi > HHI_CONCENTRATED_THRESHOLD) return 'concentrated'
+  if (hhi >= HHI_MODERATE_THRESHOLD) return 'moderate'
+  return 'diversified'
+}
+
+/**
+ * Computes inbound-precursor corridor concentration for one region: groups
+ * this region's precursor-flow records by (originCountry, transitCountry)
+ * corridor, sums raw quantityKg per corridor, and returns the HHI (0-10000)
+ * plus the dominant corridor's label and share. Returns nulls when the region
+ * has no precursor-flow records for the year (nothing to concentrate).
+ */
+function computeCorridorConcentration(
+  region: string,
+  precursorFlows: MmPrecursorFlowRecord[],
+): { hhi: number | null; dominantCorridor: string | null; dominantSharePct: number | null } {
+  const byCorridor = new Map<string, number>()
+  for (const flow of precursorFlows) {
+    if (flow.to !== region) continue
+    const key = flow.transitCountry ? `${flow.originCountry} → ${flow.transitCountry}` : flow.originCountry
+    byCorridor.set(key, (byCorridor.get(key) ?? 0) + flow.quantityKg)
+  }
+  const total = [...byCorridor.values()].reduce((sum, qty) => sum + qty, 0)
+  if (total <= 0) return { hhi: null, dominantCorridor: null, dominantSharePct: null }
+
+  let hhi = 0
+  let dominantCorridor: string | null = null
+  let dominantShare = 0
+  for (const [corridor, qty] of byCorridor) {
+    const share = qty / total
+    hhi += share * share * 10_000
+    if (share > dominantShare) {
+      dominantShare = share
+      dominantCorridor = corridor
+    }
+  }
+  return {
+    hhi: Math.round(hhi),
+    dominantCorridor,
+    dominantSharePct: Math.round(dominantShare * 1000) / 10,
+  }
+}
+
 function evidenceStalenessTier(ageYears: number | null): EvidenceStaleness {
   if (ageYears === null) return 'no-data'
   if (ageYears >= STALE_EVIDENCE_AGE_YEARS) return 'stale'
@@ -144,6 +209,14 @@ export interface RegionRiskProfile {
   evidenceAgeYears: number | null
   /** Recency tier for the region's freshest evidence, driving a confidence penalty when stale. */
   evidenceStaleness: EvidenceStaleness
+  /** Herfindahl-Hirschman Index (0-10000) of inbound precursor-corridor concentration; null when no corridor data. */
+  precursorCorridorHHI: number | null
+  /** Concentration tier derived from `precursorCorridorHHI` using DOJ/FTC-style thresholds. */
+  precursorCorridorTier: CorridorConcentrationTier
+  /** Label of the corridor carrying the largest share of this region's inbound precursor supply. */
+  dominantPrecursorCorridor: string | null
+  /** Share (percent) of inbound precursor supply carried by `dominantPrecursorCorridor`. */
+  dominantPrecursorCorridorSharePct: number | null
 }
 
 export interface IntelligenceBriefing {
@@ -160,6 +233,7 @@ export interface IntelligenceBriefing {
     risingRegions: number
     spilloverWatchRegions: number
     staleRegions: number
+    concentratedCorridorRegions: number
   }
 }
 
@@ -479,6 +553,10 @@ export function buildMyanmarIntelligenceBriefing(input: {
     const verificationTier: VerificationTier =
       regionSources.size >= 2 ? 'multi-source' : regionSources.size === 1 ? 'single-source' : 'unverified'
 
+    const { hhi: precursorCorridorHHI, dominantCorridor: dominantPrecursorCorridor, dominantSharePct: dominantPrecursorCorridorSharePct } =
+      computeCorridorConcentration(region.id, precursorFlows)
+    const precursorCorridorTier = corridorConcentrationTier(precursorCorridorHHI)
+
     const drivers = [
       [conflictPressure, 'conflict pressure'],
       [precursorPressure, 'inbound precursor pressure'],
@@ -514,6 +592,10 @@ export function buildMyanmarIntelligenceBriefing(input: {
       mostRecentEvidenceYear: evidenceYear,
       evidenceAgeYears,
       evidenceStaleness,
+      precursorCorridorHHI,
+      precursorCorridorTier,
+      dominantPrecursorCorridor,
+      dominantPrecursorCorridorSharePct,
       // Filled in below, once every region's own riskScore is known.
       neighborRiskScore: 0,
       neighborRegion: null as string | null,
@@ -556,6 +638,7 @@ export function buildMyanmarIntelligenceBriefing(input: {
   const conflictedRegions = profiles.filter((p) => p.hasSourceConflict).length
   const spilloverWatchRegions = profiles.filter((p) => p.spilloverWatch).length
   const staleRegions = profiles.filter((p) => p.evidenceStaleness === 'stale').length
+  const concentratedCorridorRegions = profiles.filter((p) => p.precursorCorridorTier === 'concentrated').length
 
   return {
     year,
@@ -571,6 +654,7 @@ export function buildMyanmarIntelligenceBriefing(input: {
       risingRegions: profiles.filter((p) => p.trajectory === 'rising').length,
       spilloverWatchRegions,
       staleRegions,
+      concentratedCorridorRegions,
     },
   }
 }

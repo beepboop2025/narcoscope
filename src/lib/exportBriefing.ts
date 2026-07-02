@@ -31,6 +31,7 @@ export function riskProfilesToCsv(briefing: IntelligenceBriefing): string {
     'hasSourceConflict', 'conflictNotes',
     'spilloverWatch', 'neighborRegion', 'neighborRiskScore',
     'evidenceStaleness', 'mostRecentEvidenceYear', 'evidenceAgeYears',
+    'precursorCorridorHHI', 'precursorCorridorTier', 'dominantPrecursorCorridor', 'dominantPrecursorCorridorSharePct',
     'topDrivers',
   ]
   const rows = briefing.profiles.map((p) => [
@@ -41,6 +42,7 @@ export function riskProfilesToCsv(briefing: IntelligenceBriefing): string {
     p.hasSourceConflict, p.conflictNotes.join('; '),
     p.spilloverWatch, p.neighborRegion, p.neighborRiskScore,
     p.evidenceStaleness, p.mostRecentEvidenceYear, p.evidenceAgeYears,
+    p.precursorCorridorHHI, p.precursorCorridorTier, p.dominantPrecursorCorridor, p.dominantPrecursorCorridorSharePct,
     p.drivers.join('; '),
   ])
   return toCsv(headers, rows)

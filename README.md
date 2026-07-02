@@ -28,9 +28,12 @@ top of that public data: clean charts, maps, and plain-English explanations.
   disagreement, weights sources by reliability tier, computes a
   year-over-year risk trajectory (rising/falling/stable) so analysts see
   momentum, flags a geographic **spillover watch** when a calm region
-  borders one that has already crossed the high-risk threshold, and flags
+  borders one that has already crossed the high-risk threshold, flags
   **evidence staleness** (current/aging/stale) when a region's freshest
-  record predates the reporting year, discounting confidence accordingly.
+  record predates the reporting year, discounting confidence accordingly,
+  and scores **precursor-corridor concentration** with a Herfindahl-Hirschman
+  Index (diversified/moderate/concentrated) to flag single-source supply
+  dependency — both a fragility signal and an interdiction priority.
   Risk profiles and the evidence-graph ledger can be exported as CSV directly
   from the briefing for offline analyst review.
 
