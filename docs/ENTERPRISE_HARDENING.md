@@ -14,6 +14,9 @@ intelligence workflow. The design is based on recent literature patterns:
 | Crawler resilience & idempotency | Crawler policy study (arXiv:2411.15091); large-scale web-crawl reliability practice | Transient failures (network errors, timeouts, 5xx) are retried with exponential backoff + jitter; policy failures (blocked address, robots disallow, host not allowlisted, 4xx) never retry. Repeat scrapes can dedupe against a prior observation CSV so re-running the same manifest doesn't grow the review queue with identical rows. |
 | Temporal trend / momentum signal | Time-series risk-trajectory practice in OSINT triage tooling | `src/lib/intelligence.ts` computes a `trajectory` (`rising`/`falling`/`stable`/`insufficient-data`) per region from a momentum index (cultivation + synthetic-drug activity + outbound seizures) versus the nearest earlier data year, so two regions with the same point-in-time score can still be ranked by whether pressure is climbing or easing. |
 | Geographic spillover / contagion risk | Spatiotemporal spillover & carryover causal inference for conflict data (arXiv:2504.03464); grid-resolution neural conflict forecasting learning spatial contagion (arXiv:2506.14817) | `src/lib/intelligence.ts` runs a second pass over already-scored regions using a public administrative-adjacency map (`MM_REGION_ADJACENCY` in `src/data/myanmar.ts`) to flag `spilloverWatch`: a region whose own evidence looks calm but borders a high-risk region, per research finding conflict spillover concentrated at shared borders. Never affects a region's own `riskScore` — it's a distinct early-warning signal. |
+| Evidence recency / temporal-credibility decay | Staleness-aware evidence fusion (arXiv:2506.05780); temporal credibility decay in OSINT entity correlation | `src/lib/intelligence.ts` computes `mostRecentEvidenceYear`/`evidenceAgeYears`/`evidenceStaleness` (`current` / `aging` / `stale` / `no-data`) per region from the freshest record across all evidence types, and applies a confidence-score penalty once evidence is 1+ (aging) or 3+ (stale) report-years old, so uncorroborated old reporting doesn't carry current-year confidence. |
+| Supply-chain corridor-concentration risk | HHI concentration methodology (US DOJ/FTC Horizontal Merger Guidelines thresholds) applied to trafficking corridors instead of market share | `src/lib/intelligence.ts` computes an HHI (0-10000) for each region's *inbound* precursor-corridor sourcing and *outbound* seized-drug exit-corridor sourcing, tiering each `diversified` / `moderate` / `concentrated`. A region whose supply/export runs through one corridor is both more fragile and a sharper interdiction target than one with diversified routing. |
+| Source-independence discounting | Non-independence bias in multi-source/Dempster-Shafer evidence fusion; trust-weighted source reliability (arXiv:2401.02379) | `src/lib/sourceReliability.ts` adds `canonicalSourceId`, resolving free-text `sourceName`/`sourceUrl` variants of the *same* organisation (e.g. "UNODC" vs. "UNODC Myanmar Opium Survey 2024") to one stable source-identity family. `sourceDiversity`, `verificationTier`, the confidence score's source-count term, and the cross-source disagreement gate are all keyed on independent families rather than raw name strings, so name-string duplication of one source can no longer masquerade as multi-source corroboration. `rawSourceNameCount` and `enterpriseReadiness.duplicateSourceNameRegions` expose the raw-vs-family gap as an actionable upstream data-quality signal. |
 
 ## Enterprise Intel tab
 
@@ -24,11 +27,17 @@ The tab computes deterministic, explainable profiles per Myanmar region:
 - **Confidence score** rewards evidence count, source diversity (weighted by
   average source reliability, `avgSourceReliability`), and availability of
   region statistics, and is penalized when independent sources disagree on the
-  same precursor inflow (see verification gate below).
+  same precursor inflow (see verification gate below) or when the region's
+  freshest evidence is aging/stale (see evidence recency below).
 - **Verification tier** — `multi-source`, `single-source`, or `unverified` —
   states plainly whether a region's evidence has been corroborated by more than
   one independent source family, following multi-source verification gate
-  practice from open OSINT pipelines.
+  practice from open OSINT pipelines. Source *families* — not raw name
+  strings — decide this: two records citing the same organisation under
+  different name-string variants collapse to one family via
+  `canonicalSourceId`, so name-string duplication can't inflate a region to
+  `multi-source` on its own (see `rawSourceNameCount` vs. `sourceDiversity`
+  and `enterpriseReadiness.duplicateSourceNameRegions` for the audit trail).
 - **Cross-source conflict flag** — when two or more independent sources report
   materially different quantities for the same region/precursor/year, the
   region is flagged with a conflict note instead of quietly blending the
@@ -38,8 +47,9 @@ The tab computes deterministic, explainable profiles per Myanmar region:
   low-tier or unrecognised source can't silently pull the "consensus" figure
   toward itself and escape being flagged as the outlier.
 - **Evidence graph ledger** lists the strongest event/entity relations so an
-  analyst can trace why a score changed, and now tags each cited source with
-  its reliability tier (`high` / `medium` / `low`) directly in the ledger.
+  analyst can trace why a score changed, and tags each cited source with its
+  reliability tier (`high` / `medium` / `low`) in-app; the CSV export additionally
+  resolves each source to its independent source family (`canonicalSourceId`).
 - **Risk trajectory** (`rising` / `falling` / `stable` / `insufficient-data`)
   shows whether a region's momentum is climbing or easing versus the nearest
   earlier year with data, so two regions tied on point-in-time score can still
@@ -48,6 +58,14 @@ The tab computes deterministic, explainable profiles per Myanmar region:
   whose administrative neighbor has crossed the high-risk threshold, using a
   public region-adjacency map — a distinct early-warning signal from the
   region's own `riskScore`, grounded in conflict spatial-diffusion research.
+- **Evidence staleness** (`current` / `aging` / `stale` / `no-data`) tracks how
+  old a region's freshest evidence is relative to the reporting year, applying
+  a graduated confidence penalty so old, uncorroborated reporting doesn't
+  carry the same weight as current-year data.
+- **Corridor concentration** (inbound precursor and outbound seizure) reports
+  an HHI (0-10000) and DOJ/FTC-style tier per region, plus the dominant
+  corridor and its share, surfacing single-corridor dependency as both a
+  fragility signal and an interdiction-priority target.
 
 Scores are triage indicators, not ground truth. They prioritize analyst review
 and preserve the evidence trail needed to challenge or revise a claim.
