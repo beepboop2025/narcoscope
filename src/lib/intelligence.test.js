@@ -152,4 +152,63 @@ describe('buildMyanmarIntelligenceBriefing', () => {
     assert.ok(conflictingProfile.confidenceScore < agreeingProfile.confidenceScore)
     assert.equal(conflicting.enterpriseReadiness.conflictedRegions, 1)
   })
+
+  it('weights the conflict-detection fused mean by source reliability instead of a naive average', () => {
+    // A single low-reliability outlier claiming a huge quantity should not
+    // drag the "fused mean" far enough to itself dodge being flagged as the
+    // outlier, and should not out-vote two high-reliability sources that agree.
+    const briefing = buildMyanmarIntelligenceBriefing({
+      year: 2024,
+      regions,
+      regionRecords: [],
+      conflictEvents: [],
+      precursorFlows: [
+        {
+          originCountry: 'China', transitCountry: null, to: 'shan_north', year: 2024,
+          precursor: 'meth_precursors', quantityKg: 1000, confidence: 'official',
+          sourceName: 'INCB Precursors report', sourceUrl: 'https://incb.org/report',
+        },
+        {
+          originCountry: 'China', transitCountry: null, to: 'shan_north', year: 2024,
+          precursor: 'meth_precursors', quantityKg: 1020, confidence: 'reported',
+          sourceName: 'UNODC Synthetic Drugs in East and Southeast Asia', sourceUrl: 'https://unodc.org/report',
+        },
+        {
+          originCountry: 'China', transitCountry: null, to: 'shan_north', year: 2024,
+          precursor: 'meth_precursors', quantityKg: 9000, confidence: 'estimated',
+          sourceName: 'Anonymous Telegram channel', sourceUrl: 'https://t.me/somechannel',
+        },
+      ],
+      outflows: [],
+    })
+
+    const profile = briefing.profiles.find((p) => p.region === 'shan_north')
+    assert.equal(profile.hasSourceConflict, true)
+    // The two high-reliability sources should still be recognisable as the
+    // dominant signal: the flagged deviation is attributed to disagreement,
+    // and confidence still reflects strong multi-source corroboration
+    // among the credible sources rather than collapsing to the outlier.
+    assert.equal(profile.verificationTier, 'multi-source')
+  })
+
+  it('exposes average source reliability per region for analyst triage', () => {
+    const briefing = buildMyanmarIntelligenceBriefing({
+      year: 2024,
+      regions,
+      regionRecords: [],
+      conflictEvents: [
+        {
+          region: 'shan_north', year: 2024, actor: 'Border militia', actorType: 'militia',
+          eventType: 'clash', intensity: 80, sourceName: 'ACLED Myanmar event data',
+          sourceUrl: 'https://acleddata.com/data',
+        },
+      ],
+      precursorFlows: [],
+      outflows: [],
+    })
+    const shan = briefing.profiles.find((p) => p.region === 'shan_north')
+    const kachin = briefing.profiles.find((p) => p.region === 'kachin')
+    assert.ok(shan.avgSourceReliability > 0)
+    assert.equal(kachin.avgSourceReliability, 0)
+  })
 })

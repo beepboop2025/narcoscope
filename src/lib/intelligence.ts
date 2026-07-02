@@ -5,12 +5,15 @@ import type {
   MmPrecursorFlowRecord,
   MmRegionRecord,
 } from '../types'
+import { sourceReliabilityTier, sourceReliabilityWeight, type ReliabilityTier } from './sourceReliability'
 
 export interface EvidenceNode {
   id: string
   label: string
   kind: 'region' | 'actor' | 'country' | 'precursor' | 'source'
   weight: number
+  /** Only populated for `kind: 'source'` nodes. */
+  reliability?: ReliabilityTier
 }
 
 export interface EvidenceEdge {
@@ -21,6 +24,8 @@ export interface EvidenceEdge {
   sourceName?: string
   sourceUrl?: string
 }
+
+export type { ReliabilityTier }
 
 /**
  * Verification tier follows the multi-source verification gate pattern used by
@@ -47,6 +52,8 @@ export interface RegionRiskProfile {
   verificationTier: VerificationTier
   hasSourceConflict: boolean
   conflictNotes: string[]
+  /** Mean reliability weight (0-1) of the distinct sources reporting on this region. */
+  avgSourceReliability: number
 }
 
 export interface IntelligenceBriefing {
@@ -89,10 +96,20 @@ function detectPrecursorConflicts(
     const distinctSources = new Set(flows.map((f) => f.sourceName))
     if (distinctSources.size < 2) continue
 
-    const quantities = flows.map((f) => f.quantityKg)
-    const mean = quantities.reduce((sum, q) => sum + q, 0) / quantities.length
-    if (mean <= 0) continue
-    const maxDeviation = Math.max(...quantities.map((q) => Math.abs(q - mean) / mean))
+    // Reliability-weighted mean: a well-established intergovernmental source
+    // (e.g. UNODC, INCB) shouldn't be pulled 50/50 toward an unweighted
+    // average with an unrecognised or low-tier source when they disagree.
+    // This follows trust-weighted fusion practice from source-reliability
+    // research (arXiv:2401.02379) rather than treating every source name as
+    // equally authoritative.
+    const weights = flows.map((f) => sourceReliabilityWeight(f.sourceName, f.sourceUrl))
+    const totalWeight = weights.reduce((sum, w) => sum + w, 0)
+    if (totalWeight <= 0) continue
+    const weightedMean = flows.reduce((sum, f, i) => sum + f.quantityKg * weights[i], 0) / totalWeight
+    if (weightedMean <= 0) continue
+    const maxDeviation = Math.max(
+      ...flows.map((f) => Math.abs(f.quantityKg - weightedMean) / weightedMean),
+    )
 
     if (maxDeviation > CONFLICT_RELATIVE_DEVIATION) {
       const region = key.split('::')[0]
@@ -134,7 +151,7 @@ export function buildMyanmarIntelligenceBriefing(input: {
 
   const precursorByRegion = new Map<string, number>()
   for (const flow of precursorFlows) {
-    const weighted = flow.quantityKg * confidenceWeight(flow.confidence)
+    const weighted = flow.quantityKg * confidenceWeight(flow.confidence) * sourceReliabilityWeight(flow.sourceName, flow.sourceUrl)
     precursorByRegion.set(flow.to, (precursorByRegion.get(flow.to) ?? 0) + weighted)
   }
 
@@ -171,6 +188,19 @@ export function buildMyanmarIntelligenceBriefing(input: {
       outflows.filter((r) => r.from === region.id).length +
       (stat ? 1 : 0)
 
+    // Average reliability of the distinct source families backing this
+    // region's evidence — corroboration from two high-reliability sources
+    // should raise confidence more than corroboration from two low-tier ones.
+    const regionSourceUrlByName = new Map<string, string | undefined>()
+    conflictEvents.filter((r) => r.region === region.id).forEach((r) => regionSourceUrlByName.set(r.sourceName, r.sourceUrl))
+    precursorFlows.filter((r) => r.to === region.id).forEach((r) => regionSourceUrlByName.set(r.sourceName, r.sourceUrl))
+    const sourceReliabilityWeights = [...regionSources].map((name) =>
+      sourceReliabilityWeight(name, regionSourceUrlByName.get(name)),
+    )
+    const avgSourceReliability = sourceReliabilityWeights.length
+      ? sourceReliabilityWeights.reduce((sum, w) => sum + w, 0) / sourceReliabilityWeights.length
+      : 0
+
     const riskScore = clamp(
       conflictPressure * 0.25 +
       precursorPressure * 0.25 +
@@ -183,7 +213,7 @@ export function buildMyanmarIntelligenceBriefing(input: {
 
     const confidenceScore = clamp(
       Math.min(100, evidenceCount * 16) * 0.45 +
-      Math.min(100, regionSources.size * 34) * 0.35 +
+      Math.min(100, regionSources.size * 34) * 0.35 * (0.5 + 0.5 * avgSourceReliability) +
       (stat ? 20 : 0) -
       (hasSourceConflict ? SOURCE_CONFLICT_PENALTY : 0),
     )
@@ -219,6 +249,7 @@ export function buildMyanmarIntelligenceBriefing(input: {
       verificationTier,
       hasSourceConflict,
       conflictNotes,
+      avgSourceReliability: Math.round(avgSourceReliability * 100) / 100,
     }
   }).sort((a, b) => b.riskScore - a.riskScore)
 
@@ -251,7 +282,7 @@ function buildEvidenceGraph(input: {
   const edges: EvidenceEdge[] = []
   const upsert = (node: EvidenceNode) => {
     const existing = nodeMap.get(node.id)
-    nodeMap.set(node.id, existing ? { ...existing, weight: Math.max(existing.weight, node.weight) } : node)
+    nodeMap.set(node.id, existing ? { ...existing, ...node, weight: Math.max(existing.weight, node.weight) } : node)
   }
 
   for (const region of input.regions) {
@@ -260,7 +291,13 @@ function buildEvidenceGraph(input: {
 
   for (const event of input.conflictEvents) {
     upsert({ id: `actor:${event.actor}`, label: event.actor, kind: 'actor', weight: event.intensity })
-    upsert({ id: `source:${event.sourceName}`, label: event.sourceName, kind: 'source', weight: 1 })
+    upsert({
+      id: `source:${event.sourceName}`,
+      label: event.sourceName,
+      kind: 'source',
+      weight: 1,
+      reliability: sourceReliabilityTier(event.sourceName, event.sourceUrl),
+    })
     edges.push({
       from: `actor:${event.actor}`,
       to: `region:${event.region}`,
@@ -282,12 +319,19 @@ function buildEvidenceGraph(input: {
   for (const flow of input.precursorFlows) {
     upsert({ id: `country:${flow.originCountry}`, label: flow.originCountry, kind: 'country', weight: flow.quantityKg })
     upsert({ id: `precursor:${flow.precursor}`, label: flow.precursor.replace(/_/g, ' '), kind: 'precursor', weight: flow.quantityKg })
-    upsert({ id: `source:${flow.sourceName}`, label: flow.sourceName, kind: 'source', weight: 1 })
+    upsert({
+      id: `source:${flow.sourceName}`,
+      label: flow.sourceName,
+      kind: 'source',
+      weight: 1,
+      reliability: sourceReliabilityTier(flow.sourceName, flow.sourceUrl),
+    })
+    const reliabilityWeight = sourceReliabilityWeight(flow.sourceName, flow.sourceUrl)
     edges.push({
       from: `country:${flow.originCountry}`,
       to: `region:${flow.to}`,
       relation: 'precursor_inflow',
-      weight: flow.quantityKg * confidenceWeight(flow.confidence),
+      weight: flow.quantityKg * confidenceWeight(flow.confidence) * reliabilityWeight,
       sourceName: flow.sourceName,
       sourceUrl: flow.sourceUrl,
     })
@@ -295,7 +339,7 @@ function buildEvidenceGraph(input: {
       from: `source:${flow.sourceName}`,
       to: `country:${flow.originCountry}`,
       relation: 'reports',
-      weight: confidenceWeight(flow.confidence),
+      weight: confidenceWeight(flow.confidence) * reliabilityWeight,
       sourceName: flow.sourceName,
       sourceUrl: flow.sourceUrl,
     })

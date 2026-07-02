@@ -6,8 +6,8 @@ intelligence workflow. The design is based on recent literature patterns:
 | Pattern | Papers that motivate it | Product implementation |
 |---|---|---|
 | Event/entity knowledge graphs | EventRAG (ACL 2025); GraphRAG survey (arXiv:2408.08921); temporal-causal entity-event KGs (arXiv:2506.05939) | `src/lib/intelligence.ts` builds event/entity evidence nodes and edges for conflict actors, source countries, regions, sources, precursor inflows, and drug outflows. |
-| Uncertainty and source reliability | LLM uncertainty survey (arXiv:2412.05563); misinformation-source webgraphs (arXiv:2401.02379) | The Enterprise Intel tab exposes confidence scores, source diversity, evidence counts, and downweights estimated precursor records. |
-| Multi-source verification gates | Conflict-driven evidence summarization / CARE-RAG (arXiv:2507.01281); probabilistic cross-source entity resolution (Splink-based OSINT pipelines) | Each region profile carries an explicit `verificationTier` (multi-source / single-source / unverified). Precursor-inflow reports from independent sources that materially disagree (>50% relative deviation) are flagged as a cross-source conflict and the confidence score is penalized rather than silently averaged away. |
+| Uncertainty and source reliability | LLM uncertainty survey (arXiv:2412.05563); misinformation-source webgraphs (arXiv:2401.02379) | The Enterprise Intel tab exposes confidence scores, source diversity, evidence counts, and downweights estimated precursor records. `src/lib/sourceReliability.ts` grades each named source into a `high` / `medium` / `low` reliability tier (name rules for known intergovernmental/OSINT bodies, domain rules as fallback) and that weight now feeds precursor-pressure aggregation, fused-mean conflict detection, region confidence scoring, and evidence-graph edge weights — not just the raw `official`/`reported`/`estimated` confidence tag. |
+| Multi-source verification gates | Conflict-driven evidence summarization / CARE-RAG (arXiv:2507.01281); probabilistic cross-source entity resolution (Splink-based OSINT pipelines) | Each region profile carries an explicit `verificationTier` (multi-source / single-source / unverified). Precursor-inflow reports from independent sources that materially disagree from the **reliability-weighted** fused mean (>50% relative deviation) are flagged as a cross-source conflict and the confidence score is penalized rather than silently averaged away — a low-tier outlier source can no longer drag the fused estimate toward itself and dodge being flagged. |
 | Human-in-the-loop OSINT review | OSINT Research Studios (arXiv:2401.00928); AIDE human validation for data extraction (arXiv:2501.11840) | Scraper output remains an analyst work queue with excerpts and hashes; it is not directly loaded as factual app data. |
 | Supply-chain visibility via KGs | Supply-chain KG + LLM paper (arXiv:2408.07705); GNN/federated supply-chain analytics (arXiv:2503.07231) | Country-to-region precursor inflow records can be fused with conflict pressure and outbound seizure records to surface hidden dependency risk. |
 | Provenance and crawler governance | Blockchain/federated provenance architecture (arXiv:2505.24675); crawler policy study (arXiv:2411.15091); SSRF taint-analysis work (arXiv:2502.21026) | The scraper has a source manifest, host allowlist, DNS/private-IP refusal, robots.txt checks, per-host rate budgets, cache, and hash-chained JSONL audit logs. |
@@ -19,8 +19,9 @@ The tab computes deterministic, explainable profiles per Myanmar region:
 
 - **Risk score** blends conflict pressure, inbound precursor pressure, outbound
   seizure pressure, synthetic-drug activity, and opium-cultivation pressure.
-- **Confidence score** rewards evidence count, source diversity, and availability
-  of region statistics, and is penalized when independent sources disagree on the
+- **Confidence score** rewards evidence count, source diversity (weighted by
+  average source reliability, `avgSourceReliability`), and availability of
+  region statistics, and is penalized when independent sources disagree on the
   same precursor inflow (see verification gate below).
 - **Verification tier** — `multi-source`, `single-source`, or `unverified` —
   states plainly whether a region's evidence has been corroborated by more than
@@ -29,9 +30,14 @@ The tab computes deterministic, explainable profiles per Myanmar region:
 - **Cross-source conflict flag** — when two or more independent sources report
   materially different quantities for the same region/precursor/year, the
   region is flagged with a conflict note instead of quietly blending the
-  numbers together (conflict-driven summarization pattern).
+  numbers together (conflict-driven summarization pattern). The disagreement
+  check now compares each report against a **reliability-weighted fused mean**
+  (`src/lib/sourceReliability.ts`) rather than a naive average, so a single
+  low-tier or unrecognised source can't silently pull the "consensus" figure
+  toward itself and escape being flagged as the outlier.
 - **Evidence graph ledger** lists the strongest event/entity relations so an
-  analyst can trace why a score changed.
+  analyst can trace why a score changed, and now tags each cited source with
+  its reliability tier (`high` / `medium` / `low`) directly in the ledger.
 
 Scores are triage indicators, not ground truth. They prioritize analyst review
 and preserve the evidence trail needed to challenge or revise a claim.

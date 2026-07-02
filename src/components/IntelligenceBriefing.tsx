@@ -8,6 +8,12 @@ const riskClass = (score: number): string => {
   return 'watch'
 }
 
+const reliabilityLabel = (weight: number): string => {
+  if (weight >= 0.9) return 'high'
+  if (weight >= 0.65) return 'medium'
+  return 'low'
+}
+
 export default function IntelligenceBriefing() {
   const {
     mmRegions,
@@ -85,7 +91,8 @@ export default function IntelligenceBriefing() {
             </div>
             <p>
               Confidence {profile.confidenceScore}/100 from {profile.evidenceCount} evidence
-              record(s) and {profile.sourceDiversity} source family/families.
+              record(s) and {profile.sourceDiversity} source family/families
+              {profile.sourceDiversity > 0 && ` (avg. reliability ${reliabilityLabel(profile.avgSourceReliability)})`}.
             </p>
             <p className={`verification-tier tier-${profile.verificationTier}`}>
               {profile.verificationTier === 'multi-source' && 'Multi-source verified'}
@@ -137,7 +144,7 @@ export default function IntelligenceBriefing() {
       <h3>Evidence graph ledger</h3>
       <table className="data-table">
         <thead>
-          <tr><th>From</th><th>Relation</th><th>To</th><th>Weight</th><th>Source</th></tr>
+          <tr><th>From</th><th>Relation</th><th>To</th><th>Weight</th><th>Source</th><th>Reliability</th></tr>
         </thead>
         <tbody>
           {briefing.edges
@@ -147,6 +154,7 @@ export default function IntelligenceBriefing() {
             .map((edge, i) => {
               const from = briefing.nodes.find((n) => n.id === edge.from)?.label ?? edge.from
               const to = briefing.nodes.find((n) => n.id === edge.to)?.label ?? edge.to
+              const sourceNode = edge.sourceName ? briefing.nodes.find((n) => n.id === `source:${edge.sourceName}`) : undefined
               return (
                 <tr key={`${edge.from}-${edge.to}-${i}`}>
                   <td>{from}</td>
@@ -157,6 +165,11 @@ export default function IntelligenceBriefing() {
                     {edge.sourceUrl ? (
                       <a href={edge.sourceUrl} target="_blank" rel="noreferrer">{edge.sourceName}</a>
                     ) : 'Loaded data'}
+                  </td>
+                  <td>
+                    {sourceNode?.reliability ? (
+                      <span className={`reliability-tag tier-${sourceNode.reliability}`}>{sourceNode.reliability}</span>
+                    ) : '—'}
                   </td>
                 </tr>
               )
