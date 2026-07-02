@@ -295,6 +295,120 @@ describe('buildMyanmarIntelligenceBriefing', () => {
     assert.equal(kachin.avgSourceReliability, 0)
   })
 
+  describe('conflict-event source disagreement', () => {
+    it('flags cross-source conflicts when independent conflict-event reports disagree materially on intensity', () => {
+      const agreeing = buildMyanmarIntelligenceBriefing({
+        year: 2024,
+        regions,
+        regionRecords: [],
+        conflictEvents: [
+          {
+            region: 'shan_north', year: 2024, actor: 'Border militia', actorType: 'militia',
+            eventType: 'clash', intensity: 70, sourceName: 'ACLED Myanmar event data',
+            sourceUrl: 'https://acleddata.com/asia-pacific/myanmar/',
+          },
+          {
+            region: 'shan_north', year: 2024, actor: 'Border militia', actorType: 'militia',
+            eventType: 'clash', intensity: 75, sourceName: 'International Crisis Group',
+            sourceUrl: 'https://www.crisisgroup.org/asia/south-east-asia/myanmar',
+          },
+        ],
+        precursorFlows: [],
+        outflows: [],
+      })
+      const conflicting = buildMyanmarIntelligenceBriefing({
+        year: 2024,
+        regions,
+        regionRecords: [],
+        conflictEvents: [
+          {
+            region: 'shan_north', year: 2024, actor: 'Border militia', actorType: 'militia',
+            eventType: 'clash', intensity: 20, sourceName: 'ACLED Myanmar event data',
+            sourceUrl: 'https://acleddata.com/asia-pacific/myanmar/',
+          },
+          {
+            region: 'shan_north', year: 2024, actor: 'Border militia', actorType: 'militia',
+            eventType: 'clash', intensity: 90, sourceName: 'International Crisis Group',
+            sourceUrl: 'https://www.crisisgroup.org/asia/south-east-asia/myanmar',
+          },
+        ],
+        precursorFlows: [],
+        outflows: [],
+      })
+
+      const agreeingProfile = agreeing.profiles.find((p) => p.region === 'shan_north')
+      const conflictingProfile = conflicting.profiles.find((p) => p.region === 'shan_north')
+
+      assert.equal(agreeingProfile.hasSourceConflict, false)
+      assert.equal(conflictingProfile.hasSourceConflict, true)
+      assert.ok(conflictingProfile.conflictNotes.some((n) => n.includes('clash intensity')))
+      assert.ok(conflictingProfile.confidenceScore < agreeingProfile.confidenceScore)
+      assert.equal(conflicting.enterpriseReadiness.conflictedRegions, 1)
+    })
+
+    it('does not conflate disagreement across different event types in the same region', () => {
+      const briefing = buildMyanmarIntelligenceBriefing({
+        year: 2024,
+        regions,
+        regionRecords: [],
+        conflictEvents: [
+          {
+            region: 'shan_north', year: 2024, actor: 'Border militia', actorType: 'militia',
+            eventType: 'clash', intensity: 70, sourceName: 'ACLED Myanmar event data',
+            sourceUrl: 'https://acleddata.com/asia-pacific/myanmar/',
+          },
+          {
+            region: 'shan_north', year: 2024, actor: 'Myanmar military', actorType: 'military',
+            eventType: 'territorial_control', intensity: 10, sourceName: 'International Crisis Group',
+            sourceUrl: 'https://www.crisisgroup.org/asia/south-east-asia/myanmar',
+          },
+        ],
+        precursorFlows: [],
+        outflows: [],
+      })
+      const shan = briefing.profiles.find((p) => p.region === 'shan_north')
+      assert.equal(shan.hasSourceConflict, false)
+    })
+
+    it('accumulates notes from both precursor and conflict-event disagreement for the same region', () => {
+      const briefing = buildMyanmarIntelligenceBriefing({
+        year: 2024,
+        regions,
+        regionRecords: [],
+        conflictEvents: [
+          {
+            region: 'shan_north', year: 2024, actor: 'Border militia', actorType: 'militia',
+            eventType: 'clash', intensity: 20, sourceName: 'ACLED Myanmar event data',
+            sourceUrl: 'https://acleddata.com/asia-pacific/myanmar/',
+          },
+          {
+            region: 'shan_north', year: 2024, actor: 'Border militia', actorType: 'militia',
+            eventType: 'clash', intensity: 90, sourceName: 'International Crisis Group',
+            sourceUrl: 'https://www.crisisgroup.org/asia/south-east-asia/myanmar',
+          },
+        ],
+        precursorFlows: [
+          {
+            originCountry: 'China', transitCountry: null, to: 'shan_north', year: 2024,
+            precursor: 'meth_precursors', quantityKg: 1000, confidence: 'official',
+            sourceName: 'INCB Precursors report', sourceUrl: 'https://www.incb.org/incb/en/precursors/',
+          },
+          {
+            originCountry: 'China', transitCountry: null, to: 'shan_north', year: 2024,
+            precursor: 'meth_precursors', quantityKg: 4000, confidence: 'reported',
+            sourceName: 'UNODC Synthetic Drugs in East and Southeast Asia',
+            sourceUrl: 'https://www.unodc.org/roseap/en/what-we-do/toc/synthetic-drugs.html',
+          },
+        ],
+        outflows: [],
+      })
+      const shan = briefing.profiles.find((p) => p.region === 'shan_north')
+      assert.equal(shan.conflictNotes.length, 2)
+      assert.ok(shan.conflictNotes.some((n) => n.includes('clash intensity')))
+      assert.ok(shan.conflictNotes.some((n) => n.includes('meth precursors inflow')))
+    })
+  })
+
   describe('spillover watch', () => {
     const adjacency = { shan_north: ['kachin'], kachin: ['shan_north'] }
 

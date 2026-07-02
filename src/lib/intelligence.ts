@@ -177,42 +177,54 @@ const SPILLOVER_HIGH_RISK_THRESHOLD = 70
 /** Minimum gap between a region's own score and its highest-risk neighbor to flag spillover watch. */
 const SPILLOVER_GAP_THRESHOLD = 15
 
-function detectPrecursorConflicts(
-  precursorFlows: MmPrecursorFlowRecord[],
+/**
+ * Generic reliability-weighted disagreement check shared by precursor-flow
+ * and conflict-event corroboration: groups records by key, computes a
+ * source-reliability-weighted mean of `valueOf(record)`, and flags the group
+ * when any record deviates from that mean by more than
+ * `CONFLICT_RELATIVE_DEVIATION`. Kept generic (rather than duplicated per
+ * evidence type) so new evidence types get the same trust-weighted
+ * corroboration gate for free.
+ */
+function detectWeightedDisagreement<T>(
+  records: T[],
+  keyOf: (record: T) => string,
+  valueOf: (record: T) => number,
+  sourceNameOf: (record: T) => string,
+  sourceUrlOf: (record: T) => string | undefined,
+  noteFor: (key: string, distinctSources: number, maxDeviationPct: number) => { region: string; note: string },
 ): Map<string, string[]> {
   const notesByRegion = new Map<string, string[]>()
-  const groups = new Map<string, MmPrecursorFlowRecord[]>()
+  const groups = new Map<string, T[]>()
 
-  for (const flow of precursorFlows) {
-    const key = `${flow.to}::${flow.precursor}`
+  for (const record of records) {
+    const key = keyOf(record)
     const bucket = groups.get(key) ?? []
-    bucket.push(flow)
+    bucket.push(record)
     groups.set(key, bucket)
   }
 
-  for (const [key, flows] of groups) {
-    const distinctSources = new Set(flows.map((f) => f.sourceName))
+  for (const [key, group] of groups) {
+    const distinctSources = new Set(group.map(sourceNameOf))
     if (distinctSources.size < 2) continue
 
     // Reliability-weighted mean: a well-established intergovernmental source
-    // (e.g. UNODC, INCB) shouldn't be pulled 50/50 toward an unweighted
-    // average with an unrecognised or low-tier source when they disagree.
-    // This follows trust-weighted fusion practice from source-reliability
-    // research (arXiv:2401.02379) rather than treating every source name as
-    // equally authoritative.
-    const weights = flows.map((f) => sourceReliabilityWeight(f.sourceName, f.sourceUrl))
+    // (e.g. UNODC, INCB, ACLED) shouldn't be pulled 50/50 toward an
+    // unweighted average with an unrecognised or low-tier source when they
+    // disagree. This follows trust-weighted fusion practice from
+    // source-reliability research (arXiv:2401.02379) rather than treating
+    // every source name as equally authoritative.
+    const weights = group.map((r) => sourceReliabilityWeight(sourceNameOf(r), sourceUrlOf(r)))
     const totalWeight = weights.reduce((sum, w) => sum + w, 0)
     if (totalWeight <= 0) continue
-    const weightedMean = flows.reduce((sum, f, i) => sum + f.quantityKg * weights[i], 0) / totalWeight
+    const weightedMean = group.reduce((sum, r, i) => sum + valueOf(r) * weights[i], 0) / totalWeight
     if (weightedMean <= 0) continue
     const maxDeviation = Math.max(
-      ...flows.map((f) => Math.abs(f.quantityKg - weightedMean) / weightedMean),
+      ...group.map((r) => Math.abs(valueOf(r) - weightedMean) / weightedMean),
     )
 
     if (maxDeviation > CONFLICT_RELATIVE_DEVIATION) {
-      const region = key.split('::')[0]
-      const precursor = flows[0].precursor.replace(/_/g, ' ')
-      const note = `${distinctSources.size} sources disagree on ${precursor} inflow (up to ${Math.round(maxDeviation * 100)}% spread)`
+      const { region, note } = noteFor(key, distinctSources.size, Math.round(maxDeviation * 100))
       const notes = notesByRegion.get(region) ?? []
       notes.push(note)
       notesByRegion.set(region, notes)
@@ -220,6 +232,64 @@ function detectPrecursorConflicts(
   }
 
   return notesByRegion
+}
+
+function detectPrecursorConflicts(
+  precursorFlows: MmPrecursorFlowRecord[],
+): Map<string, string[]> {
+  return detectWeightedDisagreement(
+    precursorFlows,
+    (f) => `${f.to}::${f.precursor}`,
+    (f) => f.quantityKg,
+    (f) => f.sourceName,
+    (f) => f.sourceUrl,
+    (key, distinctSources, maxDeviationPct) => {
+      const [region, precursorId] = key.split('::')
+      const precursor = precursorId.replace(/_/g, ' ')
+      return {
+        region,
+        note: `${distinctSources} sources disagree on ${precursor} inflow (up to ${maxDeviationPct}% spread)`,
+      }
+    },
+  )
+}
+
+/**
+ * Cross-source disagreement check for conflict-pressure reporting: when two+
+ * independent sources report materially different intensity for the same
+ * region and event type, that disagreement is surfaced as an explicit note
+ * (and confidence penalty) rather than silently averaged away — the same
+ * multi-source verification gate already applied to precursor-flow evidence,
+ * extended to the conflict-pressure layer.
+ */
+function detectConflictEventConflicts(
+  conflictEvents: MmConflictEventRecord[],
+): Map<string, string[]> {
+  return detectWeightedDisagreement(
+    conflictEvents,
+    (e) => `${e.region}::${e.eventType}`,
+    (e) => e.intensity,
+    (e) => e.sourceName,
+    (e) => e.sourceUrl,
+    (key, distinctSources, maxDeviationPct) => {
+      const [region, eventType] = key.split('::')
+      return {
+        region,
+        note: `${distinctSources} sources disagree on ${eventType.replace(/_/g, ' ')} intensity (up to ${maxDeviationPct}% spread)`,
+      }
+    },
+  )
+}
+
+function mergeNoteMaps(...maps: Array<Map<string, string[]>>): Map<string, string[]> {
+  const merged = new Map<string, string[]>()
+  for (const map of maps) {
+    for (const [region, notes] of map) {
+      const existing = merged.get(region) ?? []
+      merged.set(region, [...existing, ...notes])
+    }
+  }
+  return merged
 }
 
 /**
@@ -328,7 +398,10 @@ export function buildMyanmarIntelligenceBriefing(input: {
   const maxPrecursor = Math.max(0, ...precursorByRegion.values())
   const maxOutflow = Math.max(0, ...outflowByRegion.values())
   const maxOpium = Math.max(0, ...regionRecords.map((r) => r.opiumHa))
-  const conflictNotesByRegion = detectPrecursorConflicts(precursorFlows)
+  const conflictNotesByRegion = mergeNoteMaps(
+    detectPrecursorConflicts(precursorFlows),
+    detectConflictEventConflicts(conflictEvents),
+  )
 
   const profiles = regions.map((region) => {
     const stat = regionRecords.find((r) => r.region === region.id)
