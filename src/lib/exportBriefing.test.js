@@ -80,7 +80,21 @@ describe('exportBriefing', () => {
       const csv = evidenceLedgerToCsv(briefing)
       const lines = csv.split('\r\n')
       assert.equal(lines.length, 1 + briefing.edges.length)
-      assert.equal(lines[0], 'from,relation,to,weight,sourceName,sourceUrl')
+      assert.equal(lines[0], 'from,relation,to,weight,sourceName,sourceFamily,sourceUrl')
+    })
+
+    it('includes the resolved source family alongside the raw source name for audit', () => {
+      const csv = evidenceLedgerToCsv(briefing)
+      const dataLine = csv.split('\r\n').find((line) => line.includes('ACLED'))
+      assert.ok(dataLine.includes(',acled,'))
+    })
+
+    it('leaves sourceFamily blank for edges with no source attribution', () => {
+      const csv = evidenceLedgerToCsv(briefing)
+      const edgeWithoutSource = briefing.edges.find((e) => !e.sourceName)
+      if (edgeWithoutSource) {
+        assert.ok(csv.split('\r\n').some((line) => line.endsWith(',,')))
+      }
     })
 
     it('quotes source names containing commas', () => {

@@ -7,6 +7,7 @@
  */
 
 import type { IntelligenceBriefing } from './intelligence'
+import { canonicalSourceId } from './sourceReliability'
 
 /** Escapes a single CSV field per RFC 4180 (quote if it contains a comma, quote, or newline). */
 function csvField(value: string | number | boolean | null | undefined): string {
@@ -50,13 +51,20 @@ export function riskProfilesToCsv(briefing: IntelligenceBriefing): string {
   return toCsv(headers, rows)
 }
 
-/** Evidence-graph ledger: one row per fused edge, with the resolved node labels and source provenance. */
+/**
+ * Evidence-graph ledger: one row per fused edge, with the resolved node
+ * labels and source provenance. Includes `sourceFamily` (see
+ * `canonicalSourceId`) alongside the raw `sourceName` so auditors can see
+ * which raw name strings the fusion engine treated as the same independent
+ * source — making the source-independence discounting behind
+ * `sourceDiversity`/`verificationTier` reviewable rather than opaque.
+ */
 export function evidenceLedgerToCsv(briefing: IntelligenceBriefing): string {
   const labelOf = (id: string): string => briefing.nodes.find((n) => n.id === id)?.label ?? id
-  const headers = ['from', 'relation', 'to', 'weight', 'sourceName', 'sourceUrl']
+  const headers = ['from', 'relation', 'to', 'weight', 'sourceName', 'sourceFamily', 'sourceUrl']
   const rows = briefing.edges.map((edge) => [
     labelOf(edge.from), edge.relation, labelOf(edge.to), Math.round(edge.weight),
-    edge.sourceName ?? '', edge.sourceUrl ?? '',
+    edge.sourceName ?? '', edge.sourceName ? canonicalSourceId(edge.sourceName, edge.sourceUrl) : '', edge.sourceUrl ?? '',
   ])
   return toCsv(headers, rows)
 }
