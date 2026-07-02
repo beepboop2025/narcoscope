@@ -554,6 +554,153 @@ describe('buildMyanmarIntelligenceBriefing', () => {
     })
   })
 
+  describe('compound early warning', () => {
+    it('flags a calm region only when both spillover and actor-network watches fire', () => {
+      const adjacency = { shan_north: ['kachin'], kachin: ['shan_north'] }
+      const briefing = buildMyanmarIntelligenceBriefing({
+        year: 2024,
+        regions,
+        regionAdjacency: adjacency,
+        regionRecords: [
+          { region: 'shan_north', year: 2024, opiumHa: 20000, methIndex: 95 },
+          { region: 'kachin', year: 2024, opiumHa: 500, methIndex: 5 },
+        ],
+        conflictEvents: [
+          {
+            region: 'shan_north', year: 2024, actor: 'Shared Armed Group', actorType: 'eao',
+            eventType: 'clash', intensity: 90, sourceName: 'ACLED', sourceUrl: 'https://example.org/acled',
+          },
+          {
+            region: 'kachin', year: 2024, actor: 'Shared Armed Group', actorType: 'eao',
+            eventType: 'territorial_control', intensity: 20, sourceName: 'ICG', sourceUrl: 'https://example.org/icg',
+          },
+        ],
+        precursorFlows: [
+          {
+            originCountry: 'China', transitCountry: null, to: 'shan_north', year: 2024,
+            precursor: 'meth_precursors', quantityKg: 5000, confidence: 'official',
+            sourceName: 'INCB', sourceUrl: 'https://www.incb.org/incb/en/precursors/',
+          },
+        ],
+        outflows: [],
+      })
+
+      const kachin = briefing.profiles.find((p) => p.region === 'kachin')
+      const shan = briefing.profiles.find((p) => p.region === 'shan_north')
+      assert.equal(kachin.spilloverWatch, true)
+      assert.equal(kachin.actorNetworkWatch, true)
+      assert.equal(kachin.compoundEarlyWarning, true)
+      assert.equal(shan.compoundEarlyWarning, false, 'a high-risk region is never its own compound warning')
+      assert.equal(briefing.enterpriseReadiness.compoundEarlyWarningRegions, 1)
+    })
+
+    it('does not flag compound warning when only one signal fires', () => {
+      const briefing = buildMyanmarIntelligenceBriefing({
+        year: 2024,
+        regions,
+        // No adjacency map supplied, so spillover can never fire — only
+        // actor-network watch can trigger here.
+        regionRecords: [
+          { region: 'shan_north', year: 2024, opiumHa: 20000, methIndex: 95 },
+          { region: 'kachin', year: 2024, opiumHa: 500, methIndex: 5 },
+        ],
+        conflictEvents: [
+          {
+            region: 'shan_north', year: 2024, actor: 'Shared Armed Group', actorType: 'eao',
+            eventType: 'clash', intensity: 90, sourceName: 'ACLED', sourceUrl: 'https://example.org/acled',
+          },
+          {
+            region: 'kachin', year: 2024, actor: 'Shared Armed Group', actorType: 'eao',
+            eventType: 'territorial_control', intensity: 20, sourceName: 'ICG', sourceUrl: 'https://example.org/icg',
+          },
+        ],
+        precursorFlows: [
+          {
+            originCountry: 'China', transitCountry: null, to: 'shan_north', year: 2024,
+            precursor: 'meth_precursors', quantityKg: 5000, confidence: 'official',
+            sourceName: 'INCB', sourceUrl: 'https://www.incb.org/incb/en/precursors/',
+          },
+        ],
+        outflows: [],
+      })
+
+      const kachin = briefing.profiles.find((p) => p.region === 'kachin')
+      assert.equal(kachin.actorNetworkWatch, true)
+      assert.equal(kachin.spilloverWatch, false)
+      assert.equal(kachin.compoundEarlyWarning, false)
+      assert.equal(briefing.enterpriseReadiness.compoundEarlyWarningRegions, 0)
+    })
+  })
+
+  describe('systemic corridor chokepoints', () => {
+    const borderNodes = [
+      { id: 'muse', label: 'Muse', lat: 24, lng: 98 },
+      { id: 'mekong', label: 'Mekong SEZ', lat: 20, lng: 100 },
+    ]
+
+    it('flags a corridor serving multiple regions as a systemic chokepoint', () => {
+      const briefing = buildMyanmarIntelligenceBriefing({
+        year: 2024,
+        regions,
+        borderNodes,
+        regionRecords: [],
+        conflictEvents: [],
+        precursorFlows: [],
+        outflows: [
+          { from: 'shan_north', to: 'muse', year: 2024, quantityKg: 3000, drug: 'Methamphetamine' },
+          { from: 'kachin', to: 'muse', year: 2024, quantityKg: 1000, drug: 'Heroin' },
+          { from: 'kachin', to: 'mekong', year: 2024, quantityKg: 500, drug: 'Methamphetamine' },
+        ],
+      })
+
+      const muse = briefing.enterpriseReadiness.chokepoints.find((c) => c.corridor === 'muse')
+      const mekong = briefing.enterpriseReadiness.chokepoints.find((c) => c.corridor === 'mekong')
+      assert.equal(muse.label, 'Muse')
+      assert.equal(muse.totalQuantityKg, 4000)
+      assert.equal(muse.regionsServed, 2)
+      assert.equal(muse.systemicChokepoint, true, 'serves 2 regions, so it is systemic regardless of share')
+      assert.equal(mekong.regionsServed, 1)
+      assert.equal(mekong.systemicChokepoint, false, 'single-region, minority-share corridor is not systemic')
+      // Sorted descending by total volume.
+      assert.equal(briefing.enterpriseReadiness.chokepoints[0].corridor, 'muse')
+      assert.equal(briefing.enterpriseReadiness.systemicChokepointCount, 1)
+    })
+
+    it('flags a single-region corridor as systemic when its network-wide share is outsized', () => {
+      const briefing = buildMyanmarIntelligenceBriefing({
+        year: 2024,
+        regions,
+        borderNodes,
+        regionRecords: [],
+        conflictEvents: [],
+        precursorFlows: [],
+        outflows: [
+          { from: 'shan_north', to: 'muse', year: 2024, quantityKg: 8000, drug: 'Methamphetamine' },
+          { from: 'kachin', to: 'mekong', year: 2024, quantityKg: 2000, drug: 'Methamphetamine' },
+        ],
+      })
+
+      const muse = briefing.enterpriseReadiness.chokepoints.find((c) => c.corridor === 'muse')
+      assert.equal(muse.regionsServed, 1)
+      assert.equal(muse.sharePctOfTotalOutflow, 80)
+      assert.equal(muse.systemicChokepoint, true, '80% of network volume is an outsized single-corridor share')
+    })
+
+    it('returns no chokepoints when there are no outflow records', () => {
+      const briefing = buildMyanmarIntelligenceBriefing({
+        year: 2024,
+        regions,
+        borderNodes,
+        regionRecords: [],
+        conflictEvents: [],
+        precursorFlows: [],
+        outflows: [],
+      })
+      assert.deepEqual(briefing.enterpriseReadiness.chokepoints, [])
+      assert.equal(briefing.enterpriseReadiness.systemicChokepointCount, 0)
+    })
+  })
+
   describe('evidence staleness', () => {
     it('treats current-year evidence as current with no confidence penalty', () => {
       const briefing = buildMyanmarIntelligenceBriefing({

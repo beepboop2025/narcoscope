@@ -18,6 +18,8 @@ intelligence workflow. The design is based on recent literature patterns:
 | Supply-chain corridor-concentration risk | HHI concentration methodology (US DOJ/FTC Horizontal Merger Guidelines thresholds) applied to trafficking corridors instead of market share | `src/lib/intelligence.ts` computes an HHI (0-10000) for each region's *inbound* precursor-corridor sourcing and *outbound* seized-drug exit-corridor sourcing, tiering each `diversified` / `moderate` / `concentrated`. A region whose supply/export runs through one corridor is both more fragile and a sharper interdiction target than one with diversified routing. |
 | Source-independence discounting | Non-independence bias in multi-source/Dempster-Shafer evidence fusion; trust-weighted source reliability (arXiv:2401.02379) | `src/lib/sourceReliability.ts` adds `canonicalSourceId`, resolving free-text `sourceName`/`sourceUrl` variants of the *same* organisation (e.g. "UNODC" vs. "UNODC Myanmar Opium Survey 2024") to one stable source-identity family. `sourceDiversity`, `verificationTier`, the confidence score's source-count term, and the cross-source disagreement gate are all keyed on independent families rather than raw name strings, so name-string duplication of one source can no longer masquerade as multi-source corroboration. `rawSourceNameCount` and `enterpriseReadiness.duplicateSourceNameRegions` expose the raw-vs-family gap as an actionable upstream data-quality signal. |
 | Armed-actor network contagion | Bipartite armed-actor/territory network analysis of conflict diffusion (arXiv:2508.09051) | `src/lib/intelligence.ts` runs an `actorNetworkWatch` pass alongside geographic spillover: it groups `MM_CONFLICT_EVENTS` by shared `actor` name and flags a calm region as linked to a high-risk region when they share a conflict actor — even when the two regions aren't administratively adjacent (e.g. an armed group with an administered zone plus reported influence pockets elsewhere). A distinct early-warning path from `spilloverWatch`'s geographic-adjacency signal; never affects a region's own `riskScore`. |
+| Ensemble/multi-signal corroboration | Ensembling independently-derived conflict-forecast models increases reliability over any single model (ViEWS-style ensemble forecasting practice) | `src/lib/intelligence.ts` computes `compoundEarlyWarning`: true only when a region's `spilloverWatch` (geographic-adjacency evidence) **and** `actorNetworkWatch` (shared-actor evidence) both fire. The two signals are derived from independent evidence (administrative-border geometry vs. actor-attribution records), so agreement between them is a materially stronger, corroborated warning than either alone — surfaced separately from each individual flag so analysts can distinguish single-signal hints from cross-validated ones. |
+| Supply-chain chokepoint/bottleneck centrality | Network-centrality-driven chokepoint/bottleneck detection over supply-chain knowledge graphs (arXiv:2510.01115) | `src/lib/intelligence.ts` computes `enterpriseReadiness.chokepoints`: groups all outbound seizure corridors (border/exit towns) network-wide, independent of any single region, and flags a corridor `systemicChokepoint` when it either serves 2+ distinct source regions or alone carries an outsized share (≥40%) of total network volume. Complements the per-region outbound-corridor HHI — a region can look diversified on its own HHI while still routing through a node that other regions also depend on, and that node is the higher-leverage, network-wide interdiction target. |
 
 ## Enterprise Intel tab
 
@@ -73,6 +75,18 @@ The tab computes deterministic, explainable profiles per Myanmar region:
   an HHI (0-10000) and DOJ/FTC-style tier per region, plus the dominant
   corridor and its share, surfacing single-corridor dependency as both a
   fragility signal and an interdiction-priority target.
+- **Compound early warning** flags a region only when both `spilloverWatch`
+  and `actorNetworkWatch` fire together — the two are derived from
+  independent evidence, so their agreement is a corroborated signal rather
+  than two separate low-confidence hints, following ensemble-forecasting
+  practice from conflict early-warning systems. Never affects the region's
+  own `riskScore`.
+- **Corridor chokepoints** rank outbound corridor towns network-wide (not
+  per-region) by total seized volume, flagging a corridor `systemicChokepoint`
+  when it serves multiple regions or alone carries an outsized share of total
+  network volume, per network-centrality chokepoint-detection research
+  (arXiv:2510.01115) applied to trafficking corridors instead of a generic
+  supply-chain graph.
 
 Scores are triage indicators, not ground truth. They prioritize analyst review
 and preserve the evidence trail needed to challenge or revise a claim.

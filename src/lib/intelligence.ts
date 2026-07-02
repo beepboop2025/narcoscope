@@ -171,6 +171,74 @@ function computeOutflowCorridorConcentration(
   }
 }
 
+/**
+ * A border/exit-corridor town whose disruption would affect the trafficking
+ * network as a whole, not just one region's supply — distinct from
+ * `outflowCorridorTier`'s region-scoped HHI. A region can have a diversified
+ * outbound HHI (several exit towns) while still routing through a node that
+ * *other* regions also depend on; conversely a region can be "concentrated"
+ * on a corridor town that, network-wide, carries only a small share of total
+ * volume. Modelled on graph centrality / chokepoint-detection practice for
+ * supply-chain risk (arXiv:2510.01115 exploits network centrality over a
+ * supply-chain knowledge graph to surface economically salient bottleneck
+ * nodes) applied here to seizure-reported drug-outflow corridors: a node is
+ * flagged systemic when it serves 2+ distinct source regions or carries an
+ * outsized share of total network-wide outbound volume.
+ */
+export interface CorridorChokepoint {
+  corridor: string
+  label: string
+  totalQuantityKg: number
+  regionsServed: number
+  sharePctOfTotalOutflow: number
+  systemicChokepoint: boolean
+}
+
+/** Regions served by a corridor at/above this count already indicates network-wide dependency. */
+const CHOKEPOINT_MIN_REGIONS_SERVED = 2
+/** Share of total network outbound volume at/above which a single-region corridor still counts as systemic. */
+const CHOKEPOINT_SHARE_THRESHOLD_PCT = 40
+
+/**
+ * Computes systemic chokepoint risk across all outbound corridors (border/
+ * exit towns), independent of any single region's own corridor-concentration
+ * score. Groups outflow records by `to` (the corridor town), sums raw
+ * quantityKg, counts distinct source regions per corridor, and flags a
+ * corridor as a systemic chokepoint when either (a) it serves multiple
+ * regions — so one closure/crackdown there degrades several regions' export
+ * capacity at once — or (b) it alone carries an outsized share of total
+ * network-wide outbound volume, even if only one region uses it.
+ */
+function computeCorridorChokepoints(
+  outflows: MmFlowRecord[],
+  labelByRegion: Map<string, string>,
+): CorridorChokepoint[] {
+  const byCorridor = new Map<string, { totalQuantityKg: number; regions: Set<string> }>()
+  for (const flow of outflows) {
+    const entry = byCorridor.get(flow.to) ?? { totalQuantityKg: 0, regions: new Set<string>() }
+    entry.totalQuantityKg += flow.quantityKg
+    entry.regions.add(flow.from)
+    byCorridor.set(flow.to, entry)
+  }
+  const totalNetworkOutflow = [...byCorridor.values()].reduce((sum, e) => sum + e.totalQuantityKg, 0)
+  if (totalNetworkOutflow <= 0) return []
+
+  const chokepoints: CorridorChokepoint[] = [...byCorridor.entries()].map(([corridor, entry]) => {
+    const sharePctOfTotalOutflow = Math.round((entry.totalQuantityKg / totalNetworkOutflow) * 1000) / 10
+    return {
+      corridor,
+      label: labelByRegion.get(corridor) ?? corridor,
+      totalQuantityKg: entry.totalQuantityKg,
+      regionsServed: entry.regions.size,
+      sharePctOfTotalOutflow,
+      systemicChokepoint:
+        entry.regions.size >= CHOKEPOINT_MIN_REGIONS_SERVED || sharePctOfTotalOutflow >= CHOKEPOINT_SHARE_THRESHOLD_PCT,
+    }
+  })
+  chokepoints.sort((a, b) => b.totalQuantityKg - a.totalQuantityKg)
+  return chokepoints
+}
+
 function evidenceStalenessTier(ageYears: number | null): EvidenceStaleness {
   if (ageYears === null) return 'no-data'
   if (ageYears >= STALE_EVIDENCE_AGE_YEARS) return 'stale'
@@ -293,6 +361,18 @@ export interface RegionRiskProfile {
    * analysis, arXiv:2508.09051). Never affects the region's own riskScore.
    */
   actorNetworkWatch: boolean
+  /**
+   * True when both `spilloverWatch` (geographic adjacency) and
+   * `actorNetworkWatch` (shared conflict actor) fire for this region at
+   * once. The two signals are derived from independent evidence — one from
+   * administrative-border geometry, the other from actor-attribution
+   * records — so agreement between them is a stronger, corroborated
+   * early-warning than either alone, following the same logic that makes
+   * ensembles of independently-derived conflict-forecast models
+   * (e.g. ViEWS-style ensembling) more reliable than any single model.
+   * Never affects the region's own `riskScore`.
+   */
+  compoundEarlyWarning: boolean
   /** Most recent year (<= reporting year) with any evidence record for this region; null if none. */
   mostRecentEvidenceYear: number | null
   /** Years between `mostRecentEvidenceYear` and the reporting year; null when there's no evidence at all. */
@@ -344,6 +424,16 @@ export interface IntelligenceBriefing {
      * distinct from genuine multi-source corroboration.
      */
     duplicateSourceNameRegions: number
+    /** Regions where both independent early-warning signals (spillover + actor-network) agree. */
+    compoundEarlyWarningRegions: number
+    /**
+     * Outbound corridor towns ranked by systemic (network-wide) chokepoint
+     * risk — distinct from any single region's `outflowCorridorTier`. See
+     * `computeCorridorChokepoints`.
+     */
+    chokepoints: CorridorChokepoint[]
+    /** Count of `chokepoints` entries flagged `systemicChokepoint`. */
+    systemicChokepointCount: number
   }
 }
 
@@ -774,6 +864,7 @@ export function buildMyanmarIntelligenceBriefing(input: {
       actorNetworkRegion: null as string | null,
       actorNetworkActor: null as string | null,
       actorNetworkWatch: false,
+      compoundEarlyWarning: false,
     }
   })
 
@@ -832,11 +923,16 @@ export function buildMyanmarIntelligenceBriefing(input: {
       actorNetworkRiskScore >= ACTOR_NETWORK_HIGH_RISK_THRESHOLD &&
       profile.riskScore < ACTOR_NETWORK_HIGH_RISK_THRESHOLD &&
       actorNetworkRiskScore - profile.riskScore >= ACTOR_NETWORK_GAP_THRESHOLD
+    // Compound pass: both independent early-warning signals firing on the
+    // same region is a corroborated ensemble result, not just two separate
+    // low-confidence hints — see doc comment on `compoundEarlyWarning`.
+    profile.compoundEarlyWarning = profile.spilloverWatch && profile.actorNetworkWatch
   }
 
   profiles.sort((a, b) => b.riskScore - a.riskScore)
 
   const { nodes, edges } = buildEvidenceGraph({ regions, conflictEvents, precursorFlows, outflows, borderNodes: input.borderNodes })
+  const chokepoints = computeCorridorChokepoints(outflows, labelByRegion)
   const regionsWithProvenance = profiles.filter((p) => p.evidenceCount > 1 && p.sourceDiversity > 0).length
   const conflictedRegions = profiles.filter((p) => p.hasSourceConflict).length
   const spilloverWatchRegions = profiles.filter((p) => p.spilloverWatch).length
@@ -845,6 +941,7 @@ export function buildMyanmarIntelligenceBriefing(input: {
   const concentratedOutflowCorridorRegions = profiles.filter((p) => p.outflowCorridorTier === 'concentrated').length
   const duplicateSourceNameRegions = profiles.filter((p) => p.rawSourceNameCount > p.sourceDiversity).length
   const actorNetworkWatchRegions = profiles.filter((p) => p.actorNetworkWatch).length
+  const compoundEarlyWarningRegions = profiles.filter((p) => p.compoundEarlyWarning).length
 
   return {
     year,
@@ -864,6 +961,9 @@ export function buildMyanmarIntelligenceBriefing(input: {
       concentratedOutflowCorridorRegions,
       duplicateSourceNameRegions,
       actorNetworkWatchRegions,
+      compoundEarlyWarningRegions,
+      chokepoints,
+      systemicChokepointCount: chokepoints.filter((c) => c.systemicChokepoint).length,
     },
   }
 }

@@ -1,6 +1,6 @@
 import { describe, it, assert } from 'vitest'
 import { buildMyanmarIntelligenceBriefing } from './intelligence'
-import { riskProfilesToCsv, evidenceLedgerToCsv } from './exportBriefing'
+import { riskProfilesToCsv, evidenceLedgerToCsv, chokepointsToCsv } from './exportBriefing'
 
 describe('exportBriefing', () => {
   const regions = [
@@ -78,6 +78,11 @@ describe('exportBriefing', () => {
       assert.ok(csv.includes('sourceDiversity,rawSourceNameCount'))
     })
 
+    it('includes compoundEarlyWarning for downstream audit', () => {
+      const csv = riskProfilesToCsv(briefing)
+      assert.ok(csv.includes('compoundEarlyWarning'))
+    })
+
     it('quotes fields containing commas per RFC 4180', () => {
       const csv = riskProfilesToCsv(briefing)
       // "INCB, precursors report" flows into a source name referenced by the
@@ -119,6 +124,22 @@ describe('exportBriefing', () => {
       const csv = evidenceLedgerToCsv(briefing)
       assert.ok(csv.includes('Shan North'))
       assert.ok(!csv.includes('region:shan_north'))
+    })
+  })
+
+  describe('chokepointsToCsv', () => {
+    it('produces one header row plus one row per chokepoint', () => {
+      const csv = chokepointsToCsv(briefing)
+      const lines = csv.split('\r\n')
+      assert.equal(lines[0], 'corridor,label,totalQuantityKg,regionsServed,sharePctOfTotalOutflow,systemicChokepoint')
+      assert.equal(lines.length, 1 + briefing.enterpriseReadiness.chokepoints.length)
+    })
+
+    it('reports the single outflow corridor in the shared fixture as 100% share, single-region, systemic (outsized share)', () => {
+      const csv = chokepointsToCsv(briefing)
+      const dataLine = csv.split('\r\n')[1]
+      assert.ok(dataLine.startsWith('muse,'))
+      assert.ok(dataLine.includes(',3000,1,100,true'))
     })
   })
 })

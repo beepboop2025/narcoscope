@@ -32,6 +32,7 @@ export function riskProfilesToCsv(briefing: IntelligenceBriefing): string {
     'hasSourceConflict', 'conflictNotes',
     'spilloverWatch', 'neighborRegion', 'neighborRiskScore',
     'actorNetworkWatch', 'actorNetworkRegion', 'actorNetworkRiskScore', 'actorNetworkActor',
+    'compoundEarlyWarning',
     'evidenceStaleness', 'mostRecentEvidenceYear', 'evidenceAgeYears',
     'precursorCorridorHHI', 'precursorCorridorTier', 'dominantPrecursorCorridor', 'dominantPrecursorCorridorSharePct',
     'outflowCorridorHHI', 'outflowCorridorTier', 'dominantOutflowCorridor', 'dominantOutflowCorridorSharePct',
@@ -45,6 +46,7 @@ export function riskProfilesToCsv(briefing: IntelligenceBriefing): string {
     p.hasSourceConflict, p.conflictNotes.join('; '),
     p.spilloverWatch, p.neighborRegion, p.neighborRiskScore,
     p.actorNetworkWatch, p.actorNetworkRegion, p.actorNetworkRiskScore, p.actorNetworkActor,
+    p.compoundEarlyWarning,
     p.evidenceStaleness, p.mostRecentEvidenceYear, p.evidenceAgeYears,
     p.precursorCorridorHHI, p.precursorCorridorTier, p.dominantPrecursorCorridor, p.dominantPrecursorCorridorSharePct,
     p.outflowCorridorHHI, p.outflowCorridorTier, p.dominantOutflowCorridor, p.dominantOutflowCorridorSharePct,
@@ -67,6 +69,20 @@ export function evidenceLedgerToCsv(briefing: IntelligenceBriefing): string {
   const rows = briefing.edges.map((edge) => [
     labelOf(edge.from), edge.relation, labelOf(edge.to), Math.round(edge.weight),
     edge.sourceName ?? '', edge.sourceName ? canonicalSourceId(edge.sourceName, edge.sourceUrl) : '', edge.sourceUrl ?? '',
+  ])
+  return toCsv(headers, rows)
+}
+
+/**
+ * Systemic chokepoint export: one row per outbound corridor town, ranked by
+ * total network-wide volume, with the region-count and share metrics behind
+ * `systemicChokepoint` — lets an interdiction-planning audience prioritize
+ * corridors independent of any single region's own risk profile.
+ */
+export function chokepointsToCsv(briefing: IntelligenceBriefing): string {
+  const headers = ['corridor', 'label', 'totalQuantityKg', 'regionsServed', 'sharePctOfTotalOutflow', 'systemicChokepoint']
+  const rows = briefing.enterpriseReadiness.chokepoints.map((c) => [
+    c.corridor, c.label, c.totalQuantityKg, c.regionsServed, c.sharePctOfTotalOutflow, c.systemicChokepoint,
   ])
   return toCsv(headers, rows)
 }

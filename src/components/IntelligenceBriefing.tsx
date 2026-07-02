@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { MM_REGION_ADJACENCY } from '../data/myanmar'
 import { useData } from '../lib/dataStore'
-import { downloadCsv, evidenceLedgerToCsv, riskProfilesToCsv } from '../lib/exportBriefing'
+import { chokepointsToCsv, downloadCsv, evidenceLedgerToCsv, riskProfilesToCsv } from '../lib/exportBriefing'
 import { buildMyanmarIntelligenceBriefing } from '../lib/intelligence'
 
 const riskClass = (score: number): string => {
@@ -146,6 +146,14 @@ export default function IntelligenceBriefing() {
           <span className="stat-label">Regions on actor-network watch</span>
         </div>
         <div className="stat">
+          <span className="stat-value">{briefing.enterpriseReadiness.compoundEarlyWarningRegions}</span>
+          <span className="stat-label">Regions on compound early warning</span>
+        </div>
+        <div className="stat">
+          <span className="stat-value">{briefing.enterpriseReadiness.systemicChokepointCount}</span>
+          <span className="stat-label">Systemic outbound chokepoints</span>
+        </div>
+        <div className="stat">
           <span className="stat-value">{briefing.enterpriseReadiness.staleRegions}</span>
           <span className="stat-label">Regions with stale evidence (3+ yrs)</span>
         </div>
@@ -178,6 +186,15 @@ export default function IntelligenceBriefing() {
         >
           ⬇ Export evidence ledger (CSV)
         </button>
+        {briefing.enterpriseReadiness.chokepoints.length > 0 && (
+          <button
+            type="button"
+            className="export-btn"
+            onClick={() => downloadCsv(`myanmar-chokepoints-${briefing.year}.csv`, chokepointsToCsv(briefing))}
+          >
+            ⬇ Export corridor chokepoints (CSV)
+          </button>
+        )}
       </div>
 
       <div className="intel-grid">
@@ -230,6 +247,14 @@ export default function IntelligenceBriefing() {
                 } (risk ${profile.actorNetworkRiskScore})`}
               >
                 ☍ Actor-network watch: linked to a high-risk region via shared actor
+              </p>
+            )}
+            {profile.compoundEarlyWarning && (
+              <p
+                className="compound-warning-flag"
+                title="Both geographic spillover and actor-network signals agree — independent corroboration, prioritize review."
+              >
+                ⛒ Compound early warning: two independent signals agree
               </p>
             )}
             <p
@@ -300,6 +325,35 @@ export default function IntelligenceBriefing() {
           ))}
         </tbody>
       </table>
+
+      {briefing.enterpriseReadiness.chokepoints.length > 0 && (
+        <>
+          <h3>Outbound corridor chokepoints</h3>
+          <p className="intro">
+            Network-wide chokepoint risk (arXiv:2510.01115-style supply-chain
+            centrality) — distinct from any single region's own corridor HHI. A
+            corridor town serving multiple regions, or alone carrying an outsized
+            share of total outbound volume, is a systemic interdiction target:
+            disrupting it degrades several regions' export capacity at once.
+          </p>
+          <table className="data-table">
+            <thead>
+              <tr><th>Corridor</th><th>Total kg</th><th>Regions served</th><th>Share of network</th><th>Systemic</th></tr>
+            </thead>
+            <tbody>
+              {briefing.enterpriseReadiness.chokepoints.map((c) => (
+                <tr key={c.corridor} className={c.systemicChokepoint ? 'hot' : ''}>
+                  <td>{c.label}</td>
+                  <td>{c.totalQuantityKg.toLocaleString()}</td>
+                  <td>{c.regionsServed}</td>
+                  <td>{c.sharePctOfTotalOutflow}%</td>
+                  <td>{c.systemicChokepoint ? '⛒ Yes' : '—'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </>
+      )}
 
       <h3>Evidence graph ledger</h3>
       <table className="data-table">
