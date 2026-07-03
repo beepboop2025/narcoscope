@@ -16,7 +16,6 @@
 
 import fs from 'node:fs'
 import path from 'node:path'
-import xlsx from 'xlsx'
 
 // =============================================================================
 // EDIT THIS CONFIG to match your source spreadsheets.
@@ -250,7 +249,7 @@ function parseCsv(text) {
   return { headers, rows }
 }
 
-function readSpreadsheet(inputPath, schemaConfig) {
+async function readSpreadsheet(inputPath, schemaConfig) {
   const ext = path.extname(inputPath).toLowerCase()
   const buffer = fs.readFileSync(inputPath)
 
@@ -258,7 +257,19 @@ function readSpreadsheet(inputPath, schemaConfig) {
     return parseCsv(buffer.toString('utf8'))
   }
 
-  // .xlsx / .xls
+  // .xlsx / .xls — the xlsx package was dropped from the project's
+  // dependencies (unpatched upstream advisories; `npm audit` stays clean
+  // without it), so it is loaded on demand only when someone actually
+  // converts an Excel file. CSV conversion never needs it.
+  let xlsx
+  try {
+    xlsx = (await import('xlsx')).default
+  } catch {
+    throw new Error(
+      'Converting .xlsx/.xls requires the optional "xlsx" package, which is not installed. ' +
+      'Run `npm install --no-save xlsx` and retry, or export the sheet as CSV instead.',
+    )
+  }
   const workbook = xlsx.read(buffer, { type: 'buffer' })
   const sheetName = schemaConfig.sheetName ?? workbook.SheetNames[0]
   if (!workbook.Sheets[sheetName]) {
@@ -365,7 +376,7 @@ function writeCsv(outputPath, headers, records) {
 // Main
 // =============================================================================
 
-function main() {
+async function main() {
   const [, , schema, inputFile, outputFile] = process.argv
 
   if (!schema || !inputFile || !outputFile) {
@@ -399,7 +410,7 @@ function main() {
   fs.mkdirSync(path.dirname(outputPath), { recursive: true })
   const warningsPath = `${outputPath}.warnings.txt`
 
-  const { headers, rows } = readSpreadsheet(inputPath, schemaConfig)
+  const { headers, rows } = await readSpreadsheet(inputPath, schemaConfig)
   const { map: headerMap, ambiguous } = buildHeaderMap(headers, schemaConfig.headers)
   const outputHeaders = [...schemaDef.required, ...schemaDef.optional]
 
@@ -506,4 +517,7 @@ function main() {
   console.log(`Warnings:     ${path.relative(projectRoot, warningsPath)}`)
 }
 
-main()
+main().catch((err) => {
+  console.error(err.message ?? err)
+  process.exit(1)
+})
