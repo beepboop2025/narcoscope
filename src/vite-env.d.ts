@@ -1,9 +1,9 @@
 /// <reference types="vite/client" />
 
-// world-atlas ships topojson as JSON; we only ever hand it to react-simple-maps.
+// world-atlas ships topojson as JSON; the map renderer converts it to GeoJSON.
 declare module 'world-atlas/*.json' {
-  // Topojson blob handed straight to react-simple-maps; not worth typing.
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const value: any
+  import type { CountriesTopology } from './lib/mapSvg'
+
+  const value: CountriesTopology
   export default value
 }

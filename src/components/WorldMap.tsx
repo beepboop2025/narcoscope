@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState, type ChangeEvent } from 'react'
-import { ComposableMap, Geographies, Geography, Graticule, Line, Marker } from 'react-simple-maps'
+import { geoEqualEarth } from 'd3-geo'
 import topology from 'world-atlas/countries-110m.json'
 import { PRECURSORS, COUNTRY_CENTROIDS } from '../data/flows'
 import { useData } from '../lib/dataStore'
 import { explainFlows } from '../lib/explain'
+import { arcPath, countriesFromTopology, graticulePath, pathForGeometry, projectedPoint } from '../lib/mapSvg'
 import Explainer from './Explainer'
 import type { FlowRecord } from '../types'
 
@@ -26,11 +27,20 @@ const coord = (name: string): [number, number] | null => {
   return c ? [c.lng, c.lat] : null
 }
 
+const MAP_WIDTH = 800
+const MAP_HEIGHT = 440
+const countries = countriesFromTopology(topology)
+
 export default function WorldMap() {
   const { flowRecords } = useData()
   const [precursor, setPrecursor] = useState('all')
   const [yearIdx, setYearIdx] = useState(0)
   const [playing, setPlaying] = useState(false)
+  const projection = useMemo(
+    () => geoEqualEarth().fitSize([MAP_WIDTH, MAP_HEIGHT], { type: 'Sphere' }),
+    [],
+  )
+  const graticule = useMemo(() => graticulePath(projection), [projection])
 
   // All corridors for the chosen precursor, across every year. STABLE reference
   // set: the arc-thickness scale is computed from it once, so a corridor that
@@ -120,31 +130,17 @@ export default function WorldMap() {
       <Explainer text={explainFlows(flows, `recorded corridors in ${currentYear}`)} />
 
       <div className="map-card">
-        <ComposableMap
-          projection="geoEqualEarth"
-          projectionConfig={{ scale: 150 }}
-          height={440}
-          style={{ width: '100%', height: 'auto' }}
-        >
-          <Graticule stroke="#1b2540" strokeWidth={0.4} />
-          <Geographies geography={topology}>
-            {({ geographies }: { geographies: any[] }) =>
-              geographies.map((geo) => (
-                <Geography
-                  key={geo.rsmKey}
-                  geography={geo}
-                  fill="#15203a"
-                  stroke="#26314a"
-                  strokeWidth={0.4}
-                  style={{
-                    default: { outline: 'none' },
-                    hover: { fill: '#1c2a48', outline: 'none' },
-                    pressed: { outline: 'none' },
-                  }}
-                />
-              ))
-            }
-          </Geographies>
+        <svg viewBox={`0 0 ${MAP_WIDTH} ${MAP_HEIGHT}`} role="img" aria-label="World precursor flow map">
+          <path d={graticule} fill="none" stroke="#1b2540" strokeWidth={0.4} />
+          {countries.map((country, index) => (
+            <path
+              key={country.id ?? index}
+              d={pathForGeometry(projection, country.geometry)}
+              fill="#15203a"
+              stroke="#26314a"
+              strokeWidth={0.4}
+            />
+          ))}
 
           {/* Corridor arcs */}
           {flows.flatMap((rec) =>
@@ -158,15 +154,14 @@ export default function WorldMap() {
               // flickering. (Index-based keys would reshuffle every frame.)
               const key = `${rec.precursor}|${leg[0]}->${leg[1]}`
               return (
-                <Line
+                <path
                   key={key}
-                  from={from}
-                  to={to}
+                  d={arcPath(projection, from, to)}
                   stroke={fromChina ? '#ff7a59' : '#6ea8fe'}
                   strokeWidth={widthScale(rec.quantityKg, maxQty)}
                   strokeLinecap="round"
+                  fill="none"
                   opacity={0.7}
-                  style={{ transition: 'stroke-width 0.6s ease' }}
                 />
               )
             }),
@@ -176,10 +171,11 @@ export default function WorldMap() {
           {nodes.map((n) => {
             const c = coord(n.name)
             if (!c) return null
-            const [lng, lat] = c
+            const point = projectedPoint(projection, c)
+            if (!point) return null
             const r = 3 + (maxQty ? (n.qty / maxQty) * 7 : 0)
             return (
-              <Marker key={n.name} coordinates={[lng, lat]}>
+              <g key={n.name} transform={`translate(${point[0]} ${point[1]})`}>
                 <title>{`${n.name} — ${n.qty.toLocaleString()} kg across corridors (${n.isSource ? 'a listed source' : 'transit/destination'})`}</title>
                 <circle
                   r={r}
@@ -191,10 +187,10 @@ export default function WorldMap() {
                 <text textAnchor="middle" y={-r - 4} className="map-label">
                   {n.name}
                 </text>
-              </Marker>
+              </g>
             )
           })}
-        </ComposableMap>
+        </svg>
       </div>
 
       <p className="note">

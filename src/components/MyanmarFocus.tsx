@@ -1,13 +1,17 @@
 import { useEffect, useMemo, useState, type ChangeEvent } from 'react'
-import { ComposableMap, Geographies, Geography, Line, Marker } from 'react-simple-maps'
+import { geoMercator } from 'd3-geo'
 import topology from 'world-atlas/countries-110m.json'
 import { COUNTRY_CENTROIDS, PRECURSORS } from '../data/flows'
 import { useData } from '../lib/dataStore'
 import { explainMyanmar } from '../lib/explain'
+import { arcPath, countriesFromTopology, pathForGeometry, projectedPoint } from '../lib/mapSvg'
 import Explainer from './Explainer'
 
 const widthScale = (qty: number, max: number): number => (max ? 1 + (qty / max) * 5 : 1)
 const fmtKg = (v: number): string => `${Number(v).toLocaleString()} kg`
+const MAP_WIDTH = 800
+const MAP_HEIGHT = 460
+const countries = countriesFromTopology(topology)
 
 export default function MyanmarFocus() {
   const {
@@ -20,6 +24,10 @@ export default function MyanmarFocus() {
   } = useData()
   const [yearIdx, setYearIdx] = useState(0)
   const [playing, setPlaying] = useState(false)
+  const projection = useMemo(
+    () => geoMercator().center([98.7, 22]).scale(1500).translate([MAP_WIDTH / 2, MAP_HEIGHT / 2]),
+    [],
+  )
 
   // Resolve any region/border id -> [lng, lat] from the (possibly swapped-in)
   // node tables. Rebuilds only when the node tables change.
@@ -112,26 +120,16 @@ export default function MyanmarFocus() {
       />
 
       <div className="map-card">
-        <ComposableMap
-          projection="geoMercator"
-          projectionConfig={{ center: [98.7, 22], scale: 1500 }}
-          height={460}
-          style={{ width: '100%', height: 'auto' }}
-        >
-          <Geographies geography={topology}>
-            {({ geographies }: { geographies: any[] }) =>
-              geographies.map((geo) => (
-                <Geography
-                  key={geo.rsmKey}
-                  geography={geo}
-                  fill="#15203a"
-                  stroke="#26314a"
-                  strokeWidth={0.5}
-                  style={{ default: { outline: 'none' }, hover: { fill: '#1c2a48', outline: 'none' }, pressed: { outline: 'none' } }}
-                />
-              ))
-            }
-          </Geographies>
+        <svg viewBox={`0 0 ${MAP_WIDTH} ${MAP_HEIGHT}`} role="img" aria-label="Myanmar precursor and conflict focus map">
+          {countries.map((country, index) => (
+            <path
+              key={country.id ?? index}
+              d={pathForGeometry(projection, country.geometry)}
+              fill="#15203a"
+              stroke="#26314a"
+              strokeWidth={0.5}
+            />
+          ))}
 
           {/* Cross-border corridor arcs */}
           {flows.map((rec) => {
@@ -139,12 +137,12 @@ export default function MyanmarFocus() {
             const to = coordOf(rec.to)
             if (!from || !to) return null
             return (
-              <Line
+              <path
                 key={`${rec.from}->${rec.to}`}
-                from={from} to={to}
+                d={arcPath(projection, from, to)}
                 stroke={rec.drug === 'Heroin' ? '#e0d36e' : '#ff7a59'}
                 strokeWidth={widthScale(rec.quantityKg, maxQty)}
-                strokeLinecap="round" opacity={0.8}
+                strokeLinecap="round" fill="none" opacity={0.8}
               />
             )
           })}
@@ -155,13 +153,13 @@ export default function MyanmarFocus() {
             const to = coordOf(rec.to)
             if (!origin || !to) return null
             return (
-              <Line
+              <path
                 key={`${rec.originCountry}->${rec.to}->${rec.precursor}`}
-                from={[origin.lng, origin.lat]}
-                to={to}
+                d={arcPath(projection, [origin.lng, origin.lat], to)}
                 stroke={rec.originCountry === 'China' ? '#ffab98' : '#a1ecff'}
                 strokeWidth={widthScale(rec.quantityKg, maxPrecursorQty)}
                 strokeLinecap="round"
+                fill="none"
                 strokeDasharray="5 4"
                 opacity={0.62}
               />
@@ -169,16 +167,22 @@ export default function MyanmarFocus() {
           })}
 
           {/* Border corridor towns (diamonds) */}
-          {mmBorderNodes.map((n) => (
-            <Marker key={n.id} coordinates={[n.lng, n.lat]}>
-              <title>{n.label} — cross-border corridor town</title>
-              <rect x={-3.5} y={-3.5} width={7} height={7} transform="rotate(45)" fill="#6ea8fe" stroke="#0a0f1a" strokeWidth={0.8} />
-              <text textAnchor="middle" y={-7} className="map-label-sm">{n.label}</text>
-            </Marker>
-          ))}
+          {mmBorderNodes.map((n) => {
+            const point = projectedPoint(projection, [n.lng, n.lat])
+            if (!point) return null
+            return (
+              <g key={n.id} transform={`translate(${point[0]} ${point[1]})`}>
+                <title>{n.label} — cross-border corridor town</title>
+                <rect x={-3.5} y={-3.5} width={7} height={7} transform="rotate(45)" fill="#6ea8fe" stroke="#0a0f1a" strokeWidth={0.8} />
+                <text textAnchor="middle" y={-7} className="map-label-sm">{n.label}</text>
+              </g>
+            )
+          })}
 
           {/* Production regions (circles) */}
           {mmRegions.map((rg) => {
+            const point = projectedPoint(projection, [rg.lng, rg.lat])
+            if (!point) return null
             const ha = haFor(rg.id)
             const meth = methFor(rg.id)
             const conflict = conflictFor(rg.id)
@@ -186,17 +190,17 @@ export default function MyanmarFocus() {
             const ring = r + 3 + (maxConflict ? (conflict / maxConflict) * 6 : 0)
             const fill = `rgb(${110 + Math.round(meth * 1.45)}, ${120 - Math.round(meth * 0.5)}, 90)`
             return (
-              <Marker key={rg.id} coordinates={[rg.lng, rg.lat]}>
+              <g key={rg.id} transform={`translate(${point[0]} ${point[1]})`}>
                 <title>{`${rg.label} — ${ha.toLocaleString()} ha opium poppy, synthetic-drug activity ${meth}/100, conflict pressure ${conflict}/100 (${currentYear ?? '—'})`}</title>
                 {conflict > 0 && (
                   <circle r={ring} fill="none" stroke="#ffab98" strokeOpacity={0.45} strokeWidth={1.2} />
                 )}
                 <circle r={r} fill={fill} fillOpacity={0.85} stroke="#0a0f1a" strokeWidth={0.8} />
                 <text textAnchor="middle" y={-r - 3} className="map-label">{rg.label}</text>
-              </Marker>
+              </g>
             )
           })}
-        </ComposableMap>
+        </svg>
       </div>
 
       <h3>Region detail — {currentYear ?? '—'}</h3>
