@@ -3,6 +3,7 @@ import { MM_REGION_ADJACENCY } from '../data/myanmar'
 import { useData } from '../lib/dataStore'
 import { chokepointsToCsv, downloadCsv, evidenceLedgerToCsv, riskProfilesToCsv } from '../lib/exportBriefing'
 import { buildMyanmarIntelligenceBriefing } from '../lib/intelligence'
+import { sourceFamilyLabel } from '../lib/sourceReliability'
 
 const riskClass = (score: number): string => {
   if (score >= 75) return 'critical'
@@ -169,6 +170,10 @@ export default function IntelligenceBriefing() {
           <span className="stat-value">{briefing.enterpriseReadiness.duplicateSourceNameRegions}</span>
           <span className="stat-label">Regions with duplicate source-name variants</span>
         </div>
+        <div className="stat">
+          <span className="stat-value">{briefing.enterpriseReadiness.singleSourceFragileRegions}</span>
+          <span className="stat-label">Regions single-source fragile</span>
+        </div>
       </div>
 
       <div className="export-actions">
@@ -287,6 +292,14 @@ export default function IntelligenceBriefing() {
                 )}
               >
                 {corridorIcon[profile.outflowCorridorTier]} Outbound corridor: {profile.outflowCorridorTier}
+              </p>
+            )}
+            {profile.singleSourceFragile && (
+              <p
+                className="fragility-flag"
+                title={`Removing source family "${sourceFamilyLabel(profile.fragileSourceFamily ?? '')}" alone would drop this region's risk score by ${profile.fragileScoreDrop} points, below high-risk.`}
+              >
+                ⚡ Single-source fragile: high-risk score hinges on one reporter
               </p>
             )}
             <div className="driver-list">

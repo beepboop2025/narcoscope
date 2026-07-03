@@ -1,5 +1,5 @@
 import { describe, it, assert } from 'vitest'
-import { canonicalSourceId, sourceReliabilityTier, sourceReliabilityWeight } from './sourceReliability'
+import { canonicalSourceId, sourceFamilyLabel, sourceReliabilityTier, sourceReliabilityWeight } from './sourceReliability'
 
 describe('sourceReliabilityTier', () => {
   it('grades well-known intergovernmental and conflict-monitoring sources as high reliability', () => {
@@ -64,5 +64,11 @@ describe('canonicalSourceId', () => {
   it('falls back to a stable "unknown" id when there is no name or url', () => {
     assert.equal(canonicalSourceId(undefined), 'unknown')
     assert.equal(canonicalSourceId(null), 'unknown')
+  })
+
+  it('strips the internal name: prefix from display labels but leaves curated family ids alone', () => {
+    assert.equal(sourceFamilyLabel(canonicalSourceId('Local NGO Bulletin')), 'local ngo bulletin')
+    assert.equal(sourceFamilyLabel('incb'), 'incb')
+    assert.equal(sourceFamilyLabel('unknown'), 'unknown')
   })
 })

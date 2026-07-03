@@ -36,6 +36,7 @@ export function riskProfilesToCsv(briefing: IntelligenceBriefing): string {
     'evidenceStaleness', 'mostRecentEvidenceYear', 'evidenceAgeYears',
     'precursorCorridorHHI', 'precursorCorridorTier', 'dominantPrecursorCorridor', 'dominantPrecursorCorridorSharePct',
     'outflowCorridorHHI', 'outflowCorridorTier', 'dominantOutflowCorridor', 'dominantOutflowCorridorSharePct',
+    'singleSourceFragile', 'fragileSourceFamily', 'fragileScoreDrop',
     'topDrivers',
   ]
   const rows = briefing.profiles.map((p) => [
@@ -50,6 +51,7 @@ export function riskProfilesToCsv(briefing: IntelligenceBriefing): string {
     p.evidenceStaleness, p.mostRecentEvidenceYear, p.evidenceAgeYears,
     p.precursorCorridorHHI, p.precursorCorridorTier, p.dominantPrecursorCorridor, p.dominantPrecursorCorridorSharePct,
     p.outflowCorridorHHI, p.outflowCorridorTier, p.dominantOutflowCorridor, p.dominantOutflowCorridorSharePct,
+    p.singleSourceFragile, p.fragileSourceFamily, p.fragileScoreDrop,
     p.drivers.join('; '),
   ])
   return toCsv(headers, rows)

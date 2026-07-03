@@ -166,3 +166,14 @@ export function canonicalSourceId(sourceName: string | undefined | null, sourceU
   const normalized = name.trim().toLowerCase().replace(/\s+/g, ' ')
   return normalized ? `name:${normalized}` : 'unknown'
 }
+
+/**
+ * Human-readable label for a `canonicalSourceId` family key. The `name:`
+ * prefix is an internal disambiguator (it keeps unrecognised free-text names
+ * from colliding with curated family ids) and must never surface in the UI —
+ * use this at every display site. CSV audit exports deliberately keep the
+ * raw key instead: it is the stable identity auditors can join/dedupe on.
+ */
+export function sourceFamilyLabel(familyId: string): string {
+  return familyId.startsWith('name:') ? familyId.slice('name:'.length) : familyId
+}

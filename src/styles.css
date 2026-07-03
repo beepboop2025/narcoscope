@@ -395,6 +395,25 @@ h3 { font-family: var(--font-display); font-weight: 400; font-size: 1.2rem; lett
   padding: 0.35rem 0.5rem;
   background: rgba(214, 161, 224, 0.08);
 }
+.compound-warning-flag {
+  color: #ff8c7a;
+  font-size: 0.78rem;
+  font-weight: 600;
+  margin: 0 0 0.65rem;
+  border: 1px solid rgba(255, 140, 122, 0.55);
+  border-radius: 0.5rem;
+  padding: 0.35rem 0.5rem;
+  background: rgba(255, 140, 122, 0.12);
+}
+.fragility-flag {
+  color: #8fd8ff;
+  font-size: 0.78rem;
+  margin: 0 0 0.65rem;
+  border: 1px solid rgba(143, 216, 255, 0.4);
+  border-radius: 0.5rem;
+  padding: 0.35rem 0.5rem;
+  background: rgba(143, 216, 255, 0.08);
+}
 .staleness-tag {
   font-size: 0.72rem;
   margin: 0 0 0.5rem;

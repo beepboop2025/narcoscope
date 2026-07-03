@@ -239,6 +239,112 @@ function computeCorridorChokepoints(
   return chokepoints
 }
 
+/** riskScore at/above this level is "high risk" for the single-source-fragility check. */
+const FRAGILITY_HIGH_RISK_THRESHOLD = 70
+
+export interface SingleSourceFragility {
+  fragile: boolean
+  /** Independent source family whose removal alone would flip the region below high-risk; null unless fragile. */
+  family: string | null
+  /** riskScore points that would be lost if `family` were removed; null unless fragile. */
+  scoreDrop: number | null
+}
+
+/**
+ * Leave-one-source-family-out sensitivity check: even a "multi-source"
+ * region (per `verificationTier`) can have its numeric risk score
+ * effectively carried by one dominant reporter if that source's reported
+ * volume dwarfs the others'. This recomputes the region's inbound-precursor
+ * and outbound-seizure pressure with each independent source family's
+ * contribution removed in turn, holding conflict/synthetic/opium pressure
+ * fixed, and flags the region when losing its single largest contributor
+ * alone would drop it out of the high-risk tier — a fragility signal that
+ * `verificationTier`'s source *count* can miss entirely. Standard
+ * leave-one-out robustness practice applied to multi-source evidence fusion
+ * instead of statistical model validation.
+ */
+function computeSingleSourceFragility(input: {
+  /** The rounded, displayed risk score (`profile.riskScore`), so the high-risk gate here matches the tiering used everywhere else. */
+  riskScore: number
+  conflictPressure: number
+  syntheticActivity: number
+  opiumPressure: number
+  maxPrecursor: number
+  maxOutflow: number
+  regionPrecursorFlows: MmPrecursorFlowRecord[]
+  regionOutflows: MmFlowRecord[]
+}): SingleSourceFragility {
+  const {
+    riskScore,
+    conflictPressure,
+    syntheticActivity,
+    opiumPressure,
+    maxPrecursor,
+    maxOutflow,
+    regionPrecursorFlows,
+    regionOutflows,
+  } = input
+
+  if (riskScore < FRAGILITY_HIGH_RISK_THRESHOLD) {
+    return { fragile: false, family: null, scoreDrop: null }
+  }
+
+  const totalPrecursorWeighted = regionPrecursorFlows.reduce(
+    (sum, f) => sum + f.quantityKg * confidenceWeight(f.confidence) * sourceReliabilityWeight(f.sourceName, f.sourceUrl),
+    0,
+  )
+  const totalOutflowQty = regionOutflows.reduce((sum, f) => sum + f.quantityKg, 0)
+
+  const precursorByFamily = new Map<string, number>()
+  for (const flow of regionPrecursorFlows) {
+    const family = canonicalSourceId(flow.sourceName, flow.sourceUrl)
+    const weighted = flow.quantityKg * confidenceWeight(flow.confidence) * sourceReliabilityWeight(flow.sourceName, flow.sourceUrl)
+    precursorByFamily.set(family, (precursorByFamily.get(family) ?? 0) + weighted)
+  }
+  // Un-attributed outflow rows (legacy CSVs without provenance) are not a
+  // source family — the rest of the module never counts them toward source
+  // diversity or disagreement checks, so they must not become a removable
+  // pseudo-family here either. They stay in `totalOutflowQty` (the evidence
+  // exists) but can never be named as the fragile reporter.
+  const outflowByFamily = new Map<string, number>()
+  for (const flow of regionOutflows) {
+    if (!flow.sourceName) continue
+    const family = canonicalSourceId(flow.sourceName, flow.sourceUrl)
+    outflowByFamily.set(family, (outflowByFamily.get(family) ?? 0) + flow.quantityKg)
+  }
+
+  const families = new Set([...precursorByFamily.keys(), ...outflowByFamily.keys()])
+  let worstScore = riskScore
+  let worstFamily: string | null = null
+  for (const family of families) {
+    const counterfactualPrecursorWeighted = totalPrecursorWeighted - (precursorByFamily.get(family) ?? 0)
+    const counterfactualOutflowQty = totalOutflowQty - (outflowByFamily.get(family) ?? 0)
+    const counterfactualPrecursorPressure = normalizedShare(counterfactualPrecursorWeighted, maxPrecursor)
+    const counterfactualOutflowPressure = normalizedShare(counterfactualOutflowQty, maxOutflow)
+    const counterfactualScore = clamp(
+      conflictPressure * 0.25 +
+      counterfactualPrecursorPressure * 0.25 +
+      counterfactualOutflowPressure * 0.2 +
+      syntheticActivity * 0.2 +
+      opiumPressure * 0.1,
+    )
+    if (counterfactualScore < worstScore) {
+      worstScore = counterfactualScore
+      worstFamily = family
+    }
+  }
+
+  // Compare rounded scores: `riskScore` arrives as the rounded, displayed
+  // value, and the counterfactual must cross the threshold in the same
+  // rounded terms the rest of the module (highRiskRegions, UI tiers) uses.
+  const fragile = worstFamily !== null && Math.round(worstScore) < FRAGILITY_HIGH_RISK_THRESHOLD
+  return {
+    fragile,
+    family: fragile ? worstFamily : null,
+    scoreDrop: fragile ? riskScore - Math.round(worstScore) : null,
+  }
+}
+
 function evidenceStalenessTier(ageYears: number | null): EvidenceStaleness {
   if (ageYears === null) return 'no-data'
   if (ageYears >= STALE_EVIDENCE_AGE_YEARS) return 'stale'
@@ -395,6 +501,21 @@ export interface RegionRiskProfile {
   dominantOutflowCorridor: string | null
   /** Share (percent) of outbound seized volume carried by `dominantOutflowCorridor`. */
   dominantOutflowCorridorSharePct: number | null
+  /**
+   * True when this region is high-risk (`riskScore >= 70`) but a
+   * leave-one-source-family-out check finds that removing its single
+   * largest-contributing independent source alone would drop it back below
+   * the high-risk threshold. Distinct from `verificationTier`: a region can
+   * have 2+ independent source families (`multi-source`) while one of them
+   * still numerically dominates the risk score, so source *count* alone
+   * doesn't guarantee the score is robust to any one source being wrong,
+   * revised, or retracted.
+   */
+  singleSourceFragile: boolean
+  /** Independent source family whose removal alone triggers `singleSourceFragile`; null unless fragile. */
+  fragileSourceFamily: string | null
+  /** riskScore points that would be lost if `fragileSourceFamily` were removed; null unless fragile. */
+  fragileScoreDrop: number | null
 }
 
 export interface IntelligenceBriefing {
@@ -415,6 +536,8 @@ export interface IntelligenceBriefing {
     concentratedOutflowCorridorRegions: number
     /** Regions flagged via `actorNetworkWatch` (shared-actor network contagion, not geographic adjacency). */
     actorNetworkWatchRegions: number
+    /** Regions flagged `singleSourceFragile` — high-risk classification carried by one dominant source family. */
+    singleSourceFragileRegions: number
     /**
      * Regions where `rawSourceNameCount` exceeds `sourceDiversity` — i.e.
      * the fusion engine's source-family collapsing actually changed the
@@ -812,6 +935,20 @@ export function buildMyanmarIntelligenceBriefing(input: {
     const outflowCorridorTier = corridorConcentrationTier(outflowCorridorHHI)
     const dominantOutflowCorridor = dominantOutflowCorridorId ? (labelByRegion.get(dominantOutflowCorridorId) ?? dominantOutflowCorridorId) : null
 
+    const { fragile: singleSourceFragile, family: fragileSourceFamily, scoreDrop: fragileScoreDrop } = computeSingleSourceFragility({
+      // Rounded, matching the exposed `profile.riskScore`: a region displayed
+      // as high-risk (e.g. 69.5 → 70) must also be eligible for the
+      // fragility check, or the two definitions of "high-risk" drift apart.
+      riskScore: Math.round(riskScore),
+      conflictPressure,
+      syntheticActivity,
+      opiumPressure,
+      maxPrecursor,
+      maxOutflow,
+      regionPrecursorFlows: precursorFlows.filter((f) => f.to === region.id),
+      regionOutflows: outflows.filter((f) => f.from === region.id),
+    })
+
     const drivers = [
       [conflictPressure, 'conflict pressure'],
       [precursorPressure, 'inbound precursor pressure'],
@@ -856,6 +993,9 @@ export function buildMyanmarIntelligenceBriefing(input: {
       outflowCorridorTier,
       dominantOutflowCorridor,
       dominantOutflowCorridorSharePct,
+      singleSourceFragile,
+      fragileSourceFamily,
+      fragileScoreDrop,
       // Filled in below, once every region's own riskScore is known.
       neighborRiskScore: 0,
       neighborRegion: null as string | null,
@@ -941,6 +1081,7 @@ export function buildMyanmarIntelligenceBriefing(input: {
   const concentratedOutflowCorridorRegions = profiles.filter((p) => p.outflowCorridorTier === 'concentrated').length
   const duplicateSourceNameRegions = profiles.filter((p) => p.rawSourceNameCount > p.sourceDiversity).length
   const actorNetworkWatchRegions = profiles.filter((p) => p.actorNetworkWatch).length
+  const singleSourceFragileRegions = profiles.filter((p) => p.singleSourceFragile).length
   const compoundEarlyWarningRegions = profiles.filter((p) => p.compoundEarlyWarning).length
 
   return {
@@ -961,6 +1102,7 @@ export function buildMyanmarIntelligenceBriefing(input: {
       concentratedOutflowCorridorRegions,
       duplicateSourceNameRegions,
       actorNetworkWatchRegions,
+      singleSourceFragileRegions,
       compoundEarlyWarningRegions,
       chokepoints,
       systemicChokepointCount: chokepoints.filter((c) => c.systemicChokepoint).length,

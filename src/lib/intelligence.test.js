@@ -1171,4 +1171,155 @@ describe('buildMyanmarIntelligenceBriefing', () => {
       assert.equal(briefing.enterpriseReadiness.duplicateSourceNameRegions, 0)
     })
   })
+
+  describe('single-source fragility (leave-one-family-out)', () => {
+    it('flags a high-risk multi-source region whose score is carried by one dominant source family', () => {
+      const briefing = buildMyanmarIntelligenceBriefing({
+        year: 2024,
+        regions,
+        regionRecords: [
+          { region: 'shan_north', year: 2024, opiumHa: 20000, methIndex: 95 },
+        ],
+        conflictEvents: [
+          {
+            region: 'shan_north', year: 2024, actor: 'Border militia', actorType: 'militia',
+            eventType: 'clash', intensity: 90, sourceName: 'ACLED', sourceUrl: 'https://example.org/acled',
+          },
+        ],
+        precursorFlows: [
+          // INCB carries ~99% of the weighted inbound-precursor volume; the
+          // second (unrecognised, low-tier) source keeps the region formally
+          // "multi-source" without making the score robust.
+          {
+            originCountry: 'China', transitCountry: null, to: 'shan_north', year: 2024,
+            precursor: 'meth_precursors', quantityKg: 5000, confidence: 'official',
+            sourceName: 'INCB', sourceUrl: 'https://www.incb.org/incb/en/precursors/',
+          },
+          {
+            originCountry: 'China', transitCountry: null, to: 'shan_north', year: 2024,
+            precursor: 'meth_precursors', quantityKg: 100, confidence: 'official',
+            sourceName: 'Hillside Field Monitor', sourceUrl: 'https://example.com/hillside',
+          },
+        ],
+        outflows: [],
+      })
+
+      const shan = briefing.profiles.find((p) => p.region === 'shan_north')
+      assert.ok(shan.riskScore >= 70, 'fixture must put the region in the high-risk tier')
+      assert.equal(shan.verificationTier, 'multi-source', 'fragility must be distinct from source count')
+      assert.equal(shan.singleSourceFragile, true)
+      assert.equal(shan.fragileSourceFamily, 'incb')
+      assert.ok(shan.fragileScoreDrop > 0)
+      assert.ok(shan.riskScore - shan.fragileScoreDrop < 70, 'the drop must cross the high-risk threshold')
+      assert.equal(briefing.enterpriseReadiness.singleSourceFragileRegions, 1)
+    })
+
+    it('does not flag a high-risk region whose score survives losing any one source family', () => {
+      const briefing = buildMyanmarIntelligenceBriefing({
+        year: 2024,
+        regions,
+        regionRecords: [
+          { region: 'shan_north', year: 2024, opiumHa: 20000, methIndex: 100 },
+        ],
+        conflictEvents: [
+          {
+            region: 'shan_north', year: 2024, actor: 'Border militia', actorType: 'militia',
+            eventType: 'clash', intensity: 100, sourceName: 'ACLED', sourceUrl: 'https://example.org/acled',
+          },
+        ],
+        precursorFlows: [
+          // Two equal-weight high-tier families split the precursor volume,
+          // and a third family carries the outflow evidence: removing any one
+          // family costs at most 20 points from a score of 100.
+          {
+            originCountry: 'China', transitCountry: null, to: 'shan_north', year: 2024,
+            precursor: 'meth_precursors', quantityKg: 1000, confidence: 'official',
+            sourceName: 'INCB', sourceUrl: 'https://www.incb.org/incb/en/precursors/',
+          },
+          {
+            originCountry: 'China', transitCountry: null, to: 'shan_north', year: 2024,
+            precursor: 'meth_precursors', quantityKg: 1000, confidence: 'official',
+            sourceName: 'UNODC', sourceUrl: 'https://www.unodc.org/',
+          },
+        ],
+        outflows: [
+          {
+            from: 'shan_north', to: 'muse', year: 2024, quantityKg: 3000, drug: 'Methamphetamine',
+            sourceName: 'GI-TOC', sourceUrl: 'https://globalinitiative.net/',
+          },
+        ],
+      })
+
+      const shan = briefing.profiles.find((p) => p.region === 'shan_north')
+      assert.ok(shan.riskScore >= 70, 'fixture must put the region in the high-risk tier')
+      assert.equal(shan.singleSourceFragile, false)
+      assert.equal(shan.fragileSourceFamily, null)
+      assert.equal(shan.fragileScoreDrop, null)
+      assert.equal(briefing.enterpriseReadiness.singleSourceFragileRegions, 0)
+    })
+
+    it('never names un-attributed outflow evidence as the fragile source family', () => {
+      const briefing = buildMyanmarIntelligenceBriefing({
+        year: 2024,
+        regions,
+        regionRecords: [
+          { region: 'shan_north', year: 2024, opiumHa: 20000, methIndex: 80 },
+        ],
+        conflictEvents: [
+          {
+            region: 'shan_north', year: 2024, actor: 'Border militia', actorType: 'militia',
+            eventType: 'clash', intensity: 60, sourceName: 'ACLED', sourceUrl: 'https://example.org/acled',
+          },
+        ],
+        precursorFlows: [
+          {
+            originCountry: 'China', transitCountry: null, to: 'shan_north', year: 2024,
+            precursor: 'meth_precursors', quantityKg: 1000, confidence: 'official',
+            sourceName: 'INCB', sourceUrl: 'https://www.incb.org/incb/en/precursors/',
+          },
+          {
+            originCountry: 'China', transitCountry: null, to: 'shan_north', year: 2024,
+            precursor: 'meth_precursors', quantityKg: 1000, confidence: 'official',
+            sourceName: 'UNODC', sourceUrl: 'https://www.unodc.org/',
+          },
+        ],
+        outflows: [
+          // Legacy row without provenance: it carries the full outflow
+          // pressure (20 points), so if it were treated as a removable
+          // "family" its removal alone would cross below high-risk — but
+          // un-attributed evidence is not a reporter and must never be
+          // named as the fragile source.
+          { from: 'shan_north', to: 'muse', year: 2024, quantityKg: 3000, drug: 'Methamphetamine' },
+        ],
+      })
+
+      const shan = briefing.profiles.find((p) => p.region === 'shan_north')
+      assert.ok(shan.riskScore >= 70, 'fixture must put the region in the high-risk tier')
+      assert.equal(shan.singleSourceFragile, false)
+      assert.equal(shan.fragileSourceFamily, null)
+    })
+
+    it('never flags a region below the high-risk threshold, even with one dominant source', () => {
+      const briefing = buildMyanmarIntelligenceBriefing({
+        year: 2024,
+        regions,
+        regionRecords: [],
+        conflictEvents: [],
+        precursorFlows: [
+          {
+            originCountry: 'China', transitCountry: null, to: 'kachin', year: 2024,
+            precursor: 'meth_precursors', quantityKg: 4000, confidence: 'official',
+            sourceName: 'INCB', sourceUrl: 'https://www.incb.org/incb/en/precursors/',
+          },
+        ],
+        outflows: [],
+      })
+
+      const kachin = briefing.profiles.find((p) => p.region === 'kachin')
+      assert.ok(kachin.riskScore < 70)
+      assert.equal(kachin.singleSourceFragile, false)
+      assert.equal(kachin.fragileSourceFamily, null)
+      assert.equal(kachin.fragileScoreDrop, null)
+    })
+  })
 })

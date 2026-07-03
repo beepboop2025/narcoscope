@@ -56,6 +56,13 @@ describe('exportBriefing', () => {
       assert.ok(csv.includes('actorNetworkActor'))
     })
 
+    it('includes single-source fragility fields for downstream audit', () => {
+      const csv = riskProfilesToCsv(briefing)
+      assert.ok(csv.includes('singleSourceFragile'))
+      assert.ok(csv.includes('fragileSourceFamily'))
+      assert.ok(csv.includes('fragileScoreDrop'))
+    })
+
     it('includes precursor-corridor concentration fields for downstream audit', () => {
       const csv = riskProfilesToCsv(briefing)
       assert.ok(csv.includes('precursorCorridorHHI'))
