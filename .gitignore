@@ -31,3 +31,6 @@ pnpm-debug.log*
 .env
 .env.*
 !.env.example
+
+# pipeline raw downloads (regenerable, see scripts/pipeline/)
+data-raw/

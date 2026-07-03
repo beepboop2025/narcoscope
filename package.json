@@ -9,6 +9,7 @@
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
     "scrape:myanmar": "node scripts/scrape/myanmar-conflict-precursors.mjs",
+    "data:refresh": "node scripts/pipeline/run.mjs",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest"

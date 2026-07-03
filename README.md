@@ -137,6 +137,16 @@ The repo is Vercel-ready (`vercel.json` pins the Vite framework). Either:
 - **Dashboard:** import the Git repo at vercel.com — zero config, auto-detected.
 - **CLI:** `npx vercel` (preview) / `npx vercel --prod` (production).
 
+## Data pipeline
+
+`npm run data:refresh` fetches the automatable open sources (UNODC WDR
+annexes, World Bank GDP), regenerates the bundled datasets, and validates
+them against the test suite. A quarterly GitHub Action does the same and
+opens a PR when the data changes. The full source registry (including the
+manual and API-key sources not yet wired in) lives in
+[`scripts/pipeline/sources.json`](./scripts/pipeline/sources.json); the
+playbook is [`docs/DATA_PIPELINE.md`](./docs/DATA_PIPELINE.md).
+
 ## Status / TODO
 
 - `purityAdjustedPrice()` in `src/lib/metrics.js` is an intentional stub — the

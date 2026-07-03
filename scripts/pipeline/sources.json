@@ -1,0 +1,148 @@
+{
+  "comment": "Open-data source registry for the Drug Price Observatory pipeline. automation: 'auto' = fetched and transformed by run.mjs with no credentials; 'api-key' = automatable once a free key is configured; 'manual' = one download or copy step per release cycle, then the listed converter handles it.",
+  "sources": [
+    {
+      "id": "wdr-prices",
+      "name": "UNODC World Drug Report 2025 — Annex 8.1 Prices and purities",
+      "url": "https://www.unodc.org/documents/data-and-analysis/WDR_2025/Annex/8.1_Prices_and_purities_of_drugs.xlsx",
+      "format": "xlsx",
+      "cadence": "annual (June, with each WDR edition — bump the URL year)",
+      "license": "UN open data, attribution",
+      "automation": "auto",
+      "feeds": "src/data/prices.ts (Street Prices tab)",
+      "transform": "scripts/convert/wdr-prices-to-ts.mjs"
+    },
+    {
+      "id": "wdr-seizures",
+      "name": "UNODC World Drug Report 2025 — Annex 7.1 Drug seizures 2019-2023",
+      "url": "https://www.unodc.org/documents/data-and-analysis/WDR_2025/Annex/7.1_Drug_seizures_2019-2023.xlsx",
+      "format": "xlsx",
+      "cadence": "annual (June — bump the URL year and filename)",
+      "license": "UN open data, attribution",
+      "automation": "auto",
+      "feeds": "src/data/seizures.json (Seizure globe)",
+      "transform": "scripts/convert/wdr-seizures-to-json.mjs"
+    },
+    {
+      "id": "wdr-price-series",
+      "name": "UNODC WDR 2025 — Annex 8.3 Price time series Western Europe & USA (1990-)",
+      "url": "https://www.unodc.org/documents/data-and-analysis/WDR_2025/Annex/8.3_Price_time_series_in_Western_Europe_and_United_States.xlsx",
+      "format": "xlsx",
+      "cadence": "annual",
+      "license": "UN open data, attribution",
+      "automation": "auto",
+      "feeds": "NOT YET INTEGRATED — long-run price trend view (30+ year series)",
+      "transform": "TODO: new converter + a long-series chart in Explorer"
+    },
+    {
+      "id": "wdr-opium-cultivation",
+      "name": "UNODC WDR 2025 — Annex 6.2.1/6.2.2 Opium poppy cultivation & production",
+      "url": "https://www.unodc.org/documents/data-and-analysis/WDR_2025/Annex/6.2.1_Illicit_cultivation_of_opium_poppy.xlsx",
+      "format": "xlsx",
+      "cadence": "annual",
+      "license": "UN open data, attribution",
+      "automation": "auto",
+      "feeds": "NOT YET INTEGRATED — national context for Myanmar Focus (state-level detail comes from the opium survey below)",
+      "transform": "TODO"
+    },
+    {
+      "id": "worldbank-gdp",
+      "name": "World Bank GDP per capita (NY.GDP.PCAP.CD)",
+      "url": "https://api.worldbank.org/v2/country/all/indicator/NY.GDP.PCAP.CD?format=json&per_page=20000&date=2020:2024",
+      "format": "json-api",
+      "cadence": "continuous; refreshed whenever prices regenerate",
+      "license": "CC BY 4.0",
+      "automation": "auto",
+      "feeds": "GDP_PER_CAPITA_USD in src/data/prices.ts (affordability lens)",
+      "transform": "fetched inline by wdr-prices-to-ts.mjs (standalone: scripts/convert/fetch-gdp.mjs)"
+    },
+    {
+      "id": "natural-earth-ind",
+      "name": "Natural Earth 10m admin-0 countries, India-POV variant",
+      "url": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/10m_cultural/ne_10m_admin_0_countries_ind.shp",
+      "format": "shapefile (+ .dbf/.shx/.prj)",
+      "cadence": "rarely (NE releases); re-run only on boundary updates",
+      "license": "public domain",
+      "automation": "manual",
+      "feeds": "src/data/countries-ind.json + src/data/countryGeo.ts (all maps, GoI boundaries)",
+      "transform": "mapshaper simplify (see docs/DATA_PIPELINE.md) then scripts/convert/gen-country-geo.mjs"
+    },
+    {
+      "id": "acled-myanmar",
+      "name": "ACLED conflict events — Myanmar",
+      "url": "https://api.acleddata.com/acled/read?key={ACLED_KEY}&email={ACLED_EMAIL}&country=Myanmar&year=2019|2020|2021|2022|2023|2024&fields=event_date|year|admin1|actor1|event_type|fatalities&limit=0",
+      "format": "json-api",
+      "cadence": "weekly updates; pull quarterly",
+      "license": "free registration for non-commercial research use (acleddata.com/register); attribution required",
+      "automation": "api-key",
+      "feeds": "mmConflictEvents (Myanmar Focus + intelligence layer) — replaces illustrative conflict data",
+      "transform": "TODO: scripts/convert/acled-to-mm-conflict.mjs (admin1 -> app region ids, fatalities -> intensity)"
+    },
+    {
+      "id": "unodc-myanmar-opium-survey",
+      "name": "UNODC Myanmar Opium Survey (state/region cultivation estimates)",
+      "url": "https://www.unodc.org/roseap/en/myanmar/publications.html",
+      "format": "pdf (tables)",
+      "cadence": "annual (Dec-Feb)",
+      "license": "UN open data, attribution",
+      "automation": "manual",
+      "feeds": "mmRegionRecords opiumHa (Myanmar Focus) — replaces illustrative cultivation figures",
+      "transform": "scripts/convert/from-pdf.mjs (existing PDF table extractor), then the mmRegionRecords CSV schema"
+    },
+    {
+      "id": "unodc-sea-synthetic-drugs",
+      "name": "UNODC Synthetic Drugs in East and Southeast Asia (annual report)",
+      "url": "https://www.unodc.org/roseap/en/sea-synthetic-drugs.html",
+      "format": "pdf (tables: meth seizures, prices, precursor cases by country)",
+      "cadence": "annual (~June)",
+      "license": "UN open data, attribution",
+      "automation": "manual",
+      "feeds": "mmFlowRecords / precursor context for Myanmar Focus",
+      "transform": "scripts/convert/from-pdf.mjs + from-spreadsheet.mjs schemas"
+    },
+    {
+      "id": "incb-precursors",
+      "name": "INCB Precursors Annual Report (seizure/shipment tables)",
+      "url": "https://www.incb.org/incb/en/precursors/technical_reports/precursors-technical-reports.html",
+      "format": "pdf (annex tables)",
+      "cadence": "annual (~March)",
+      "license": "UN open data, attribution",
+      "automation": "manual",
+      "feeds": "FLOW_RECORDS + PRECURSOR_PRICE_RECORDS (Precursor Flows tab) — replaces illustrative corridors",
+      "transform": "scripts/convert/from-pdf.mjs, corridor rows via the flows CSV schema"
+    },
+    {
+      "id": "euda-price-purity",
+      "name": "EUDA (ex-EMCDDA) European price, purity and seizures tables",
+      "url": "https://www.euda.europa.eu/data/stats2025_en",
+      "format": "xlsx per table (stable landing page, table URLs change yearly)",
+      "cadence": "annual",
+      "license": "EU open data, attribution",
+      "automation": "manual",
+      "feeds": "European enrichment for prices.ts (purity-adjusted view gets much denser)",
+      "transform": "scripts/convert/from-spreadsheet.mjs (prices schema)"
+    },
+    {
+      "id": "unodc-ids",
+      "name": "UNODC Individual Drug Seizures (IDS) microdata — origin/destination per seizure",
+      "url": "https://dmp.unodc.org/",
+      "format": "portal export",
+      "cadence": "continuous",
+      "license": "UN; registration required for microdata exports",
+      "automation": "manual",
+      "feeds": "THE upgrade path for real corridor arcs (origin -> transit -> destination at event grain)",
+      "transform": "TODO once export access is granted — aggregate to corridor/year before bundling (ethical grain guard)"
+    },
+    {
+      "id": "ocindex",
+      "name": "Global Organized Crime Index (GI-TOC) country scores",
+      "url": "https://ocindex.net/downloads",
+      "format": "xlsx",
+      "cadence": "biennial",
+      "license": "GI-TOC, attribution",
+      "automation": "manual",
+      "feeds": "NOT YET INTEGRATED — candidate context layer (criminality/resilience scores beside seizure data); also a relationship signal for the GI-TOC grant track",
+      "transform": "TODO"
+    }
+  ]
+}
