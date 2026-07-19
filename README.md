@@ -91,7 +91,7 @@ presenting anything as factual:
 - ACLED / International Crisis Group — Myanmar civil-war context
 
 Load real data through the **"Load official data (CSV)"** panel in the footer; each
-file is parsed by `src/lib/ingest.js` and bad rows are reported, not silently dropped.
+file is parsed by `src/lib/ingest.ts` and bad rows are reported, not silently dropped.
 See `src/lib/ingest-config-reference.md` for the column mapping.
 
 Myanmar conflict and precursor-flow source triage can be prepared with the
@@ -111,7 +111,7 @@ analyst review. See `docs/ENTERPRISE_HARDENING.md` for the paper-backed design.
 
 ## Tech
 
-React 18 · Vite 5 · TypeScript · Recharts · react-simple-maps (world-atlas bundled
+React 18 · Vite 8 · TypeScript · Recharts · react-simple-maps (world-atlas bundled
 locally). The interface layer adds **Three.js / React Three Fiber** (a lazy-loaded
 hero globe with bloom post-processing — kept out of the initial bundle),
 **@react-spring/web** (physics-based letter/section reveals and animated counters),
@@ -149,7 +149,7 @@ playbook is [`docs/DATA_PIPELINE.md`](./docs/DATA_PIPELINE.md).
 
 ## Status / TODO
 
-- `purityAdjustedPrice()` in `src/lib/metrics.js` is an intentional stub — the
+- `purityAdjustedPrice()` in `src/lib/metrics.ts` is an intentional stub — the
   null-purity policy is an editorial choice left to the maintainer.
 - ~~Load and **verify** real UNODC/INCB data~~ **Street prices: done** (WDR 2025
   Annex 8.1, see `src/data/prices.ts` provenance header). Remaining: precursor
