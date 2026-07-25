@@ -24,7 +24,11 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 process.chdir(root)
 const offline = process.argv.includes('--offline')
 
-const { sources } = JSON.parse(fs.readFileSync('scripts/pipeline/sources.json', 'utf8'))
+// `_section` entries are documentation dividers inside the registry array,
+// not sources. Dropped here so nothing downstream has to special-case them.
+const { sources: allEntries } = JSON.parse(fs.readFileSync('scripts/pipeline/sources.json', 'utf8'))
+const sections = allEntries.filter((s) => s._section)
+const sources = allEntries.filter((s) => !s._section)
 const rawDir = 'data-raw'
 fs.mkdirSync(rawDir, { recursive: true })
 
@@ -70,6 +74,24 @@ run('node', ['scripts/convert/wdr-seizures-to-json.mjs', rawPath(bySourceId['wdr
 console.log('· regenerating country geo (centroids + feature ids) …')
 run('node', ['scripts/convert/gen-country-geo.mjs'])
 
+// These two fetch their own sources (Socrata JSON and Treasury CSV rather than
+// the xlsx the download loop above handles), so they run unconditionally and
+// manage their own caching under data-raw/.
+if (!offline) {
+  console.log('· regenerating overdose mortality (CDC VSRR, live fetch) …')
+  run('node', ['scripts/convert/cdc-overdose-to-json.mjs'])
+
+  console.log('· regenerating OFAC designations (live fetch) …')
+  run('node', ['scripts/convert/ofac-designations-to-json.mjs'])
+
+  console.log('· regenerating wastewater loads (Statistics Canada, live fetch) …')
+  run('node', ['scripts/convert/statcan-wastewater-to-json.mjs'])
+} else {
+  console.log('· offline: reusing cached OFAC files, skipping CDC (no local cache)')
+  run('node', ['scripts/convert/ofac-designations-to-json.mjs', '--offline'])
+  run('node', ['scripts/convert/statcan-wastewater-to-json.mjs', '--offline'])
+}
+
 // ---- validate --------------------------------------------------------------------
 console.log('· validating (typecheck + full test suite incl. dataset-integrity tests) …')
 run('npx', ['tsc', '--noEmit'])
@@ -82,4 +104,7 @@ console.log(diff || '  (no data changes — sources unchanged since last run)')
 
 const pending = sources.filter((s) => s.automation !== 'auto')
 console.log('\nSources needing a key or a manual step (see docs/DATA_PIPELINE.md):')
-for (const s of pending) console.log(`  [${s.automation}] ${s.id} — ${s.feeds}`)
+for (const s of pending) console.log(`  [${s.automation}] ${s.id} — ${s.feeds.split('.')[0]}`)
+
+console.log(`\nRegistry: ${sources.length} sources across ${sections.length + 1} sections; ` +
+  `${sources.filter((s) => s.automation === 'auto').length} fully automated.`)

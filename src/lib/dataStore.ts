@@ -27,6 +27,21 @@ let state: DataState = {
   priceRecords: PRICE_RECORDS,
   precursorPriceRecords: PRECURSOR_PRICE_RECORDS,
   flowRecords: FLOW_RECORDS,
+  // Empty by design, and it does NOT mean "no data". The CDC mortality and
+  // OFAC designation extracts are ~450 kB each and live in src/data/bundled.ts,
+  // imported only from lazy tab chunks so they stay out of the entry bundle.
+  // These fields therefore mean "loaded from a user CSV"; components resolve
+  // loaded-vs-bundled with `withBundled()`.
+  overdoseRecords: [],
+  designationRecords: [],
+  // Same convention as the two above: empty means "loaded from a user CSV".
+  // The bundled default is Statistics Canada's wastewater series, resolved via
+  // withBundled() in the Triangulation tab. EUDA and ACIC still cannot be
+  // automated (403 / PDF-only), so Europe and Australia remain CSV-load only.
+  wastewaterRecords: [],
+  // Never bundled: message evidence is per-investigation, consent-scoped, and
+  // has no business shipping inside a public static site.
+  messageEvidence: [],
   mmRegions: MM_REGIONS,
   mmBorderNodes: MM_BORDER_NODES,
   mmRegionRecords: MM_REGION_RECORDS,
@@ -81,6 +96,10 @@ export function loadData(bundle: LoadBundle = {}): LoadReport {
   apply('priceRecords', 'parsePrices', bundle.prices)
   apply('precursorPriceRecords', 'parsePrecursorPrices', bundle.precursorPrices)
   apply('flowRecords', 'parseFlows', bundle.flows)
+  apply('overdoseRecords', 'parseOverdoseDeaths', bundle.overdose)
+  apply('wastewaterRecords', 'parseWastewater', bundle.wastewater)
+  apply('designationRecords', 'parseDesignations', bundle.designations)
+  apply('messageEvidence', 'parseMessageEvidence', bundle.messageEvidence)
 
   // Myanmar node tables FIRST — the records below reference their ids.
   apply('mmRegions', 'parseMyanmarRegions', bundle.mmRegions)

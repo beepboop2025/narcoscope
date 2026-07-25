@@ -1,0 +1,267 @@
+{
+  "meta": {
+    "generated": "2026-07-25",
+    "generator": "scripts/ontology/derive-ontology.mjs",
+    "method": "Induced by observation over the bundled datasets and source registry. No language model is involved: the corpus is already structured, so the schema can be observed rather than generated, which removes the hallucination risk that ontology-constraint layers exist to suppress.",
+    "status": "DRAFT FOR REVIEW — never auto-applied to src/types.ts"
+  },
+  "entityTypes": [
+    {
+      "type": "Country",
+      "description": "A sovereign jurisdiction. The primary spatial key across supply-side datasets.",
+      "instances": 164,
+      "observedIn": [
+        "seizures",
+        "prices",
+        "flows",
+        "designations"
+      ],
+      "identifier": "ISO-3166 alpha-3 where available, publisher country string otherwise"
+    },
+    {
+      "type": "SubnationalJurisdiction",
+      "description": "US state or equivalent. The finest geography any bundled dataset carries, by policy.",
+      "instances": 54,
+      "observedIn": [
+        "overdose"
+      ],
+      "identifier": "CDC two-letter jurisdiction code"
+    },
+    {
+      "type": "Region",
+      "description": "Sub-national production or conflict region (Myanmar focus layer).",
+      "instances": 6,
+      "observedIn": [
+        "mmRegionRecords",
+        "mmConflictEvents",
+        "mmPrecursorFlows"
+      ],
+      "identifier": "snake_case region id"
+    },
+    {
+      "type": "CorridorNode",
+      "description": "Border or exit town through which outbound volume is reported.",
+      "instances": 4,
+      "observedIn": [
+        "mmFlowRecords"
+      ],
+      "identifier": "snake_case node id"
+    },
+    {
+      "type": "Drug",
+      "description": "Finished drug tracked at retail.",
+      "instances": 4,
+      "observedIn": [
+        "prices",
+        "wastewater"
+      ],
+      "identifier": "closed enum in src/types.ts"
+    },
+    {
+      "type": "SubstanceClass",
+      "description": "ICD-10 substance class used by mortality reporting. Deliberately a SEPARATE type from Drug — the vocabularies are not interchangeable, and the mapping between them is explicit in src/lib/triangulate.ts.",
+      "instances": 6,
+      "observedIn": [
+        "overdose"
+      ],
+      "identifier": "closed enum derived from CDC indicator labels"
+    },
+    {
+      "type": "Precursor",
+      "description": "Precursor chemical class, identified by end-drug and INCB control status. Logistics only: no chemistry, routes or yields.",
+      "instances": 6,
+      "observedIn": [
+        "flows",
+        "precursorPrices",
+        "mmPrecursorFlows"
+      ],
+      "identifier": "closed enum in src/types.ts"
+    },
+    {
+      "type": "DesignatedEntity",
+      "description": "Named party on an official sanctions list under a stated legal authority. NOT an adjudication of guilt.",
+      "instances": 2638,
+      "observedIn": [
+        "designations"
+      ],
+      "identifier": "OFAC entity number"
+    },
+    {
+      "type": "SanctionsProgram",
+      "description": "The legal authority under which a designation was made.",
+      "instances": 4,
+      "observedIn": [
+        "designations"
+      ],
+      "identifier": "OFAC program code"
+    },
+    {
+      "type": "ConflictActor",
+      "description": "Armed actor named in conflict-event reporting.",
+      "instances": null,
+      "observedIn": [
+        "mmConflictEvents"
+      ],
+      "identifier": "free-text actor name"
+    },
+    {
+      "type": "Source",
+      "description": "A publisher of evidence, resolved to an independent source family so name variants of one organisation do not inflate corroboration.",
+      "instances": 39,
+      "observedIn": [
+        "all attributed record types"
+      ],
+      "identifier": "canonicalSourceId() family key"
+    }
+  ],
+  "relationTypes": [
+    {
+      "relation": "seizedIn",
+      "domain": "Drug",
+      "range": "Country",
+      "attributes": [
+        "year",
+        "quantityKg"
+      ],
+      "instances": 11198,
+      "side": "supply"
+    },
+    {
+      "relation": "retailPricedIn",
+      "domain": "Drug",
+      "range": "Country",
+      "attributes": [
+        "year",
+        "priceUsdPerGram",
+        "purityPct"
+      ],
+      "instances": 208,
+      "side": "supply"
+    },
+    {
+      "relation": "traffickedFromTo",
+      "domain": "Precursor",
+      "range": "Country -> Country",
+      "attributes": [
+        "year",
+        "quantityKg",
+        "sourceName",
+        "sourceUrl"
+      ],
+      "instances": 8,
+      "side": "supply"
+    },
+    {
+      "relation": "causedDeathsIn",
+      "domain": "SubstanceClass",
+      "range": "SubnationalJurisdiction",
+      "attributes": [
+        "year",
+        "periodEndMonth",
+        "deaths",
+        "percentComplete"
+      ],
+      "instances": 3077,
+      "side": "demand"
+    },
+    {
+      "relation": "designatedUnder",
+      "domain": "DesignatedEntity",
+      "range": "SanctionsProgram",
+      "attributes": [],
+      "instances": 2663,
+      "side": "enforcement"
+    },
+    {
+      "relation": "recordedInCountry",
+      "domain": "DesignatedEntity",
+      "range": "Country",
+      "attributes": [],
+      "instances": 2583,
+      "side": "enforcement",
+      "note": "The only edge behind the jurisdiction graph in src/lib/designationNetwork.ts. There is deliberately NO DesignatedEntity -> DesignatedEntity relation: OFAC publishes none, so any such edge would be invented."
+    },
+    {
+      "relation": "aliasOf",
+      "domain": "DesignatedEntity",
+      "range": "DesignatedEntity name variant",
+      "attributes": [],
+      "instances": 1509,
+      "side": "enforcement",
+      "note": "Published by OFAC, so these equivalences are ground truth rather than inferred entity resolution."
+    }
+  ],
+  "attributeProfiles": {
+    "DesignatedEntity": {
+      "aliases": {
+        "coveragePct": 26.3,
+        "type": "list"
+      },
+      "countries": {
+        "coveragePct": 90.7,
+        "type": "list"
+      },
+      "entityNumber": {
+        "coveragePct": 100,
+        "type": "number"
+      },
+      "entityType": {
+        "coveragePct": 100,
+        "type": "string"
+      },
+      "name": {
+        "coveragePct": 100,
+        "type": "string"
+      },
+      "programs": {
+        "coveragePct": 100,
+        "type": "list"
+      }
+    },
+    "OverdoseRecord": {
+      "deaths": {
+        "coveragePct": 100,
+        "type": "number"
+      },
+      "jurisdiction": {
+        "coveragePct": 100,
+        "type": "string"
+      },
+      "partialYear": {
+        "coveragePct": 100,
+        "type": "boolean"
+      },
+      "percentComplete": {
+        "coveragePct": 100,
+        "type": "number"
+      },
+      "periodEndMonth": {
+        "coveragePct": 100,
+        "type": "number"
+      },
+      "predictedDeaths": {
+        "coveragePct": 42.9,
+        "type": "number"
+      },
+      "substance": {
+        "coveragePct": 100,
+        "type": "string"
+      },
+      "year": {
+        "coveragePct": 100,
+        "type": "number"
+      }
+    }
+  },
+  "provenance": {
+    "registeredSources": 39,
+    "automatedSources": 9,
+    "workQueueSources": 14,
+    "sourceTiers": {
+      "official": 5,
+      "research": 6,
+      "journalism": 3
+    },
+    "verificationRule": "A named individual or company may only reach a bundled dataset if that entity also appears on an official designation list (see scripts/pipeline/sources.json: ofac-sdn, un-consolidated-sanctions). Anything named only by journalism or a crowd-sourced tracker stays in the queue as a lead. This is the line between reporting a government's published action and republishing an allegation."
+  }
+}

@@ -1,11 +1,13 @@
 {
-  "description": "Public sources for Myanmar civil-war / precursor-flow data preparation. The scraper reads only these allowlisted hosts.",
+  "description": "Public sources for Myanmar / convergence-nexus data preparation. The scraper reads only these allowlisted hosts. OUTPUT IS AN ANALYST WORK QUEUE, NOT APP DATA: rows carry excerpts and content fingerprints for a human to verify and code into a CSV schema. Sources are ordered official-record first, research second, journalism last, matching the reliability tiers in src/lib/sourceReliability.ts.",
+  "verification_rule": "A named individual or company may only reach a bundled dataset if that entity also appears on an official designation list (see scripts/pipeline/sources.json: ofac-sdn, un-consolidated-sanctions). Anything named only by journalism or a crowd-sourced tracker stays in the queue as a lead. This is the line between reporting a government's published action and republishing an allegation.",
   "sources": [
     {
       "id": "unodc-roseap-synthetic-drugs",
       "name": "UNODC Synthetic Drugs in East and Southeast Asia",
       "url": "https://www.unodc.org/roseap/en/what-we-do/toc/synthetic-drugs.html",
       "focus": "precursor_flows",
+      "tier": "official",
       "keywords": ["Myanmar", "China", "precursor", "methamphetamine", "Shan", "Golden Triangle"]
     },
     {
@@ -13,13 +15,39 @@
       "name": "INCB Precursors",
       "url": "https://www.incb.org/incb/en/precursors/",
       "focus": "precursor_flows",
+      "tier": "official",
       "keywords": ["Myanmar", "China", "precursor", "acetic anhydride", "methamphetamine"]
+    },
+    {
+      "id": "unodc-smart",
+      "name": "UNODC Global SMART Programme",
+      "url": "https://www.unodc.org/unodc/en/scientists/smart.html",
+      "focus": "precursor_flows",
+      "tier": "official",
+      "keywords": ["precursor", "synthetic", "NPS", "designer precursor", "scheduling"]
+    },
+    {
+      "id": "dea-ndta",
+      "name": "DEA National Drug Threat Assessment",
+      "url": "https://www.dea.gov/resources/national-drug-threat-assessment",
+      "focus": "precursor_flows",
+      "tier": "official",
+      "keywords": ["fentanyl", "precursor", "China", "cartel", "analogue", "supplier"]
+    },
+    {
+      "id": "ohchr-myanmar",
+      "name": "OHCHR — Myanmar",
+      "url": "https://www.ohchr.org/en/countries/myanmar",
+      "focus": "conflict_events",
+      "tier": "official",
+      "keywords": ["Myanmar", "arms", "broker", "transfer", "military", "sanctions"]
     },
     {
       "id": "crisis-group-myanmar",
       "name": "International Crisis Group — Myanmar",
       "url": "https://www.crisisgroup.org/asia/south-east-asia/myanmar",
       "focus": "conflict_events",
+      "tier": "research",
       "keywords": ["Shan", "Wa", "Kachin", "militia", "border", "China", "conflict"]
     },
     {
@@ -27,7 +55,65 @@
       "name": "ACLED — Myanmar",
       "url": "https://acleddata.com/asia-pacific/myanmar/",
       "focus": "conflict_events",
+      "tier": "research",
       "keywords": ["Myanmar", "Shan", "Kachin", "armed", "clashes", "military"]
+    },
+    {
+      "id": "c4ads-reports",
+      "name": "C4ADS — illicit network investigations",
+      "url": "https://c4ads.org/reports/",
+      "focus": "precursor_flows",
+      "tier": "research",
+      "keywords": ["precursor", "exporter", "China", "shell company", "shipment", "Myanmar"],
+      "note": "Names companies and individuals. Cross-check every named entity against ofac-sdn before it leaves the queue."
+    },
+    {
+      "id": "fortify-rights",
+      "name": "Fortify Rights",
+      "url": "https://www.fortifyrights.org/publications/",
+      "focus": "conflict_events",
+      "tier": "research",
+      "keywords": ["Myanmar", "military", "militia", "trafficking", "documentation"]
+    },
+    {
+      "id": "global-witness",
+      "name": "Global Witness",
+      "url": "https://www.globalwitness.org/en/campaigns/",
+      "focus": "convergence",
+      "tier": "research",
+      "keywords": ["Myanmar", "timber", "jade", "wildlife", "border", "SEZ"]
+    },
+    {
+      "id": "the-sentry",
+      "name": "The Sentry",
+      "url": "https://thesentry.org/reports/",
+      "focus": "convergence",
+      "tier": "research",
+      "keywords": ["laundering", "military", "business", "bank", "asset"]
+    },
+    {
+      "id": "insight-crime",
+      "name": "InSight Crime",
+      "url": "https://insightcrime.org/",
+      "focus": "conflict_events",
+      "tier": "journalism",
+      "keywords": ["trafficking", "network", "seizure", "route", "cartel"]
+    },
+    {
+      "id": "irrawaddy",
+      "name": "The Irrawaddy",
+      "url": "https://www.irrawaddy.com/",
+      "focus": "conflict_events",
+      "tier": "journalism",
+      "keywords": ["Shan", "Wa", "Myawaddy", "militia", "BGF", "drug", "seizure"]
+    },
+    {
+      "id": "rfa-myanmar",
+      "name": "Radio Free Asia — Myanmar",
+      "url": "https://www.rfa.org/english/news/myanmar/",
+      "focus": "conflict_events",
+      "tier": "journalism",
+      "keywords": ["Shan", "Kokang", "Mongla", "border", "drug", "compound"]
     }
   ]
 }

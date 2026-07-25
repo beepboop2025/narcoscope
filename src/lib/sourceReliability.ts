@@ -32,7 +32,20 @@ export const RELIABILITY_TIER_WEIGHT: Record<ReliabilityTier, number> = {
 const NAME_RULES: Array<{ match: RegExp; tier: ReliabilityTier }> = [
   { match: /\b(UNODC|INCB|WHO|OHCHR|OCHA|UNDP|UNHCR|World Bank)\b/i, tier: 'high' },
   { match: /\b(ACLED|International Crisis Group|Crisis Group|IISS|USIP|GI-TOC|Global Initiative)\b/i, tier: 'high' },
+  // Official national statistical / regulatory publishers. These sit at the
+  // same tier as intergovernmental bodies: a designation or a vital-statistics
+  // count is a published act of a government, with a named legal basis and a
+  // correction process behind it.
+  { match: /\b(CDC|NCHS|VSRR|NIDA|SAMHSA|OFAC|DEA|HIDTA|EUDA|EMCDDA|ACIC|Conflict Armament Research|Small Arms Survey)\b/i, tier: 'high' },
+  // Established research institutes and investigative NGOs with published
+  // methodologies. High-quality, but their outputs are analysis rather than
+  // the primary official record, so they sit a tier below.
+  { match: /\b(C4ADS|OCCRP|RAND|Stimson|Global Financial Integrity|The Sentry|Global Witness|Fortify Rights|TRAFFIC|EIA|Environmental Investigation Agency|InSight Crime|Insight Crime)\b/i, tier: 'medium' },
   { match: /\b(Radio Free Asia|RFA|Frontier Myanmar|The Irrawaddy|Myanmar Now|Reuters|AP|AFP|BBC)\b/i, tier: 'medium' },
+  // Crowd-sourced and community-reported trackers. Genuinely useful for lead
+  // generation and deliberately NOT promoted above 'low': entries are
+  // self-reported, unverified, and frequently name private individuals.
+  { match: /\b(GASO|Global Anti-Scam|WildLeaks)\b/i, tier: 'low' },
 ]
 
 /**
@@ -101,6 +114,32 @@ const SOURCE_FAMILY_RULES: Array<{ match: RegExp; family: string }> = [
   { match: /\bIISS\b/i, family: 'iiss' },
   { match: /\bUSIP\b/i, family: 'usip' },
   { match: /\b(GI-TOC|Global Initiative)\b/i, family: 'gi-toc' },
+  // Order note: CDC/NCHS/VSRR collapse to one family because they are one
+  // reporter — NCHS is a CDC centre and VSRR is its release series. Counting
+  // them as three would manufacture corroboration out of a single dataset,
+  // exactly the non-independence bias `canonicalSourceId` exists to prevent.
+  { match: /\b(CDC|NCHS|VSRR)\b/i, family: 'cdc' },
+  { match: /\b(OFAC|Treasury)\b/i, family: 'ofac' },
+  { match: /\bDEA\b/i, family: 'dea' },
+  { match: /\bHIDTA\b/i, family: 'hidta' },
+  { match: /\b(SAMHSA|NIDA)\b/i, family: 'hhs-research' },
+  // EUDA is the renamed EMCDDA — same institution, so same family.
+  { match: /\b(EUDA|EMCDDA)\b/i, family: 'euda' },
+  { match: /\b(ACIC|Australian Criminal Intelligence|NWDMP)\b/i, family: 'acic' },
+  { match: /\bC4ADS\b/i, family: 'c4ads' },
+  { match: /\bOCCRP\b/i, family: 'occrp' },
+  { match: /\bRAND\b/i, family: 'rand' },
+  { match: /\bStimson\b/i, family: 'stimson' },
+  { match: /\bGlobal Financial Integrity\b/i, family: 'gfi' },
+  { match: /\bThe Sentry\b/i, family: 'the-sentry' },
+  { match: /\bGlobal Witness\b/i, family: 'global-witness' },
+  { match: /\bFortify Rights\b/i, family: 'fortify-rights' },
+  { match: /\bTRAFFIC\b/i, family: 'traffic' },
+  { match: /\b(EIA|Environmental Investigation Agency)\b/i, family: 'eia' },
+  { match: /\bConflict Armament Research\b/i, family: 'conflict-armament-research' },
+  { match: /\bSmall Arms Survey\b/i, family: 'small-arms-survey' },
+  { match: /\bIn[Ss]ight Crime\b/i, family: 'insight-crime' },
+  { match: /\b(GASO|Global Anti-Scam)\b/i, family: 'gaso' },
   { match: /\b(Radio Free Asia|RFA)\b/i, family: 'rfa' },
   { match: /\bFrontier Myanmar\b/i, family: 'frontier-myanmar' },
   { match: /\bThe Irrawaddy\b/i, family: 'irrawaddy' },
@@ -125,6 +164,25 @@ const SOURCE_FAMILY_DOMAIN_RULES: Array<{ match: RegExp; family: string }> = [
   { match: /(^|\.)iiss\.org$/i, family: 'iiss' },
   { match: /(^|\.)usip\.org$/i, family: 'usip' },
   { match: /(^|\.)globalinitiative\.net$/i, family: 'gi-toc' },
+  { match: /(^|\.)cdc\.gov$/i, family: 'cdc' },
+  { match: /(^|\.)(treasury|treas)\.gov$/i, family: 'ofac' },
+  { match: /(^|\.)dea\.gov$/i, family: 'dea' },
+  { match: /(^|\.)(euda|emcdda)\.europa\.eu$/i, family: 'euda' },
+  { match: /(^|\.)acic\.gov\.au$/i, family: 'acic' },
+  { match: /(^|\.)c4ads\.org$/i, family: 'c4ads' },
+  { match: /(^|\.)occrp\.org$/i, family: 'occrp' },
+  { match: /(^|\.)rand\.org$/i, family: 'rand' },
+  { match: /(^|\.)stimson\.org$/i, family: 'stimson' },
+  { match: /(^|\.)gfintegrity\.org$/i, family: 'gfi' },
+  { match: /(^|\.)thesentry\.org$/i, family: 'the-sentry' },
+  { match: /(^|\.)globalwitness\.org$/i, family: 'global-witness' },
+  { match: /(^|\.)fortifyrights\.org$/i, family: 'fortify-rights' },
+  { match: /(^|\.)traffic\.org$/i, family: 'traffic' },
+  { match: /(^|\.)eia-international\.org$/i, family: 'eia' },
+  { match: /(^|\.)conflictarm\.com$/i, family: 'conflict-armament-research' },
+  { match: /(^|\.)smallarmssurvey\.org$/i, family: 'small-arms-survey' },
+  { match: /(^|\.)insightcrime\.org$/i, family: 'insight-crime' },
+  { match: /(^|\.)gaso\.world$/i, family: 'gaso' },
   { match: /(^|\.)rfa\.org$/i, family: 'rfa' },
   { match: /(^|\.)frontiermyanmar\.net$/i, family: 'frontier-myanmar' },
   { match: /(^|\.)irrawaddy\.com$/i, family: 'irrawaddy' },
