@@ -12,7 +12,11 @@
     "data:refresh": "node scripts/pipeline/run.mjs",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "ontology": "node scripts/ontology/derive-ontology.mjs",
+    "data:overdose": "node scripts/convert/cdc-overdose-to-json.mjs",
+    "data:designations": "node scripts/convert/ofac-designations-to-json.mjs",
+    "data:wastewater": "node scripts/convert/statcan-wastewater-to-json.mjs"
   },
   "dependencies": {
     "@react-spring/web": "^9.7.5",

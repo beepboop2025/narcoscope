@@ -143,6 +143,304 @@
       "automation": "manual",
       "feeds": "NOT YET INTEGRATED — candidate context layer (criminality/resilience scores beside seizure data)",
       "transform": "TODO"
+    },
+
+    {
+      "_section": "DEMAND-SIDE MODALITIES — independent of interdiction agencies. Everything above this line is collected by the same kind of body (customs, police, drug-control agencies) and therefore shares an enforcement-capacity bias. The sources below are collected by vital-statistics registrars and environmental chemists, which is what makes them able to corroborate or contradict the supply picture. See src/lib/triangulate.ts."
+    },
+    {
+      "id": "cdc-vsrr-overdose",
+      "name": "CDC NCHS VSRR Provisional Drug Overdose Death Counts",
+      "url": "https://data.cdc.gov/resource/xkb8-kh2a.json",
+      "format": "json-api (Socrata, keyless)",
+      "cadence": "monthly",
+      "license": "US Government work — public domain (17 U.S.C. §105)",
+      "automation": "auto",
+      "feeds": "src/data/overdose.json — the mortality modality on the Triangulation tab. US national + 50 states + DC + NYC, by ICD-10 substance class, 12-month-ending windows, 2015-present.",
+      "transform": "scripts/convert/cdc-overdose-to-json.mjs",
+      "notes": "Provisional: recent windows are incomplete (percentComplete carried per record). Suppressed cells are dropped, never zero-filled. T43.6 'psychostimulants' is a class code, NOT a synonym for methamphetamine — the substitution is made explicitly and reversibly in triangulate.ts's DRUG_BRIDGE, never at ingest."
+    },
+    {
+      "id": "cdc-wonder",
+      "name": "CDC WONDER — final multiple-cause-of-death mortality",
+      "url": "https://wonder.cdc.gov/mcd.html",
+      "format": "web query / XML POST API",
+      "cadence": "annual (final data, ~12 months behind provisional)",
+      "license": "US Government work — public domain",
+      "automation": "manual",
+      "feeds": "NOT YET INTEGRATED — final counts to replace VSRR provisional figures once a year closes. VSRR is the better default (monthly, current); WONDER is the authoritative back-series.",
+      "transform": "TODO — WONDER's API is an XML POST with a session-scoped request document; simpler to export CSV and run it through parseOverdoseDeaths()."
+    },
+    {
+      "id": "statcan-wastewater",
+      "name": "Statistics Canada — Drug metabolites in wastewater in select Canadian cities",
+      "url": "https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=1310087101",
+      "format": "csv (zipped, via the keyless StatCan WDS REST API)",
+      "cadence": "irregular releases; tables 13-10-0820-01 (2019-2020) and 13-10-0871-01 (2022-2023)",
+      "license": "Statistics Canada Open Licence — reproduction and distribution permitted with attribution",
+      "automation": "auto",
+      "feeds": "src/data/wastewater.json — the wastewater modality on the Triangulation tab. 82 records, 8 cities, 2019/2020/2022/2023, cocaine + methamphetamine + cannabis (+ heroin for 2019-2020 only).",
+      "transform": "scripts/convert/statcan-wastewater-to-json.mjs",
+      "notes": "THE ROUTE IN, after EUDA and ACIC both proved unautomatable. Reports the SCORE standard unit directly. The two tables use different measure names AND different unit labels for the same quantity (grams per million people per day vs milligrams per thousand people per day — dimensionally identical, no conversion applied); a converter written against only the newer vocabulary silently yields zero records for the older one. Cocaine uses benzoylecgonine, never parent cocaine. Heroin uses 6-MAM and exists only in the older table. Validation case: Canadian cannabis 2019->2023 shows seizures -94% against wastewater +69%, i.e. the post-legalisation collapse in ENFORCEMENT correctly not read as a collapse in consumption."
+    },
+    {
+      "id": "euda-wastewater",
+      "name": "EUDA (ex-EMCDDA) / SCORE municipal wastewater drug loads",
+      "url": "https://www.euda.europa.eu/topics/pods/waste-water-analysis_en",
+      "format": "xlsx / interactive tables",
+      "cadence": "annual (~March)",
+      "license": "EU open data, attribution",
+      "automation": "manual",
+      "feeds": "wastewaterRecords via the CSV loader — EUROPEAN coverage for the Triangulation tab. NOTHING IS BUNDLED: re-verified 2026-07-26 that euda.europa.eu returns HTTP 403 to non-browser clients on both the current and legacy data URLs, including the copy linked from data.europa.eu, so this cannot be automated. The bundled default is statcan-wastewater (Canada); loading a verified EUDA export extends divergence detection to Europe.",
+      "transform": "scripts/convert/from-spreadsheet.mjs then src/lib/ingest.ts parseWastewater()",
+      "notes": "Unit must be mg per 1,000 inhabitants per day (the SCORE standard). Wastewater is the only modality here that measures consumption directly — blind to enforcement effort, reporting willingness, and mortality."
+    },
+    {
+      "id": "acic-nwdmp",
+      "name": "ACIC National Wastewater Drug Monitoring Programme (Australia)",
+      "url": "https://www.acic.gov.au/publications/national-wastewater-drug-monitoring-program-report",
+      "format": "pdf (tables)",
+      "cadence": "~3 reports per year",
+      "license": "CC BY 4.0 (Australian Government)",
+      "automation": "manual",
+      "feeds": "wastewaterRecords via the CSV loader. Methodologically the most rigorous wastewater programme in the world (national coverage, consistent catchments, long series). data.gov.au carries no machine-readable release as of 2026-07-26.",
+      "transform": "scripts/convert/from-pdf.mjs then parseWastewater()"
+    },
+
+    {
+      "_section": "OFFICIAL DESIGNATIONS — published government actions naming entities under a stated legal authority. Distinct in kind from the investigative-report sources below, which publish allegations. That distinction is why designations are bundled as data and reports are not."
+    },
+    {
+      "id": "ofac-sdn",
+      "name": "US Treasury OFAC — Specially Designated Nationals list",
+      "url": "https://www.treasury.gov/ofac/downloads/sdn.csv",
+      "format": "csv (sdn.csv + add.csv addresses + alt.csv aliases)",
+      "cadence": "continuous (OFAC updates on designation/delisting)",
+      "license": "US Government work — public domain (17 U.S.C. §105)",
+      "automation": "auto",
+      "feeds": "src/data/designations.json — the Designations tab. Filtered to SDNTK (Kingpin Act), SDNT, ILLICIT-DRUGS-EO14059 (fentanyl authority) and TCO (transnational criminal organisations).",
+      "transform": "scripts/convert/ofac-designations-to-json.mjs",
+      "notes": "Fetched from Treasury DIRECTLY rather than via OpenSanctions: public domain with no licence condition, which is the only footing on which this can ship in an MIT repo. alt.csv gives OFAC's own alias equivalences, which solves the transliteration-variant entity-resolution problem with published ground truth instead of inference. Addresses, passport/ID numbers and dates of birth are present upstream and deliberately NOT extracted."
+    },
+    {
+      "id": "un-consolidated-sanctions",
+      "name": "UN Security Council Consolidated Sanctions List",
+      "url": "https://scsanctions.un.org/resources/xml/en/consolidated.xml",
+      "format": "xml",
+      "cadence": "continuous",
+      "license": "UN, freely redistributable",
+      "automation": "auto",
+      "feeds": "NOT YET INTEGRATED — would add non-US designations (arms-embargo violators, UN-designated traffickers) alongside OFAC, giving the designation layer a second independent designating authority rather than a single national view.",
+      "transform": "TODO — new converter, then merge into designations.json with a `designatingAuthority` field. Verified reachable 2026-07-26 (2.2 MB)."
+    },
+    {
+      "id": "opensanctions",
+      "name": "OpenSanctions — consolidated global sanctions aggregate",
+      "url": "https://data.opensanctions.org/datasets/latest/sanctions/index.json",
+      "format": "json / csv bulk artifacts",
+      "cadence": "daily",
+      "license": "UNSTATED on the bulk artifacts — checked 2026-07-26, the dataset index returns null for both `license` and `license_url`",
+      "automation": "manual",
+      "feeds": "REFERENCE LOOKUP ONLY, DELIBERATELY NOT BUNDLED. Aggregates OFAC/UN/EU and ~430 other lists more conveniently than fetching each, but shipping it in an MIT repo without a stated licence would be the same trap as other unstated-licence data sources. Use it to look an entity up; take the authoritative row from the issuing authority.",
+      "transform": "none — do not bundle without written licence confirmation"
+    },
+    {
+      "id": "eu-sanctions-map",
+      "name": "EU Sanctions Map",
+      "url": "https://www.sanctionsmap.eu/",
+      "format": "web / api",
+      "cadence": "continuous",
+      "license": "EU, attribution",
+      "automation": "manual",
+      "feeds": "NOT YET INTEGRATED — third designating authority for the designation layer, with alias cross-references."
+    },
+
+    {
+      "_section": "INVESTIGATIVE REPORTS AND ANALYSIS — these are REPORTS, not datasets. They publish allegations, attributions and named individuals who are frequently NOT officially designated. They feed the governed scraper's analyst work queue (scripts/scrape/) as leads requiring verification, and must never be ingested into a bundled dataset the app renders as fact. Treating a report as a dataset is how an observatory ends up publishing an accusation as a statistic."
+    },
+    {
+      "id": "dea-ndta",
+      "name": "DEA National Drug Threat Assessment",
+      "url": "https://www.dea.gov/resources/national-drug-threat-assessment",
+      "format": "pdf",
+      "cadence": "annual",
+      "license": "US Government work — public domain",
+      "automation": "manual",
+      "feeds": "Analyst context: Chinese precursor supply chains, cartel synthesis, fentanyl analogue flows. Corridor rows extractable to the flows CSV schema where DEA states an explicit origin/destination.",
+      "transform": "scripts/convert/from-pdf.mjs, corridor rows via the flows schema"
+    },
+    {
+      "id": "hidta-threat-assessments",
+      "name": "HIDTA regional Drug Threat Assessments",
+      "url": "https://www.dea.gov/hidta",
+      "format": "pdf (per region)",
+      "cadence": "annual, staggered by region",
+      "license": "US Government work — public domain",
+      "automation": "manual",
+      "feeds": "Sub-national US detail, often more granular than the national NDTA. Note the grain guard: NarcoScope publishes state level at finest for the US, never county or city.",
+      "transform": "scripts/convert/from-pdf.mjs"
+    },
+    {
+      "id": "unodc-smart",
+      "name": "UNODC Global SMART Programme — synthetic drugs & precursors",
+      "url": "https://www.unodc.org/unodc/en/scientists/smart.html",
+      "format": "pdf / web",
+      "cadence": "periodic updates + annual reports",
+      "license": "UN open data, attribution",
+      "automation": "manual",
+      "feeds": "Precursor and NPS monitoring; complements the INCB precursors report already ingested into FLOW_RECORDS.",
+      "transform": "scripts/convert/from-pdf.mjs"
+    },
+    {
+      "id": "c4ads",
+      "name": "C4ADS — open-source investigations into illicit networks",
+      "url": "https://c4ads.org/reports/",
+      "format": "pdf reports",
+      "cadence": "irregular",
+      "license": "C4ADS, attribution; check each report",
+      "automation": "manual",
+      "feeds": "WORK QUEUE ONLY. Names Chinese precursor exporters and platform listings. Company names appearing here are allegations unless the entity also appears in ofac-sdn — cross-check before any row leaves the queue.",
+      "transform": "scripts/scrape/ (governed scraper) -> analyst verification -> only then a CSV row"
+    },
+    {
+      "id": "insight-crime",
+      "name": "InSight Crime — investigative journalism on organised crime",
+      "url": "https://insightcrime.org/",
+      "format": "web articles",
+      "cadence": "continuous",
+      "license": "InSight Crime, attribution",
+      "automation": "manual",
+      "feeds": "WORK QUEUE ONLY. Strongest on Latin American networks. Same rule as C4ADS: journalism is a lead, not a record."
+    },
+    {
+      "id": "occrp-aleph",
+      "name": "OCCRP Aleph — leaks, corporate registries, court records",
+      "url": "https://aleph.occrp.org/",
+      "format": "search platform / api",
+      "cadence": "continuous",
+      "license": "varies per collection; many require an account and carry redistribution restrictions",
+      "automation": "api-key",
+      "feeds": "REFERENCE LOOKUP ONLY. Excellent for resolving a corporate trail behind a designated entity. Nothing from Aleph may be bundled — collection licences vary and several forbid redistribution outright."
+    },
+    {
+      "id": "rand-dpc",
+      "name": "RAND Drug Policy Research Center",
+      "url": "https://www.rand.org/well-being/justice-policy/centers/dpc.html",
+      "format": "pdf reports",
+      "cadence": "irregular",
+      "license": "RAND, attribution",
+      "automation": "manual",
+      "feeds": "Methodology reference for supply-side economics, especially fentanyl market modelling. Read for method, cite for context; not a data feed."
+    },
+    {
+      "id": "stimson-center",
+      "name": "Stimson Center — Southeast Asia / Mekong programme",
+      "url": "https://www.stimson.org/program/southeast-asia/",
+      "format": "web / pdf",
+      "cadence": "irregular",
+      "license": "Stimson, attribution",
+      "automation": "manual",
+      "feeds": "Context on Chinese regulatory gaps and Mekong governance. Analysis, not data."
+    },
+    {
+      "id": "global-financial-integrity",
+      "name": "Global Financial Integrity — illicit financial flows",
+      "url": "https://gfintegrity.org/reports/",
+      "format": "pdf reports",
+      "cadence": "irregular",
+      "license": "GFI, attribution",
+      "automation": "manual",
+      "feeds": "Trade-misinvoicing and illicit-flow estimates. Candidate input if a financial-flows layer is ever built; see docs/ROADMAP-PARALLEL-ECONOMY.md."
+    },
+    {
+      "id": "the-sentry",
+      "name": "The Sentry — war-economy financial investigations",
+      "url": "https://thesentry.org/reports/",
+      "format": "pdf reports",
+      "cadence": "irregular",
+      "license": "The Sentry, attribution",
+      "automation": "manual",
+      "feeds": "WORK QUEUE ONLY. Strong on military business empires and their banking relationships."
+    },
+    {
+      "id": "global-witness",
+      "name": "Global Witness — resource, wildlife and corruption investigations",
+      "url": "https://www.globalwitness.org/en/campaigns/",
+      "format": "pdf / web",
+      "cadence": "irregular",
+      "license": "Global Witness, attribution",
+      "automation": "manual",
+      "feeds": "WORK QUEUE ONLY. Covers the wildlife/timber/drug convergence in Southeast Asia."
+    },
+    {
+      "id": "fortify-rights",
+      "name": "Fortify Rights — Myanmar human-rights documentation",
+      "url": "https://www.fortifyrights.org/publications/",
+      "format": "pdf / web",
+      "cadence": "irregular",
+      "license": "Fortify Rights, attribution",
+      "automation": "manual",
+      "feeds": "WORK QUEUE ONLY. Military-militia linkage documentation for the Myanmar conflict layer."
+    },
+    {
+      "id": "traffic-wildlife",
+      "name": "TRAFFIC — wildlife trade monitoring network",
+      "url": "https://www.traffic.org/publications/",
+      "format": "pdf reports",
+      "cadence": "irregular",
+      "license": "TRAFFIC, attribution",
+      "automation": "manual",
+      "feeds": "WORK QUEUE ONLY. Wildlife trafficking through the same SEZ infrastructure as drug transshipment (Kings Romans, Mongla). Out of NarcoScope's current scope; registered so the convergence is documented rather than rediscovered."
+    },
+    {
+      "id": "eia-international",
+      "name": "Environmental Investigation Agency",
+      "url": "https://eia-international.org/reports/",
+      "format": "pdf reports",
+      "cadence": "irregular",
+      "license": "EIA, attribution",
+      "automation": "manual",
+      "feeds": "WORK QUEUE ONLY. Undercover investigations naming traders and market operators — the highest-allegation-density source in this registry, and correspondingly the one whose rows must never leave the queue unverified."
+    },
+    {
+      "id": "conflict-armament-research",
+      "name": "Conflict Armament Research — weapon tracing",
+      "url": "https://www.conflictarm.com/publications/",
+      "format": "pdf reports",
+      "cadence": "irregular",
+      "license": "CAR, attribution",
+      "automation": "manual",
+      "feeds": "Serial-number-level weapon tracing, including Myanmar. Arms flows are out of NarcoScope's scope; registered for the convergence picture."
+    },
+    {
+      "id": "small-arms-survey",
+      "name": "Small Arms Survey",
+      "url": "https://www.smallarmssurvey.org/",
+      "format": "pdf / datasets",
+      "cadence": "annual + irregular",
+      "license": "Small Arms Survey, attribution",
+      "automation": "manual",
+      "feeds": "Illicit arms flow estimates. Same scope note as CAR."
+    },
+    {
+      "id": "un-panel-of-experts-myanmar",
+      "name": "UN reporting on Myanmar (Special Rapporteur / OHCHR)",
+      "url": "https://www.ohchr.org/en/countries/myanmar",
+      "format": "pdf (UN documents)",
+      "cadence": "periodic",
+      "license": "UN, attribution",
+      "automation": "manual",
+      "feeds": "Named arms deals, brokers and transport networks with evidentiary backing — UN documents are official records rather than journalism, so rows sourced here carry a higher reliability tier."
+    },
+    {
+      "id": "gaso",
+      "name": "Global Anti-Scam Organization — crowd-sourced scam-operation reports",
+      "url": "https://www.gaso.world/",
+      "format": "web, crowd-sourced database",
+      "cadence": "continuous",
+      "license": "GASO; user-contributed content",
+      "automation": "manual",
+      "feeds": "WORK QUEUE ONLY, LOWEST TIER. Entries are self-reported, unverified, and frequently name private individuals and specific compound locations. Graded 'low' in src/lib/sourceReliability.ts on purpose and must never be promoted. Useful for establishing that a phenomenon exists in a place; never sufficient to attribute it to a person."
     }
   ]
 }

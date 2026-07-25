@@ -21,6 +21,14 @@ import type {
   MyanmarConflictActorType,
   MyanmarConflictEventType,
   SourceConfidence,
+  OverdoseRecord,
+  OverdoseSubstance,
+  WastewaterRecord,
+  DesignationRecord,
+  DesignationEntityType,
+  MessageEvidenceRecord,
+  MessageEvidenceProvenance,
+  MessageEvidenceRole,
 } from '../types'
 
 // =============================================================================
@@ -164,6 +172,43 @@ export const CONFIG: Record<string, string[]> = {
     'activity index',
     'meth activity',
   ],
+  // --- demand-side modalities ---
+  // NOTE: none of these aliases may be a bare 'state', 'name', 'country' or
+  // 'location'. buildHeaderMap takes the FIRST config key that matches a
+  // header, and those four are already claimed above by `country` and
+  // `label` — reusing them here would silently route a mortality file's
+  // jurisdiction column into the price schema's country field.
+  jurisdiction: ['jurisdiction', 'jurisdiction code', 'state code', 'state abbr', 'state_abbr'],
+  jurisdictionName: ['jurisdiction name', 'state name', 'state_name'],
+  substance: ['substance', 'indicator', 'substance class', 'drug class', 'drug_class'],
+  deaths: ['deaths', 'death count', 'number of deaths', 'data value', 'data_value', 'overdose deaths'],
+  predictedDeaths: ['predicted deaths', 'predicted value', 'predicted_value'],
+  percentComplete: ['percent complete', 'percent_complete', 'completeness', 'pct complete'],
+  periodEndMonth: ['period end month', 'period_end_month', 'end month', 'month'],
+  site: ['site', 'city', 'catchment', 'treatment plant', 'wwtp', 'sampling site'],
+  mgPer1000PerDay: [
+    'mg per 1000 per day',
+    'mg per 1000 inhabitants per day',
+    'mg/1000 people/day',
+    'mg 1000 day',
+    'mass load',
+    'daily load',
+  ],
+  // --- official designations ---
+  entityNumber: ['entity number', 'entity_number', 'ent num', 'ent_num', 'uid', 'sdn id'],
+  entityName: ['entity name', 'designated name', 'sdn name', 'designee'],
+  entityType: ['entity type', 'sdn type', 'designation type'],
+  programs: ['programs', 'program', 'sanctions program', 'authority', 'legal authority'],
+  countries: ['countries', 'country of record', 'countries of record', 'jurisdictions'],
+  aliases: ['aliases', 'alias', 'aka', 'also known as', 'alt names', 'alternate names'],
+  // --- message evidence ---
+  caseId: ['case id', 'case_id', 'case', 'case ref'],
+  provenance: ['provenance', 'how obtained', 'evidence provenance', 'obtained'],
+  platform: ['platform', 'app', 'messenger', 'channel type'],
+  participant: ['participant', 'handle', 'pseudonym', 'actor handle'],
+  role: ['role', 'participant role'],
+  indicator: ['indicator', 'signal', 'observation type', 'claim type'],
+  count: ['count', 'occurrences', 'observations', 'n'],
 }
 
 // =============================================================================
@@ -290,6 +335,44 @@ function coercePurity(value: unknown): number | null {
   const num = Number(trimmed.replace('%', '').trim())
   if (!Number.isFinite(num)) return null
   return Math.max(0, Math.min(100, num))
+}
+
+const MONTH_NAMES = [
+  'january', 'february', 'march', 'april', 'may', 'june',
+  'july', 'august', 'september', 'october', 'november', 'december',
+]
+
+/**
+ * Coerce a month cell to 1-12. Accepts a number, a full month name, or a
+ * three-letter abbreviation, since mortality publishers use all three.
+ * Returns null (not a silent default) when the value is absent or unreadable
+ * — the caller decides what a missing period window means.
+ */
+function coerceMonth(value: unknown): number | null {
+  const raw = coerceString(value)
+  if (!raw) return null
+  const asNumber = Number(raw)
+  if (Number.isFinite(asNumber)) {
+    const rounded = Math.round(asNumber)
+    return rounded >= 1 && rounded <= 12 ? rounded : null
+  }
+  const lower = raw.toLowerCase()
+  const index = MONTH_NAMES.findIndex((m) => m === lower || m.slice(0, 3) === lower)
+  return index >= 0 ? index + 1 : null
+}
+
+/**
+ * Split a multi-value cell into a trimmed list. Handles the separators
+ * publishers actually use, including OFAC's `] [` between sanctions programs
+ * and the semicolons/pipes most CSV exporters emit for list columns.
+ */
+function splitList(value: unknown): string[] {
+  const raw = coerceString(value)
+  if (!raw) return []
+  return raw
+    .split(/\]\s*\[|[;|]/)
+    .map((part) => part.replace(/[[\]]/g, '').trim())
+    .filter((part) => part.length > 0)
 }
 
 /** Normalize a drug id. */
@@ -817,6 +900,372 @@ export function parseMyanmarPrecursorFlows(
       sourceName,
       sourceUrl,
       confidence,
+    })
+  })
+
+  return { records, warnings }
+}
+
+// =============================================================================
+// DEMAND-SIDE MODALITIES
+// =============================================================================
+
+const VALID_OVERDOSE_SUBSTANCES = [
+  'cocaine',
+  'heroin',
+  'psychostimulants',
+  'synthetic_opioids',
+  'opioids_all',
+  'all_drugs',
+] as const
+function isOverdoseSubstance(v: string): v is OverdoseSubstance {
+  return (VALID_OVERDOSE_SUBSTANCES as readonly string[]).includes(v)
+}
+
+/**
+ * Maps CDC's ICD-10 indicator labels onto our substance ids, so an analyst can
+ * feed a raw CDC/WONDER export straight in without pre-renaming columns.
+ * Anything already in our vocabulary passes through untouched.
+ */
+function normalizeOverdoseSubstance(value: unknown): string | null {
+  const raw = coerceString(value)
+  if (!raw) return null
+  const lower = raw.toLowerCase()
+  if (lower.includes('cocaine')) return 'cocaine'
+  if (lower.includes('heroin')) return 'heroin'
+  if (lower.includes('psychostimulant')) return 'psychostimulants'
+  // Order matters: "synthetic opioids, excl. methadone" must be tested before
+  // the broader opioid labels, or it would fall through to `opioids_all` and
+  // the fentanyl series would silently vanish into the aggregate.
+  if (lower.includes('synthetic opioid')) return 'synthetic_opioids'
+  if (lower.includes('opioid')) return 'opioids_all'
+  if (lower.includes('number of drug overdose deaths') || lower.includes('all drug')) return 'all_drugs'
+  return lower.replace(/\s+/g, '_')
+}
+
+/**
+ * Parse overdose-mortality counts (CDC VSRR / WONDER exports, or any file in
+ * the same shape).
+ *
+ * A row with a missing/suppressed death count is SKIPPED with a warning, never
+ * coerced to zero: CDC suppresses cells that fail a data-quality review or
+ * fall below a disclosure threshold, and a suppressed cell means "we are not
+ * telling you", not "nobody died".
+ */
+export function parseOverdoseDeaths(csv: string): ParseResult<OverdoseRecord> {
+  const records: OverdoseRecord[] = []
+  const warnings: string[] = []
+  const { headers, rows } = parseCsv(csv)
+  const headerMap = buildHeaderMap(headers, CONFIG)
+  // A column literally headed "substance" is claimed by the `drug` config key
+  // (it appears there first, and buildHeaderMap is first-match-wins). Alias it
+  // back, the same way parseMyanmarPrecursorFlows recovers origin/transit —
+  // otherwise the most obvious possible header name for this file silently
+  // fails to resolve.
+  if (!('substance' in headerMap) && 'drug' in headerMap) {
+    headerMap.substance = headerMap.drug
+  }
+  // CDC's own export heads the jurisdiction column `state`, which the `country`
+  // config key claims first. Without this the most common real-world file for
+  // this parser fails to load at all.
+  if (!('jurisdiction' in headerMap) && 'country' in headerMap) {
+    headerMap.jurisdiction = headerMap.country
+  }
+
+  const required = ['jurisdiction', 'year', 'substance', 'deaths']
+  const missing = required.filter((field) => !(field in headerMap))
+  if (missing.length > 0) {
+    warnings.push(
+      `Unrecognized overdose CSV layout: missing columns ${missing.join(', ')}. No records parsed.`
+    )
+    return { records, warnings }
+  }
+
+  rows.forEach((row, index) => {
+    const lineNo = index + 2
+    const jurisdiction = coerceString(getField(row, headerMap, 'jurisdiction'))
+    const year = coerceInt(getField(row, headerMap, 'year'))
+    const substanceRaw = normalizeOverdoseSubstance(getField(row, headerMap, 'substance'))
+    const deaths = coerceNumber(getField(row, headerMap, 'deaths'))
+    const predictedDeaths = coerceNumber(getField(row, headerMap, 'predictedDeaths'))
+    const percentComplete = coerceNumber(getField(row, headerMap, 'percentComplete'))
+    const monthRaw = getField(row, headerMap, 'periodEndMonth')
+
+    if (!jurisdiction || year === null || !substanceRaw) {
+      warnings.push(`Row ${lineNo}: skipped due to missing required fields`)
+      return
+    }
+    if (!isOverdoseSubstance(substanceRaw)) {
+      warnings.push(`Row ${lineNo}: skipped due to unknown substance class ${substanceRaw}`)
+      return
+    }
+    if (deaths === null) {
+      warnings.push(`Row ${lineNo}: skipped — no death count (suppressed cells are never read as zero)`)
+      return
+    }
+    if (deaths < 0) {
+      warnings.push(`Row ${lineNo}: skipped due to negative death count`)
+      return
+    }
+
+    // Accepts a month number or a month name; defaults to a December
+    // (calendar-year-aligned) window when the column is absent entirely.
+    const periodEndMonth = coerceMonth(monthRaw) ?? 12
+
+    records.push({
+      jurisdiction,
+      year,
+      periodEndMonth,
+      partialYear: periodEndMonth !== 12,
+      substance: substanceRaw,
+      deaths,
+      predictedDeaths,
+      percentComplete,
+    })
+  })
+
+  return { records, warnings }
+}
+
+/**
+ * Parse wastewater drug loads (EUDA/SCORE, ACIC NWDMP, or any file reporting
+ * mg per 1,000 inhabitants per day). No such dataset is bundled — both major
+ * publishers block automated collection — so this parser exists to make the
+ * CSV loader the supported path for real figures.
+ */
+export function parseWastewater(csv: string): ParseResult<WastewaterRecord> {
+  const records: WastewaterRecord[] = []
+  const warnings: string[] = []
+  const { headers, rows } = parseCsv(csv)
+  const headerMap = buildHeaderMap(headers, CONFIG)
+
+  const required = ['site', 'country', 'iso3', 'year', 'drug', 'mgPer1000PerDay', 'sourceName', 'sourceUrl']
+  const missing = required.filter((field) => !(field in headerMap))
+  if (missing.length > 0) {
+    warnings.push(
+      `Unrecognized wastewater CSV layout: missing columns ${missing.join(', ')}. No records parsed.`
+    )
+    return { records, warnings }
+  }
+
+  rows.forEach((row, index) => {
+    const lineNo = index + 2
+    const site = coerceString(getField(row, headerMap, 'site'))
+    const country = coerceString(getField(row, headerMap, 'country'))
+    const iso3 = coerceString(getField(row, headerMap, 'iso3'))
+    const year = coerceInt(getField(row, headerMap, 'year'))
+    const drugRaw = normalizeDrug(getField(row, headerMap, 'drug'))
+    const mgPer1000PerDay = coerceNumber(getField(row, headerMap, 'mgPer1000PerDay'))
+    const sourceName = coerceString(getField(row, headerMap, 'sourceName'))
+    const sourceUrl = coerceString(getField(row, headerMap, 'sourceUrl'))
+
+    if (!drugRaw || !isDrug(drugRaw)) {
+      warnings.push(`Row ${lineNo}: skipped due to unknown or missing drug`)
+      return
+    }
+    if (
+      !site || !country || !iso3 || year === null ||
+      mgPer1000PerDay === null || !sourceName || !sourceUrl
+    ) {
+      warnings.push(`Row ${lineNo}: skipped due to missing required fields`)
+      return
+    }
+    if (mgPer1000PerDay < 0) {
+      warnings.push(`Row ${lineNo}: skipped due to negative mass load`)
+      return
+    }
+
+    records.push({ site, country, iso3, year, drug: drugRaw, mgPer1000PerDay, sourceName, sourceUrl })
+  })
+
+  return { records, warnings }
+}
+
+const VALID_DESIGNATION_TYPES = ['individual', 'organization', 'vessel', 'aircraft'] as const
+function isDesignationEntityType(v: string): v is DesignationEntityType {
+  return (VALID_DESIGNATION_TYPES as readonly string[]).includes(v)
+}
+
+/**
+ * Parse official sanctions designations (OFAC SDN exports, or an equivalent
+ * list in the same shape).
+ *
+ * `programs` and `countries` accept several list separators because every
+ * publisher picks a different one and OFAC itself uses `] [`.
+ */
+export function parseDesignations(csv: string): ParseResult<DesignationRecord> {
+  const records: DesignationRecord[] = []
+  const warnings: string[] = []
+  const { headers, rows } = parseCsv(csv)
+  const headerMap = buildHeaderMap(headers, CONFIG)
+
+  const required = ['entityNumber', 'entityName', 'programs']
+  const missing = required.filter((field) => !(field in headerMap))
+  if (missing.length > 0) {
+    warnings.push(
+      `Unrecognized designations CSV layout: missing columns ${missing.join(', ')}. No records parsed.`
+    )
+    return { records, warnings }
+  }
+
+  rows.forEach((row, index) => {
+    const lineNo = index + 2
+    const entityNumber = coerceInt(getField(row, headerMap, 'entityNumber'))
+    const name = coerceString(getField(row, headerMap, 'entityName'))
+    const programs = splitList(getField(row, headerMap, 'programs'))
+    const countries = splitList(getField(row, headerMap, 'countries'))
+    const typeRaw = (coerceString(getField(row, headerMap, 'entityType')) ?? '').toLowerCase()
+
+    if (entityNumber === null || !name) {
+      warnings.push(`Row ${lineNo}: skipped due to missing entity number or name`)
+      return
+    }
+    if (programs.length === 0) {
+      // Without a stated legal authority the row is an accusation, not a
+      // designation — the distinction this whole record type rests on.
+      warnings.push(`Row ${lineNo}: skipped — no sanctions program (a designation must cite its authority)`)
+      return
+    }
+
+    const entityType: DesignationEntityType = isDesignationEntityType(typeRaw) ? typeRaw : 'organization'
+    if (typeRaw && !isDesignationEntityType(typeRaw)) {
+      warnings.push(`Row ${lineNo}: unknown entity type "${typeRaw}", recorded as organization`)
+    }
+    const aliases = splitList(getField(row, headerMap, 'aliases'))
+
+    records.push({ entityNumber, name, entityType, programs, countries, aliases })
+  })
+
+  return { records, warnings }
+}
+
+// =============================================================================
+// MESSAGE EVIDENCE
+// =============================================================================
+
+const VALID_MESSAGE_PROVENANCE = [
+  'victim_provided',
+  'public_channel',
+  'published_by_investigator',
+] as const
+function isMessageEvidenceProvenance(v: string): v is MessageEvidenceProvenance {
+  return (VALID_MESSAGE_PROVENANCE as readonly string[]).includes(v)
+}
+
+const VALID_MESSAGE_ROLES = ['recruiter', 'victim', 'operator', 'unknown'] as const
+function isMessageEvidenceRole(v: string): v is MessageEvidenceRole {
+  return (VALID_MESSAGE_ROLES as readonly string[]).includes(v)
+}
+
+const VALID_MESSAGE_INDICATORS = [
+  'job_offer',
+  'travel_arrangement',
+  'document_confiscation',
+  'quota_threat',
+  'payment_request',
+  'other',
+] as const
+function isMessageIndicator(v: string): v is MessageEvidenceRecord['indicator'] {
+  return (VALID_MESSAGE_INDICATORS as readonly string[]).includes(v)
+}
+
+/**
+ * Parse structured message-evidence indicators (scam-compound recruitment).
+ *
+ * Two rules are enforced here rather than left to the submitter's discipline,
+ * because a schema that merely *asks* for them will eventually receive a file
+ * that ignores them:
+ *
+ *   1. `provenance` is REQUIRED and must be one of three values. A row that
+ *      does not say how the evidence was obtained is rejected, not defaulted.
+ *      There is no value meaning "intercepted", so intercept product cannot be
+ *      loaded through this path even by a caller who wants to.
+ *   2. Any column carrying message TEXT is refused outright. This record type
+ *      stores indicator categories and counts, never content — the pattern is
+ *      what the analysis needs, and the content is somebody's private
+ *      conversation.
+ */
+export function parseMessageEvidence(csv: string): ParseResult<MessageEvidenceRecord> {
+  const records: MessageEvidenceRecord[] = []
+  const warnings: string[] = []
+  const { headers, rows } = parseCsv(csv)
+  const headerMap = buildHeaderMap(headers, CONFIG)
+  // 'indicator' is claimed by the `substance` config key (first-match-wins),
+  // so recover it here the same way parseOverdoseDeaths recovers 'substance'.
+  if (!('indicator' in headerMap) && 'substance' in headerMap) {
+    headerMap.indicator = headerMap.substance
+  }
+
+  // Refuse content columns before parsing a single row. Failing the whole file
+  // is deliberate: silently dropping the column would let a submitter believe
+  // the content was accepted and stored.
+  const contentColumn = headers.find((h) =>
+    /\b(message|text|content|body|transcript|chat log|conversation)\b/i.test(String(h)))
+  if (contentColumn) {
+    warnings.push(
+      `Refused: column "${contentColumn}" appears to carry message content. This schema stores ` +
+      'indicator categories and counts only, never message text. Remove the column and resubmit.'
+    )
+    return { records, warnings }
+  }
+
+  const required = ['caseId', 'provenance', 'platform', 'participant', 'year', 'indicator', 'sourceName', 'sourceUrl']
+  const missing = required.filter((field) => !(field in headerMap))
+  if (missing.length > 0) {
+    warnings.push(
+      `Unrecognized message-evidence CSV layout: missing columns ${missing.join(', ')}. No records parsed.`
+    )
+    return { records, warnings }
+  }
+
+  rows.forEach((row, index) => {
+    const lineNo = index + 2
+    const caseId = coerceString(getField(row, headerMap, 'caseId'))
+    const provenanceRaw = toSnakeCaseSlug(getField(row, headerMap, 'provenance'))
+    const platform = coerceString(getField(row, headerMap, 'platform'))
+    const participant = coerceString(getField(row, headerMap, 'participant'))
+    const roleRaw = toSnakeCaseSlug(getField(row, headerMap, 'role')) ?? 'unknown'
+    const year = coerceInt(getField(row, headerMap, 'year'))
+    const country = coerceString(getField(row, headerMap, 'country'))
+    const indicatorRaw = toSnakeCaseSlug(getField(row, headerMap, 'indicator'))
+    const count = coerceInt(getField(row, headerMap, 'count')) ?? 1
+    const sourceName = coerceString(getField(row, headerMap, 'sourceName'))
+    const sourceUrl = coerceString(getField(row, headerMap, 'sourceUrl'))
+
+    if (!caseId || !platform || !participant || year === null || !sourceName || !sourceUrl) {
+      warnings.push(`Row ${lineNo}: skipped due to missing required fields`)
+      return
+    }
+    if (!provenanceRaw || !isMessageEvidenceProvenance(provenanceRaw)) {
+      warnings.push(
+        `Row ${lineNo}: skipped — provenance must be one of ${VALID_MESSAGE_PROVENANCE.join(', ')}. ` +
+        'Evidence with no stated provenance is not loadable.'
+      )
+      return
+    }
+    if (!indicatorRaw || !isMessageIndicator(indicatorRaw)) {
+      warnings.push(`Row ${lineNo}: skipped due to unknown indicator`)
+      return
+    }
+    if (count < 0) {
+      warnings.push(`Row ${lineNo}: skipped due to negative count`)
+      return
+    }
+
+    const role: MessageEvidenceRole = isMessageEvidenceRole(roleRaw) ? roleRaw : 'unknown'
+
+    records.push({
+      caseId,
+      provenance: provenanceRaw,
+      platform,
+      participant,
+      role,
+      year,
+      country,
+      indicator: indicatorRaw,
+      count,
+      sourceName,
+      sourceUrl,
     })
   })
 

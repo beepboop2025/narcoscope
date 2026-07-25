@@ -14,11 +14,17 @@ import HeroScene from './hero/HeroScene'
 const WorldMap = lazy(() => import('./components/WorldMap'))
 const MyanmarFocus = lazy(() => import('./components/MyanmarFocus'))
 const IntelligenceBriefing = lazy(() => import('./components/IntelligenceBriefing'))
+// Both lazy: each pulls in a several-hundred-kB bundled dataset (CDC mortality,
+// OFAC designations) that has no business in the initial payload.
+const Triangulation = lazy(() => import('./components/Triangulation'))
+const Designations = lazy(() => import('./components/Designations'))
 
 const TABS = [
   { id: 'prices', label: 'Street Prices' },
   { id: 'flows', label: 'Precursor Flows & Prices' },
   { id: 'map', label: 'Flow Map' },
+  { id: 'triangulate', label: 'Triangulation' },
+  { id: 'designations', label: 'Designations' },
   { id: 'myanmar', label: 'Myanmar Focus' },
   { id: 'intel', label: 'Enterprise Intel' },
 ] as const
@@ -61,7 +67,7 @@ export default function App() {
             <span
               className={`data-badge tk-chip ${isSample ? 'tk-chip--warning' : 'tk-chip--ok'}`}
               title={isSample
-                ? 'Official: street prices (WDR 2025 Annex 8.1), seizure globe (Annex 7.1), Myanmar opium + conflict (Opium Survey 2025; Data: ACLED), precursor corridors (INCB Precursors Report 2025). Still illustrative: Myanmar region-level flow volumes and precursor prices.'
+                ? 'Official: street prices (WDR 2025 Annex 8.1), seizure globe (Annex 7.1), overdose mortality (CDC VSRR), sanctions designations (US Treasury OFAC), Myanmar opium + conflict (Opium Survey 2025; Data: ACLED), precursor corridors (INCB Precursors Report 2025). Still illustrative: Myanmar region-level flow volumes and precursor prices. Not loaded: wastewater (no automatable publisher).'
                 : 'All datasets replaced via the CSV loader — verify against the cited official sources.'}
             >
               {isSample ? 'Official data · corridors illustrative' : 'Live data'}
@@ -69,9 +75,10 @@ export default function App() {
           </div>
           <Reveal delay={420}>
             <p className="lede">
-              Street prices, precursor-chemical flows, and trafficking corridors — drawn
-              from public UNODC&nbsp;/&nbsp;INCB data and translated into plain language.
-              Aggregate statistics for awareness, education, and research only.
+              Street prices, precursor flows, trafficking corridors, overdose mortality
+              and sanctions designations — drawn from public UNODC, INCB, CDC and US
+              Treasury data and translated into plain language. Aggregate statistics
+              for awareness, education, and research only.
             </p>
           </Reveal>
         </div>
@@ -95,6 +102,8 @@ export default function App() {
             {tab === 'prices' && <Explorer />}
             {tab === 'flows' && <Flows />}
             {tab === 'map' && <WorldMap />}
+            {tab === 'triangulate' && <Triangulation />}
+            {tab === 'designations' && <Designations />}
             {tab === 'myanmar' && <MyanmarFocus />}
             {tab === 'intel' && <IntelligenceBriefing />}
           </TabPanel>
@@ -106,7 +115,7 @@ export default function App() {
           <DataLoader />
           <p className="disclaimer tk-degraded">
             ⚠️ {isSample
-              ? 'Official data: street prices (UNODC WDR 2025 Annex 8.1 + World Bank GDP), the seizure globe (Annex 7.1), Myanmar opium cultivation (UNODC Myanmar Opium Survey 2025), Myanmar conflict pressure (Data: ACLED), and precursor trafficking corridors (INCB Precursors Report 2025). Still illustrative: Myanmar region-level flow volumes and precursor prices. '
+              ? 'Official data: street prices (UNODC WDR 2025 Annex 8.1 + World Bank GDP), the seizure globe (Annex 7.1), overdose mortality (CDC NCHS VSRR, provisional), sanctions designations (US Treasury OFAC SDN), Myanmar opium cultivation (UNODC Myanmar Opium Survey 2025), Myanmar conflict pressure (Data: ACLED), and precursor trafficking corridors (INCB Precursors Report 2025). Still illustrative: Myanmar region-level flow volumes and precursor prices. '
               : 'Showing loaded data — verify against the cited official sources. '}
             This tool reports aggregate, published statistics (country and, for focus
             regions, province level) for awareness and research. It does not provide
