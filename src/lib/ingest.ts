@@ -26,9 +26,6 @@ import type {
   WastewaterRecord,
   DesignationRecord,
   DesignationEntityType,
-  MessageEvidenceRecord,
-  MessageEvidenceProvenance,
-  MessageEvidenceRole,
 } from '../types'
 
 // =============================================================================
@@ -179,7 +176,6 @@ export const CONFIG: Record<string, string[]> = {
   // `label` — reusing them here would silently route a mortality file's
   // jurisdiction column into the price schema's country field.
   jurisdiction: ['jurisdiction', 'jurisdiction code', 'state code', 'state abbr', 'state_abbr'],
-  jurisdictionName: ['jurisdiction name', 'state name', 'state_name'],
   substance: ['substance', 'indicator', 'substance class', 'drug class', 'drug_class'],
   deaths: ['deaths', 'death count', 'number of deaths', 'data value', 'data_value', 'overdose deaths'],
   predictedDeaths: ['predicted deaths', 'predicted value', 'predicted_value'],
@@ -201,14 +197,6 @@ export const CONFIG: Record<string, string[]> = {
   programs: ['programs', 'program', 'sanctions program', 'authority', 'legal authority'],
   countries: ['countries', 'country of record', 'countries of record', 'jurisdictions'],
   aliases: ['aliases', 'alias', 'aka', 'also known as', 'alt names', 'alternate names'],
-  // --- message evidence ---
-  caseId: ['case id', 'case_id', 'case', 'case ref'],
-  provenance: ['provenance', 'how obtained', 'evidence provenance', 'obtained'],
-  platform: ['platform', 'app', 'messenger', 'channel type'],
-  participant: ['participant', 'handle', 'pseudonym', 'actor handle'],
-  role: ['role', 'participant role'],
-  indicator: ['indicator', 'signal', 'observation type', 'claim type'],
-  count: ['count', 'occurrences', 'observations', 'n'],
 }
 
 // =============================================================================
@@ -1139,135 +1127,3 @@ export function parseDesignations(csv: string): ParseResult<DesignationRecord> {
   return { records, warnings }
 }
 
-// =============================================================================
-// MESSAGE EVIDENCE
-// =============================================================================
-
-const VALID_MESSAGE_PROVENANCE = [
-  'victim_provided',
-  'public_channel',
-  'published_by_investigator',
-] as const
-function isMessageEvidenceProvenance(v: string): v is MessageEvidenceProvenance {
-  return (VALID_MESSAGE_PROVENANCE as readonly string[]).includes(v)
-}
-
-const VALID_MESSAGE_ROLES = ['recruiter', 'victim', 'operator', 'unknown'] as const
-function isMessageEvidenceRole(v: string): v is MessageEvidenceRole {
-  return (VALID_MESSAGE_ROLES as readonly string[]).includes(v)
-}
-
-const VALID_MESSAGE_INDICATORS = [
-  'job_offer',
-  'travel_arrangement',
-  'document_confiscation',
-  'quota_threat',
-  'payment_request',
-  'other',
-] as const
-function isMessageIndicator(v: string): v is MessageEvidenceRecord['indicator'] {
-  return (VALID_MESSAGE_INDICATORS as readonly string[]).includes(v)
-}
-
-/**
- * Parse structured message-evidence indicators (scam-compound recruitment).
- *
- * Two rules are enforced here rather than left to the submitter's discipline,
- * because a schema that merely *asks* for them will eventually receive a file
- * that ignores them:
- *
- *   1. `provenance` is REQUIRED and must be one of three values. A row that
- *      does not say how the evidence was obtained is rejected, not defaulted.
- *      There is no value meaning "intercepted", so intercept product cannot be
- *      loaded through this path even by a caller who wants to.
- *   2. Any column carrying message TEXT is refused outright. This record type
- *      stores indicator categories and counts, never content — the pattern is
- *      what the analysis needs, and the content is somebody's private
- *      conversation.
- */
-export function parseMessageEvidence(csv: string): ParseResult<MessageEvidenceRecord> {
-  const records: MessageEvidenceRecord[] = []
-  const warnings: string[] = []
-  const { headers, rows } = parseCsv(csv)
-  const headerMap = buildHeaderMap(headers, CONFIG)
-  // 'indicator' is claimed by the `substance` config key (first-match-wins),
-  // so recover it here the same way parseOverdoseDeaths recovers 'substance'.
-  if (!('indicator' in headerMap) && 'substance' in headerMap) {
-    headerMap.indicator = headerMap.substance
-  }
-
-  // Refuse content columns before parsing a single row. Failing the whole file
-  // is deliberate: silently dropping the column would let a submitter believe
-  // the content was accepted and stored.
-  const contentColumn = headers.find((h) =>
-    /\b(message|text|content|body|transcript|chat log|conversation)\b/i.test(String(h)))
-  if (contentColumn) {
-    warnings.push(
-      `Refused: column "${contentColumn}" appears to carry message content. This schema stores ` +
-      'indicator categories and counts only, never message text. Remove the column and resubmit.'
-    )
-    return { records, warnings }
-  }
-
-  const required = ['caseId', 'provenance', 'platform', 'participant', 'year', 'indicator', 'sourceName', 'sourceUrl']
-  const missing = required.filter((field) => !(field in headerMap))
-  if (missing.length > 0) {
-    warnings.push(
-      `Unrecognized message-evidence CSV layout: missing columns ${missing.join(', ')}. No records parsed.`
-    )
-    return { records, warnings }
-  }
-
-  rows.forEach((row, index) => {
-    const lineNo = index + 2
-    const caseId = coerceString(getField(row, headerMap, 'caseId'))
-    const provenanceRaw = toSnakeCaseSlug(getField(row, headerMap, 'provenance'))
-    const platform = coerceString(getField(row, headerMap, 'platform'))
-    const participant = coerceString(getField(row, headerMap, 'participant'))
-    const roleRaw = toSnakeCaseSlug(getField(row, headerMap, 'role')) ?? 'unknown'
-    const year = coerceInt(getField(row, headerMap, 'year'))
-    const country = coerceString(getField(row, headerMap, 'country'))
-    const indicatorRaw = toSnakeCaseSlug(getField(row, headerMap, 'indicator'))
-    const count = coerceInt(getField(row, headerMap, 'count')) ?? 1
-    const sourceName = coerceString(getField(row, headerMap, 'sourceName'))
-    const sourceUrl = coerceString(getField(row, headerMap, 'sourceUrl'))
-
-    if (!caseId || !platform || !participant || year === null || !sourceName || !sourceUrl) {
-      warnings.push(`Row ${lineNo}: skipped due to missing required fields`)
-      return
-    }
-    if (!provenanceRaw || !isMessageEvidenceProvenance(provenanceRaw)) {
-      warnings.push(
-        `Row ${lineNo}: skipped — provenance must be one of ${VALID_MESSAGE_PROVENANCE.join(', ')}. ` +
-        'Evidence with no stated provenance is not loadable.'
-      )
-      return
-    }
-    if (!indicatorRaw || !isMessageIndicator(indicatorRaw)) {
-      warnings.push(`Row ${lineNo}: skipped due to unknown indicator`)
-      return
-    }
-    if (count < 0) {
-      warnings.push(`Row ${lineNo}: skipped due to negative count`)
-      return
-    }
-
-    const role: MessageEvidenceRole = isMessageEvidenceRole(roleRaw) ? roleRaw : 'unknown'
-
-    records.push({
-      caseId,
-      provenance: provenanceRaw,
-      platform,
-      participant,
-      role,
-      year,
-      country,
-      indicator: indicatorRaw,
-      count,
-      sourceName,
-      sourceUrl,
-    })
-  })
-
-  return { records, warnings }
-}

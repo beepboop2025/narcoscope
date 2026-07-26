@@ -85,3 +85,36 @@ describe('entry-bundle budget', () => {
     }
   })
 })
+
+describe('CSV loader completeness', () => {
+  it('exposes a picker for every dataset loadData() can ingest', () => {
+    // The Triangulation tab instructs users to "load a CSV export to enable this
+    // modality". That is only true if DataLoader actually offers a picker, and
+    // for three datasets it did not — the parsers were wired into the store but
+    // unreachable from the UI, which made both the parsers and the instruction
+    // dead.
+    const types = fs.readFileSync(path.join(SRC, 'types.ts'), 'utf8')
+    const loader = fs.readFileSync(path.join(SRC, 'components/DataLoader.tsx'), 'utf8')
+    const store = fs.readFileSync(path.join(SRC, 'lib/dataStore.ts'), 'utf8')
+
+    const bundleBlock = types.slice(
+      types.indexOf('export interface LoadBundle'),
+      types.indexOf('export interface LoadReport'),
+    )
+    const keys = [...bundleBlock.matchAll(/^ {2}(\w+)\?:/gm)].map((m) => m[1])
+    assert.isAbove(keys.length, 5, 'failed to parse LoadBundle keys')
+
+    for (const key of keys) {
+      assert.include(
+        loader,
+        `key: '${key}'`,
+        `LoadBundle.${key} has no picker in DataLoader — the parser is unreachable`,
+      )
+      assert.include(
+        store,
+        `bundle.${key}`,
+        `LoadBundle.${key} is never applied in loadData()`,
+      )
+    }
+  })
+})
