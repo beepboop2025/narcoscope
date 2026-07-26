@@ -1,6 +1,8 @@
 import { describe, it, assert } from 'vitest'
 import {
   triangulate,
+  triangulateSeries,
+  scanDivergences,
   DRUG_BRIDGE,
   MODALITY_SIDE,
   MODALITY_COLLECTOR,
@@ -319,5 +321,123 @@ describe('triangulate — wastewater absence is explained precisely', () => {
     }))
     const ww = r.readings.find((x) => x.modality === 'wastewater')
     assert.include(ww.absentReason, 'No wastewater readings for both')
+  })
+})
+
+describe('triangulateSeries', () => {
+  const ww = (drug, year, load) => ({
+    site: 'City', country: 'X', iso3: 'XXX', year, drug,
+    mgPer1000PerDay: load, sourceName: 'S', sourceUrl: 'https://e.org',
+  })
+
+  it('rebases each modality to 100 at its own first year', () => {
+    const s = triangulateSeries({
+      iso3: 'XXX', country: 'X', drug: 'cocaine',
+      priceRecords: [], overdoseRecords: [],
+      wastewaterRecords: [ww('cocaine', 2019, 200), ww('cocaine', 2021, 300)],
+    })
+    const wwSeries = s.series.find((x) => x.modality === 'wastewater')
+    assert.equal(wwSeries.baseYear, 2019)
+    const p2019 = wwSeries.points.find((p) => p.year === 2019)
+    const p2021 = wwSeries.points.find((p) => p.year === 2021)
+    assert.equal(p2019.index, 100)
+    assert.equal(p2021.index, 150) // 300/200 * 100
+  })
+
+  it('omits a modality entirely when it has no data', () => {
+    const s = triangulateSeries({
+      iso3: 'XXX', country: 'X', drug: 'cocaine',
+      priceRecords: [], overdoseRecords: [],
+      wastewaterRecords: [ww('cocaine', 2019, 200)],
+    })
+    assert.isUndefined(s.series.find((x) => x.modality === 'mortality'))
+    assert.isDefined(s.series.find((x) => x.modality === 'wastewater'))
+  })
+
+  it('unions all years across modalities into the shared x-axis', () => {
+    const s = triangulateSeries({
+      iso3: 'XXX', country: 'X', drug: 'cocaine',
+      priceRecords: [
+        { drug: 'cocaine', country: 'X', iso3: 'XXX', region: 'R', year: 2018, priceUsdPerGram: 50, purityPct: null },
+      ],
+      overdoseRecords: [],
+      wastewaterRecords: [ww('cocaine', 2020, 200)],
+    })
+    assert.deepEqual(s.years, [2018, 2020])
+  })
+
+  it('leaves the index null rather than dividing by a zero base', () => {
+    // A modality whose earliest value is 0 cannot be rebased.
+    const s = triangulateSeries({
+      iso3: 'XXX', country: 'X', drug: 'cocaine',
+      priceRecords: [
+        { drug: 'cocaine', country: 'X', iso3: 'XXX', region: 'R', year: 2019, priceUsdPerGram: 0, purityPct: null },
+        { drug: 'cocaine', country: 'X', iso3: 'XXX', region: 'R', year: 2020, priceUsdPerGram: 80, purityPct: null },
+      ],
+      overdoseRecords: [], wastewaterRecords: [],
+    })
+    const price = s.series.find((x) => x.modality === 'retail_price')
+    assert.isTrue(price.points.every((p) => p.index === null))
+  })
+
+  it('draws the real divergence on the bundled US methamphetamine data', async () => {
+    const { PRICE_RECORDS } = await import('../data/prices')
+    const { BUNDLED_OVERDOSE_RECORDS, BUNDLED_WASTEWATER_RECORDS } = await import('../data/bundled')
+    const s = triangulateSeries({
+      iso3: 'USA', country: 'US', drug: 'methamphetamine',
+      priceRecords: PRICE_RECORDS,
+      overdoseRecords: BUNDLED_OVERDOSE_RECORDS,
+      wastewaterRecords: BUNDLED_WASTEWATER_RECORDS,
+    })
+    const seiz = s.series.find((x) => x.modality === 'seizures')
+    const mort = s.series.find((x) => x.modality === 'mortality')
+    assert.isDefined(seiz)
+    assert.isDefined(mort)
+    // The headline: by the latest shared year seizures are DOWN and mortality
+    // is well UP relative to their own baselines. The lines cross.
+    const seizLast = [...seiz.points].reverse().find((p) => p.index != null)
+    const mortLast = [...mort.points].reverse().find((p) => p.index != null)
+    assert.isBelow(seizLast.index, 100, 'seizures should fall below their baseline')
+    assert.isAbove(mortLast.index, 200, 'meth-involved deaths should more than double')
+  })
+})
+
+describe('scanDivergences', () => {
+  const country = (iso3, name) => ({ iso3, name })
+
+  it('ranks genuine divergences ahead of concordant results', async () => {
+    const { PRICE_RECORDS } = await import('../data/prices')
+    const { BUNDLED_OVERDOSE_RECORDS, BUNDLED_WASTEWATER_RECORDS } = await import('../data/bundled')
+    const { SEIZURE_COUNTRIES } = await import('./seizures')
+    const hits = scanDivergences({
+      countries: SEIZURE_COUNTRIES.filter((c) => ['USA', 'CAN'].includes(c.iso3)).map((c) => country(c.iso3, c.name)),
+      drugs: ['cocaine', 'heroin', 'methamphetamine', 'cannabis'],
+      year: 2023, baselineYear: 2019,
+      priceRecords: PRICE_RECORDS,
+      overdoseRecords: BUNDLED_OVERDOSE_RECORDS,
+      wastewaterRecords: BUNDLED_WASTEWATER_RECORDS,
+    })
+    const divergent = new Set(['enforcementArtifact', 'undetectedExpansion'])
+    // Once a concordant verdict appears, no divergent one may follow it.
+    let seenConcordant = false
+    for (const h of hits) {
+      if (!divergent.has(h.verdict)) seenConcordant = true
+      else assert.isFalse(seenConcordant, `${h.iso3}/${h.drug} divergence ranked below a concordant result`)
+    }
+    // And the known cases are present and flagged divergent.
+    const usMeth = hits.find((h) => h.iso3 === 'USA' && h.drug === 'methamphetamine')
+    const caCannabis = hits.find((h) => h.iso3 === 'CAN' && h.drug === 'cannabis')
+    assert.equal(usMeth.verdict, 'undetectedExpansion')
+    assert.equal(caCannabis.verdict, 'undetectedExpansion')
+  })
+
+  it('excludes untriangulated pairs entirely', () => {
+    const hits = scanDivergences({
+      countries: [country('ZZZ', 'Nowhere')],
+      drugs: ['cocaine'],
+      year: 2023, baselineYear: 2019,
+      priceRecords: [], overdoseRecords: [], wastewaterRecords: [],
+    })
+    assert.lengthOf(hits, 0)
   })
 })
