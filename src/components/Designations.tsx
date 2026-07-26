@@ -32,6 +32,23 @@ export default function Designations() {
 
   const bridges = network.nodes.filter((n) => n.articulationPoint)
 
+  // Top jurisdictions by betweenness — the brokers of the designated network.
+  // Charted rather than only tabled because the striking finding (a country
+  // with few designations but high betweenness is a structural broker) is a
+  // relationship between two columns, which a bar makes visible at a glance.
+  const brokerChart = useMemo(
+    () => network.nodes
+      .filter((n) => n.betweenness > 0)
+      .slice(0, 10)
+      .map((n) => ({
+        country: n.country.length > 18 ? `${n.country.slice(0, 17)}…` : n.country,
+        fullName: n.country,
+        betweenness: n.betweenness,
+        articulationPoint: n.articulationPoint,
+      })),
+    [network],
+  )
+
   return (
     <section>
       <div className="controls">
@@ -108,6 +125,35 @@ export default function Designations() {
             <p className="note">No designated entity matches that name or any OFAC-published alias.</p>
           ) : null}
         </>
+      ) : null}
+
+      {brokerChart.length > 1 ? (
+        <div className="chart-card">
+          <h3>Broker jurisdictions — betweenness centrality</h3>
+          {/* Pure-CSS bars: a horizontal ranking needs no charting library, and
+              avoids recharts v3's vertical-BarChart quirks. Widths are relative
+              to the top bar so the shape is read as a ranking, not an axis. */}
+          <div className="bar-list">
+            {brokerChart.map((n) => (
+              <div className="bar-row" key={n.country}>
+                <span className="bar-label" title={n.fullName}>{n.country}</span>
+                <span className="bar-track">
+                  <span
+                    className={`bar-fill ${n.articulationPoint ? 'bar-fill--hot' : ''}`}
+                    style={{ width: `${(n.betweenness / brokerChart[0].betweenness) * 100}%` }}
+                  />
+                </span>
+                <span className="bar-value">{n.betweenness.toFixed(3)}{n.articulationPoint ? ' ⧉' : ''}</span>
+              </div>
+            ))}
+          </div>
+          <p className="note">
+            Betweenness = how often a jurisdiction sits on the shortest path between two others in
+            the designation graph. A high bar on few designations is a <strong>broker</strong>:
+            structurally central out of proportion to its own designation count. Coral bars marked
+            ⧉ are <strong>articulation points</strong> — removing them splits the graph.
+          </p>
+        </div>
       ) : null}
 
       <h3>Jurisdictions by structural position</h3>

@@ -611,3 +611,248 @@ export function triangulate(input: {
     caveats,
   }
 }
+
+// =============================================================================
+// TIME SERIES — making divergence visible instead of stating it
+// =============================================================================
+//
+// The point-in-time `triangulate()` collapses a whole trend into two numbers
+// (baseline year, current year) and a verdict word. That is enough to classify,
+// but it hides the thing worth seeing: WHEN seizures and consumption parted
+// ways, and how far. A seizure line falling while a mortality line climbs is a
+// far more convincing account of "interdiction is missing this" than the
+// sentence that says so.
+//
+// The series rebases every modality to an INDEX = 100 at its own first
+// available year. That is the only honest way to draw seizures (kilograms),
+// mortality (deaths) and wastewater (mg/1000/day) on one axis: the shapes are
+// comparable even though the units are not, and the reader is comparing
+// *trajectories*, never levels. Absolute values are kept per point so a tooltip
+// can still show the real figure.
+
+export interface SeriesPoint {
+  year: number
+  /** Rebased to 100 at the modality's first available year. Null where no reading exists. */
+  index: number | null
+  /** The real measurement in the modality's own unit, for tooltips. Null where absent. */
+  value: number | null
+}
+
+export interface ModalitySeries {
+  modality: Modality
+  side: 'supply' | 'demand'
+  unit: string
+  /** The year the index is rebased to (first year with a value). Null if the series is empty. */
+  baseYear: number | null
+  points: SeriesPoint[]
+}
+
+/** Rebase a sparse per-year map to an index against its earliest value. */
+function toIndexedSeries(
+  modality: Modality,
+  unit: string,
+  byYear: Map<number, number>,
+  years: number[],
+): ModalitySeries {
+  const present = [...byYear.keys()].sort((a, b) => a - b)
+  const baseYear = present.length ? present[0] : null
+  const baseValue = baseYear !== null ? byYear.get(baseYear)! : null
+  const points: SeriesPoint[] = years.map((year) => {
+    const value = byYear.get(year) ?? null
+    // Index is only defined once we have a positive base to divide by. A zero
+    // or absent base leaves the index null rather than producing Infinity.
+    const index =
+      value !== null && baseValue !== null && baseValue > 0
+        ? Math.round((value / baseValue) * 1000) / 10
+        : null
+    return { year, index, value }
+  })
+  return { modality, side: MODALITY_SIDE[modality], unit, baseYear, points }
+}
+
+/** Per-year seizure kilograms for a country+drug. */
+function seizureByYear(iso3: string, drug: Drug): Map<number, number> {
+  const groupIndex = SEIZURE_GROUPS.indexOf(DRUG_BRIDGE[drug].seizureGroup)
+  const out = new Map<number, number>()
+  if (groupIndex === -1) return out
+  for (const [year, kg] of countryTrend(iso3, groupIndex)) {
+    if (kg > 0) out.set(year, kg)
+  }
+  return out
+}
+
+function priceByYear(priceRecords: PriceRecord[], iso3: string, drug: Drug): Map<number, number> {
+  const out = new Map<number, number>()
+  for (const r of priceRecords) {
+    if (r.iso3 === iso3 && r.drug === drug) out.set(r.year, r.priceUsdPerGram)
+  }
+  return out
+}
+
+function mortalityByYear(overdoseRecords: OverdoseRecord[], iso3: string, drug: Drug): Map<number, number> {
+  const substance = DRUG_BRIDGE[drug].overdoseSubstance
+  const out = new Map<number, number>()
+  if (substance === null || iso3 !== 'USA') return out
+  for (const r of overdoseRecords) {
+    if (r.jurisdiction === 'US' && r.substance === substance && !r.partialYear) {
+      out.set(r.year, r.deaths)
+    }
+  }
+  return out
+}
+
+function wastewaterByYear(wastewaterRecords: WastewaterRecord[], iso3: string, drug: Drug): Map<number, number> {
+  const byYearVals = new Map<number, number[]>()
+  for (const r of wastewaterRecords) {
+    if (r.iso3 === iso3 && r.drug === drug) {
+      const arr = byYearVals.get(r.year) ?? []
+      arr.push(r.mgPer1000PerDay)
+      byYearVals.set(r.year, arr)
+    }
+  }
+  const out = new Map<number, number>()
+  for (const [year, vals] of byYearVals) {
+    out.set(year, vals.reduce((s, v) => s + v, 0) / vals.length)
+  }
+  return out
+}
+
+export interface TriangulationSeries {
+  iso3: string
+  country: string
+  drug: Drug
+  /** Every year that appears in ANY modality, ascending — the chart's x-axis. */
+  years: number[]
+  series: ModalitySeries[]
+}
+
+/**
+ * Builds an indexed multi-year series for one country+drug across every
+ * modality that has data. Only modalities with at least one reading are
+ * returned, so the chart never draws an empty line. The union of all years
+ * present becomes the shared x-axis.
+ */
+export function triangulateSeries(input: {
+  iso3: string
+  country: string
+  drug: Drug
+  priceRecords: PriceRecord[]
+  overdoseRecords: OverdoseRecord[]
+  wastewaterRecords: WastewaterRecord[]
+}): TriangulationSeries {
+  const { iso3, country, drug } = input
+  const byModality: Array<[Modality, string, Map<number, number>]> = [
+    ['seizures', 'kg', seizureByYear(iso3, drug)],
+    ['retail_price', 'USD/g', priceByYear(input.priceRecords, iso3, drug)],
+    ['mortality', 'deaths', mortalityByYear(input.overdoseRecords, iso3, drug)],
+    ['wastewater', 'mg/1000/day', wastewaterByYear(input.wastewaterRecords, iso3, drug)],
+  ]
+
+  const yearSet = new Set<number>()
+  for (const [, , m] of byModality) for (const y of m.keys()) yearSet.add(y)
+  const years = [...yearSet].sort((a, b) => a - b)
+
+  const series = byModality
+    .filter(([, , m]) => m.size > 0)
+    .map(([modality, unit, m]) => toIndexedSeries(modality, unit, m, years))
+
+  return { iso3, country, drug, years, series }
+}
+
+// =============================================================================
+// DIVERGENCE SCAN — surfacing the interesting cases instead of hiding them
+// =============================================================================
+//
+// A user staring at a country picker has no way to know that US methamphetamine
+// and Canadian cannabis are where the story is. The scan runs every
+// country+drug pair that can be triangulated and ranks them, so the divergences
+// rise to the top on their own. This is the difference between a tool that
+// answers a question you already knew to ask and one that tells you which
+// question to ask.
+
+export interface DivergenceHit {
+  iso3: string
+  country: string
+  drug: Drug
+  verdict: TriangulationVerdict
+  supplyDirection: -1 | 0 | 1
+  demandDirection: -1 | 0 | 1
+  /** Signed supply change over the window (proportion), for magnitude ranking. */
+  supplyChangePct: number | null
+  /** Signed demand change over the window (proportion). */
+  demandChangePct: number | null
+  /** How far apart the two sides moved — the headline magnitude of the divergence. */
+  gap: number
+  verdictFragile: boolean
+}
+
+/** Verdicts that represent an actual divergence worth surfacing first. */
+const DIVERGENT_VERDICTS = new Set<TriangulationVerdict>(['enforcementArtifact', 'undetectedExpansion'])
+
+/**
+ * Runs `triangulate()` across the cartesian product of the supplied countries
+ * and drugs and returns only the pairs that produced a real verdict, ranked so
+ * the divergences (enforcement artefact / undetected expansion) come first,
+ * then by the size of the supply/demand gap. `countries` is caller-supplied so
+ * the scan doesn't reach into the seizure dataset itself — the component knows
+ * which countries it wants to offer.
+ */
+export function scanDivergences(input: {
+  countries: Array<{ iso3: string; name: string }>
+  drugs: Drug[]
+  year: number
+  baselineYear: number
+  priceRecords: PriceRecord[]
+  overdoseRecords: OverdoseRecord[]
+  wastewaterRecords: WastewaterRecord[]
+}): DivergenceHit[] {
+  const hits: DivergenceHit[] = []
+  for (const country of input.countries) {
+    for (const drug of input.drugs) {
+      const r = triangulate({
+        iso3: country.iso3,
+        country: country.name,
+        drug,
+        year: input.year,
+        baselineYear: input.baselineYear,
+        priceRecords: input.priceRecords,
+        overdoseRecords: input.overdoseRecords,
+        wastewaterRecords: input.wastewaterRecords,
+      })
+      if (r.verdict === 'untriangulated') continue
+
+      const supplyReading =
+        r.readings.find((x) => x.modality === 'seizures' && x.available) ??
+        r.readings.find((x) => x.modality === 'retail_price' && x.available)
+      const demandReading =
+        r.readings.find((x) => x.modality === 'wastewater' && x.available) ??
+        r.readings.find((x) => x.modality === 'mortality' && x.available)
+      const supplyChangePct = supplyReading?.changePct ?? null
+      const demandChangePct = demandReading?.changePct ?? null
+      const gap =
+        supplyChangePct !== null && demandChangePct !== null
+          ? Math.abs(supplyChangePct - demandChangePct)
+          : 0
+
+      hits.push({
+        iso3: country.iso3,
+        country: country.name,
+        drug,
+        verdict: r.verdict,
+        supplyDirection: r.supplyDirection,
+        demandDirection: r.demandDirection,
+        supplyChangePct,
+        demandChangePct,
+        gap: Math.round(gap * 1000) / 1000,
+        verdictFragile: r.verdictFragile,
+      })
+    }
+  }
+
+  return hits.sort((a, b) => {
+    const aDiv = DIVERGENT_VERDICTS.has(a.verdict) ? 1 : 0
+    const bDiv = DIVERGENT_VERDICTS.has(b.verdict) ? 1 : 0
+    if (aDiv !== bDiv) return bDiv - aDiv
+    return b.gap - a.gap
+  })
+}

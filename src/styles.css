@@ -222,6 +222,23 @@ main { padding-top: 1.75rem; }
 }
 .chart-card h3 { margin: 0 0 0.8rem; font-size: 1.1rem; }
 
+/* Divergence-scan rows: clickable, so they read as interactive and the current
+   selection is highlighted. */
+.scan-row { cursor: pointer; transition: background 0.15s var(--ease); }
+.scan-row:hover { background: rgba(110, 168, 254, 0.08); }
+.scan-row--active { background: rgba(110, 168, 254, 0.14); box-shadow: inset 3px 0 0 var(--accent); }
+.scan-row td:first-child { font-weight: 600; }
+.scan-fragile { color: #e0c37f; cursor: help; }
+
+/* Pure-CSS horizontal bar ranking (Designations broker chart). */
+.bar-list { display: flex; flex-direction: column; gap: 0.4rem; }
+.bar-row { display: grid; grid-template-columns: 9rem 1fr 4.5rem; align-items: center; gap: 0.6rem; }
+.bar-label { font-size: 0.85rem; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bar-track { height: 0.85rem; background: rgba(110, 168, 254, 0.1); border-radius: 0.45rem; overflow: hidden; }
+.bar-fill { display: block; height: 100%; background: var(--accent); border-radius: 0.45rem; transition: width 0.5s var(--ease); }
+.bar-fill--hot { background: var(--hot); }
+.bar-value { font-variant-numeric: tabular-nums; font-size: 0.82rem; color: var(--muted); text-align: right; }
+
 h3 { font-family: var(--font-display); font-weight: 400; font-size: 1.2rem; letter-spacing: 0.01em; }
 
 .data-table { width: 100%; border-collapse: collapse; margin: 0.65rem 0 1.6rem; font-size: 0.9rem; }

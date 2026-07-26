@@ -1,4 +1,7 @@
 import { useMemo, useState, type ChangeEvent } from 'react'
+import {
+  ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, Legend, ReferenceLine,
+} from 'recharts'
 import { DRUGS } from '../data/prices'
 import { useData } from '../lib/dataStore'
 import {
@@ -8,6 +11,8 @@ import {
 import { SEIZURE_COUNTRIES, SEIZURE_YEARS, fmtKg } from '../lib/seizures'
 import {
   triangulate,
+  triangulateSeries,
+  scanDivergences,
   MODALITY_LABEL,
   MODALITY_COLLECTOR,
   MODALITY_SIDE,
@@ -15,6 +20,7 @@ import {
   VERDICT_PLAIN_ENGLISH,
   DRUG_BRIDGE,
   MATERIAL_CHANGE_THRESHOLD,
+  type Modality,
   type TriangulationVerdict,
 } from '../lib/triangulate'
 import Explainer from './Explainer'
@@ -31,6 +37,19 @@ const VERDICT_CHIP: Record<TriangulationVerdict, string> = {
   untriangulated: '',
 }
 
+/**
+ * Line colour per modality, chosen so SUPPLY reads warm and CONSUMPTION reads
+ * cool — the same source-hot / destination-cool grammar the corridor maps use.
+ * When the two sides diverge, warm and cool lines physically pull apart, which
+ * is the whole point of drawing them together.
+ */
+const MODALITY_COLOR: Record<Modality, string> = {
+  seizures: '#ff9f6e',
+  retail_price: '#e0c37f',
+  mortality: '#6ea8fe',
+  wastewater: '#79e0a8',
+}
+
 const fmtPct = (v: number | null): string =>
   v === null ? '—' : `${v > 0 ? '+' : ''}${(v * 100).toFixed(0)}%`
 
@@ -43,6 +62,8 @@ function fmtValue(value: number | null, unit: string): string {
   if (unit === 'deaths') return value.toLocaleString()
   return `${value.toFixed(1)} ${unit}`
 }
+
+const drugLabel = (id: Drug): string => DRUGS.find((d) => d.id === id)?.label ?? id
 
 export default function Triangulation() {
   const {
@@ -62,6 +83,7 @@ export default function Triangulation() {
   const baselineYear = SEIZURE_YEARS[0]
 
   const country = SEIZURE_COUNTRIES.find((c) => c.iso3 === iso3)
+  const drugList = useMemo(() => DRUGS.map((d) => d.id), [])
 
   const result = useMemo(
     () => triangulate({
@@ -76,6 +98,51 @@ export default function Triangulation() {
     }),
     [iso3, country, drug, year, baselineYear, priceRecords, overdoseRecords, wastewaterRecords],
   )
+
+  // The scan runs every country+drug pair and ranks divergences first, so the
+  // interesting cases surface without the user knowing to hunt for them. It
+  // does not depend on the current selection, so it is memoised on the data
+  // alone and stays stable while the user clicks around.
+  const scan = useMemo(
+    () => scanDivergences({
+      countries: SEIZURE_COUNTRIES.map((c) => ({ iso3: c.iso3, name: c.name })),
+      drugs: drugList,
+      year,
+      baselineYear,
+      priceRecords,
+      overdoseRecords,
+      wastewaterRecords,
+    }),
+    [drugList, year, baselineYear, priceRecords, overdoseRecords, wastewaterRecords],
+  )
+
+  const series = useMemo(
+    () => triangulateSeries({
+      iso3,
+      country: country?.name ?? iso3,
+      drug,
+      priceRecords,
+      overdoseRecords,
+      wastewaterRecords,
+    }),
+    [iso3, country, drug, priceRecords, overdoseRecords, wastewaterRecords],
+  )
+
+  // Reshape the indexed series into recharts rows: one object per year, one key
+  // per modality. Only years where at least one modality has a value are kept.
+  const chartData = useMemo(() => {
+    return series.years
+      .map((yr) => {
+        const row: Record<string, number> = { year: yr }
+        let any = false
+        for (const s of series.series) {
+          const pt = s.points.find((p) => p.year === yr)
+          if (pt?.index != null) { row[s.modality] = pt.index; any = true }
+        }
+        return any ? row : null
+      })
+      .filter((r): r is Record<string, number> => r !== null)
+  }, [series])
 
   // Countries ranked by how many modalities they can actually support, so the
   // picker leads with the ones where triangulation is possible rather than
@@ -101,6 +168,45 @@ export default function Triangulation() {
 
   return (
     <section>
+      {/* Divergence scan — the interesting cases surfaced automatically. */}
+      <div className="chart-card">
+        <h3>Where supply and consumption disagree — {baselineYear}→{year}</h3>
+        <Explainer
+          text={
+            `Of every country and drug that can be cross-checked, ${scan.filter((h) => h.verdict === 'undetectedExpansion' || h.verdict === 'enforcementArtifact').length} show ` +
+            `supply and consumption moving in genuinely different directions. Those are listed first: they are the cases a ` +
+            `seizure-only view gets wrong. Click any row to open it.`
+          }
+        />
+        <table className="data-table">
+          <thead>
+            <tr>
+              <th>Country</th><th>Drug</th><th>Verdict</th><th>Supply</th><th>Consumption</th><th>Gap</th>
+            </tr>
+          </thead>
+          <tbody>
+            {scan.slice(0, 8).map((h) => (
+              <tr
+                key={`${h.iso3}-${h.drug}`}
+                className={`scan-row ${iso3 === h.iso3 && drug === h.drug ? 'scan-row--active' : ''}`}
+                onClick={() => { setIso3(h.iso3); setDrug(h.drug) }}
+              >
+                <td>{h.country}</td>
+                <td>{drugLabel(h.drug)}</td>
+                <td>
+                  <span className={`tk-chip ${VERDICT_CHIP[h.verdict]}`}>{VERDICT_LABEL[h.verdict]}</span>
+                  {h.verdictFragile ? <span className="scan-fragile" title="Verdict flips if one modality is dropped"> ⚑</span> : null}
+                </td>
+                <td className={h.supplyDirection === 1 ? 'hot' : ''}>{arrow(h.supplyDirection)} {fmtPct(h.supplyChangePct)}</td>
+                <td>{arrow(h.demandDirection)} {fmtPct(h.demandChangePct)}</td>
+                <td>{Math.round(h.gap * 100)} pts</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <p className="note">Gap = distance between the supply and consumption changes over the window. ⚑ marks a verdict that would flip if one modality were dropped.</p>
+      </div>
+
       <div className="controls">
         <label>
           Country&nbsp;
@@ -158,8 +264,46 @@ export default function Triangulation() {
         <Explainer text={VERDICT_PLAIN_ENGLISH[result.verdict]} />
       </div>
 
+      {/* The divergence, drawn. Every modality rebased to 100 at its own first
+          year, so trajectories are comparable even though the units are not. */}
+      {chartData.length > 1 ? (
+        <div className="chart-card">
+          <h3>Trajectories, indexed to 100 — {country?.name ?? iso3}, {drugLabel(drug)}</h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={chartData} margin={{ top: 8, right: 16, bottom: 8, left: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#26314a" />
+              <XAxis dataKey="year" stroke="#8aa0c6" />
+              <YAxis stroke="#8aa0c6" />
+              <ReferenceLine y={100} stroke="#4a5a7a" strokeDasharray="4 4" label={{ value: 'baseline', fill: '#8aa0c6', fontSize: 11, position: 'insideBottomLeft' }} />
+              <Tooltip
+                contentStyle={{ background: '#0e1626', border: '1px solid #26314a' }}
+                formatter={(v, name) => [`${v} (index)`, MODALITY_LABEL[name as Modality]]}
+              />
+              <Legend formatter={(name) => `${MODALITY_LABEL[name as Modality]} (${MODALITY_SIDE[name as Modality] === 'supply' ? 'supply' : 'consumption'})`} />
+              {series.series.map((s) => (
+                <Line
+                  key={s.modality}
+                  type="monotone"
+                  dataKey={s.modality}
+                  stroke={MODALITY_COLOR[s.modality]}
+                  strokeWidth={2}
+                  strokeDasharray={s.side === 'supply' ? undefined : '5 3'}
+                  dot={{ r: 2 }}
+                  connectNulls
+                />
+              ))}
+            </LineChart>
+          </ResponsiveContainer>
+          <p className="note">
+            Solid = supply, dashed = consumption. Each line starts at 100 in its own first year;
+            the reader compares <em>shapes</em>, never levels — the units (kg, deaths, mg/1000/day)
+            are not comparable, but the trajectories are. Lines pulling apart is the divergence.
+          </p>
+        </div>
+      ) : null}
+
       <h3>
-        The four modalities — {country?.name ?? iso3}, {DRUGS.find((d) => d.id === drug)?.label},
+        The four modalities — {country?.name ?? iso3}, {drugLabel(drug)},
         {' '}{baselineYear} → {year}
       </h3>
       <table className="data-table">

@@ -226,8 +226,10 @@ playbook is [`docs/DATA_PIPELINE.md`](./docs/DATA_PIPELINE.md).
 
 ## Status / TODO
 
-- `purityAdjustedPrice()` in `src/lib/metrics.ts` is an intentional stub — the
-  null-purity policy is an editorial choice left to the maintainer.
+- ~~`purityAdjustedPrice()` is an intentional stub~~ **done** — it now returns
+  price per pure gram and refuses to adjust when purity is unknown (an honest
+  `n/a` beats comparing a cut street price against a pure one). See the editorial
+  note in `src/lib/metrics.ts`.
 - ~~Load and **verify** real UNODC/INCB data~~ **Street prices: done** (WDR 2025
   Annex 8.1, see `src/data/prices.ts` provenance header). Remaining: precursor
   prices, flow corridors, and the Myanmar dataset.
