@@ -8,6 +8,13 @@ const FIELDS: { key: keyof LoadBundle; label: string }[] = [
   { key: 'prices', label: 'Street prices' },
   { key: 'precursorPrices', label: 'Precursor prices' },
   { key: 'flows', label: 'Precursor flows' },
+  // Wastewater is the one that matters most here. The Triangulation tab tells
+  // users to load a CSV export to switch the modality on for their country —
+  // EUDA and ACIC both block automated collection — and that instruction is
+  // only true if there is a picker for it. There wasn't until now.
+  { key: 'wastewater', label: 'Wastewater loads (EUDA / ACIC export)' },
+  { key: 'overdose', label: 'Overdose mortality (CDC WONDER export)' },
+  { key: 'designations', label: 'Sanctions designations (OFAC / UN export)' },
   { key: 'mmRegions', label: 'Myanmar regions' },
   { key: 'mmBorderNodes', label: 'Myanmar border nodes' },
   { key: 'mmRegionRecords', label: 'Myanmar region stats' },
@@ -43,8 +50,12 @@ export default function DataLoader() {
   return (
     <div className="loader">
       <button className="loader-toggle" onClick={() => setOpen((o) => !o)}>
+        {/* `isSample` means "no CSV has been loaded", which is NOT the same as
+            "the data is illustrative" — most bundled datasets are official
+            extracts now (UNODC, CDC, OFAC, StatCan). Calling that state
+            "sample data" understated the provenance of everything on screen. */}
         {open ? '▾' : '▸'} Load official data (CSV) — currently showing{' '}
-        <strong>{isSample ? 'sample' : 'loaded'}</strong> data
+        <strong>{isSample ? 'bundled' : 'your loaded'}</strong> data
       </button>
 
       {open && (

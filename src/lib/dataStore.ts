@@ -39,9 +39,6 @@ let state: DataState = {
   // withBundled() in the Triangulation tab. EUDA and ACIC still cannot be
   // automated (403 / PDF-only), so Europe and Australia remain CSV-load only.
   wastewaterRecords: [],
-  // Never bundled: message evidence is per-investigation, consent-scoped, and
-  // has no business shipping inside a public static site.
-  messageEvidence: [],
   mmRegions: MM_REGIONS,
   mmBorderNodes: MM_BORDER_NODES,
   mmRegionRecords: MM_REGION_RECORDS,
@@ -99,7 +96,6 @@ export function loadData(bundle: LoadBundle = {}): LoadReport {
   apply('overdoseRecords', 'parseOverdoseDeaths', bundle.overdose)
   apply('wastewaterRecords', 'parseWastewater', bundle.wastewater)
   apply('designationRecords', 'parseDesignations', bundle.designations)
-  apply('messageEvidence', 'parseMessageEvidence', bundle.messageEvidence)
 
   // Myanmar node tables FIRST — the records below reference their ids.
   apply('mmRegions', 'parseMyanmarRegions', bundle.mmRegions)

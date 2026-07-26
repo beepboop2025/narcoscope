@@ -3,7 +3,6 @@ import {
   parseOverdoseDeaths,
   parseWastewater,
   parseDesignations,
-  parseMessageEvidence,
 } from './ingest'
 
 describe('parseOverdoseDeaths', () => {
@@ -130,56 +129,5 @@ describe('parseDesignations', () => {
     const { records, warnings } = parseDesignations(csv)
     assert.equal(records[0].entityType, 'organization')
     assert.include(warnings[0], 'unknown entity type')
-  })
-})
-
-describe('parseMessageEvidence', () => {
-  const header = 'case id,provenance,platform,participant,role,year,country,indicator,count,source name,source url'
-  const row = 'C-1,victim_provided,Telegram,handle-7,recruiter,2025,Cambodia,job_offer,4,GASO,https://www.gaso.world/'
-
-  it('parses a well-formed row', () => {
-    const { records, warnings } = parseMessageEvidence(`${header}\n${row}`)
-    assert.lengthOf(records, 1)
-    assert.lengthOf(warnings, 0)
-    assert.equal(records[0].provenance, 'victim_provided')
-    assert.equal(records[0].indicator, 'job_offer')
-    assert.equal(records[0].count, 4)
-  })
-
-  it('refuses the whole file when a column carries message content', () => {
-    // Failing loudly rather than dropping the column: silently discarding it
-    // would let a submitter believe the content had been accepted and stored.
-    const csv = `${header},message text\n${row},"come work in Bavet, free flights"`
-    const { records, warnings } = parseMessageEvidence(csv)
-    assert.lengthOf(records, 0)
-    assert.include(warnings[0], 'message content')
-  })
-
-  it.each(['transcript', 'chat log', 'conversation', 'body', 'content'])(
-    'refuses a content column named "%s"',
-    (columnName) => {
-      const { warnings } = parseMessageEvidence(`${header},${columnName}\n${row},anything`)
-      assert.include(warnings[0], 'Refused')
-    },
-  )
-
-  it('rejects a row with no stated provenance rather than defaulting one', () => {
-    const csv = `${header}\nC-1,,Telegram,handle-7,recruiter,2025,Cambodia,job_offer,4,GASO,https://x.org`
-    const { records, warnings } = parseMessageEvidence(csv)
-    assert.lengthOf(records, 0)
-    assert.include(warnings[0], 'provenance must be one of')
-  })
-
-  it('has no provenance value that would admit intercepted communications', () => {
-    const csv = `${header}\nC-1,intercepted,Telegram,handle-7,recruiter,2025,Cambodia,job_offer,4,GASO,https://x.org`
-    const { records, warnings } = parseMessageEvidence(csv)
-    assert.lengthOf(records, 0, 'the schema must not accept intercept product')
-    assert.include(warnings[0], 'provenance must be one of')
-  })
-
-  it('falls back to an unknown role rather than skipping the observation', () => {
-    const csv = `${header}\nC-1,public_channel,Telegram,handle-7,bystander,2025,Cambodia,job_offer,1,GASO,https://x.org`
-    const { records } = parseMessageEvidence(csv)
-    assert.equal(records[0].role, 'unknown')
   })
 })

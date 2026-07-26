@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated": "2026-07-25",
+    "generated": "2026-07-26",
     "generator": "scripts/ontology/derive-ontology.mjs",
     "method": "Induced by observation over the bundled datasets and source registry. No language model is involved: the corpus is already structured, so the schema can be observed rather than generated, which removes the hallucination risk that ontology-constraint layers exist to suppress.",
     "status": "DRAFT FOR REVIEW — never auto-applied to src/types.ts"
@@ -107,7 +107,7 @@
     {
       "type": "Source",
       "description": "A publisher of evidence, resolved to an independent source family so name variants of one organisation do not inflate corroboration.",
-      "instances": 39,
+      "instances": 40,
       "observedIn": [
         "all attributed record types"
       ],
@@ -254,8 +254,8 @@
     }
   },
   "provenance": {
-    "registeredSources": 39,
-    "automatedSources": 9,
+    "registeredSources": 40,
+    "automatedSources": 10,
     "workQueueSources": 14,
     "sourceTiers": {
       "official": 5,

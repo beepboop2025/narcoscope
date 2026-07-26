@@ -1,6 +1,6 @@
 # NarcoScope draft ontology
 
-Generated 2026-07-25 by `scripts/ontology/derive-ontology.mjs`. **Draft for review — not auto-applied.**
+Generated 2026-07-26 by `scripts/ontology/derive-ontology.mjs`. **Draft for review — not auto-applied.**
 
 Induced by observation over the bundled datasets and source registry. No language model is involved: the corpus is already structured, so the schema can be observed rather than generated, which removes the hallucination risk that ontology-constraint layers exist to suppress.
 
@@ -18,7 +18,7 @@ Induced by observation over the bundled datasets and source registry. No languag
 | `DesignatedEntity` | 2638 | OFAC entity number | Named party on an official sanctions list under a stated legal authority. NOT an adjudication of guilt. |
 | `SanctionsProgram` | 4 | OFAC program code | The legal authority under which a designation was made. |
 | `ConflictActor` | n/a | free-text actor name | Armed actor named in conflict-event reporting. |
-| `Source` | 39 | canonicalSourceId() family key | A publisher of evidence, resolved to an independent source family so name variants of one organisation do not inflate corroboration. |
+| `Source` | 40 | canonicalSourceId() family key | A publisher of evidence, resolved to an independent source family so name variants of one organisation do not inflate corroboration. |
 
 ## Relation types
 
@@ -39,7 +39,7 @@ Induced by observation over the bundled datasets and source registry. No languag
 
 ## Provenance
 
-- 39 registered sources, 9 fully automated
+- 40 registered sources, 10 fully automated
 - 14 sources in the governed scraper work queue
 - Work-queue tiers: official 5, research 6, journalism 3
 

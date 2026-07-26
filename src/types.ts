@@ -199,66 +199,6 @@ export interface WastewaterRecord {
 }
 
 // =============================================================================
-// MESSAGE EVIDENCE (scam-compound recruitment)
-// =============================================================================
-
-/**
- * How a message record was obtained. This is a REQUIRED, closed enum with
- * exactly three members, and the omission is the point: there is no
- * `intercepted` option, and there must never be one. NarcoScope has no lawful
- * intercept authority, so a schema that could hold intercept product would be
- * a surveillance capability sitting in an open-source repo with no legitimate
- * way to fill it. These three are what an NGO or newsroom actually possesses.
- */
-export type MessageEvidenceProvenance =
-  /** Supplied by a victim or their representative, with consent, for analysis. */
-  | 'victim_provided'
-  /** Posted in a public channel or group readable without deception or credentials. */
-  | 'public_channel'
-  /** Already published in an investigator's or journalist's report. */
-  | 'published_by_investigator'
-
-export type MessageEvidenceRole = 'recruiter' | 'victim' | 'operator' | 'unknown'
-
-/**
- * A structured indicator observed in message evidence — the recruitment side of
- * the scam-compound pipeline, where interdiction is still upstream of anyone
- * being trafficked (cf. arXiv:2605.25416 on deceptive recruitment detection).
- *
- * Note what this record does NOT contain: message text. Only the indicator
- * type and how many times it was observed. Recruitment-pattern analysis needs
- * the pattern, not the private content, and storing the content would turn a
- * research dataset into a repository of other people's conversations. The
- * participant field is a pseudonymous handle that must be pseudonymised
- * upstream — never a real name, phone number, or account id.
- */
-export interface MessageEvidenceRecord {
-  /** Pseudonymous case grouping, so related records join without identifying anyone. */
-  caseId: string
-  provenance: MessageEvidenceProvenance
-  /** Platform name only (e.g. 'Telegram'), never a channel or account identifier. */
-  platform: string
-  /** Pseudonymised participant handle. Pseudonymisation is the submitter's responsibility. */
-  participant: string
-  role: MessageEvidenceRole
-  year: number
-  /** Country the recruitment targeted, or where the compound is reported. */
-  country: string | null
-  /** What kind of claim was observed — a category, never the wording. */
-  indicator:
-    | 'job_offer'
-    | 'travel_arrangement'
-    | 'document_confiscation'
-    | 'quota_threat'
-    | 'payment_request'
-    | 'other'
-  /** How many times this indicator appeared in the case. */
-  count: number
-  sourceName: string
-  sourceUrl: string
-}
-
-// =============================================================================
 // OFFICIAL DESIGNATIONS
 // =============================================================================
 
@@ -328,8 +268,6 @@ export interface DataState {
   /** Empty by default — no wastewater dataset is bundled. See `WastewaterRecord`. */
   wastewaterRecords: WastewaterRecord[]
   designationRecords: DesignationRecord[]
-  /** Empty by default — message evidence is loaded per investigation, never bundled. */
-  messageEvidence: MessageEvidenceRecord[]
   mmRegions: MmNode[]
   mmBorderNodes: MmNode[]
   mmRegionRecords: MmRegionRecord[]
@@ -346,7 +284,6 @@ export interface LoadBundle {
   overdose?: string
   wastewater?: string
   designations?: string
-  messageEvidence?: string
   mmRegions?: string
   mmBorderNodes?: string
   mmRegionRecords?: string
