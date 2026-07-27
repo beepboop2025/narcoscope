@@ -285,6 +285,17 @@ main { padding-top: 1.75rem; }
 .us-state:hover { opacity: 0.82; }
 .us-state:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 
+/* Country toggle chips (Price History) */
+.country-toggles { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.chip-toggle {
+  font-size: 0.8rem; padding: 0.28rem 0.7rem; border-radius: 1rem; cursor: pointer;
+  background: transparent; color: var(--muted);
+  border: 1px solid var(--border); transition: all 0.12s var(--ease);
+}
+.chip-toggle:hover { border-color: var(--accent); color: var(--text); }
+.chip-toggle--on { background: rgba(110, 168, 254, 0.16); color: var(--text); border-color: var(--accent); }
+.chip-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
 h3 { font-family: var(--font-display); font-weight: 400; font-size: 1.2rem; letter-spacing: 0.01em; }
 
 .data-table { width: 100%; border-collapse: collapse; margin: 0.65rem 0 1.6rem; font-size: 0.9rem; }
