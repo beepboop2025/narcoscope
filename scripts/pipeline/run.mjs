@@ -92,6 +92,11 @@ if (!offline) {
   run('node', ['scripts/convert/statcan-wastewater-to-json.mjs', '--offline'])
 }
 
+// LAST: the overview summary aggregates every dataset above, so it must run
+// after all of them or it would summarise stale data.
+console.log('· regenerating overview dashboard summary …')
+run('node', ['scripts/convert/gen-overview.mjs'])
+
 // ---- validate --------------------------------------------------------------------
 console.log('· validating (typecheck + full test suite incl. dataset-integrity tests) …')
 run('npx', ['tsc', '--noEmit'])
