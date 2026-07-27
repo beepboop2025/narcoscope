@@ -21,6 +21,8 @@ const Triangulation = lazy(() => import('./components/Triangulation'))
 const Designations = lazy(() => import('./components/Designations'))
 // Lazy: reads the bundled OFAC designation dataset.
 const IllicitFinance = lazy(() => import('./components/IllicitFinance'))
+// Lazy: reads the tiny 5.7 kB CITES confiscation pre-aggregate.
+const WildlifeSeizures = lazy(() => import('./components/WildlifeSeizures'))
 // Lazy: pulls the bundled CDC overdose dataset + the US states topojson.
 const StateOverdose = lazy(() => import('./components/StateOverdose'))
 // Lazy: the ~118 kB 30-year price series lives in its own chunk.
@@ -39,6 +41,7 @@ const TABS = [
   { id: 'triangulate', label: 'Triangulation' },
   { id: 'designations', label: 'Designations' },
   { id: 'illicitfinance', label: 'Illicit Finance' },
+  { id: 'wildlife', label: 'Wildlife Seizures' },
   { id: 'myanmar', label: 'Myanmar Focus' },
   { id: 'intel', label: 'Enterprise Intel' },
 ] as const
@@ -123,6 +126,7 @@ export default function App() {
             {tab === 'triangulate' && <Triangulation />}
             {tab === 'designations' && <Designations />}
             {tab === 'illicitfinance' && <IllicitFinance />}
+            {tab === 'wildlife' && <WildlifeSeizures />}
             {tab === 'myanmar' && <MyanmarFocus />}
             {tab === 'intel' && <IntelligenceBriefing />}
           </TabPanel>

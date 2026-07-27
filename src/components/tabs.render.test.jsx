@@ -23,6 +23,7 @@ import StateOverdose from './StateOverdose'
 import PriceHistory from './PriceHistory'
 import SeizureTrends from './SeizureTrends'
 import IllicitFinance from './IllicitFinance'
+import WildlifeSeizures from './WildlifeSeizures'
 import Triangulation from './Triangulation'
 import Designations from './Designations'
 import Explorer from './Explorer'
@@ -223,6 +224,28 @@ describe('Illicit Finance', () => {
     expect(screen.getByText(/Trade-based laundering/i)).toBeTruthy()
     // Laundering hubs bar list present.
     expect(document.querySelectorAll('.bar-row').length).toBeGreaterThan(3)
+  })
+})
+
+describe('Wildlife Seizures', () => {
+  it('renders the class bars, the most-confiscated species table, and the corridor', () => {
+    render(<WildlifeSeizures />)
+    // Class bar list (Reptilia leads) + a populated species table.
+    expect(document.querySelectorAll('.bar-row').length).toBeGreaterThan(5)
+    expect(screen.getAllByText(/Reptilia/i).length).toBeGreaterThan(0)
+    const tables = document.querySelectorAll('.data-table')
+    expect(tables.length).toBeGreaterThanOrEqual(1)
+    expect(tables[0].querySelectorAll('tbody tr').length).toBeGreaterThan(5)
+    // Plain-language taxon name resolved (elephant), not just Latin.
+    expect(screen.getAllByText(/African elephant/i).length).toBeGreaterThan(0)
+  })
+
+  it('drops incomplete trailing years so the trend has no false cliff', () => {
+    render(<WildlifeSeizures />)
+    // The 2024/2025 near-empty CITES-lag years must be excluded from the trend
+    // heading, which names the last full year (2023).
+    expect(screen.getAllByText(/2023/).length).toBeGreaterThan(0)
+    expect(screen.queryByText(/2025–|–2025/)).toBeNull()
   })
 })
 
