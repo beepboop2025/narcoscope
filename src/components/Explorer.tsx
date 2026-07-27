@@ -1,7 +1,4 @@
 import { useMemo, useState, type ChangeEvent } from 'react'
-import {
-  ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, Legend,
-} from 'recharts'
 import { DRUGS } from '../data/prices'
 import { useData } from '../lib/dataStore'
 import { affordabilityDays, purityAdjustedPrice } from '../lib/metrics'
@@ -10,6 +7,16 @@ import Explainer from './Explainer'
 
 const fmtUsd = (v: number | string | null | undefined): string =>
   (v == null ? 'n/a' : `$${Number(v).toFixed(2)}`)
+
+/** Region → colour, so the price gradient reads geographically at a glance. */
+const REGION_COLOR: Record<string, string> = {
+  Americas: '#79e0a8',
+  Europe: '#6ea8fe',
+  Asia: '#ff9f6e',
+  Africa: '#e0c37f',
+  Oceania: '#e06ec0',
+}
+const REGION_ORDER = ['Americas', 'Europe', 'Asia', 'Africa', 'Oceania']
 
 export default function Explorer() {
   const { priceRecords } = useData()
@@ -21,22 +28,28 @@ export default function Explorer() {
     [priceRecords, drug],
   )
 
-  // Build a per-country price series for the chart (year on X, price on Y).
-  const chartData = useMemo(() => {
-    const years = [...new Set(rows.map((r) => r.year))].sort()
-    return years.map((year) => {
-      const point: Record<string, number> = { year }
-      rows.filter((r) => r.year === year).forEach((r) => {
-        const value = purityAdjusted
+  // The data is a single-year cross-section (UNODC WDR 2025 Annex 8.1, 2019),
+  // so the honest view is a RANKED price-by-country bar, not a time trend — a
+  // line chart of one year collapses every country onto one vertical stack.
+  // Ranking also shows the story the explainer tells: cheap near production,
+  // dear the further a drug travels.
+  const bars = useMemo(() => {
+    return rows
+      .map((r) => {
+        const price = purityAdjusted
           ? purityAdjustedPrice(r.priceUsdPerGram, r.purityPct)
           : r.priceUsdPerGram
-        if (value != null) point[r.country] = Number(value.toFixed(2))
+        return price == null
+          ? null
+          : { country: r.country, region: r.region, price: Number(price.toFixed(2)) }
       })
-      return point
-    })
+      .filter((x): x is { country: string; region: string; price: number } => x != null)
+      .sort((a, b) => b.price - a.price)
   }, [rows, purityAdjusted])
+  const maxPrice = bars.length ? bars[0].price : 1
+  const regionsPresent = REGION_ORDER.filter((r) => bars.some((b) => b.region === r))
+  const priceYear = rows[0]?.year ?? 2019
 
-  const countries = useMemo(() => [...new Set(rows.map((r) => r.country))], [rows])
   const drugLabel = DRUGS.find((d) => d.id === drug)?.label ?? drug
   const explanation = useMemo(() => explainPrices(rows, drugLabel), [rows, drugLabel])
 
@@ -62,22 +75,39 @@ export default function Explorer() {
       <Explainer text={explanation} />
 
       <div className="chart-card">
-        <h3>Retail price trend — {drugLabel}</h3>
-        <ResponsiveContainer width="100%" height={280}>
-          <LineChart data={chartData} margin={{ top: 8, right: 16, bottom: 8, left: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#26314a" />
-            <XAxis dataKey="year" stroke="#8aa0c6" />
-            <YAxis stroke="#8aa0c6" tickFormatter={(v) => `$${v}`} />
-            <Tooltip
-              contentStyle={{ background: '#0e1626', border: '1px solid #26314a' }}
-              formatter={(v) => fmtUsd(v as number)}
-            />
-            <Legend />
-            {countries.map((c, i) => (
-              <Line key={c} type="monotone" dataKey={c} stroke={LINE_COLORS[i % LINE_COLORS.length]} dot strokeWidth={2} />
+        <div className="price-chart-head">
+          <h3>
+            {purityAdjusted ? 'Price per pure gram' : 'Retail price per gram'} by country — {drugLabel} ({priceYear})
+          </h3>
+          <div className="region-legend">
+            {regionsPresent.map((r) => (
+              <span key={r} className="region-key">
+                <span className="region-dot" style={{ background: REGION_COLOR[r] }} />{r}
+              </span>
             ))}
-          </LineChart>
-        </ResponsiveContainer>
+          </div>
+        </div>
+        {bars.length ? (
+          <div className="price-bars">
+            {bars.map((b) => (
+              <div className="price-bar-row" key={b.country}>
+                <span className="price-bar-label" title={`${b.country} · ${b.region}`}>{b.country}</span>
+                <span className="price-bar-track">
+                  <span
+                    className="price-bar-fill"
+                    style={{ width: `${Math.max(1.5, (b.price / maxPrice) * 100)}%`, background: REGION_COLOR[b.region] ?? '#6ea8fe' }}
+                  />
+                </span>
+                <span className="price-bar-value">{fmtUsd(b.price)}</span>
+              </div>
+            ))}
+          </div>
+        ) : <p className="note">No priced records for this drug.</p>}
+        <p className="note">
+          One year of data (UNODC WDR {priceYear} Annex 8.1), so this is a price snapshot ranked
+          high to low, not a time trend. The 30-year trend for heroin and cocaine lives in the
+          <strong> Price History</strong> tab. Bars are coloured by region.
+        </p>
       </div>
 
       <table className="data-table">
@@ -112,4 +142,3 @@ export default function Explorer() {
   )
 }
 
-const LINE_COLORS = ['#6ea8fe', '#ff9f6e', '#79e0a8', '#e06ec0', '#e0d36e']

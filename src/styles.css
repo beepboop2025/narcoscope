@@ -671,3 +671,15 @@ h3 { font-family: var(--font-display); font-weight: 400; font-size: 1.2rem; lett
 .panel-trend-bar { display: block; width: 100%; background: var(--accent-grad); border-radius: 0.2rem 0.2rem 0 0; min-height: 2px; }
 .panel-trend-year { font-size: 0.65rem; color: var(--muted); }
 .panel-source { margin-top: 0.8rem; font-size: 0.7rem; }
+
+/* Street Prices — ranked price-by-country bars (replaces the single-year line) */
+.price-chart-head { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 0.5rem; }
+.region-legend { display: flex; gap: 0.8rem; flex-wrap: wrap; }
+.region-key { font-size: 0.78rem; color: var(--muted); display: inline-flex; align-items: center; gap: 0.3rem; }
+.region-dot { width: 0.6rem; height: 0.6rem; border-radius: 50%; display: inline-block; }
+.price-bars { display: flex; flex-direction: column; gap: 0.28rem; margin-top: 0.9rem; max-height: 30rem; overflow-y: auto; }
+.price-bar-row { display: grid; grid-template-columns: 8.5rem 1fr 4rem; align-items: center; gap: 0.6rem; }
+.price-bar-label { font-size: 0.82rem; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.price-bar-track { height: 0.8rem; background: rgba(110,168,254,0.08); border-radius: 0.4rem; overflow: hidden; }
+.price-bar-fill { display: block; height: 100%; border-radius: 0.4rem; transition: width 0.4s var(--ease); }
+.price-bar-value { font-variant-numeric: tabular-nums; font-size: 0.82rem; color: var(--muted); text-align: right; }

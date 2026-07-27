@@ -21,6 +21,7 @@ import { render, screen, cleanup, fireEvent, within } from '@testing-library/rea
 import Overview from './Overview'
 import StateOverdose from './StateOverdose'
 import PriceHistory from './PriceHistory'
+import SeizureTrends from './SeizureTrends'
 import Triangulation from './Triangulation'
 import Designations from './Designations'
 import Explorer from './Explorer'
@@ -171,6 +172,37 @@ describe('Price History (30yr)', () => {
     render(<PriceHistory />)
     // Year range like 1990–2023 must appear.
     expect(screen.getAllByText(/199\d.\d{4}/).length).toBeGreaterThan(0)
+  })
+})
+
+describe('Seizure Trends', () => {
+  it('renders the world-by-group trend chart and the group + movers tables', () => {
+    render(<SeizureTrends />)
+    expect(screen.getByText(/World seizures by drug group/i)).toBeTruthy()
+    // Two tables: group change + country movers, both populated.
+    const tables = document.querySelectorAll('.data-table')
+    expect(tables.length).toBeGreaterThanOrEqual(2)
+    expect(tables[0].querySelectorAll('tbody tr').length).toBeGreaterThan(3)
+  })
+})
+
+describe('Street Prices chart (ranked, not a broken line)', () => {
+  it('renders ranked price bars, not a single-year line chart', () => {
+    render(<Explorer />)
+    // The fix: bars, sorted high to low, coloured by region — no recharts line.
+    expect(document.querySelectorAll('.price-bar-row').length).toBeGreaterThan(20)
+    expect(document.querySelectorAll('.recharts-line').length).toBe(0)
+    // Bars are sorted descending.
+    const vals = [...document.querySelectorAll('.price-bar-value')]
+      .map((el) => Number(el.textContent.replace(/[$,]/g, '')))
+    const sorted = [...vals].sort((a, b) => b - a)
+    expect(vals).toEqual(sorted)
+  })
+
+  it('shows the region legend, not a 58-country rainbow', () => {
+    render(<Explorer />)
+    // 5 regions max, not one legend entry per country.
+    expect(document.querySelectorAll('.region-key').length).toBeLessThanOrEqual(5)
   })
 })
 
