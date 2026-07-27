@@ -94,7 +94,7 @@ describe('CSV loader completeness', () => {
     // unreachable from the UI, which made both the parsers and the instruction
     // dead.
     const types = fs.readFileSync(path.join(SRC, 'types.ts'), 'utf8')
-    const loader = fs.readFileSync(path.join(SRC, 'components/DataLoader.tsx'), 'utf8')
+    const loadable = fs.readFileSync(path.join(SRC, 'data/loadableDatasets.ts'), 'utf8')
     const store = fs.readFileSync(path.join(SRC, 'lib/dataStore.ts'), 'utf8')
 
     const bundleBlock = types.slice(
@@ -105,10 +105,13 @@ describe('CSV loader completeness', () => {
     assert.isAbove(keys.length, 5, 'failed to parse LoadBundle keys')
 
     for (const key of keys) {
+      // Every ingestible dataset must be offered by the shared picker list
+      // (loadableDatasets.ts, which DataLoader renders verbatim) AND applied by
+      // loadData(). This is the drift that once left 3 parsers unreachable.
       assert.include(
-        loader,
+        loadable,
         `key: '${key}'`,
-        `LoadBundle.${key} has no picker in DataLoader — the parser is unreachable`,
+        `LoadBundle.${key} has no picker in loadableDatasets.ts — the parser is unreachable`,
       )
       assert.include(
         store,

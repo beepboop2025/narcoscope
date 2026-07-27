@@ -226,6 +226,7 @@ main { padding-top: 1.75rem; }
    selection is highlighted. */
 .scan-row { cursor: pointer; transition: background 0.15s var(--ease); }
 .scan-row:hover { background: rgba(110, 168, 254, 0.08); }
+.scan-row:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
 .scan-row--active { background: rgba(110, 168, 254, 0.14); box-shadow: inset 3px 0 0 var(--accent); }
 .scan-row td:first-child { font-weight: 600; }
 .scan-fragile { color: #e0c37f; cursor: help; }

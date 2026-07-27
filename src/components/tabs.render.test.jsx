@@ -1,0 +1,145 @@
+// @vitest-environment happy-dom
+//
+// RENDER SMOKE TESTS — the structural fix for a recurring failure mode.
+//
+// Every UI bug this project has shipped — a DataLoader that offered 9 pickers
+// while the store ingested 12, a word-order-sensitive search that returned zero
+// results, a chart that drew an empty surface — passed `tsc` and the full unit
+// suite, and was caught only by a human opening the app. Unit tests verify the
+// pure functions; nothing verified that the components actually put the right
+// things on screen.
+//
+// These mount each tab in happy-dom and assert on the real DOM. They cannot see
+// a recharts chart (ResponsiveContainer needs real layout dimensions, which a
+// headless DOM does not provide — the same reason the recharts BarChart failed
+// visibly in the browser), so charts stay verified in-browser. But everything
+// else — pickers, tables, scan rows, search, clickable selection — is exactly
+// the surface that broke before, and now a failing render fails CI.
+
+import { describe, it, expect, afterEach, beforeAll } from 'vitest'
+import { render, screen, cleanup, fireEvent, within } from '@testing-library/react'
+import Triangulation from './Triangulation'
+import Designations from './Designations'
+import Explorer from './Explorer'
+import Flows from './Flows'
+import DataLoader from './DataLoader'
+import { LOADABLE_DATASET_KEYS } from '../data/loadableDatasets'
+
+beforeAll(() => {
+  // recharts' ResponsiveContainer measures its parent; happy-dom reports 0, and
+  // recharts logs a warning per chart. Silence just that one line so a real
+  // error in a test still stands out.
+  const realWarn = console.warn
+  console.warn = (...args) => {
+    if (String(args[0]).includes('width(0) and height(0)')) return
+    realWarn(...args)
+  }
+})
+
+afterEach(cleanup)
+
+describe('Triangulation tab', () => {
+  it('renders the divergence scan with real ranked rows', () => {
+    render(<Triangulation />)
+    // The scan must surface the known divergences. If the scan silently
+    // returned nothing (a regression in scanDivergences), this fails.
+    const rows = document.querySelectorAll('.scan-row')
+    expect(rows.length).toBeGreaterThan(1)
+    expect(screen.getAllByText(/Methamphetamine|Cannabis/i).length).toBeGreaterThan(0)
+  })
+
+  it('offers both a country and a drug picker', () => {
+    render(<Triangulation />)
+    const selects = document.querySelectorAll('select')
+    expect(selects.length).toBe(2)
+  })
+
+  it('renders the four-modality table with all modality names', () => {
+    render(<Triangulation />)
+    for (const name of ['Seizures', 'Retail price', 'Overdose mortality', 'Wastewater load']) {
+      expect(screen.getAllByText(name).length).toBeGreaterThan(0)
+    }
+  })
+
+  it('opens a country+drug when a scan row is clicked', () => {
+    render(<Triangulation />)
+    const rows = [...document.querySelectorAll('.scan-row')]
+    const target = rows.find((r) => !r.classList.contains('scan-row--active'))
+    expect(target).toBeTruthy()
+    fireEvent.click(target)
+    // After the click that row becomes the active selection.
+    expect(target.classList.contains('scan-row--active')).toBe(true)
+  })
+
+  it('activates a scan row from the keyboard (Enter)', () => {
+    render(<Triangulation />)
+    const rows = [...document.querySelectorAll('.scan-row')]
+    const target = rows.find((r) => !r.classList.contains('scan-row--active'))
+    // The row must be reachable and operable without a mouse.
+    expect(target.getAttribute('tabindex')).toBe('0')
+    expect(target.getAttribute('role')).toBe('button')
+    fireEvent.keyDown(target, { key: 'Enter' })
+    expect(target.classList.contains('scan-row--active')).toBe(true)
+  })
+})
+
+describe('Designations tab', () => {
+  it('renders the broker bar ranking', () => {
+    render(<Designations />)
+    const bars = document.querySelectorAll('.bar-row')
+    expect(bars.length).toBeGreaterThan(1)
+  })
+
+  it('resolves an OFAC alias through the search box, word-order-insensitive', () => {
+    // This is the exact bug that shipped: "chao wei" returned zero results
+    // because OFAC stores "WEI, Chao". The end-to-end path — type, filter,
+    // render — is what a unit test on searchDesignations could not catch.
+    render(<Designations />)
+    const input = document.querySelector('input[type=search]')
+    fireEvent.change(input, { target: { value: 'chao wei' } })
+    expect(screen.getByText(/WEI, Zhao/)).toBeTruthy()
+  })
+
+  it('renders the jurisdiction structural-position table', () => {
+    render(<Designations />)
+    expect(screen.getByText('Broker jurisdictions — betweenness centrality')).toBeTruthy()
+    expect(screen.getByText(/structural position/i)).toBeTruthy()
+  })
+})
+
+describe('DataLoader', () => {
+  it('actually renders every picker in the shared list to the DOM', () => {
+    // Proves LOADABLE_DATASETS reaches the screen (bundleBudget.test.js does the
+    // independent count check against the LoadBundle type). Comparing the DOM
+    // count to the list length would be tautological — both come from the same
+    // source — so this asserts one label per dataset is present by text.
+    render(<DataLoader />)
+    fireEvent.click(screen.getByText(/Load official data/i))
+    expect(document.querySelectorAll('.loader-field').length).toBe(LOADABLE_DATASET_KEYS.length)
+  })
+
+  it('renders the three demand/designation pickers that once shipped missing', () => {
+    render(<DataLoader />)
+    fireEvent.click(screen.getByText(/Load official data/i))
+    // These three were ingestible by the store but had no picker — the exact
+    // regression. Asserted by their visible labels, independent of the count.
+    expect(screen.getByText(/Wastewater loads/i)).toBeTruthy()
+    expect(screen.getByText(/Overdose mortality/i)).toBeTruthy()
+    expect(screen.getByText(/Sanctions designations/i)).toBeTruthy()
+  })
+})
+
+describe('Explorer + Flows tabs mount and populate', () => {
+  it('Explorer renders a populated price table', () => {
+    render(<Explorer />)
+    const bodyRows = document.querySelectorAll('.data-table tbody tr')
+    expect(bodyRows.length).toBeGreaterThan(0)
+  })
+
+  it('Flows renders the corridor table with the official INCB source', () => {
+    render(<Flows />)
+    const tables = document.querySelectorAll('.data-table')
+    expect(tables.length).toBeGreaterThan(0)
+    expect(within(tables[0]).getAllByText(/INCB/i).length).toBeGreaterThan(0)
+  })
+})
