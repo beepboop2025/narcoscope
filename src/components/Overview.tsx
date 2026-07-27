@@ -1,6 +1,17 @@
+import {
+  ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, Legend, ReferenceLine,
+} from 'recharts'
 import overview from '../data/overview.json'
 import CountUp from '../motion/CountUp'
 import Reveal from '../motion/Reveal'
+
+/** Line colour per trend substance — fentanyl hot (it drives the epidemic). */
+const TREND_COLOR: Record<string, string> = {
+  all_drugs: '#a1ecff',
+  synthetic_opioids: '#ff8f6e',
+  psychostimulants: '#e0c37f',
+  cocaine: '#79e0a8',
+}
 
 /**
  * The Overview landing — a dense window onto data the app already holds.
@@ -69,6 +80,39 @@ export default function Overview() {
           <span className="stat-label">Countries tracked</span>
         </div>
       </div>
+
+      {/* The epidemic arc — the biggest current story: peaked, now falling. */}
+      <Reveal>
+        <div className="chart-card">
+          <h3 className="overview-h">The US overdose epidemic — peaked, now falling</h3>
+          <p className="note">
+            US drug-overdose deaths climbed for a decade to {overview.overdoseTrend.peakDeaths?.toLocaleString()} in{' '}
+            {overview.overdoseTrend.peakYear}, then fell {fmtPct(overview.overdoseTrend.changeFromPeak)} to{' '}
+            {overview.headline.usOverdoseLatest.toLocaleString()} by {overview.headline.usOverdoseYear} —
+            the sharpest sustained decline since the crisis began. Fentanyl (coral) drove both the rise and the fall.
+          </p>
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={overview.overdoseTrend.series} margin={{ top: 8, right: 16, bottom: 8, left: 4 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#26314a" />
+              <XAxis dataKey="year" stroke="#8aa0c6" />
+              <YAxis stroke="#8aa0c6" tickFormatter={(v) => `${Math.round(v / 1000)}k`} />
+              {overview.overdoseTrend.peakYear != null ? (
+                <ReferenceLine x={overview.overdoseTrend.peakYear} stroke="#ff8f6e" strokeDasharray="4 4"
+                  label={{ value: 'peak', fill: '#ff8f6e', fontSize: 11, position: 'top' }} />
+              ) : null}
+              <Tooltip
+                contentStyle={{ background: '#0e1626', border: '1px solid #26314a' }}
+                formatter={(v, name) => [Number(v).toLocaleString(), overview.overdoseTrend.substances.find((s) => s.id === name)?.label ?? name]}
+              />
+              <Legend formatter={(name) => overview.overdoseTrend.substances.find((s) => s.id === name)?.label ?? name} />
+              {overview.overdoseTrend.substances.map((s) => (
+                <Line key={s.id} type="monotone" dataKey={s.id} stroke={TREND_COLOR[s.id] ?? '#8aa0c6'}
+                      strokeWidth={s.id === 'all_drugs' ? 3 : 2} dot={false} connectNulls />
+              ))}
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </Reveal>
 
       {/* Divergence alerts — the flagship finding, front and centre. */}
       <Reveal>
