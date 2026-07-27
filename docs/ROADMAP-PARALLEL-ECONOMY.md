@@ -141,14 +141,20 @@ no structure to read.
 
 ## 5. Nearest-term work, in order
 
-1. **UN Consolidated Sanctions List** (`un-consolidated-sanctions`) — registered,
-   verified reachable, `automation: auto`. Adds a second independent designating
-   authority so the designation layer stops being a single national view.
-   Smallest increment with the clearest gain.
-2. **Wastewater ingestion** — the triangulation layer's fourth modality is built
-   and waiting. One verified EUDA or ACIC export turns divergence detection from
-   a US-only capability into a European and Australian one.
-3. **CDC WONDER final mortality** — replaces provisional VSRR counts for closed
+1. ~~**UN Consolidated Sanctions List**~~ **evaluated 2026-07-27, dead end.** It
+   is reachable, but it is a counter-terrorism / non-proliferation list, not a
+   narcotics one: zero opium/meth/fentanyl entries, and the only 12 drug-related
+   entities are Taliban figures where the opium economy is a *funding* mention,
+   not the designation basis. Adding it would import ~1,000 terrorism
+   designations to gain ~12 relevant rows and dilute a narcotics + TCO tab. The
+   real second-authority gap stays open — **EU Sanctions Map** is the better
+   candidate (genuine EU narcotics designations, with alias cross-references).
+2. **EU Sanctions Map** (`eu-sanctions-map`) — the actual smallest-increment win
+   for a second designating authority, now that the UN list is ruled out.
+3. **Wastewater ingestion (Europe/Australia)** — the modality now ships for
+   Canada; one verified EUDA or ACIC export extends divergence detection past
+   North America. Both publishers block automated collection, so it is CSV-load.
+4. **CDC WONDER final mortality** — replaces provisional VSRR counts for closed
    years, tightening the back-series triangulation runs against.
-4. **EUDA price and purity tables** — densifies the retail-price modality across
+5. **EUDA price and purity tables** — densifies the retail-price modality across
    Europe, which currently drops out of triangulation for most EU countries.

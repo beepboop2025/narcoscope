@@ -1,27 +1,13 @@
 import { useState, type ChangeEvent } from 'react'
 import { loadData, useData } from '../lib/dataStore'
 import type { LoadBundle, LoadReport } from '../types'
+import { LOADABLE_DATASETS } from '../data/loadableDatasets'
 
-// Each picker maps to one parser/dataset in loadData(). Omit a file → that
+// The picker list is the single source of truth in loadableDatasets.ts, shared
+// with loadData() and the tests so the three can never drift (they once did:
+// 9 pickers, 12 ingestible datasets, 3 dead parsers). Omit a file → that
 // dataset keeps its current data, so you can load one CSV at a time.
-const FIELDS: { key: keyof LoadBundle; label: string }[] = [
-  { key: 'prices', label: 'Street prices' },
-  { key: 'precursorPrices', label: 'Precursor prices' },
-  { key: 'flows', label: 'Precursor flows' },
-  // Wastewater is the one that matters most here. The Triangulation tab tells
-  // users to load a CSV export to switch the modality on for their country —
-  // EUDA and ACIC both block automated collection — and that instruction is
-  // only true if there is a picker for it. There wasn't until now.
-  { key: 'wastewater', label: 'Wastewater loads (EUDA / ACIC export)' },
-  { key: 'overdose', label: 'Overdose mortality (CDC WONDER export)' },
-  { key: 'designations', label: 'Sanctions designations (OFAC / UN export)' },
-  { key: 'mmRegions', label: 'Myanmar regions' },
-  { key: 'mmBorderNodes', label: 'Myanmar border nodes' },
-  { key: 'mmRegionRecords', label: 'Myanmar region stats' },
-  { key: 'mmFlows', label: 'Myanmar flows' },
-  { key: 'mmConflictEvents', label: 'Myanmar civil-war events' },
-  { key: 'mmPrecursorFlows', label: 'Myanmar precursor inflows' },
-]
+const FIELDS = LOADABLE_DATASETS
 
 export default function DataLoader() {
   const { isSample } = useData()

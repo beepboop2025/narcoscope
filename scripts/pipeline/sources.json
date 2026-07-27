@@ -229,9 +229,9 @@
       "format": "xml",
       "cadence": "continuous",
       "license": "UN, freely redistributable",
-      "automation": "auto",
-      "feeds": "NOT YET INTEGRATED — would add non-US designations (arms-embargo violators, UN-designated traffickers) alongside OFAC, giving the designation layer a second independent designating authority rather than a single national view.",
-      "transform": "TODO — new converter, then merge into designations.json with a `designatingAuthority` field. Verified reachable 2026-07-26 (2.2 MB)."
+      "automation": "manual",
+      "feeds": "EVALUATED 2026-07-27, NOT INTEGRATED: the list is reachable (2.2 MB, 736 individuals + 275 entities) but it is a counter-terrorism / non-proliferation instrument, NOT a narcotics one. Zero opium/meth/fentanyl entries; only 12 entities mention drug trafficking at all, and all 12 are Taliban figures where the opium economy is named as a FUNDING source in the listing narrative, not as the designation basis. Adding it to a narcotics + TCO tab would contribute ~12 relevant rows while importing 1,000 terrorism designations that dilute the focus. Same call as unodc-ids and opensanctions: a documented dead end, not a pending build. The genuine second-authority gap remains open — EU Sanctions Map is the better candidate.",
+      "transform": "none — revisit only if a narcotics-specific UN regime is ever created."
     },
     {
       "id": "opensanctions",

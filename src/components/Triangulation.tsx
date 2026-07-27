@@ -185,11 +185,22 @@ export default function Triangulation() {
             </tr>
           </thead>
           <tbody>
-            {scan.slice(0, 8).map((h) => (
+            {scan.slice(0, 8).map((h) => {
+              const open = () => { setIso3(h.iso3); setDrug(h.drug) }
+              return (
               <tr
                 key={`${h.iso3}-${h.drug}`}
                 className={`scan-row ${iso3 === h.iso3 && drug === h.drug ? 'scan-row--active' : ''}`}
-                onClick={() => { setIso3(h.iso3); setDrug(h.drug) }}
+                // A clickable row must also be operable without a mouse: it takes
+                // focus, announces itself as a button, and responds to Enter and
+                // Space the way a button does.
+                role="button"
+                tabIndex={0}
+                aria-label={`Open ${h.country} ${drugLabel(h.drug)} — ${VERDICT_LABEL[h.verdict]}`}
+                onClick={open}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open() }
+                }}
               >
                 <td>{h.country}</td>
                 <td>{drugLabel(h.drug)}</td>
@@ -201,7 +212,8 @@ export default function Triangulation() {
                 <td>{arrow(h.demandDirection)} {fmtPct(h.demandChangePct)}</td>
                 <td>{Math.round(h.gap * 100)} pts</td>
               </tr>
-            ))}
+              )
+            })}
           </tbody>
         </table>
         <p className="note">Gap = distance between the supply and consumption changes over the window. ⚑ marks a verdict that would flip if one modality were dropped.</p>

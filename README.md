@@ -236,9 +236,10 @@ playbook is [`docs/DATA_PIPELINE.md`](./docs/DATA_PIPELINE.md).
 - **Wastewater now ships (Canada).** Extending it to Europe or Australia still
   needs a manually-fetched EUDA or ACIC export — both publishers block
   automation. Each one added is another country where divergence detection works.
-- The UN Consolidated Sanctions List is registered and verified reachable but
-  not yet converted — it would give the designation layer a second independent
-  designating authority. See [`docs/ROADMAP-PARALLEL-ECONOMY.md`](./docs/ROADMAP-PARALLEL-ECONOMY.md)
+- A **second designating authority** for the Designations tab (it is OFAC-only
+  today). The UN Consolidated list was evaluated and ruled out — it is a
+  counter-terrorism instrument with almost no narcotics designations; EU
+  Sanctions Map is the live candidate. See [`docs/ROADMAP-PARALLEL-ECONOMY.md`](./docs/ROADMAP-PARALLEL-ECONOMY.md)
   for the ordered backlog and for the methods excluded on ethical or
   data-quality grounds.
 
