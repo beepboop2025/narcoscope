@@ -23,6 +23,8 @@ const Designations = lazy(() => import('./components/Designations'))
 const StateOverdose = lazy(() => import('./components/StateOverdose'))
 // Lazy: the ~118 kB 30-year price series lives in its own chunk.
 const PriceHistory = lazy(() => import('./components/PriceHistory'))
+// Lazy: reads the ~210 kB seizure dataset (shared with the Flow Map chunk).
+const SeizureTrends = lazy(() => import('./components/SeizureTrends'))
 
 const TABS = [
   { id: 'overview', label: 'Overview' },
@@ -30,6 +32,7 @@ const TABS = [
   { id: 'pricehistory', label: 'Price History (30yr)' },
   { id: 'flows', label: 'Precursor Flows & Prices' },
   { id: 'map', label: 'Flow Map' },
+  { id: 'seizuretrends', label: 'Seizure Trends' },
   { id: 'states', label: 'US Overdose Map' },
   { id: 'triangulate', label: 'Triangulation' },
   { id: 'designations', label: 'Designations' },
@@ -112,6 +115,7 @@ export default function App() {
             {tab === 'pricehistory' && <PriceHistory />}
             {tab === 'flows' && <Flows />}
             {tab === 'map' && <WorldMap />}
+            {tab === 'seizuretrends' && <SeizureTrends />}
             {tab === 'states' && <StateOverdose />}
             {tab === 'triangulate' && <Triangulation />}
             {tab === 'designations' && <Designations />}
