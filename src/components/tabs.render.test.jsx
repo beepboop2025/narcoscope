@@ -18,6 +18,7 @@
 
 import { describe, it, expect, afterEach, beforeAll } from 'vitest'
 import { render, screen, cleanup, fireEvent, within } from '@testing-library/react'
+import Overview from './Overview'
 import Triangulation from './Triangulation'
 import Designations from './Designations'
 import Explorer from './Explorer'
@@ -104,6 +105,26 @@ describe('Designations tab', () => {
     render(<Designations />)
     expect(screen.getByText('Broker jurisdictions — betweenness centrality')).toBeTruthy()
     expect(screen.getByText(/structural position/i)).toBeTruthy()
+  })
+})
+
+describe('Overview landing', () => {
+  it('renders the headline stats, divergence alerts, and dense panels', () => {
+    render(<Overview />)
+    // The divergence alert cards are the flagship — both known cases present.
+    expect(screen.getByText('US methamphetamine')).toBeTruthy()
+    expect(screen.getByText('Canada cannabis')).toBeTruthy()
+    // Dense panels all render with their bar rows.
+    expect(screen.getByText(/overdose deaths by substance/i)).toBeTruthy()
+    expect(document.querySelectorAll('.bar-row').length).toBeGreaterThan(10)
+    // Freshness table proves the collection story is shown.
+    expect(screen.getByText('Data freshness')).toBeTruthy()
+  })
+
+  it('shows real bound figures, not placeholders', () => {
+    render(<Overview />)
+    // Fentanyl is the leading substance and its real count must be on screen.
+    expect(screen.getByText(/38,056|38056/)).toBeTruthy()
   })
 })
 

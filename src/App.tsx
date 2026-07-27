@@ -1,5 +1,6 @@
 import { useState, lazy, Suspense, type ReactNode } from 'react'
 import { useSpring, animated } from '@react-spring/web'
+import Overview from './components/Overview'
 import Explorer from './components/Explorer'
 import Flows from './components/Flows'
 import DataLoader from './components/DataLoader'
@@ -20,6 +21,7 @@ const Triangulation = lazy(() => import('./components/Triangulation'))
 const Designations = lazy(() => import('./components/Designations'))
 
 const TABS = [
+  { id: 'overview', label: 'Overview' },
   { id: 'prices', label: 'Street Prices' },
   { id: 'flows', label: 'Precursor Flows & Prices' },
   { id: 'map', label: 'Flow Map' },
@@ -43,7 +45,7 @@ function TabPanel({ children }: { children: ReactNode }) {
 
 export default function App() {
   const { isSample } = useData()
-  const [tab, setTab] = useState<string>('prices')
+  const [tab, setTab] = useState<string>('overview')
   useSmoothScroll()
 
   return (
@@ -99,6 +101,7 @@ export default function App() {
       <main>
         <Suspense fallback={<div className="map-loading">Loading…</div>}>
           <TabPanel key={tab}>
+            {tab === 'overview' && <Overview />}
             {tab === 'prices' && <Explorer />}
             {tab === 'flows' && <Flows />}
             {tab === 'map' && <WorldMap />}

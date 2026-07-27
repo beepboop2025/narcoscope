@@ -240,6 +240,45 @@ main { padding-top: 1.75rem; }
 .bar-fill--hot { background: var(--hot); }
 .bar-value { font-variant-numeric: tabular-nums; font-size: 0.82rem; color: var(--muted); text-align: right; }
 
+/* ============================================================== */
+/* OVERVIEW DASHBOARD — dense landing                              */
+/* ============================================================== */
+.overview { display: flex; flex-direction: column; gap: 1.6rem; }
+.overview-h { margin: 0 0 0.3rem; }
+
+.overview-headline .stat-value { font-size: 2.1rem; }
+.stat-delta { font-weight: 700; font-variant-numeric: tabular-nums; }
+.delta-up { color: #ff8f6e; }     /* rising harm/supply = warm/alarming */
+.delta-down { color: #7fe0a8; }   /* falling = cool/good */
+
+/* Divergence alert cards */
+.alert-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-top: 0.6rem; }
+.alert-card {
+  background: linear-gradient(180deg, var(--panel-2), var(--panel));
+  border: 1px solid var(--border); border-left: 3px solid var(--hot);
+  border-radius: 0.75rem; padding: 1rem 1.15rem;
+}
+.alert-head { font-family: var(--font-display); font-size: 1.15rem; margin-bottom: 0.7rem; }
+.alert-window { color: var(--muted); font-size: 0.8rem; font-family: var(--font-body); margin-left: 0.4rem; }
+.alert-split { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
+.alert-side { display: flex; flex-direction: column; align-items: center; flex: 1; }
+.alert-num { font-size: 1.9rem; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.1; }
+.alert-sub { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; margin-top: 0.2rem; }
+.alert-vs { color: var(--muted); font-size: 0.8rem; }
+.alert-reading { margin-top: 0.8rem; padding-top: 0.7rem; border-top: 1px solid var(--border); font-size: 0.85rem; color: var(--text); font-style: italic; }
+
+/* Dense panel grid */
+.panel-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1rem; }
+.panel {
+  background: linear-gradient(180deg, var(--panel-2), var(--panel));
+  border: 1px solid var(--border); border-radius: 0.75rem; padding: 1.05rem 1.15rem;
+}
+.panel h4 { margin: 0 0 0.85rem; font-size: 0.95rem; font-weight: 700; letter-spacing: 0.01em; }
+.panel-note { margin: 0.75rem 0 0; font-size: 0.78rem; color: var(--muted); }
+.freshness-panel { grid-column: 1 / -1; }
+.freshness-table { margin-top: 0; }
+.freshness-table td, .freshness-table th { font-size: 0.85rem; }
+
 h3 { font-family: var(--font-display); font-weight: 400; font-size: 1.2rem; letter-spacing: 0.01em; }
 
 .data-table { width: 100%; border-collapse: collapse; margin: 0.65rem 0 1.6rem; font-size: 0.9rem; }
