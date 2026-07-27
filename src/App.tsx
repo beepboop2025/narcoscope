@@ -19,12 +19,15 @@ const IntelligenceBriefing = lazy(() => import('./components/IntelligenceBriefin
 // OFAC designations) that has no business in the initial payload.
 const Triangulation = lazy(() => import('./components/Triangulation'))
 const Designations = lazy(() => import('./components/Designations'))
+// Lazy: pulls the bundled CDC overdose dataset + the US states topojson.
+const StateOverdose = lazy(() => import('./components/StateOverdose'))
 
 const TABS = [
   { id: 'overview', label: 'Overview' },
   { id: 'prices', label: 'Street Prices' },
   { id: 'flows', label: 'Precursor Flows & Prices' },
   { id: 'map', label: 'Flow Map' },
+  { id: 'states', label: 'US Overdose Map' },
   { id: 'triangulate', label: 'Triangulation' },
   { id: 'designations', label: 'Designations' },
   { id: 'myanmar', label: 'Myanmar Focus' },
@@ -105,6 +108,7 @@ export default function App() {
             {tab === 'prices' && <Explorer />}
             {tab === 'flows' && <Flows />}
             {tab === 'map' && <WorldMap />}
+            {tab === 'states' && <StateOverdose />}
             {tab === 'triangulate' && <Triangulation />}
             {tab === 'designations' && <Designations />}
             {tab === 'myanmar' && <MyanmarFocus />}
