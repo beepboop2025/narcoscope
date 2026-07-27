@@ -20,6 +20,7 @@ import { describe, it, expect, afterEach, beforeAll } from 'vitest'
 import { render, screen, cleanup, fireEvent, within } from '@testing-library/react'
 import Overview from './Overview'
 import StateOverdose from './StateOverdose'
+import PriceHistory from './PriceHistory'
 import Triangulation from './Triangulation'
 import Designations from './Designations'
 import Explorer from './Explorer'
@@ -151,6 +152,23 @@ describe('US Overdose Map', () => {
     const cells = [...document.querySelectorAll('.us-state')].filter((p) => p.getAttribute('tabindex') === '0')
     expect(cells.length).toBeGreaterThan(40)
     expect(cells[0].getAttribute('role')).toBe('button')
+  })
+})
+
+describe('Price History (30yr)', () => {
+  it('renders the long-run change table with real multi-decade falls', () => {
+    render(<PriceHistory />)
+    // The long-run change table is the payoff — default countries present.
+    expect(screen.getAllByText('Germany').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('United States').length).toBeGreaterThan(0)
+    // Country toggle chips for every reporting country.
+    expect(document.querySelectorAll('.chip-toggle').length).toBeGreaterThan(10)
+  })
+
+  it('covers a multi-decade span in the headline', () => {
+    render(<PriceHistory />)
+    // Year range like 1990–2023 must appear.
+    expect(screen.getAllByText(/199\d.\d{4}/).length).toBeGreaterThan(0)
   })
 })
 

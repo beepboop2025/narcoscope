@@ -31,8 +31,8 @@
       "cadence": "annual",
       "license": "UN open data, attribution",
       "automation": "auto",
-      "feeds": "NOT YET INTEGRATED — long-run price trend view (30+ year series)",
-      "transform": "TODO: new converter + a long-series chart in Explorer"
+      "feeds": "src/data/priceSeries.json (Price History tab) — INTEGRATED 2026-07-27: heroin + cocaine retail street prices, 18 countries + US, 1990-2023.",
+      "transform": "scripts/convert/wdr-price-series-to-json.mjs"
     },
     {
       "id": "wdr-opium-cultivation",

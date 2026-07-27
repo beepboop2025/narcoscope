@@ -21,10 +21,13 @@ const Triangulation = lazy(() => import('./components/Triangulation'))
 const Designations = lazy(() => import('./components/Designations'))
 // Lazy: pulls the bundled CDC overdose dataset + the US states topojson.
 const StateOverdose = lazy(() => import('./components/StateOverdose'))
+// Lazy: the ~118 kB 30-year price series lives in its own chunk.
+const PriceHistory = lazy(() => import('./components/PriceHistory'))
 
 const TABS = [
   { id: 'overview', label: 'Overview' },
   { id: 'prices', label: 'Street Prices' },
+  { id: 'pricehistory', label: 'Price History (30yr)' },
   { id: 'flows', label: 'Precursor Flows & Prices' },
   { id: 'map', label: 'Flow Map' },
   { id: 'states', label: 'US Overdose Map' },
@@ -106,6 +109,7 @@ export default function App() {
           <TabPanel key={tab}>
             {tab === 'overview' && <Overview />}
             {tab === 'prices' && <Explorer />}
+            {tab === 'pricehistory' && <PriceHistory />}
             {tab === 'flows' && <Flows />}
             {tab === 'map' && <WorldMap />}
             {tab === 'states' && <StateOverdose />}

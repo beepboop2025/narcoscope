@@ -71,6 +71,9 @@ run('node', ['scripts/convert/wdr-prices-to-ts.mjs', rawPath(bySourceId['wdr-pri
 console.log('· regenerating seizures dataset …')
 run('node', ['scripts/convert/wdr-seizures-to-json.mjs', rawPath(bySourceId['wdr-seizures'])])
 
+console.log('· regenerating 30-year price history …')
+run('node', ['scripts/convert/wdr-price-series-to-json.mjs', rawPath(bySourceId['wdr-price-series'])])
+
 console.log('· regenerating country geo (centroids + feature ids) …')
 run('node', ['scripts/convert/gen-country-geo.mjs'])
 
