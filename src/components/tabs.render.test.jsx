@@ -22,6 +22,7 @@ import Overview from './Overview'
 import StateOverdose from './StateOverdose'
 import PriceHistory from './PriceHistory'
 import SeizureTrends from './SeizureTrends'
+import IllicitFinance from './IllicitFinance'
 import Triangulation from './Triangulation'
 import Designations from './Designations'
 import Explorer from './Explorer'
@@ -203,6 +204,25 @@ describe('Street Prices chart (ranked, not a broken line)', () => {
     render(<Explorer />)
     // 5 regions max, not one legend entry per country.
     expect(document.querySelectorAll('.region-key').length).toBeLessThanOrEqual(5)
+  })
+})
+
+describe('Illicit Finance', () => {
+  it('surfaces the named cross-border laundering networks from OFAC data', () => {
+    render(<IllicitFinance />)
+    // The convergence: laundering networks incl. the wildlife-trafficking TCO.
+    expect(screen.getAllByText(/ALTAF KHANANI MONEY LAUNDERING/i).length).toBeGreaterThan(0)
+    expect(screen.getAllByText(/BARAKAT/i).length).toBeGreaterThan(0)
+    expect(screen.getAllByText(/WILDLIFE TRAFFICKING/i).length).toBeGreaterThan(0)
+  })
+
+  it('renders the laundering typologies including hawala and fei-chien', () => {
+    render(<IllicitFinance />)
+    expect(screen.getByText('Hawala')).toBeTruthy()
+    expect(screen.getByText(/Fei-ch/i)).toBeTruthy()
+    expect(screen.getByText(/Trade-based laundering/i)).toBeTruthy()
+    // Laundering hubs bar list present.
+    expect(document.querySelectorAll('.bar-row').length).toBeGreaterThan(3)
   })
 })
 
