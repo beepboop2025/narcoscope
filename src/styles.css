@@ -279,6 +279,12 @@ main { padding-top: 1.75rem; }
 .freshness-table { margin-top: 0; }
 .freshness-table td, .freshness-table th { font-size: 0.85rem; }
 
+/* US choropleth */
+.us-choropleth { width: 100%; height: auto; display: block; }
+.us-state { cursor: pointer; transition: opacity 0.12s var(--ease); }
+.us-state:hover { opacity: 0.82; }
+.us-state:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
 h3 { font-family: var(--font-display); font-weight: 400; font-size: 1.2rem; letter-spacing: 0.01em; }
 
 .data-table { width: 100%; border-collapse: collapse; margin: 0.65rem 0 1.6rem; font-size: 0.9rem; }

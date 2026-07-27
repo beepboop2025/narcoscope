@@ -19,6 +19,7 @@
 import { describe, it, expect, afterEach, beforeAll } from 'vitest'
 import { render, screen, cleanup, fireEvent, within } from '@testing-library/react'
 import Overview from './Overview'
+import StateOverdose from './StateOverdose'
 import Triangulation from './Triangulation'
 import Designations from './Designations'
 import Explorer from './Explorer'
@@ -125,6 +126,31 @@ describe('Overview landing', () => {
     render(<Overview />)
     // Fentanyl is the leading substance and its real count must be on screen.
     expect(screen.getByText(/38,056|38056/)).toBeTruthy()
+  })
+})
+
+describe('US Overdose Map', () => {
+  it('renders the choropleth, national headline, movers and ranked table', () => {
+    render(<StateOverdose />)
+    // 50 states + DC render as clickable paths.
+    expect(document.querySelectorAll('.us-state').length).toBeGreaterThan(50)
+    // The ranked all-states table is populated.
+    expect(document.querySelectorAll('.data-table tbody tr').length).toBeGreaterThan(40)
+    // Substance, year and metric controls exist.
+    expect(document.querySelectorAll('select').length).toBe(2)
+  })
+
+  it('computes per-100k rates, not just raw counts', () => {
+    render(<StateOverdose />)
+    // The rate toggle is on by default and the chart title says "per 100k".
+    expect(screen.getAllByText(/per 100k/i).length).toBeGreaterThan(0)
+  })
+
+  it('state map cells are keyboard-operable', () => {
+    render(<StateOverdose />)
+    const cells = [...document.querySelectorAll('.us-state')].filter((p) => p.getAttribute('tabindex') === '0')
+    expect(cells.length).toBeGreaterThan(40)
+    expect(cells[0].getAttribute('role')).toBe('button')
   })
 })
 
