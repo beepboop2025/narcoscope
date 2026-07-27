@@ -37,6 +37,14 @@ export default function CountUp({
   const reduced = usePrefersReducedMotion()
   const ref = useRef<HTMLSpanElement>(null)
   const [inView, setInView] = useState(false)
+  // Correctness fallback: the spring animates 0 → value only once in view AND
+  // once requestAnimationFrame is running. A tab loaded occluded (background
+  // tab, restored session) has rAF suspended, so the number would sit at 0 —
+  // looking broken — until the user focuses it. After a short grace period we
+  // render the final value directly, bypassing the animation, so the figure is
+  // never stuck at zero regardless of rAF. For a normal foreground load the
+  // spring finishes long before this fires, so nothing visibly changes.
+  const [settled, setSettled] = useState(false)
 
   useEffect(() => {
     if (reduced) return
@@ -52,7 +60,8 @@ export default function CountUp({
       { threshold: 0.4 },
     )
     io.observe(el)
-    return () => io.disconnect()
+    const fallback = setTimeout(() => setSettled(true), 1600)
+    return () => { io.disconnect(); clearTimeout(fallback) }
   }, [reduced])
 
   const { n } = useSpring({
@@ -60,7 +69,8 @@ export default function CountUp({
     config: { tension: 90, friction: 26 },
   })
 
-  if (reduced) {
+  // Show the plain value under reduced motion, or once the fallback has fired.
+  if (reduced || settled) {
     return (
       <span ref={ref} className={`count-up ${className ?? ''}`}>
         {prefix}{fmt(value, decimals, group)}{suffix}
