@@ -1,0 +1,11 @@
+[Unit]
+Description=Run the NarcoScope data collector daily
+
+[Timer]
+# Daily at 05:17 UTC (off-peak) with jitter, and catch-up if the box was down.
+OnCalendar=*-*-* 05:17:00
+RandomizedDelaySec=1800
+Persistent=true
+
+[Install]
+WantedBy=timers.target
