@@ -22,8 +22,8 @@ them when adding a source.
 ## One-time provisioning (as root on the box)
 
 ```bash
-# 1. Node (LTS) via nodesource
-curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && apt-get install -y nodejs
+# 1. Node (LTS) via nodesource, plus unzip (StatCan converter needs it)
+curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && apt-get install -y nodejs unzip
 
 # 2. Clone
 git clone https://github.com/beepboop2025/narcoscope.git /opt/narcoscope
