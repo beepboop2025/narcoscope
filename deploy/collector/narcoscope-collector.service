@@ -1,0 +1,16 @@
+[Unit]
+Description=NarcoScope open-data collector (fetch, validate, push)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+Environment=NARCOSCOPE_REPO=/opt/narcoscope
+Environment=NARCOSCOPE_DEPLOY_KEY=/root/.ssh/narcoscope_deploy
+Environment=NARCOSCOPE_BRANCH=main
+# Node/npm live under the default PATH plus wherever nodesource installs them.
+Environment=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ExecStart=/opt/narcoscope/deploy/collector/collect.sh
+# The full pipeline (npm ci + fetch + test suite) can take a few minutes.
+TimeoutStartSec=1800
+Nice=10
