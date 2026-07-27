@@ -9,6 +9,8 @@ set -euo pipefail
 REPO=/opt/narcoscope
 
 command -v node >/dev/null || { echo "ERROR: node not installed — see deploy/collector/README.md"; exit 1; }
+# unzip is needed by the StatCan wastewater converter; ensure it is present.
+command -v unzip >/dev/null || { echo "· installing unzip"; apt-get install -y unzip >/dev/null; }
 [ -d "$REPO/.git" ] || { echo "ERROR: repo not cloned at $REPO"; exit 1; }
 [ -f /root/.ssh/narcoscope_deploy ] || { echo "ERROR: deploy key missing at /root/.ssh/narcoscope_deploy"; exit 1; }
 
