@@ -121,6 +121,8 @@ describe('Overview landing', () => {
     expect(document.querySelectorAll('.bar-row').length).toBeGreaterThan(10)
     // Freshness table proves the collection story is shown.
     expect(screen.getByText('Data freshness')).toBeTruthy()
+    // The epidemic-arc trend is the alive centrepiece.
+    expect(screen.getByText(/overdose epidemic/i)).toBeTruthy()
   })
 
   it('shows real bound figures, not placeholders', () => {

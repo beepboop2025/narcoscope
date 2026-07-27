@@ -71,6 +71,28 @@ const overdoseBySubstance = ['synthetic_opioids', 'psychostimulants', 'cocaine',
   .filter((x) => x.deaths != null)
   .sort((a, b) => b.deaths - a.deaths)
 
+// --- national overdose TREND: the epidemic arc, rise and recent fall ----------
+// The biggest current story in the whole dataset and one a bar chart hides: US
+// overdose deaths climbed for a decade, peaked, and are now falling sharply.
+const TREND_SUBSTANCES = ['all_drugs', 'synthetic_opioids', 'psychostimulants', 'cocaine']
+const nationalTrend = overdoseYears.map((year) => {
+  const row = { year }
+  for (const s of TREND_SUBSTANCES) row[s] = usDeaths(s, year)
+  return row
+})
+const peak = overdoseYears
+  .map((y) => ({ year: y, deaths: usDeaths('all_drugs', y) }))
+  .filter((p) => p.deaths != null)
+  .sort((a, b) => b.deaths - a.deaths)[0]
+const overdoseTrend = {
+  substances: TREND_SUBSTANCES.map((s) => ({ id: s, label: SUBSTANCE_LABEL[s] })),
+  series: nationalTrend,
+  peakYear: peak?.year ?? null,
+  peakDeaths: peak?.deaths ?? null,
+  // Fall from the peak to the latest full year — the headline of the decline.
+  changeFromPeak: peak ? pct(allDrugsLatest ?? 0, peak.deaths) : null,
+}
+
 // --- seizures: world total latest year + top countries ------------------------
 const seizureYears = seizures.meta.years
 const seizureLatest = seizureYears[seizureYears.length - 1]
@@ -189,6 +211,7 @@ const overview = {
     wastewaterCities: wastewater.meta.sites.length,
   },
   overdoseBySubstance,
+  overdoseTrend,
   topSeizureCountries,
   designationsByProgram,
   topDesignationCountries,
