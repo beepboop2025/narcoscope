@@ -6,18 +6,19 @@
 ![tests](https://github.com/beepboop2025/narcoscope/actions/workflows/tests.yml/badge.svg)
 ![coverage](https://img.shields.io/badge/coverage-86%25-brightgreen)
 
-# 🌍 NarcoScope
+# NarcoScope
 
-**Live: [drug-price-observatory.vercel.app](https://drug-price-observatory.vercel.app)** · permanent home: **narcoscope.io** (domain reserved, coming soon)
+[Open the live explorer](https://drug-price-observatory.vercel.app/)
 
-An educational, public-good **data explorer** that makes the world's drug-trade
-data *legible*. UNODC, INCB, and EUDA already publish street (retail) prices,
-precursor-chemical prices, and trafficking-flow/seizure data — but it's buried in
-dense PDFs and CSVs most people can't read. This app is a **translation layer** on
-top of that public data: clean charts, maps, and plain-English explanations.
+NarcoScope is a research interface for aggregate public statistics on retail drug
+prices, seizures, precursor flows, overdose mortality, and sanctions designations.
+It organizes records from UNODC, INCB, EUDA, CDC, the US Treasury, and other named
+publishers into charts, maps, and source-linked explanations.
 
-> **Mission:** democratize hard-to-read official drug data. Not a new data source —
-> a way to *understand* the existing one.
+NarcoScope does not create a new drug-market dataset. It preserves each source,
+retrieval date, and extraction rule, and labels official and illustrative records
+separately. The ethical limits are part of the product: no point-of-sale, real-time,
+sub-street, or navigable location data is collected or shown.
 
 ## What it shows
 
@@ -61,8 +62,8 @@ top of that public data: clean charts, maps, and plain-English explanations.
   Risk profiles and the evidence-graph ledger can be exported as CSV directly
   from the briefing for offline analyst review.
 
-Every view carries an auto-generated *"In plain English"* sentence and hover
-tooltips that explain each figure in human terms.
+Every view includes a plain-language reading and hover tooltips that explain how to
+interpret the figure.
 
 ## Screenshots
 
@@ -76,7 +77,7 @@ mobile / WebGL-less devices.
 
 ![NarcoScope — WebGL hero globe](docs/screenshots/hero.png)
 
-**Street Prices** — price trends + affordability lens, with a plain-English summary:
+**Street Prices:** price trends and an affordability lens, with a plain-language summary:
 
 ![Street Prices](docs/screenshots/street-prices.png)
 

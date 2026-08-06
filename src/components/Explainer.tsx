@@ -8,7 +8,7 @@ export default function Explainer({ text }: ExplainerProps) {
   if (!text) return null
   return (
     <p className="explainer">
-      <span className="explainer-tag">In plain English</span>
+      <span className="explainer-tag">Plain-language reading</span>
       {text}
     </p>
   )

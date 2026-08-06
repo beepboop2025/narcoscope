@@ -1,0 +1,25 @@
+# NarcoScope
+
+> A research interface for aggregate public drug-market data, with source provenance and explicit official or illustrative data labels.
+
+NarcoScope covers retail prices, seizures, precursor flows, overdose mortality, wastewater measurements, wildlife confiscation records, and sanctions designations. The interface is for awareness, education, and research.
+
+## Data sources
+
+- UNODC World Drug Report and statistical annexes
+- International Narcotics Control Board precursor reports
+- European Union Drugs Agency datasets
+- CDC provisional overdose mortality
+- Statistics Canada wastewater measurements
+- US Treasury OFAC sanctions designations
+- World Bank GDP per capita
+
+## Limits
+
+NarcoScope does not provide point-of-sale, real-time, sub-street, or navigable location data. Some precursor-price and regional flow records remain illustrative and are labelled in the interface. A designation is a published government action, not a finding of guilt.
+
+## Links
+
+- [Live explorer](https://drug-price-observatory.vercel.app/)
+- [Source code and methodology](https://github.com/beepboop2025/narcoscope)
+- [Source registry](https://github.com/beepboop2025/narcoscope/blob/main/scripts/pipeline/sources.json)
