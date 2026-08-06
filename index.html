@@ -1,11 +1,43 @@
 <!doctype html>
-<html lang="en" style="background:#000;opacity:0">
+<html lang="en" style="background:#000">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <title>NarcoScope — Awareness through public data</title>
-    <meta name="description" content="An educational data explorer for the retail (street) prices of illicit drugs, built on public UNODC/EUDA datasets. For awareness and research." />
+    <title>NarcoScope | Public drug-market data explorer</title>
+    <meta name="description" content="Explore public UNODC, INCB, EUDA, CDC, and US Treasury data on retail drug prices, seizures, precursor flows, overdose mortality, and sanctions." />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <link rel="canonical" href="https://drug-price-observatory.vercel.app/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="NarcoScope" />
+    <meta property="og:title" content="NarcoScope | Public drug-market data explorer" />
+    <meta property="og:description" content="Public statistics on retail drug prices, seizures, precursor flows, overdose mortality, and sanctions, with sources and data-status labels." />
+    <meta property="og:url" content="https://drug-price-observatory.vercel.app/" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="NarcoScope | Public drug-market data explorer" />
+    <meta name="twitter:description" content="Public drug-market statistics with sources, methods, and explicit official or illustrative data labels." />
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "NarcoScope",
+      "alternateName": "Drug Price Observatory",
+      "url": "https://drug-price-observatory.vercel.app/",
+      "applicationCategory": "EducationalApplication",
+      "operatingSystem": "Any",
+      "description": "A research interface for aggregate public data on retail drug prices, seizures, precursor flows, overdose mortality, and sanctions designations.",
+      "codeRepository": "https://github.com/beepboop2025/narcoscope",
+      "license": "https://opensource.org/license/mit",
+      "isAccessibleForFree": true,
+      "featureList": [
+        "Retail price and affordability trends",
+        "Seizure and overdose comparisons",
+        "Precursor-flow maps",
+        "Source provenance and data-status labels"
+      ]
+    }
+    </script>
 
     <!-- Typography: Gilda Display (display serif) + Lato (body) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -16,7 +48,14 @@
     />
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <main style="max-width:52rem;margin:5rem auto;padding:0 1.5rem;color:#f5f5f5;font-family:system-ui,sans-serif;line-height:1.6">
+        <h1>NarcoScope</h1>
+        <p>NarcoScope is a research interface for aggregate public drug-market data. It covers retail prices, seizures, precursor flows, overdose mortality, and sanctions designations from UNODC, INCB, EUDA, CDC, and the US Treasury.</p>
+        <p>Every view identifies its source and data state. Official extracts and illustrative records are labelled separately. The project does not provide point-of-sale, real-time, or navigable location data.</p>
+        <p><a href="https://github.com/beepboop2025/narcoscope" style="color:#9ee8ff">Read the source and methodology on GitHub</a>.</p>
+      </main>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

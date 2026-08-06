@@ -69,7 +69,7 @@ export default function App() {
         <HeroScene />
         <div className="hero-inner">
           <div className="brand">
-            <span className="brand-mark">🌍</span>
+            <span className="brand-mark" aria-hidden="true">N</span>
             <div className="titles">
               <SpringText
                 as="h1"
@@ -78,7 +78,7 @@ export default function App() {
                 trigger="mount"
                 stagger={26}
               />
-              <p className="tagline">Making the world&rsquo;s drug-trade data legible.</p>
+              <p className="tagline">Public drug-market data, sourced and explained.</p>
               <p className="formerly-note">formerly the Drug Price Observatory</p>
             </div>
             <span
@@ -92,10 +92,10 @@ export default function App() {
           </div>
           <Reveal delay={420}>
             <p className="lede">
-              Street prices, precursor flows, trafficking corridors, overdose mortality
-              and sanctions designations — drawn from public UNODC, INCB, CDC and US
-              Treasury data and translated into plain language. Aggregate statistics
-              for awareness, education, and research only.
+              Explore street prices, precursor flows, trafficking corridors, overdose
+              mortality, and sanctions designations from public UNODC, INCB, CDC, and US
+              Treasury records. Aggregate statistics for awareness, education, and
+              research only.
             </p>
           </Reveal>
         </div>
