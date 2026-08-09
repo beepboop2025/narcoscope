@@ -40,7 +40,7 @@ const TABS = [
   { id: 'states', label: 'US Overdose Map' },
   { id: 'triangulate', label: 'Triangulation' },
   { id: 'designations', label: 'Designations' },
-  { id: 'illicitfinance', label: 'Illicit Finance' },
+  { id: 'illicitfinance', label: 'Finance Typologies' },
   { id: 'wildlife', label: 'Wildlife Seizures' },
   { id: 'myanmar', label: 'Myanmar Focus' },
   { id: 'intel', label: 'Enterprise Intel' },

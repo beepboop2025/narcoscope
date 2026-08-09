@@ -8,12 +8,10 @@ import CountUp from '../motion/CountUp'
 import Reveal from '../motion/Reveal'
 
 /**
- * Wildlife Seizures — the wildlife-trafficking dimension of the convergence,
- * standing on its own data (CITES confiscations, Source='I') rather than only
- * the OFAC-designation angle in Illicit Finance. Same criminal infrastructure,
- * a different commodity: the Teo Boon Ching network OFAC named for laundering
- * is a wildlife-trafficking network. Lazy tab, but the data is a tiny 5.7 kB
- * pre-aggregate, so the weight is only recharts (already shared).
+ * Wildlife Seizures presents CITES confiscation records as an adjacent public
+ * dataset. It does not use OFAC names to infer a laundering role or claim that
+ * wildlife and drug records describe the same actors. Lazy tab, but the data
+ * is a tiny 5.7 kB pre-aggregate, so the weight is only recharts.
  *
  * Honesty is the whole design constraint: this is CITES-reported confiscations
  * of CITES-LISTED species, counted as records (quantities mix units), a partial
@@ -65,12 +63,11 @@ export default function WildlifeSeizures() {
 
       <Explainer
         text={
-          `Wildlife trafficking is not a separate world from the drug trade — it runs on the same ` +
-          `couriers, corridors and laundering plumbing. The network OFAC designated around Teo Boon Ching, ` +
-          `which appears in Illicit Finance, is a wildlife-trafficking operation. This tab gives that ` +
-          `dimension its own hard data: ${meta.totalRecords.toLocaleString()} confiscations of protected ` +
-          `species reported to CITES since ${meta.yearRange[0]}. It is a partial view — only CITES-listed ` +
-          `species, only what parties report — so read it as a floor, never a total.`
+          `Wildlife confiscations are an adjacent lens on cross-border illicit commodity markets. ` +
+          `This tab presents ${meta.totalRecords.toLocaleString()} confiscation records for protected ` +
+          `species reported to CITES since ${meta.yearRange[0]}. It does not identify financing methods ` +
+          `or link wildlife records to drug-market actors. It is a partial view: only CITES-listed ` +
+          `species and only what parties report, so it must never be read as a complete total.`
         }
       />
 
@@ -196,9 +193,8 @@ export default function WildlifeSeizures() {
             ))}
           </div>
           <p className="panel-note">
-            Live animals, raw corals, leather goods and derivatives lead — the same commodity spread
-            (luxury goods, traditional medicine, exotic pets) that funds and launders through the wider
-            trafficking economy.
+            Live animals, raw corals, leather goods and derivatives lead. These categories describe the
+            seized commodity form; they do not identify a financing or laundering mechanism.
           </p>
         </div>
       </Reveal>
@@ -206,8 +202,8 @@ export default function WildlifeSeizures() {
       <p className="note">
         Source: <a href={meta.url} target="_blank" rel="noreferrer">{meta.source}</a>. {meta.caveat} This
         is a one-time annual extract (the full CITES database is ~460 MB), so unlike the drug-market
-        panels it is not refreshed daily. It sits alongside Illicit Finance as the wildlife face of one
-        convergent criminal infrastructure.
+        panels it is not refreshed daily. It is adjacent context, not evidence that wildlife and drug
+        records share actors, routes or financial infrastructure.
       </p>
     </section>
   )
