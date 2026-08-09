@@ -209,20 +209,20 @@ describe('Street Prices chart (ranked, not a broken line)', () => {
 })
 
 describe('Illicit Finance', () => {
-  it('surfaces the named cross-border laundering networks from OFAC data', () => {
+  it('limits laundering-specific claims to the literal OFAC name', () => {
     render(<IllicitFinance />)
-    // The convergence: laundering networks incl. the wildlife-trafficking TCO.
     expect(screen.getAllByText(/ALTAF KHANANI MONEY LAUNDERING/i).length).toBeGreaterThan(0)
-    expect(screen.getAllByText(/BARAKAT/i).length).toBeGreaterThan(0)
-    expect(screen.getAllByText(/WILDLIFE TRAFFICKING/i).length).toBeGreaterThan(0)
+    expect(screen.getByText(/generic entity-name words are not used/i)).toBeTruthy()
+    expect(screen.queryByText(/designated financial facilitators/i)).toBeNull()
+    expect(screen.queryByRole('heading', { name: /laundering hubs/i })).toBeNull()
   })
 
-  it('renders the laundering typologies including hawala and fei-chien', () => {
+  it('renders typologies as reference material separate from entity facts', () => {
     render(<IllicitFinance />)
     expect(screen.getByText('Hawala')).toBeTruthy()
     expect(screen.getByText(/Fei-ch/i)).toBeTruthy()
-    expect(screen.getByText(/Trade-based laundering/i)).toBeTruthy()
-    // Laundering hubs bar list present.
+    expect(screen.getByText(/Trade-based money laundering/i)).toBeTruthy()
+    expect(screen.getByText(/not derived from the designation extract/i)).toBeTruthy()
     expect(document.querySelectorAll('.bar-row').length).toBeGreaterThan(3)
   })
 })

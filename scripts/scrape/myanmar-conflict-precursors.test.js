@@ -8,6 +8,7 @@ import {
   normalizeBody,
   observationsToCsv,
   robotsAllows,
+  SOURCE_FOCUSES,
   validateManifest,
   FetchError,
   BlockedAddressError,
@@ -74,6 +75,26 @@ describe('myanmar conflict/precursor scraper helpers', () => {
     assert.throws(
       () => validateManifest({ sources: [{ id: 'Bad ID', url: 'file:///tmp/x', keywords: [] }] }),
       /kebab-case/,
+    )
+  })
+
+  it('accepts every semantically distinct focus in the default manifest', async () => {
+    const manifest = JSON.parse(await fs.readFile(new URL('./myanmar-sources.json', import.meta.url), 'utf8'))
+    const sources = validateManifest(manifest)
+
+    assert.deepEqual([...new Set(sources.map((source) => source.focus))].sort(), [...SOURCE_FOCUSES].sort())
+    assert.equal(sources.filter((source) => source.focus === 'convergence').length, 2)
+    assert.throws(
+      () => validateManifest({
+        sources: [{
+          id: 'unknown-focus',
+          name: 'Unknown Focus',
+          url: 'https://example.org',
+          focus: 'financial_inference',
+          keywords: ['Myanmar'],
+        }],
+      }),
+      /must be one of/,
     )
   })
 

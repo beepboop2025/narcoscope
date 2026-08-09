@@ -100,6 +100,12 @@ if (!offline) {
 console.log('· regenerating overview dashboard summary …')
 run('node', ['scripts/convert/gen-overview.mjs'])
 
+// The public Palimpsest bridge is generated from the official datasets above.
+// Keeping it in the refresh path prevents a successful data refresh from
+// leaving a stale public aggregate behind.
+console.log('· regenerating public Palimpsest China aggregate …')
+run('node', ['scripts/bridge/build-palimpsest-china.mjs'])
+
 // ---- validate --------------------------------------------------------------------
 console.log('· validating (typecheck + full test suite incl. dataset-integrity tests) …')
 run('npx', ['tsc', '--noEmit'])
@@ -107,7 +113,10 @@ run('npx', ['vitest', 'run'])
 
 // ---- report ------------------------------------------------------------------------
 console.log('\n✔ pipeline complete. Changed files:')
-const diff = spawnSync('git', ['status', '--porcelain', '--', 'src/data'], { encoding: 'utf8' }).stdout.trim()
+const diff = spawnSync('git', [
+  'status', '--porcelain', '--', 'src/data',
+  'public/data/narcoscope-palimpsest-v1.json',
+], { encoding: 'utf8' }).stdout.trim()
 console.log(diff || '  (no data changes — sources unchanged since last run)')
 
 const pending = sources.filter((s) => s.automation !== 'auto')

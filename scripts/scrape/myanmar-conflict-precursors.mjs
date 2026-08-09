@@ -22,6 +22,7 @@ const DEFAULT_MIN_INTERVAL_MS = 1500
 const DEFAULT_MAX_RETRIES = 2
 const DEFAULT_RETRY_BASE_MS = 500
 const USER_AGENT = 'DrugPriceObservatory/0.1 (public data preparation; aggregate research only)'
+export const SOURCE_FOCUSES = Object.freeze(['conflict_events', 'precursor_flows', 'convergence'])
 
 export class FetchError extends Error {}
 export class BlockedAddressError extends FetchError {}
@@ -403,8 +404,8 @@ export function validateManifest(manifest, file = '<manifest>') {
     if (ids.has(source.id)) throw new Error(`duplicate source id: ${source.id}`)
     ids.add(source.id)
     if (!source.name || typeof source.name !== 'string') throw new Error(`${prefix}.name is required`)
-    if (!['conflict_events', 'precursor_flows'].includes(source.focus)) {
-      throw new Error(`${prefix}.focus must be conflict_events or precursor_flows`)
+    if (!SOURCE_FOCUSES.includes(source.focus)) {
+      throw new Error(`${prefix}.focus must be one of: ${SOURCE_FOCUSES.join(', ')}`)
     }
     const url = new URL(source.url)
     if (!['https:', 'http:'].includes(url.protocol)) throw new Error(`${prefix}.url must be http(s)`)
