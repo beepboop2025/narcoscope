@@ -20,6 +20,8 @@
 
 import fs from 'node:fs'
 
+import { fetchJsonWithRetry } from '../lib/http.mjs'
+
 const xlsxPath = process.argv[2]
 if (!xlsxPath) {
   console.error('Usage: node wdr-prices-to-ts.mjs <path-to-8.1_Prices_and_purities.xlsx>')
@@ -130,9 +132,13 @@ if (unknownCountries.size) {
 // ---- World Bank GDP per capita for every country in the dataset -----------
 const isoList = [...new Set(records.map((r) => r.iso3))].sort()
 const WB_URL = 'https://api.worldbank.org/v2/country/all/indicator/NY.GDP.PCAP.CD?format=json&per_page=20000&date=2020:2024'
-const res = await fetch(WB_URL)
-if (!res.ok) { console.error(`World Bank API error: ${res.status}`); process.exit(1) }
-const payload = await res.json()
+let payload
+try {
+  payload = await fetchJsonWithRetry(WB_URL)
+} catch (error) {
+  console.error(`World Bank API error: ${error.message}`)
+  process.exit(1)
+}
 const latest = new Map() // iso3 -> [year, value]
 for (const row of (payload[1] ?? [])) {
   const iso3 = row?.countryiso3code
