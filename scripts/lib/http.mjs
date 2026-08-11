@@ -29,7 +29,6 @@ export async function fetchWithRetry(
   }
 
   const requestHeaders = {
-    Accept: 'application/json',
     'User-Agent': DEFAULT_USER_AGENT,
     ...headers,
   }
@@ -60,6 +59,12 @@ export async function fetchWithRetry(
 }
 
 export async function fetchJsonWithRetry(url, options = {}) {
-  const response = await fetchWithRetry(url, options)
+  const response = await fetchWithRetry(url, {
+    ...options,
+    headers: {
+      Accept: 'application/json',
+      ...options.headers,
+    },
+  })
   return response.json()
 }

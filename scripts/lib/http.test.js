@@ -70,6 +70,19 @@ describe('fetchJsonWithRetry', () => {
 })
 
 describe('fetchWithRetry', () => {
+  it('does not assume a response media type', async () => {
+    const fetchImpl = vi.fn().mockResolvedValue(response(200))
+
+    await fetchWithRetry('https://example.test/data', { fetchImpl })
+
+    expect(fetchImpl).toHaveBeenCalledWith(
+      'https://example.test/data',
+      expect.objectContaining({
+        headers: expect.not.objectContaining({ Accept: expect.anything() }),
+      }),
+    )
+  })
+
   it('returns successful binary responses with caller-specific accept headers', async () => {
     const archive = response(200)
     const fetchImpl = vi.fn().mockResolvedValue(archive)
