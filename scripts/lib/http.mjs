@@ -14,7 +14,7 @@ const wait = (milliseconds) =>
  * small retry budget for transport failures and transient HTTP responses.
  * Permanent HTTP failures still fail closed immediately.
  */
-export async function fetchJsonWithRetry(
+export async function fetchWithRetry(
   url,
   {
     attempts = 3,
@@ -48,7 +48,7 @@ export async function fetchJsonWithRetry(
       continue
     }
 
-    if (response.ok) return response.json()
+    if (response.ok) return response
 
     if (!isRetryableStatus(response.status) || attempt === attempts) {
       throw new Error(`HTTP ${response.status} after ${attempt} attempt(s)`)
@@ -57,4 +57,9 @@ export async function fetchJsonWithRetry(
   }
 
   throw new Error('request retry budget exhausted')
+}
+
+export async function fetchJsonWithRetry(url, options = {}) {
+  const response = await fetchWithRetry(url, options)
+  return response.json()
 }
