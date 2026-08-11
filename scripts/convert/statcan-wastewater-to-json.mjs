@@ -52,6 +52,8 @@ import os from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+import { fetchWithRetry } from '../lib/http.mjs'
+
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 const RAW_DIR = path.join(ROOT, 'data-raw')
 const SOURCE_NAME = 'Statistics Canada — Drug metabolites in wastewater in select Canadian cities'
@@ -166,8 +168,9 @@ function splitLine(line) {
 async function loadTable(productId) {
   const zipPath = path.join(RAW_DIR, `statcan-${productId}.zip`)
   if (!offline) {
-    const res = await fetch(tableUrl(productId))
-    if (!res.ok) throw new Error(`StatCan fetch failed (${res.status}) for ${productId}`)
+    const res = await fetchWithRetry(tableUrl(productId), {
+      headers: { Accept: 'application/zip' },
+    })
     fs.mkdirSync(RAW_DIR, { recursive: true })
     fs.writeFileSync(zipPath, Buffer.from(await res.arrayBuffer()))
   }

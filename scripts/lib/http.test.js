@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 
-import { fetchJsonWithRetry } from './http.mjs'
+import { fetchJsonWithRetry, fetchWithRetry } from './http.mjs'
 
 const response = (status, payload = {}) => ({
   ok: status >= 200 && status < 300,
@@ -66,5 +66,39 @@ describe('fetchJsonWithRetry', () => {
     })).rejects.toThrow('request failed after 2 attempts: connection reset')
     expect(fetchImpl).toHaveBeenCalledTimes(2)
     expect(sleep.mock.calls).toEqual([[5]])
+  })
+})
+
+describe('fetchWithRetry', () => {
+  it('does not assume a response media type', async () => {
+    const fetchImpl = vi.fn().mockResolvedValue(response(200))
+
+    await fetchWithRetry('https://example.test/data', { fetchImpl })
+
+    expect(fetchImpl).toHaveBeenCalledWith(
+      'https://example.test/data',
+      expect.objectContaining({
+        headers: expect.not.objectContaining({ Accept: expect.anything() }),
+      }),
+    )
+  })
+
+  it('returns successful binary responses with caller-specific accept headers', async () => {
+    const archive = response(200)
+    const fetchImpl = vi.fn().mockResolvedValue(archive)
+
+    await expect(fetchWithRetry('https://example.test/table.zip', {
+      fetchImpl,
+      headers: { Accept: 'application/zip' },
+    })).resolves.toBe(archive)
+    expect(fetchImpl).toHaveBeenCalledWith(
+      'https://example.test/table.zip',
+      expect.objectContaining({
+        headers: expect.objectContaining({
+          Accept: 'application/zip',
+          'User-Agent': expect.stringContaining('NarcoScope data collector'),
+        }),
+      }),
+    )
   })
 })
