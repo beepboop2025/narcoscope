@@ -16,6 +16,10 @@ REPO="${NARCOSCOPE_REPO:-/opt/narcoscope}"
 DEPLOY_KEY="${NARCOSCOPE_DEPLOY_KEY:-/root/.ssh/narcoscope_deploy}"
 BRANCH="${NARCOSCOPE_BRANCH:-main}"
 export GIT_SSH_COMMAND="ssh -i ${DEPLOY_KEY} -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new"
+GENERATED_PATHS=(
+  "src/data"
+  "public/data/narcoscope-palimpsest-v1.json"
+)
 
 log() { echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] $*"; }
 
@@ -25,7 +29,7 @@ log "collector start (repo=$REPO branch=$BRANCH)"
 # Always start from a clean, current main so a local wobble can't accumulate.
 git fetch --quiet origin "$BRANCH"
 git reset --quiet --hard "origin/${BRANCH}"
-git clean -qfd -- src/data data-raw 2>/dev/null || true
+git clean -qfd -- "${GENERATED_PATHS[@]}" data-raw 2>/dev/null || true
 
 # Dependencies (fast no-op when the lockfile is unchanged).
 npm ci --no-audit --no-fund --silent
@@ -36,13 +40,14 @@ if ! npm run data:refresh; then
   exit 1
 fi
 
-# Push only the generated data, only if it actually changed.
-if git diff --quiet -- src/data; then
+# Push only the generated data and its derived public artifact, only if either
+# changed. `git status` also sees newly generated, previously untracked files.
+if [[ -z "$(git status --porcelain -- "${GENERATED_PATHS[@]}")" ]]; then
   log "no data changes"
   exit 0
 fi
 
-git add src/data
+git add -- "${GENERATED_PATHS[@]}"
 git -c user.name="narcoscope-collector" \
     -c user.email="collector@narcoscope.local" \
     commit --quiet -m "data: automated refresh $(date -u +%Y-%m-%dT%H:%MZ)

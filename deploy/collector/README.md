@@ -11,8 +11,9 @@ and pushing validated changes, which trigger a Vercel redeploy.
    annexes, World Bank GDP, CDC VSRR overdose, OFAC SDN, Statistics Canada
    wastewater), regenerates the bundled datasets **and the Overview summary**,
    then runs `tsc` + the full test suite as a **hard validation gate**.
-4. If `src/data` changed *and* validation passed, commits and pushes to `main`.
-   Otherwise pushes nothing.
+4. If `src/data` or its derived public Palimpsest artifact changed *and*
+   validation passed, commits them together and pushes to `main`. Otherwise
+   pushes nothing.
 
 Bad or malformed upstream data fails the test gate and is never pushed. The one
 residual risk — a source silently changing format in a way that still passes the
