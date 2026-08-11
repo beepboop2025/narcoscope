@@ -33,7 +33,9 @@ jobs:
       - name: Open PR if datasets changed
         uses: peter-evans/create-pull-request@v6
         with:
-          add-paths: src/data
+          add-paths: |
+            src/data
+            public/data/narcoscope-palimpsest-v1.json
           branch: data-refresh/automated
           commit-message: 'data: quarterly open-source refresh (UNODC annexes + World Bank GDP)'
           title: 'Automated data refresh'
