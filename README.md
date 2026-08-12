@@ -102,6 +102,19 @@ or navigable location data, and the precursor layer stores **logistics only** (w
 how much, where, control status) with **no chemistry, synthesis routes, or yields**.
 It is not, and must not be used as, a guide to obtaining any substance.
 
+### Private ScamShield signal
+
+The Hetzner analyst environment can ingest ScamShield's privacy-minimized
+Telegram aggregate for private review. This does not enter the website or its
+Git-backed datasets. A strict schema firewall rejects raw messages, exact IOCs,
+source identifiers, universal-coverage claims, public-eligibility claims, and
+anything that drops the human-review requirement. The importer has no network
+access and retains only aggregate counts, a source-file hash, hourly snapshots,
+and an append-only receipt ledger under `/var/lib/narcoscope-analyst/`.
+
+See [`deploy/private-import/README.md`](deploy/private-import/README.md) for the
+trust boundary and production service.
+
 ### Named entities
 
 The Designations tab names people and companies, which every other layer avoids.
