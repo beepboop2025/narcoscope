@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <defs>
+    <radialGradient id="g" cx="72%" cy="28%" r="74%">
+      <stop offset="0" stop-color="#19353d"/>
+      <stop offset="1" stop-color="#05080a"/>
+    </radialGradient>
+    <pattern id="grid" width="56" height="56" patternUnits="userSpaceOnUse">
+      <path d="M56 0H0v56" fill="none" stroke="#6de4dc" stroke-opacity=".08"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="630" fill="url(#g)"/>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+  <circle cx="905" cy="316" r="212" fill="none" stroke="#6de4dc" stroke-opacity=".42" stroke-width="2"/>
+  <circle cx="905" cy="316" r="142" fill="none" stroke="#6de4dc" stroke-opacity=".23" stroke-width="2"/>
+  <path d="M700 350c93-96 174-134 267-108 52 15 91 54 137 110" fill="none" stroke="#e88d76" stroke-width="7"/>
+  <circle cx="701" cy="350" r="10" fill="#e88d76"/><circle cx="1104" cy="352" r="10" fill="#e88d76"/>
+  <text x="74" y="172" fill="#6de4dc" font-family="Arial,sans-serif" font-size="25" letter-spacing="7">PUBLIC DATA OBSERVATORY</text>
+  <text x="70" y="300" fill="#f1f6f5" font-family="Georgia,serif" font-size="112">NarcoScope</text>
+  <text x="76" y="382" fill="#b9c8c8" font-family="Arial,sans-serif" font-size="37">Drug-market records, made legible.</text>
+  <text x="76" y="486" fill="#e88d76" font-family="monospace" font-size="24">SOURCES NAMED · CLOCKS SEPARATED · LIMITS VISIBLE</text>
+  <text x="76" y="548" fill="#879a9b" font-family="monospace" font-size="21">narcoscope.com</text>
+</svg>
