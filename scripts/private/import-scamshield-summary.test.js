@@ -140,4 +140,19 @@ describe('ScamShield private analyst import', () => {
     expect(installer).toContain('--property=Result --value')
     expect(installer).not.toContain('systemctl --no-pager --full status')
   })
+
+  it('exposes only the aggregate file from ScamShield state', () => {
+    const here = path.dirname(fileURLToPath(import.meta.url))
+    const unit = fs.readFileSync(
+      path.resolve(here, '../../deploy/private-import/narcoscope-scamshield-import.service'),
+      'utf8',
+    )
+    expect(unit).toContain(
+      'BindReadOnlyPaths=/var/lib/scamshield/handoffs/narcoscope/' +
+      'scamshield-monitoring-summary.json:/run/narcoscope-scamshield-import/input.json',
+    )
+    expect(unit).toContain('InaccessiblePaths=/var/lib/scamshield')
+    expect(unit).toContain('--input /run/narcoscope-scamshield-import/input.json')
+    expect(unit).not.toContain('--input /var/lib/scamshield')
+  })
 })
