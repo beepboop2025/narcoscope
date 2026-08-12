@@ -19,7 +19,8 @@
     "ontology": "node scripts/ontology/derive-ontology.mjs",
     "data:overdose": "node scripts/convert/cdc-overdose-to-json.mjs",
     "data:designations": "node scripts/convert/ofac-designations-to-json.mjs",
-    "data:wastewater": "node scripts/convert/statcan-wastewater-to-json.mjs"
+    "data:wastewater": "node scripts/convert/statcan-wastewater-to-json.mjs",
+    "private:import:scamshield": "node scripts/private/import-scamshield-summary.mjs"
   },
   "dependencies": {
     "@react-spring/web": "^9.7.5",

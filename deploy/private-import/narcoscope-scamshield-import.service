@@ -1,0 +1,43 @@
+[Unit]
+Description=Import ScamShield aggregate into NarcoScope private analyst state
+After=scamshield-feed.service
+ConditionPathExists=/var/lib/scamshield/handoffs/narcoscope/scamshield-monitoring-summary.json
+
+[Service]
+Type=oneshot
+User=narcoscope-analyst
+Group=narcoscope-analyst
+SupplementaryGroups=intelligence-review
+WorkingDirectory=/opt/narcoscope
+Environment=PATH=/usr/local/bin:/usr/bin:/bin
+UMask=0077
+StateDirectory=narcoscope-analyst
+StateDirectoryMode=0700
+ExecStart=/usr/bin/env node /opt/narcoscope/scripts/private/import-scamshield-summary.mjs --input /var/lib/scamshield/handoffs/narcoscope/scamshield-monitoring-summary.json --state-dir /var/lib/narcoscope-analyst/scamshield
+PrivateNetwork=true
+NoNewPrivileges=true
+CapabilityBoundingSet=
+AmbientCapabilities=
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectKernelLogs=true
+ProtectControlGroups=true
+ProtectClock=true
+ProtectHostname=true
+ProtectProc=invisible
+ProcSubset=pid
+LockPersonality=true
+RestrictSUIDSGID=true
+RestrictRealtime=true
+RestrictNamespaces=true
+RemoveIPC=true
+RestrictAddressFamilies=AF_UNIX
+SystemCallArchitectures=native
+ReadOnlyPaths=/opt/narcoscope /var/lib/scamshield/handoffs/narcoscope
+ReadWritePaths=/var/lib/narcoscope-analyst
+MemoryMax=256M
+TasksMax=32
