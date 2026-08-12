@@ -1,4 +1,4 @@
-import { useEffect, useState, lazy, Suspense, type ReactNode } from 'react'
+import { useEffect, useRef, useState, lazy, Suspense, type KeyboardEvent, type ReactNode } from 'react'
 import { useSpring, animated } from '@react-spring/web'
 import Overview from './components/Overview'
 import Explorer from './components/Explorer'
@@ -76,6 +76,130 @@ function TabPanel({ children }: { children: ReactNode }) {
   return <animated.div style={style}>{children}</animated.div>
 }
 
+const CORRIDOR_STAGES = [
+  {
+    id: 'record',
+    index: '01',
+    eyebrow: 'OFFICIAL RECORD',
+    title: 'Inspect the claim.',
+    copy: 'Start with the source-linked dossier, its aggregation boundary, and every row NarcoScope refused to combine.',
+    href: '#newsroom',
+    cta: 'Open the cited newsroom',
+    auxHref: '/news/feed.json',
+    auxLabel: 'Follow the JSON feed',
+  },
+  {
+    id: 'context',
+    index: '02',
+    eyebrow: 'CHINA CONTEXT',
+    title: 'Test what is visible.',
+    copy: 'Palimpsest tracks China’s information controls and publication gaps—the relevant context when precursor evidence depends on what entered the public record.',
+    href: 'https://palimpsest.info/',
+    cta: 'Open Palimpsest',
+    auxHref: 'https://t.me/palimpsest_watch_bot?start=narcoscope_corridor',
+    auxLabel: 'Ask @palimpsest_watch_bot',
+  },
+  {
+    id: 'bot',
+    index: '03',
+    eyebrow: 'PERSONAL DESK',
+    title: 'Ask, then follow.',
+    copy: 'Use the NarcoScope evidence bot for the latest bounded brief, a newsroom story, scope notes, and explicit opt-in follow alerts.',
+    href: 'https://t.me/NarcoScopeEvidenceBot?start=ref_site_corridor',
+    cta: 'Open @NarcoScopeEvidenceBot',
+    auxHref: 'https://narcoscope.com/developers/',
+    auxLabel: 'Or connect through API + MCP',
+  },
+  {
+    id: 'signal',
+    index: '04',
+    eyebrow: 'REVIEWED CHANNEL',
+    title: 'Watch the evidence move.',
+    copy: 'Evidence Signal carries curated NarcoScope, Palimpsest, and ScamShield updates. Private submissions and raw wire material never enter the channel.',
+    href: 'https://t.me/EvidenceSignalDesk',
+    cta: 'Join @EvidenceSignalDesk',
+    auxHref: 'https://t.me/NarcoScopeEvidenceBot?start=ref_signal_channel',
+    auxLabel: 'Prefer the personal bot',
+  },
+] as const
+
+export function resolveCorridorTabIndex(
+  key: string,
+  currentIndex: number,
+  tabCount = CORRIDOR_STAGES.length,
+): number | null {
+  if (tabCount < 1) return null
+  if (key === 'ArrowRight') return (currentIndex + 1) % tabCount
+  if (key === 'ArrowLeft') return (currentIndex - 1 + tabCount) % tabCount
+  if (key === 'Home') return 0
+  if (key === 'End') return tabCount - 1
+  return null
+}
+
+function EvidenceCorridor() {
+  const [activeId, setActiveId] = useState<(typeof CORRIDOR_STAGES)[number]['id']>('record')
+  const tabRefs = useRef<Array<HTMLButtonElement | null>>([])
+  const active = CORRIDOR_STAGES.find((stage) => stage.id === activeId) ?? CORRIDOR_STAGES[0]
+
+  const handleStageKeyDown = (event: KeyboardEvent<HTMLButtonElement>, currentIndex: number) => {
+    const nextIndex = resolveCorridorTabIndex(event.key, currentIndex)
+    if (nextIndex === null) return
+    const nextStage = CORRIDOR_STAGES[nextIndex]
+    if (!nextStage) return
+    event.preventDefault()
+    setActiveId(nextStage.id)
+    tabRefs.current[nextIndex]?.focus()
+  }
+
+  return (
+    <section className="evidence-corridor" aria-labelledby="corridor-title">
+      <header className="corridor-header">
+        <div>
+          <span>THE EVIDENCE CORRIDOR</span>
+          <h2 id="corridor-title">Don&rsquo;t stop at the chart.<br /><em>Follow the claim.</em></h2>
+        </div>
+        <p>
+          Move from the underlying record to the relevant China context, then choose
+          a personal bot or the reviewed public signal. Every step preserves the evidence boundary.
+        </p>
+      </header>
+      <div className="corridor-instrument">
+        <div className="corridor-route" role="tablist" aria-label="Evidence corridor stages">
+          <span className="corridor-line" aria-hidden="true" />
+          {CORRIDOR_STAGES.map((stage, index) => (
+            <button
+              key={stage.id}
+              id={`corridor-tab-${stage.id}`}
+              ref={(node) => { tabRefs.current[index] = node }}
+              type="button"
+              role="tab"
+              aria-selected={active.id === stage.id}
+              aria-controls="corridor-detail"
+              tabIndex={active.id === stage.id ? 0 : -1}
+              className={active.id === stage.id ? 'active' : ''}
+              onClick={() => setActiveId(stage.id)}
+              onPointerEnter={() => setActiveId(stage.id)}
+              onKeyDown={(event) => handleStageKeyDown(event, index)}
+            >
+              <b>{stage.index}</b>
+              <span>{stage.eyebrow}</span>
+            </button>
+          ))}
+        </div>
+        <article
+          className={`corridor-detail corridor-detail--${active.id}`}
+          id="corridor-detail"
+          role="tabpanel"
+          aria-labelledby={`corridor-tab-${active.id}`}
+        >
+          <div><span>{active.index} / {active.eyebrow}</span><h3>{active.title}</h3></div>
+          <div><p>{active.copy}</p><nav><a href={active.href}>{active.cta} ↗</a><a href={active.auxHref}>{active.auxLabel}</a></nav></div>
+        </article>
+      </div>
+    </section>
+  )
+}
+
 export default function App() {
   const { isSample } = useData()
   const [tab, setTab] = useState<string>(initialTab)
@@ -141,6 +265,8 @@ export default function App() {
               </button>
               <a className="hero-action" href="/developers/">Connect API + MCP</a>
               <a className="hero-action" href="/news/feed.json">Follow the feed</a>
+              <a className="hero-action hero-action--telegram" href="https://t.me/NarcoScopeEvidenceBot?start=ref_site_hero">Open the Telegram bot</a>
+              <a className="hero-action hero-action--signal" href="https://t.me/EvidenceSignalDesk">Join Evidence Signal</a>
             </div>
           </Reveal>
         </div>
@@ -181,6 +307,10 @@ export default function App() {
       </main>
 
       <Reveal>
+        <EvidenceCorridor />
+      </Reveal>
+
+      <Reveal>
         <footer className="app-footer tk-card tk-card--watch">
           <DataLoader />
           <p className="disclaimer tk-degraded">
@@ -203,12 +333,11 @@ export default function App() {
             ))}
           </div>
           <aside className="network-note" aria-labelledby="network-note-title">
-            <span id="network-note-title">Independent evidence network</span>
-            <p>
-              For financial-system plumbing, institution risk and market exits,{' '}
-              <a href="https://myquantdoesntspeakenglish.com/">My Quant Doesn’t Speak English</a>{' '}
-              collects the Seiche, LiquiLens and Undertow investigations. Different subject; the same rule that evidence must stay inspectable.
-            </p>
+            <span id="network-note-title">Related evidence network</span>
+            <div className="network-routes">
+              <a href="https://palimpsest.info/"><b>Relevant subject</b><strong>Palimpsest</strong><small>China&rsquo;s information controls and publication gaps beside the precursor record.</small></a>
+              <a href="https://myquantdoesntspeakenglish.com/"><b>Different subject</b><strong>My Quant Doesn&rsquo;t Speak English</strong><small>The financial research wire; shared evidence rules, kept outside this subject route.</small></a>
+            </div>
           </aside>
           <nav className="product-links" aria-label="NarcoScope product links">
             <a href="/#newsroom">Evidence newsroom</a>
@@ -216,6 +345,8 @@ export default function App() {
             <a href="/openapi.json">OpenAPI</a>
             <a href="/server.json">MCP manifest</a>
             <a href="/product-card.json">Product card</a>
+            <a href="https://t.me/NarcoScopeEvidenceBot?start=ref_site_footer">Telegram bot</a>
+            <a href="https://t.me/EvidenceSignalDesk">Evidence Signal channel</a>
             <a href="https://github.com/beepboop2025/narcoscope" target="_blank" rel="noreferrer">Source code</a>
           </nav>
         </footer>

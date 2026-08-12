@@ -25,8 +25,15 @@ MCP endpoint: https://narcoscope.com/mcp
 - Atom: https://narcoscope.com/news/feed.xml
 - Palimpsest bridge: https://narcoscope.com/api/v1/palimpsest-bridge
 
+## Telegram
+
+- NarcoScope evidence bot: https://t.me/NarcoScopeEvidenceBot
+- Reviewed Evidence Signal channel: https://t.me/EvidenceSignalDesk
+- Relevant China context bot: https://t.me/palimpsest_watch_bot
+
 ## Related evidence desk
 
+- Palimpsest, https://palimpsest.info/: the relevant evidence desk for China information controls and publication gaps alongside NarcoScope's public precursor record.
 - My Quant Doesn't Speak English, https://myquantdoesntspeakenglish.com/: the independent editorial wire for Seiche, LiquiLens, and Undertow investigations. It shares NarcoScope's inspectable-evidence standard, not its drug-market subject.
 
 ## Evidence rules
