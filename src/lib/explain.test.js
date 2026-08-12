@@ -76,27 +76,28 @@ describe('explainPrices', () => {
 })
 
 describe('explainFlows', () => {
-  it('mentions total mass and the top corridor', () => {
+  it('reports an exact-only subtotal without ranking unlike records', () => {
     const flows = [
       {
         origin: 'China',
         destination: 'Myanmar',
         transit: 'Thailand',
         quantityKg: 5000,
+        quantityRelation: 'exact',
         drug: 'Methamphetamine',
       },
       {
         origin: 'Laos',
         destination: 'Thailand',
         quantityKg: 2000,
+        quantityRelation: 'exact',
         drug: 'Methamphetamine',
       },
     ]
     const sentence = explainFlows(flows, 'East Asia')
     assert.ok(sentence.includes('7.0 tonnes'))
-    assert.ok(sentence.includes('China'))
-    assert.ok(sentence.includes('Myanmar'))
-    assert.ok(sentence.includes('Thailand'))
+    assert.ok(sentence.includes('2 exact records'))
+    assert.ok(sentence.includes('not combined into a route share'))
   })
 
   it('returns the no-data phrase when flows are empty', () => {
@@ -104,6 +105,15 @@ describe('explainFlows', () => {
       explainFlows([], 'East Asia'),
       'No trafficking corridors are recorded for East Asia.',
     )
+  })
+
+  it('does not treat a missing quantity qualifier as exact', () => {
+    const sentence = explainFlows([
+      { origin: 'Unknown', destination: 'Elsewhere', quantityKg: 900 },
+    ], 'legacy imports')
+
+    assert.ok(sentence.includes('no exact-only subtotal'))
+    assert.ok(sentence.includes('1 approximate, bounded or unqualified record is kept separate'))
   })
 })
 

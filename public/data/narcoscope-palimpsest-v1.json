@@ -400,9 +400,9 @@
       "measurement": {
         "status": "official_reported",
         "valueType": "administrative_measurement",
-        "method": "Country-level corridor and incident quantities stated in the INCB Precursors Report 2025",
-        "unit": "kilograms as reported; one report-wide caveat may describe gross preparation weight",
-        "grain": "reported origin, destination, precursor class and year"
+        "method": "Country-level corridor quantities stated or transparently derived from the INCB Precursors Report 2025, retaining every qualifier and quantity basis",
+        "unit": "reported kilograms or qualified kilogram bounds; quantityBasis identifies gross preparation weight and derivations",
+        "grain": "reported origin, transit, destination, precursor class, year and record kind"
       },
       "temporalCoverage": {
         "kind": "year_range",
@@ -413,47 +413,75 @@
       "provenance": {
         "publisher": "International Narcotics Control Board",
         "title": "Precursors Report 2025",
-        "url": "https://www.incb.org/incb/en/precursors/technical_reports/precursors-technical-reports.html",
+        "url": "https://www.incb.org/incb/uploads/documents/Publications/AnnualReports/AR2025/Precursors_Report/E_INCB_2025_4_eng.pdf",
         "sourceEdition": "2025, published February 2026",
-        "localDataDate": null,
+        "localDataDate": "2026-08-12",
+        "documentSha256": "8397f2799116fe33ce6851ec2c7e03a042886fb9c048f72cdb259724de5ddd6e",
+        "retrievedAt": "2026-08-12T13:50:25Z",
         "input": {
           "path": "src/data/flows.ts",
-          "sha256": "a00091d345e34b4d8b2a6f9ebd43198fe64d59f79f032e2009b711d5625d8b0f"
+          "sha256": "2f50c75aae185a87def5565797daa5b164c97f951361095195240569a30071b0"
         }
       },
       "data": {
-        "includedIncidentCount": 3,
-        "reportedQuantityAcrossIncludedIncidentsKg": 7200,
+        "includedQuantitativeRecordCount": 1,
+        "includedContextRecordCount": 1,
+        "quantityAggregation": {
+          "status": "not_computed_non_exact_inputs",
+          "exactRecordCount": 0,
+          "nonExactRecordCount": 1,
+          "summedQuantityKg": null
+        },
         "corridors": [
-          {
-            "originAttribution": "joint_origin_includes_china",
-            "reportedOrigin": "China / India",
-            "destination": "Australia",
-            "year": 2024,
-            "precursor": "meth_precursors",
-            "quantityKg": 1000
-          },
-          {
-            "originAttribution": "joint_origin_includes_china",
-            "reportedOrigin": "China / India",
-            "destination": "New Zealand",
-            "year": 2024,
-            "precursor": "meth_precursors",
-            "quantityKg": 1200
-          },
           {
             "originAttribution": "china_only",
             "reportedOrigin": "China",
+            "transit": null,
             "destination": "European Union",
             "year": 2025,
             "precursor": "meth_pre_precursors",
-            "quantityKg": 5000
+            "quantityKg": 5000,
+            "quantityRelation": "approx",
+            "quantityBasis": "Combined substance mass across nine PICS incidents; the source reports nearly 5 tons.",
+            "recordKind": "multi_incident_aggregate",
+            "incidentCount": 9,
+            "sourceLocator": {
+              "pdfPage": 44,
+              "printedPage": 26,
+              "paragraph": 94
+            }
+          }
+        ],
+        "contextRecords": [
+          {
+            "contextId": "operation-pseudonym-australia-new-zealand-origins-2024",
+            "precursor": "meth_precursors",
+            "origins": [
+              "China",
+              "India"
+            ],
+            "destinations": [
+              "Australia",
+              "New Zealand"
+            ],
+            "year": 2024,
+            "recordKind": "qualitative_context",
+            "allocationStatus": "not_reported_by_origin_destination_pair",
+            "operationReportedSeizureCount": 168,
+            "countScope": "four_reporting_countries_operation_total",
+            "summary": "INCB reports that four participating countries recorded 168 seizures during Operation Pseudonym, most in Australia and New Zealand, and that origins for substances in both countries were reported as China and India. The report does not allocate seizure count or mass by origin-and-destination pair.",
+            "sourceLocator": {
+              "pdfPage": 31,
+              "printedPage": 13,
+              "paragraph": 46
+            }
           }
         ]
       },
       "limitations": [
         "These are selected reported incidents, not a complete flow series or an estimate of total precursor trade.",
-        "Rows reported with the joint origin China / India cannot be allocated to either country and remain explicitly joint.",
+        "Operation Pseudonym does not allocate seizure counts or mass by origin-and-destination pair, so its China/India and Australia/New Zealand statement is retained only as non-summable context.",
+        "Approximate quantities and bounds are never added into an exact total.",
         "Quantities describe seizures or incidents and do not measure successful movement or end-drug output."
       ]
     },
@@ -464,7 +492,7 @@
       "measurement": {
         "status": "official_action_record",
         "valueType": "administrative_action",
-        "method": "Count of scoped OFAC SDN records carrying China as a country of record",
+        "method": "Count of scoped OFAC SDN records carrying China as a country of record, split between narcotics-specific authorities and TCO-only records",
         "unit": "designation records",
         "grain": "designated subject, program codes and countries of record; subject details removed from this bridge"
       },
@@ -487,6 +515,8 @@
       },
       "data": {
         "recordCount": 118,
+        "narcoticsSpecificProgramRecordCount": 79,
+        "tcoOnlyRecordCount": 39,
         "byEntityType": [
           {
             "entityType": "individual",
@@ -519,6 +549,7 @@
       "limitations": [
         "A designation is a published government action, not an adjudication of guilt or proof of described conduct.",
         "China is a country of record from OFAC address data; it is not a nationality finding.",
+        "The broad record count includes TCO-only records; only narcoticsSpecificProgramRecordCount is explicitly tied to a narcotics authority in the retained OFAC program codes.",
         "Program counts are not mutually exclusive because a record may carry more than one program code.",
         "The bridge excludes every subject name, alias, entity number, address and identity field."
       ]

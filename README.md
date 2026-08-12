@@ -45,6 +45,11 @@ top of that public data: clean charts, maps, and plain-English explanations.
   OFAC-published alias, plus a jurisdiction network built from the countries
   Treasury records each entity in. Betweenness and articulation-point analysis
   show which jurisdictions hold the designated networks together.
+- **Evidence Newsroom** — a deterministic, offline-capable publication pipeline
+  with sentence-level citations and independent-source gates. Its first bounded
+  analysis keeps lawful trade, selected official incidents and US harm data in
+  separate evidence lanes, and states what cannot be joined or causally
+  attributed from the public record.
 - **Myanmar Focus** — province-level (Golden Triangle) detail: production regions,
   civil-war conflict pressure, China/third-country precursor inflows, cross-border
   corridor towns, and seized volumes. The intelligence layer fuses multi-source
@@ -131,7 +136,7 @@ generated dataset carries a provenance header naming its source, retrieval date
 and extraction rules.
 
 - UNODC — Drugs: prices & World Drug Report — https://dataunodc.un.org
-- INCB — Precursors annual report & PICS — https://www.incb.org/incb/en/precursors/
+- INCB — Precursors Report 2025 (exact audited PDF) — https://www.incb.org/incb/uploads/documents/Publications/AnnualReports/AR2025/Precursors_Report/E_INCB_2025_4_eng.pdf
 - CDC NCHS — VSRR provisional drug overdose death counts — https://data.cdc.gov/NCHS/VSRR-Provisional-Drug-Overdose-Death-Counts/xkb8-kh2a
 - Statistics Canada — drug metabolites in municipal wastewater — https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=1310087101
 - US Treasury OFAC — Specially Designated Nationals — https://sanctionslist.ofac.treas.gov/Home/SdnList
@@ -139,7 +144,7 @@ and extraction rules.
 - World Bank — GDP per capita — https://data.worldbank.org
 - ACLED / International Crisis Group — Myanmar civil-war context
 
-The full registry is **40 sources across three tiers** — automated datasets,
+The full registry spans automated datasets,
 manual-step datasets, and investigative reports that feed the analyst work queue
 rather than the app — in [`scripts/pipeline/sources.json`](./scripts/pipeline/sources.json).
 Each entry records its licence, cadence, automation tier, and what it feeds.
@@ -183,6 +188,43 @@ The new **Enterprise Intel** tab adds an event/entity evidence graph, regional
 risk scores, confidence/source-diversity indicators, and an evidence ledger for
 analyst review. See `docs/ENTERPRISE_HARDENING.md` for the paper-backed design.
 
+The **Evidence Newsroom** tab reads a checked-in dossier and receipt generated
+without network access or model calls. Publication requires sentence and visual
+citations, active upstream-source independence for synthesis, a countercase,
+limitations and causal/culpability safety checks. See
+[`docs/EVIDENCE_NEWSROOM.md`](./docs/EVIDENCE_NEWSROOM.md).
+
+### Evidence newsroom publication contract
+
+The newsroom is visibly labelled **automated evidence analysis**, with
+`humanReviewStatus: not_recorded`. No generative model participates in its build,
+no expert or affected-person testimony is included, and it never simulates those
+human voices. Its initial article makes no named allegation, records right to
+reply as `not_required`, and publishes a correction/update history with stable
+revision and content hashes.
+
+An official record used by the build can support an attributed observation. An
+analytical or methodological synthesis requires at least two independent,
+actively used official upstream groups; merely registering an available,
+capability-only or unavailable source contributes zero corroboration. When the
+inputs lack a lawful-trade denominator, record-level join, adjudicated outcome or
+defensible country allocation, the newsroom abstains. It does not turn origin
+labels, administrative designations or a separate mortality trend into guilt or
+causal attribution.
+
+Publication surfaces are:
+
+- app route: `/#newsroom`;
+- standalone HTML: `/news/china-linked-precursor-incidents-official-record.html`;
+- machine brief: `/news/china-linked-precursor-incidents-official-record.machine-brief.json`;
+- cited dossier: `/news/china-linked-precursor-incidents-official-record.dossier.json`;
+- JSON Feed: `/news/feed.json`; and
+- Atom feed: `/news/feed.xml`.
+
+Run `npm run news:build` to regenerate the offline bundle and
+`npm run news:check` to verify every checked-in byte. The production build runs
+the stale-artifact check before TypeScript and Vite.
+
 ## Tech
 
 React 18 · Vite 8 · TypeScript · Recharts · react-simple-maps (world-atlas bundled
@@ -199,6 +241,8 @@ npm install
 npm run dev        # local dev server
 npm run scrape:myanmar -- --pretty
 npm run ontology   # regenerate docs/ontology/draft-ontology.{json,md}
+npm run news:build # regenerate the deterministic evidence newsroom
+npm run news:check # verify that checked-in newsroom artifacts are current
 npm run build      # type-check (tsc) + production build → dist/
 npm run preview    # preview the build
 npm run typecheck  # tsc --noEmit
@@ -230,9 +274,10 @@ playbook is [`docs/DATA_PIPELINE.md`](./docs/DATA_PIPELINE.md).
   price per pure gram and refuses to adjust when purity is unknown (an honest
   `n/a` beats comparing a cut street price against a pure one). See the editorial
   note in `src/lib/metrics.ts`.
-- ~~Load and **verify** real UNODC/INCB data~~ **Street prices: done** (WDR 2025
-  Annex 8.1, see `src/data/prices.ts` provenance header). Remaining: precursor
-  prices, flow corridors, and the Myanmar dataset.
+- ~~Load and **verify** real UNODC/INCB data~~ **Street prices and qualified
+  precursor-flow records: done** (WDR 2025 Annex 8.1 and the paragraph-located
+  INCB 2025 precursor report). Remaining: a citable precursor-price series and
+  the Myanmar dataset.
 - **Wastewater now ships (Canada).** Extending it to Europe or Australia still
   needs a manually-fetched EUDA or ACIC export — both publishers block
   automation. Each one added is another country where divergence detection works.

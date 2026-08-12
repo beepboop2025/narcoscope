@@ -281,7 +281,7 @@ export default function SeizureGlobe() {
             checked={showCorridors}
             onChange={(e) => setShowCorridors(e.target.checked)}
           />{' '}
-          precursor corridors (illustrative)
+          precursor corridors (official records)
         </label>
       </div>
 
@@ -433,8 +433,9 @@ export default function SeizureGlobe() {
       <p className="note">
         Country colour = <strong>official seized volume</strong> ({SEIZURE_META.downloaded ? 'WDR 2025' : ''} Annex 7.1,
         2019–2023) — a proxy for trafficking pressure that reflects both flows and enforcement effort, not consumption.
-        Corridor arcs remain <strong>illustrative</strong> pending official corridor-level data
-        (toggle them off above). City-states without map polygons render as dots.
+        Corridor arcs show <strong>selected, source-grained INCB records</strong>; uniform arc widths do not
+        represent additive throughput, and a reported origin does not establish responsibility. Toggle them off
+        above. City-states without map polygons render as dots.
       </p>
     </section>
   )

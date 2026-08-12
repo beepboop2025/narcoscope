@@ -61,6 +61,25 @@ export interface PrecursorPriceRecord {
   priceUsdPerKg: number
 }
 
+/** How the source qualifies a reported precursor quantity. */
+export type QuantityRelation = 'exact' | 'approx' | 'less_than' | 'greater_than'
+
+/** Whether a quantitative row is one incident, an aggregate, or a documented derivation. */
+export type FlowRecordKind =
+  | 'single_incident'
+  | 'multi_incident_aggregate'
+  | 'annual_aggregate'
+  | 'derived_subtotal'
+
+/** A locator that remains stable when the report is cited outside this application. */
+export interface DocumentSourceLocator {
+  /** One-based page number in the PDF file. */
+  pdfPage: number
+  /** Page number printed on the report page. */
+  printedPage: number
+  paragraph: number
+}
+
 export interface FlowRecord {
   precursor: PrecursorId
   origin: string
@@ -68,9 +87,55 @@ export interface FlowRecord {
   destination: string
   year: number
   quantityKg: number
+  /** Optional for user-imported legacy CSV; required by AuditedFlowRecord. */
+  quantityRelation?: QuantityRelation
+  /** What the reported kilograms measure, including derivation or gross-weight caveats. */
+  quantityBasis?: string
+  recordKind?: FlowRecordKind
+  /** Null means the source does not allocate an incident count at this row's grain. */
+  incidentCount?: number | null
   /** Attribution for the corridor figure (publisher of the seizure/incident report). */
   sourceName?: string
   sourceUrl?: string
+  sourceDocumentSha256?: string
+  sourceRetrievedAt?: string
+  sourceLocator?: DocumentSourceLocator
+}
+
+/** Fully sourced curated flow row. Public bridge generation accepts only this shape. */
+export interface AuditedFlowRecord extends FlowRecord {
+  quantityRelation: QuantityRelation
+  quantityBasis: string
+  recordKind: FlowRecordKind
+  incidentCount: number | null
+  sourceName: string
+  sourceUrl: string
+  sourceDocumentSha256: string
+  sourceRetrievedAt: string
+  sourceLocator: DocumentSourceLocator
+}
+
+/**
+ * Source context that cannot safely be represented as a quantitative corridor.
+ * It deliberately has no quantity field, so it cannot enter corridor totals.
+ */
+export interface FlowContextRecord {
+  contextId: string
+  precursor: PrecursorId
+  origins: string[]
+  destinations: string[]
+  year: number
+  recordKind: 'qualitative_context'
+  allocationStatus: 'not_reported_by_origin_destination_pair'
+  /** Report-wide operation count; never an origin/destination-pair count. */
+  operationReportedSeizureCount: number
+  countScope: 'four_reporting_countries_operation_total'
+  summary: string
+  sourceName: string
+  sourceUrl: string
+  sourceDocumentSha256: string
+  sourceRetrievedAt: string
+  sourceLocator: DocumentSourceLocator
 }
 
 /** A geographic node (Myanmar production region or border corridor town). */

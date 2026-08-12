@@ -9,10 +9,17 @@ import Explainer from './Explainer'
 import SeizureGlobe from './SeizureGlobe'
 import type { FlowRecord } from '../types'
 
-// Map a seized quantity to a stroke width so the eye reads volume directly.
-function widthScale(qty: number, max: number): number {
-  if (!max) return 1
-  return 1 + (qty / max) * 5 // 1px (small) → 6px (largest corridor)
+function quantityPrefix(record: FlowRecord): string {
+  if (record.quantityRelation === 'approx') return 'approximately '
+  if (record.quantityRelation === 'less_than') return 'less than '
+  if (record.quantityRelation === 'greater_than') return 'more than '
+  if (record.quantityRelation === 'exact') return ''
+  return 'an unqualified '
+}
+
+export function flowSummary(record: FlowRecord): string {
+  const recordKind = record.recordKind?.replaceAll('_', ' ') ?? 'record'
+  return `${quantityPrefix(record)}${record.quantityKg.toLocaleString()} kg; ${recordKind}`
 }
 
 // Break a corridor into legs: origin → transit → destination (or a direct hop).
@@ -42,24 +49,38 @@ export default function WorldMap() {
     <section>
       <div className="view-switch" role="tablist" aria-label="Map view">
         <button
+          id="map-view-globe-tab"
+          role="tab"
+          aria-controls="map-view-globe-panel"
+          aria-selected={view === 'globe'}
           className={`chip ${view === 'globe' ? 'active' : ''}`}
           onClick={() => setView('globe')}
         >
           🌐 Seizure globe (official)
         </button>
         <button
+          id="map-view-corridors-tab"
+          role="tab"
+          aria-controls="map-view-corridors-panel"
+          aria-selected={view === 'corridors'}
           className={`chip ${view === 'corridors' ? 'active' : ''}`}
           onClick={() => setView('corridors')}
         >
-          🗺 Precursor corridors (illustrative)
+          🗺 Precursor corridors (official records)
         </button>
       </div>
-      {view === 'globe' ? <SeizureGlobe /> : <CorridorMap />}
+      <div
+        id={view === 'globe' ? 'map-view-globe-panel' : 'map-view-corridors-panel'}
+        role="tabpanel"
+        aria-labelledby={view === 'globe' ? 'map-view-globe-tab' : 'map-view-corridors-tab'}
+      >
+        {view === 'globe' ? <SeizureGlobe /> : <CorridorMap />}
+      </div>
     </section>
   )
 }
 
-function CorridorMap() {
+export function CorridorMap() {
   const { flowRecords } = useData()
   const [precursor, setPrecursor] = useState('all')
   const [yearIdx, setYearIdx] = useState(0)
@@ -70,9 +91,7 @@ function CorridorMap() {
   )
   const graticule = useMemo(() => graticulePath(projection), [projection])
 
-  // All corridors for the chosen precursor, across every year. STABLE reference
-  // set: the arc-thickness scale is computed from it once, so a corridor that
-  // doubles year-over-year actually looks twice as thick during playback.
+  // All source-grained records for the chosen precursor, across every year.
   const allFlows = useMemo(
     () => flowRecords.filter((r) => precursor === 'all' || r.precursor === precursor),
     [flowRecords, precursor],
@@ -98,23 +117,26 @@ function CorridorMap() {
     [allFlows, currentYear],
   )
 
-  // Scale fixed across all years for honest comparison.
-  const maxQty = useMemo(
-    () => allFlows.reduce((m, r) => Math.max(m, r.quantityKg), 0),
-    [allFlows],
-  )
-
-  // Throughput per country (sum of every corridor it touches) → marker size.
+  // Record counts are comparable. Qualified masses and heterogeneous quantity
+  // bases are not, so nodes deliberately never sum quantityKg.
   const nodes = useMemo(() => {
-    const totals: Record<string, number> = {}
+    const recordsByCountry = new Map<string, Set<FlowRecord>>()
     flows.forEach((r) => {
       [r.origin, r.transit, r.destination]
         .filter((s): s is string => Boolean(s))
-        .forEach((n) => { totals[n] = (totals[n] || 0) + r.quantityKg })
+        .forEach((name) => {
+          const records = recordsByCountry.get(name) ?? new Set<FlowRecord>()
+          records.add(r)
+          recordsByCountry.set(name, records)
+        })
     })
-    return Object.entries(totals)
+    return [...recordsByCountry.entries()]
       .filter(([name]) => coord(name))
-      .map(([name, qty]) => ({ name, qty, isSource: flows.some((f) => f.origin === name) }))
+      .map(([name, records]) => ({
+        name,
+        recordCount: records.size,
+        isSource: flows.some((flow) => flow.origin === name),
+      }))
   }, [flows])
 
   return (
@@ -130,7 +152,7 @@ function CorridorMap() {
         <span className="legend">
           <span className="swatch source" /> source country&nbsp;&nbsp;
           <span className="swatch transit" /> transit / destination&nbsp;&nbsp;
-          arc thickness = volume seized
+          uniform arcs = record legs; node size = record count; masses are not summed
         </span>
       </div>
 
@@ -186,11 +208,13 @@ function CorridorMap() {
                   key={key}
                   d={arcPath(projection, from, to)}
                   stroke={fromChina ? '#ff7a59' : '#6ea8fe'}
-                  strokeWidth={widthScale(rec.quantityKg, maxQty)}
+                  strokeWidth={2.5}
                   strokeLinecap="round"
                   fill="none"
                   opacity={0.7}
-                />
+                >
+                  <title>{`${leg[0]} → ${leg[1]} — ${flowSummary(rec)}`}</title>
+                </path>
               )
             }),
           )}
@@ -201,10 +225,10 @@ function CorridorMap() {
             if (!c) return null
             const point = projectedPoint(projection, c)
             if (!point) return null
-            const r = 3 + (maxQty ? (n.qty / maxQty) * 7 : 0)
+            const r = 3 + Math.min(5, Math.sqrt(n.recordCount) * 2)
             return (
               <g key={n.name} transform={`translate(${point[0]} ${point[1]})`}>
-                <title>{`${n.name} — ${n.qty.toLocaleString()} kg across corridors (${n.isSource ? 'a listed source' : 'transit/destination'})`}</title>
+                <title>{`${n.name} — appears in ${n.recordCount} source-grained record${n.recordCount === 1 ? '' : 's'} (${n.isSource ? 'a listed source' : 'transit/destination'}); masses are not summed`}</title>
                 <circle
                   r={r}
                   fill={n.isSource ? '#ff7a59' : '#6ea8fe'}
@@ -222,10 +246,11 @@ function CorridorMap() {
       </div>
 
       <p className="note">
-        Each arc is an aggregate trafficking corridor (country-level, seized volume).
-        Sources glow <strong style={{ color: '#ff7a59' }}>orange</strong> — the upstream
-        supply hubs this tool exists to keep visible. Swap in real INCB/UNODC corridor
-        data via <code>src/lib/ingest.js</code> and this map updates automatically.
+        Each arc is one leg of a country-level record from the cited INCB report.
+        Sources glow <strong style={{ color: '#ff7a59' }}>orange</strong>. Uniform arc width
+        and record-count nodes avoid turning approximate values, bounds, annual
+        aggregates, and gross preparation weights into an invented throughput
+        comparison. A reported origin does not establish responsibility or total flow.
       </p>
     </section>
   )

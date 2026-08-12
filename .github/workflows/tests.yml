@@ -22,6 +22,12 @@ jobs:
       - name: Run tests with coverage
         run: npm test -- --coverage
 
+      - name: Verify deterministic newsroom artifacts
+        run: npm run news:check
+
+      - name: Build production app
+        run: npm run build
+
       - name: Coverage summary
         if: always()
         run: echo "See the 'Run tests with coverage' step above for the v8 coverage table."

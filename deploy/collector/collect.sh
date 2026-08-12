@@ -19,6 +19,7 @@ export GIT_SSH_COMMAND="ssh -i ${DEPLOY_KEY} -o IdentitiesOnly=yes -o StrictHost
 GENERATED_PATHS=(
   "src/data"
   "public/data/narcoscope-palimpsest-v1.json"
+  "public/news"
 )
 
 log() { echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] $*"; }
@@ -40,8 +41,8 @@ if ! npm run data:refresh; then
   exit 1
 fi
 
-# Push only the generated data and its derived public artifact, only if either
-# changed. `git status` also sees newly generated, previously untracked files.
+# Push only generated data and derived public artifacts, only if any changed.
+# `git status` also sees newly generated, previously untracked files.
 if [[ -z "$(git status --porcelain -- "${GENERATED_PATHS[@]}")" ]]; then
   log "no data changes"
   exit 0

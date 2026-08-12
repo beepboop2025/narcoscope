@@ -32,6 +32,18 @@ const round = (value, places = 2) => {
 }
 const sum = (values) => values.reduce((total, value) => total + value, 0)
 const sha256 = (value) => createHash('sha256').update(value).digest('hex')
+const QUANTITY_RELATIONS = new Set(['exact', 'approx', 'less_than', 'greater_than'])
+const FLOW_RECORD_KINDS = new Set([
+  'single_incident',
+  'multi_incident_aggregate',
+  'annual_aggregate',
+  'derived_subtotal',
+])
+const NARCOTICS_SPECIFIC_OFAC_PROGRAMS = new Set([
+  'SDNT',
+  'SDNTK',
+  'ILLICIT-DRUGS-EO14059',
+])
 
 function inputDescriptor(relativePath, raw) {
   return { path: relativePath, sha256: sha256(raw) }
@@ -39,6 +51,79 @@ function inputDescriptor(relativePath, raw) {
 
 function normalizedSourceTitle(value) {
   return String(value).replace(/[\u2013\u2014]/g, '-')
+}
+
+function isPositiveInteger(value) {
+  return Number.isInteger(value) && value > 0
+}
+
+function hasValidSourceLocator(locator) {
+  return locator
+    && isPositiveInteger(locator.pdfPage)
+    && isPositiveInteger(locator.printedPage)
+    && isPositiveInteger(locator.paragraph)
+}
+
+function assertPinnedIncbProvenance(record, source, label) {
+  if (record.sourceName !== source.sourceName
+    || record.sourceUrl !== source.sourceUrl
+    || record.sourceDocumentSha256 !== source.sourceDocumentSha256
+    || record.sourceRetrievedAt !== source.sourceRetrievedAt) {
+    throw new Error(`${label} does not match the pinned INCB document provenance`)
+  }
+  if (!hasValidSourceLocator(record.sourceLocator)) {
+    throw new Error(`${label} lacks a valid paragraph and page locator`)
+  }
+}
+
+function assertAuditedFlowInputs(flows) {
+  const { records, contextRecords, source } = flows
+  if (!Array.isArray(records) || !Array.isArray(contextRecords)) {
+    throw new Error('audited precursor records and context records must be arrays')
+  }
+  if (!source?.sourceName
+    || !/^https:\/\/www\.incb\.org\/.+\.pdf$/.test(source.sourceUrl ?? '')
+    || !/^[a-f0-9]{64}$/.test(source.sourceDocumentSha256 ?? '')
+    || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(source.sourceRetrievedAt ?? '')) {
+    throw new Error('pinned INCB document provenance is incomplete or invalid')
+  }
+
+  for (const record of records) {
+    const label = `precursor-flow record ${record.origin ?? '?'} to ${record.destination ?? '?'}`
+    if (!Number.isFinite(record.quantityKg) || record.quantityKg < 0) {
+      throw new Error(`${label} has an invalid quantity`)
+    }
+    if (!QUANTITY_RELATIONS.has(record.quantityRelation)
+      || !FLOW_RECORD_KINDS.has(record.recordKind)
+      || typeof record.quantityBasis !== 'string'
+      || record.quantityBasis.trim().length === 0) {
+      throw new Error(`${label} lacks audited quantity semantics`)
+    }
+    if (record.incidentCount !== null && !isPositiveInteger(record.incidentCount)) {
+      throw new Error(`${label} has an invalid incident count`)
+    }
+    assertPinnedIncbProvenance(record, source, label)
+  }
+
+  for (const record of contextRecords) {
+    const label = `precursor context ${record.contextId ?? '?'}`
+    if (record.recordKind !== 'qualitative_context'
+      || record.allocationStatus !== 'not_reported_by_origin_destination_pair'
+      || record.countScope !== 'four_reporting_countries_operation_total'
+      || !isPositiveInteger(record.operationReportedSeizureCount)
+      || !Array.isArray(record.origins)
+      || record.origins.length === 0
+      || !Array.isArray(record.destinations)
+      || record.destinations.length === 0) {
+      throw new Error(`${label} lacks audited non-bilateral context semantics`)
+    }
+    if (Object.hasOwn(record, 'quantityKg')
+      || Object.hasOwn(record, 'quantityRelation')
+      || Object.hasOwn(record, 'incidentCount')) {
+      throw new Error(`${label} must remain non-summable`)
+    }
+    assertPinnedIncbProvenance(record, source, label)
+  }
 }
 
 async function evaluateTypeScript(raw, fileName) {
@@ -95,6 +180,8 @@ export async function loadBridgeInputs(root = defaultRoot) {
     },
     flows: {
       records: flowsModule.FLOW_RECORDS,
+      contextRecords: flowsModule.FLOW_CONTEXT_RECORDS,
+      source: flowsModule.INCB_REPORT_2025,
       input: flowsFile.input,
     },
     seizures: {
@@ -110,6 +197,20 @@ export async function loadBridgeInputs(root = defaultRoot) {
       input: wildlifeFile.input,
     },
   }
+}
+
+/** Sum only fully exact reported quantities; callers must handle qualified values explicitly. */
+export function sumExactQuantityKg(records) {
+  const invalid = records.find((record) => record.quantityRelation !== 'exact')
+  if (invalid) {
+    throw new Error(
+      `cannot sum non-exact quantity (${invalid.quantityRelation}) for ${invalid.origin ?? invalid.reportedOrigin} to ${invalid.destination}`,
+    )
+  }
+  if (records.some((record) => !Number.isFinite(record.quantityKg) || record.quantityKg < 0)) {
+    throw new Error('cannot sum an invalid quantity')
+  }
+  return round(sum(records.map((record) => record.quantityKg)))
 }
 
 function yearRange(years) {
@@ -251,23 +352,72 @@ function buildSeizures(inputs) {
 }
 
 function buildPrecursorCorridors(inputs) {
+  assertAuditedFlowInputs(inputs.flows)
   const records = inputs.flows.records
     .filter((record) => record.origin.split('/').map((part) => part.trim()).includes('China'))
-    .map((record) => ({
-      originAttribution: record.origin === 'China' ? 'china_only' : 'joint_origin_includes_china',
-      reportedOrigin: record.origin,
-      destination: record.destination,
-      year: record.year,
-      precursor: record.precursor,
-      quantityKg: record.quantityKg,
-    }))
+    .map((record) => {
+      if (!QUANTITY_RELATIONS.has(record.quantityRelation)) {
+        throw new Error(`precursor-flow record has invalid quantity relation: ${record.quantityRelation}`)
+      }
+      if (!record.quantityBasis || !record.recordKind || !record.sourceLocator) {
+        throw new Error(`precursor-flow record lacks audited quantity metadata: ${record.origin} to ${record.destination}`)
+      }
+      return {
+        originAttribution: record.origin === 'China' ? 'china_only' : 'joint_origin_includes_china',
+        reportedOrigin: record.origin,
+        transit: record.transit,
+        destination: record.destination,
+        year: record.year,
+        precursor: record.precursor,
+        quantityKg: record.quantityKg,
+        quantityRelation: record.quantityRelation,
+        quantityBasis: record.quantityBasis,
+        recordKind: record.recordKind,
+        incidentCount: record.incidentCount,
+        sourceLocator: record.sourceLocator,
+      }
+    })
     .sort((a, b) => a.year - b.year
       || compareText(a.originAttribution, b.originAttribution)
       || compareText(a.destination, b.destination)
       || compareText(a.precursor, b.precursor))
 
-  const officialSource = inputs.flows.records.find((record) => record.sourceName?.includes('INCB'))
-  if (!officialSource?.sourceUrl) throw new Error('official precursor-flow provenance is absent')
+  const contextRecords = inputs.flows.contextRecords
+    .filter((record) => record.origins.includes('China'))
+    .map((record) => ({
+      contextId: record.contextId,
+      precursor: record.precursor,
+      origins: record.origins,
+      destinations: record.destinations,
+      year: record.year,
+      recordKind: record.recordKind,
+      allocationStatus: record.allocationStatus,
+      operationReportedSeizureCount: record.operationReportedSeizureCount,
+      countScope: record.countScope,
+      summary: record.summary,
+      sourceLocator: record.sourceLocator,
+    }))
+    .sort((a, b) => a.year - b.year || compareText(a.contextId, b.contextId))
+
+  const officialSource = inputs.flows.source
+  if (!officialSource?.sourceUrl || !officialSource.sourceDocumentSha256 || !officialSource.sourceRetrievedAt) {
+    throw new Error('official precursor-flow document provenance is incomplete')
+  }
+
+  const exactRecordCount = records.filter((record) => record.quantityRelation === 'exact').length
+  const nonExactRecordCount = records.length - exactRecordCount
+  const quantityAggregation = {
+    status: nonExactRecordCount > 0
+      ? 'not_computed_non_exact_inputs'
+      : records.length > 0
+        ? 'computed_exact_only'
+        : 'not_computed_no_records',
+    exactRecordCount,
+    nonExactRecordCount,
+    summedQuantityKg: records.length > 0 && nonExactRecordCount === 0
+      ? sumExactQuantityKg(records)
+      : null,
+  }
 
   return {
     datasetId: 'precursor_corridor_incidents',
@@ -276,27 +426,35 @@ function buildPrecursorCorridors(inputs) {
     measurement: {
       status: 'official_reported',
       valueType: 'administrative_measurement',
-      method: 'Country-level corridor and incident quantities stated in the INCB Precursors Report 2025',
-      unit: 'kilograms as reported; one report-wide caveat may describe gross preparation weight',
-      grain: 'reported origin, destination, precursor class and year',
+      method: 'Country-level corridor quantities stated or transparently derived from the INCB Precursors Report 2025, retaining every qualifier and quantity basis',
+      unit: 'reported kilograms or qualified kilogram bounds; quantityBasis identifies gross preparation weight and derivations',
+      grain: 'reported origin, transit, destination, precursor class, year and record kind',
     },
-    temporalCoverage: yearRange(records.map((record) => record.year)),
+    temporalCoverage: yearRange([
+      ...records.map((record) => record.year),
+      ...contextRecords.map((record) => record.year),
+    ]),
     provenance: {
       publisher: 'International Narcotics Control Board',
       title: 'Precursors Report 2025',
       url: officialSource.sourceUrl,
       sourceEdition: '2025, published February 2026',
-      localDataDate: null,
+      localDataDate: officialSource.sourceRetrievedAt.slice(0, 10),
+      documentSha256: officialSource.sourceDocumentSha256,
+      retrievedAt: officialSource.sourceRetrievedAt,
       input: inputs.flows.input,
     },
     data: {
-      includedIncidentCount: records.length,
-      reportedQuantityAcrossIncludedIncidentsKg: round(sum(records.map((record) => record.quantityKg))),
+      includedQuantitativeRecordCount: records.length,
+      includedContextRecordCount: contextRecords.length,
+      quantityAggregation,
       corridors: records,
+      contextRecords,
     },
     limitations: [
       'These are selected reported incidents, not a complete flow series or an estimate of total precursor trade.',
-      'Rows reported with the joint origin China / India cannot be allocated to either country and remain explicitly joint.',
+      'Operation Pseudonym does not allocate seizure counts or mass by origin-and-destination pair, so its China/India and Australia/New Zealand statement is retained only as non-summable context.',
+      'Approximate quantities and bounds are never added into an exact total.',
       'Quantities describe seizures or incidents and do not measure successful movement or end-drug output.',
     ],
   }
@@ -305,6 +463,16 @@ function buildPrecursorCorridors(inputs) {
 function buildDesignations(inputs) {
   const { data } = inputs.designations
   const records = data.records.filter((record) => record.countries.includes('China'))
+  const narcoticsSpecificRecords = records.filter((record) => (
+    record.programs.some((program) => NARCOTICS_SPECIFIC_OFAC_PROGRAMS.has(program))
+  ))
+  const tcoOnlyRecords = records.filter((record) => (
+    record.programs.includes('TCO')
+    && !record.programs.some((program) => NARCOTICS_SPECIFIC_OFAC_PROGRAMS.has(program))
+  ))
+  if (narcoticsSpecificRecords.length + tcoOnlyRecords.length !== records.length) {
+    throw new Error('OFAC China scope contains a record outside the narcotics-specific/TCO-only partition')
+  }
   const typeCounts = groupCounts(records, (record) => record.entityType)
   const programCounts = new Map()
   for (const record of records) {
@@ -330,7 +498,7 @@ function buildDesignations(inputs) {
     measurement: {
       status: 'official_action_record',
       valueType: 'administrative_action',
-      method: 'Count of scoped OFAC SDN records carrying China as a country of record',
+      method: 'Count of scoped OFAC SDN records carrying China as a country of record, split between narcotics-specific authorities and TCO-only records',
       unit: 'designation records',
       grain: 'designated subject, program codes and countries of record; subject details removed from this bridge',
     },
@@ -350,6 +518,8 @@ function buildDesignations(inputs) {
     },
     data: {
       recordCount: records.length,
+      narcoticsSpecificProgramRecordCount: narcoticsSpecificRecords.length,
+      tcoOnlyRecordCount: tcoOnlyRecords.length,
       byEntityType,
       byProgram,
       multiCountryRecordCount: records.filter((record) => record.countries.length > 1).length,
@@ -357,6 +527,7 @@ function buildDesignations(inputs) {
     limitations: [
       'A designation is a published government action, not an adjudication of guilt or proof of described conduct.',
       'China is a country of record from OFAC address data; it is not a nationality finding.',
+      'The broad record count includes TCO-only records; only narcoticsSpecificProgramRecordCount is explicitly tied to a narcotics authority in the retained OFAC program codes.',
       'Program counts are not mutually exclusive because a record may carry more than one program code.',
       'The bridge excludes every subject name, alias, entity number, address and identity field.',
     ],
@@ -460,6 +631,57 @@ export function assertPublicBridgeBoundary(artifact) {
   const forbidden = findForbiddenKeys(artifact)
   if (forbidden.length > 0) {
     throw new Error(`public bridge contains forbidden subject fields: ${forbidden.join(', ')}`)
+  }
+
+  const precursor = artifact.datasets.precursorCorridorIncidents
+  const { corridors, contextRecords, quantityAggregation } = precursor.data
+  if (precursor.data.includedQuantitativeRecordCount !== corridors.length
+    || precursor.data.includedContextRecordCount !== contextRecords.length) {
+    throw new Error('precursor bridge record counts do not match their arrays')
+  }
+  const exactRecordCount = corridors.filter((record) => record.quantityRelation === 'exact').length
+  const nonExactRecordCount = corridors.length - exactRecordCount
+  if (corridors.some((record) => !QUANTITY_RELATIONS.has(record.quantityRelation))) {
+    throw new Error('precursor bridge contains an invalid quantity relation')
+  }
+  if (quantityAggregation.exactRecordCount !== exactRecordCount
+    || quantityAggregation.nonExactRecordCount !== nonExactRecordCount) {
+    throw new Error('precursor quantity aggregation counts do not match corridor qualifiers')
+  }
+  if (nonExactRecordCount > 0
+    && (quantityAggregation.status !== 'not_computed_non_exact_inputs'
+      || quantityAggregation.summedQuantityKg !== null)) {
+    throw new Error('non-exact precursor values may not enter a reported quantity total')
+  }
+  if (corridors.length > 0 && nonExactRecordCount === 0
+    && (quantityAggregation.status !== 'computed_exact_only'
+      || quantityAggregation.summedQuantityKg !== sumExactQuantityKg(corridors))) {
+    throw new Error('exact-only precursor quantity total is inconsistent')
+  }
+  if (corridors.length === 0
+    && (quantityAggregation.status !== 'not_computed_no_records'
+      || quantityAggregation.summedQuantityKg !== null)) {
+    throw new Error('empty precursor quantity input may not produce a total')
+  }
+  if (contextRecords.some((record) => (
+    Object.hasOwn(record, 'quantityKg')
+    || Object.hasOwn(record, 'quantityRelation')
+    || Object.hasOwn(record, 'incidentCount')
+  ))) {
+    throw new Error('qualitative precursor context must remain non-summable')
+  }
+  if (contextRecords.some((record) => (
+    record.countScope !== 'four_reporting_countries_operation_total'
+    || !Number.isInteger(record.operationReportedSeizureCount)
+    || record.operationReportedSeizureCount < 1
+  ))) {
+    throw new Error('qualitative precursor count must retain its non-bilateral operation scope')
+  }
+
+  const designations = artifact.datasets.ofacDesignations.data
+  if (designations.narcoticsSpecificProgramRecordCount + designations.tcoOnlyRecordCount
+    !== designations.recordCount) {
+    throw new Error('OFAC narcotics-specific and TCO-only record counts must partition the scoped records')
   }
   return artifact
 }

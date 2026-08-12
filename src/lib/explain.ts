@@ -59,21 +59,19 @@ export function explainPrices(rows: PriceRecord[] | null | undefined, drugLabel:
   return s
 }
 
-/** Precursor flows: total seized, China's share, biggest single corridor. */
+/** Precursor flows: record counts and an exact-only subtotal when explicitly qualified. */
 export function explainFlows(
   flows: FlowRecord[] | null | undefined,
   scopeLabel = 'the records shown',
 ): string | null {
   if (!flows || flows.length === 0) return `No trafficking corridors are recorded for ${scopeLabel}.`
-  const total = flows.reduce((s, r) => s + r.quantityKg, 0)
-  const chinaTotal = flows.filter((r) => r.origin === 'China').reduce((s, r) => s + r.quantityKg, 0)
-  const top = [...flows].sort((a, b) => b.quantityKg - a.quantityKg)[0]
-  const share = total ? Math.round((chinaTotal / total) * 100) : 0
-
-  let s = `Across ${scopeLabel}, about ${humanizeMass(total)} of precursor chemicals were seized moving between countries.`
-  if (chinaTotal > 0) s += ` China is the listed origin of ${share}% of that seized volume.`
-  s += ` The single biggest corridor runs ${top.origin} → ${top.destination}${top.transit ? ` (via ${top.transit})` : ''}, at ${humanizeMass(top.quantityKg)}.`
-  return s
+  const exact = flows.filter((record) => record.quantityRelation === 'exact')
+  const qualified = flows.length - exact.length
+  const exactTotal = exact.reduce((total, record) => total + record.quantityKg, 0)
+  const exactText = exact.length > 0
+    ? `${humanizeMass(exactTotal)} across ${exact.length} exact record${exact.length === 1 ? '' : 's'}`
+    : 'no exact-only subtotal'
+  return `The ${scopeLabel} view contains ${flows.length} source-grained record${flows.length === 1 ? '' : 's'}: ${exactText}; ${qualified} approximate, bounded or unqualified record${qualified === 1 ? ' is' : 's are'} kept separate. Values with different precision, incident grain or quantity bases are not combined into a route share or “largest shipment.”`
 }
 
 /** Myanmar focus: where activity/cultivation peaks + the busiest exit route. */
