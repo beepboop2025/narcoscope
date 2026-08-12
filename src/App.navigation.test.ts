@@ -1,0 +1,13 @@
+import { describe, expect, it } from 'vitest'
+import { resolveTabFromHash } from './App'
+
+describe('App hash navigation', () => {
+  it('resolves tab routes and newsroom deep links', () => {
+    expect(resolveTabFromHash('#flows')).toBe('flows')
+    expect(resolveTabFromHash('#/newsroom')).toBe('newsroom')
+    expect(resolveTabFromHash('#news-source-SRC-INCB-PRECURSORS-2025')).toBe('newsroom')
+    expect(resolveTabFromHash('#news-sentence-S007')).toBe('newsroom')
+    expect(resolveTabFromHash('')).toBe('overview')
+    expect(resolveTabFromHash('#not-a-route')).toBeNull()
+  })
+})

@@ -16,7 +16,7 @@ type NewsSource = {
   newsroomRole: string
   availabilityStatus: string
   newsroomUseStatus: string
-    accessNote: string
+  accessNote: string
   documentSha256: string | null
   retrievedAt: string | null
 }
@@ -115,7 +115,13 @@ type LoadedNews = {
   dossier: NewsDossier
 }
 
-const formatNumber = new Intl.NumberFormat('en-US').format
+export function formatNewsroomNumber(value: number): string {
+  const [integer, decimal] = String(value).split('.')
+  const sign = integer.startsWith('-') ? '-' : ''
+  const digits = sign ? integer.slice(1) : integer
+  const grouped = digits.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+  return `${sign}${grouped}${decimal ? `.${decimal}` : ''}`
+}
 
 function CitationList({
   ids,
@@ -133,7 +139,7 @@ function CitationList({
           <a href={`#news-source-${sourceId}`} aria-label={`Source ${sourceNumbers.get(sourceId)}`} title={locator}>
             [{sourceNumbers.get(sourceId)}]
           </a>
-          <small>{locator}</small>
+          <small className="sr-only">{locator}</small>
           {ids[index] === sourceId ? null : <span className="sr-only">citation mismatch</span>}
         </span>
       ))}
@@ -194,7 +200,7 @@ function EvidenceVisual({
                   <span className="newsroom-visual-category">{item.category.replaceAll('_', ' ')}</span>
                   {item.label}
                 </td>
-                <td className="newsroom-visual-value">{formatNumber(item.value)}</td>
+                <td className="newsroom-visual-value">{formatNewsroomNumber(item.value)}</td>
                 <td className="newsroom-visual-bar-cell">
                   <span className="newsroom-visual-bar" aria-hidden="true">
                     <i style={{ width: `${(item.value / maxValue) * 100}%` }} />
@@ -300,7 +306,7 @@ export default function EvidenceNewsroom() {
       <ul className="newsroom-figures" aria-label="Key bounded figures">
         {dossier.keyFigures.map((figure) => (
           <li key={figure.id}>
-            <strong>{formatNumber(figure.value)}</strong>
+            <strong>{formatNewsroomNumber(figure.value)}</strong>
             <span>{figure.unit}</span>
             <small>{figure.label}</small>
             <em>{figure.attributionBoundary.replaceAll('_', ' ')}</em>

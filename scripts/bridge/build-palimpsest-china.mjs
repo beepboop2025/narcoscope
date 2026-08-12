@@ -39,6 +39,19 @@ const FLOW_RECORD_KINDS = new Set([
   'annual_aggregate',
   'derived_subtotal',
 ])
+const FLOW_AGGREGATION_ELIGIBILITIES = new Set([
+  'eligible',
+  'ineligible_non_exact',
+  'ineligible_derived',
+  'ineligible_incompatible_basis',
+])
+const FLOW_AGGREGATION_GROUPS = new Set([
+  'mdma_precursor_substance_mass',
+  'meth_pre_precursor_substance_mass',
+  'pseudoephedrine_preparation_gross_mass',
+  'potassium_permanganate_substance_mass',
+  'pseudoephedrine_preparation_mass',
+])
 const NARCOTICS_SPECIFIC_OFAC_PROGRAMS = new Set([
   'SDNT',
   'SDNTK',
@@ -90,6 +103,15 @@ function assertAuditedFlowInputs(flows) {
 
   for (const record of records) {
     const label = `precursor-flow record ${record.origin ?? '?'} to ${record.destination ?? '?'}`
+    if (typeof record.origin !== 'string' || record.origin.trim().length === 0
+      || typeof record.destination !== 'string' || record.destination.trim().length === 0) {
+      throw new Error(`${label} lacks a reported origin and destination`)
+    }
+    if ((record.transit !== null && (typeof record.transit !== 'string' || record.transit.trim().length === 0))
+      || (record.seizureLocation !== null
+        && (typeof record.seizureLocation !== 'string' || record.seizureLocation.trim().length === 0))) {
+      throw new Error(`${label} has an invalid transit or seizure location`)
+    }
     if (!Number.isFinite(record.quantityKg) || record.quantityKg < 0) {
       throw new Error(`${label} has an invalid quantity`)
     }
@@ -101,6 +123,39 @@ function assertAuditedFlowInputs(flows) {
     }
     if (record.incidentCount !== null && !isPositiveInteger(record.incidentCount)) {
       throw new Error(`${label} has an invalid incident count`)
+    }
+    if (!FLOW_AGGREGATION_ELIGIBILITIES.has(record.aggregationEligibility)
+      || (record.aggregationGroup !== null && !FLOW_AGGREGATION_GROUPS.has(record.aggregationGroup))) {
+      throw new Error(`${label} lacks audited aggregation semantics`)
+    }
+    if (record.quantityRelation !== 'exact'
+      && record.aggregationEligibility !== 'ineligible_non_exact') {
+      throw new Error(`${label} must exclude non-exact quantities from aggregation`)
+    }
+    if (record.quantityRelation === 'exact'
+      && record.aggregationEligibility === 'ineligible_non_exact') {
+      throw new Error(`${label} has an aggregation exclusion reason that contradicts its exact quantity`)
+    }
+    if (record.aggregationEligibility === 'eligible'
+      && (record.quantityRelation !== 'exact'
+        || record.recordKind === 'derived_subtotal'
+        || record.aggregationGroup === null)) {
+      throw new Error(`${label} is not eligible for a compatible exact subtotal`)
+    }
+    if (record.recordKind === 'derived_subtotal'
+      && record.aggregationEligibility !== 'ineligible_derived') {
+      throw new Error(`${label} must exclude a derived subtotal from aggregation`)
+    }
+    if (record.aggregationEligibility === 'ineligible_derived'
+      && record.recordKind !== 'derived_subtotal') {
+      throw new Error(`${label} has a derived exclusion reason on a non-derived row`)
+    }
+    if (record.recordKind === 'derived_subtotal' && record.aggregationGroup !== null) {
+      throw new Error(`${label} may not assign a canonical aggregation group to a derived subtotal`)
+    }
+    if (record.aggregationEligibility === 'ineligible_incompatible_basis'
+      && record.aggregationGroup !== null) {
+      throw new Error(`${label} may not name a compatible group for an incompatible basis`)
     }
     assertPinnedIncbProvenance(record, source, label)
   }
@@ -199,18 +254,91 @@ export async function loadBridgeInputs(root = defaultRoot) {
   }
 }
 
-/** Sum only fully exact reported quantities; callers must handle qualified values explicitly. */
+function isAggregationEligible(record) {
+  return record.quantityRelation === 'exact'
+    && FLOW_RECORD_KINDS.has(record.recordKind)
+    && record.recordKind !== 'derived_subtotal'
+    && record.aggregationEligibility === 'eligible'
+    && FLOW_AGGREGATION_GROUPS.has(record.aggregationGroup)
+}
+
+/** Sum only exact, explicitly eligible quantities in one canonical compatible group. */
 export function sumExactQuantityKg(records) {
+  if (records.length === 0) throw new Error('cannot sum an empty quantity group')
   const invalid = records.find((record) => record.quantityRelation !== 'exact')
   if (invalid) {
     throw new Error(
       `cannot sum non-exact quantity (${invalid.quantityRelation}) for ${invalid.origin ?? invalid.reportedOrigin} to ${invalid.destination}`,
     )
   }
+  const ineligible = records.find((record) => !isAggregationEligible(record))
+  if (ineligible) {
+    throw new Error(
+      `cannot sum aggregation-ineligible quantity for ${ineligible.origin ?? ineligible.reportedOrigin} to ${ineligible.destination}`,
+    )
+  }
+  const aggregationGroup = records[0].aggregationGroup
+  if (records.some((record) => record.aggregationGroup !== aggregationGroup)) {
+    throw new Error('cannot sum quantities across incompatible aggregation groups')
+  }
   if (records.some((record) => !Number.isFinite(record.quantityKg) || record.quantityKg < 0)) {
     throw new Error('cannot sum an invalid quantity')
   }
   return round(sum(records.map((record) => record.quantityKg)))
+}
+
+function quantityAggregationFor(records) {
+  const exactRecordCount = records.filter((record) => record.quantityRelation === 'exact').length
+  const nonExactRecordCount = records.length - exactRecordCount
+  const eligibleRecords = records.filter(isAggregationEligible)
+  const aggregationGroups = [...new Set(eligibleRecords.map((record) => record.aggregationGroup))]
+  const eligibleRecordCount = eligibleRecords.length
+  const excludedRecordCount = records.length - eligibleRecordCount
+
+  if (records.length === 0) {
+    return {
+      status: 'not_computed_no_records',
+      exactRecordCount,
+      nonExactRecordCount,
+      eligibleRecordCount,
+      excludedRecordCount,
+      aggregationGroup: null,
+      summedQuantityKg: null,
+    }
+  }
+  if (eligibleRecords.length === 0) {
+    return {
+      status: exactRecordCount === 0
+        ? 'not_computed_non_exact_inputs'
+        : 'not_computed_ineligible_exact_inputs',
+      exactRecordCount,
+      nonExactRecordCount,
+      eligibleRecordCount,
+      excludedRecordCount,
+      aggregationGroup: null,
+      summedQuantityKg: null,
+    }
+  }
+  if (aggregationGroups.length !== 1) {
+    return {
+      status: 'not_computed_mixed_aggregation_groups',
+      exactRecordCount,
+      nonExactRecordCount,
+      eligibleRecordCount,
+      excludedRecordCount,
+      aggregationGroup: null,
+      summedQuantityKg: null,
+    }
+  }
+  return {
+    status: 'computed_exact_only',
+    exactRecordCount,
+    nonExactRecordCount,
+    eligibleRecordCount,
+    excludedRecordCount,
+    aggregationGroup: aggregationGroups[0],
+    summedQuantityKg: sumExactQuantityKg(eligibleRecords),
+  }
 }
 
 function yearRange(years) {
@@ -367,12 +495,15 @@ function buildPrecursorCorridors(inputs) {
         reportedOrigin: record.origin,
         transit: record.transit,
         destination: record.destination,
+        seizureLocation: record.seizureLocation,
         year: record.year,
         precursor: record.precursor,
         quantityKg: record.quantityKg,
         quantityRelation: record.quantityRelation,
         quantityBasis: record.quantityBasis,
         recordKind: record.recordKind,
+        aggregationEligibility: record.aggregationEligibility,
+        aggregationGroup: record.aggregationGroup,
         incidentCount: record.incidentCount,
         sourceLocator: record.sourceLocator,
       }
@@ -404,20 +535,7 @@ function buildPrecursorCorridors(inputs) {
     throw new Error('official precursor-flow document provenance is incomplete')
   }
 
-  const exactRecordCount = records.filter((record) => record.quantityRelation === 'exact').length
-  const nonExactRecordCount = records.length - exactRecordCount
-  const quantityAggregation = {
-    status: nonExactRecordCount > 0
-      ? 'not_computed_non_exact_inputs'
-      : records.length > 0
-        ? 'computed_exact_only'
-        : 'not_computed_no_records',
-    exactRecordCount,
-    nonExactRecordCount,
-    summedQuantityKg: records.length > 0 && nonExactRecordCount === 0
-      ? sumExactQuantityKg(records)
-      : null,
-  }
+  const quantityAggregation = quantityAggregationFor(records)
 
   return {
     datasetId: 'precursor_corridor_incidents',
@@ -454,7 +572,7 @@ function buildPrecursorCorridors(inputs) {
     limitations: [
       'These are selected reported incidents, not a complete flow series or an estimate of total precursor trade.',
       'Operation Pseudonym does not allocate seizure counts or mass by origin-and-destination pair, so its China/India and Australia/New Zealand statement is retained only as non-summable context.',
-      'Approximate quantities and bounds are never added into an exact total.',
+      'Only exact rows explicitly eligible for one canonical aggregation group enter a subtotal; bounds, derivations and incompatible bases remain excluded.',
       'Quantities describe seizures or incidents and do not measure successful movement or end-drug output.',
     ],
   }
@@ -639,29 +757,52 @@ export function assertPublicBridgeBoundary(artifact) {
     || precursor.data.includedContextRecordCount !== contextRecords.length) {
     throw new Error('precursor bridge record counts do not match their arrays')
   }
-  const exactRecordCount = corridors.filter((record) => record.quantityRelation === 'exact').length
-  const nonExactRecordCount = corridors.length - exactRecordCount
   if (corridors.some((record) => !QUANTITY_RELATIONS.has(record.quantityRelation))) {
     throw new Error('precursor bridge contains an invalid quantity relation')
   }
-  if (quantityAggregation.exactRecordCount !== exactRecordCount
-    || quantityAggregation.nonExactRecordCount !== nonExactRecordCount) {
-    throw new Error('precursor quantity aggregation counts do not match corridor qualifiers')
+  if (corridors.some((record) => (
+    typeof record.reportedOrigin !== 'string'
+    || record.reportedOrigin.trim().length === 0
+    || typeof record.destination !== 'string'
+    || record.destination.trim().length === 0
+  ))) {
+    throw new Error('precursor bridge contains an invalid origin or destination')
   }
-  if (nonExactRecordCount > 0
-    && (quantityAggregation.status !== 'not_computed_non_exact_inputs'
-      || quantityAggregation.summedQuantityKg !== null)) {
-    throw new Error('non-exact precursor values may not enter a reported quantity total')
+  if (corridors.some((record) => (
+    (record.transit !== null && (typeof record.transit !== 'string' || record.transit.trim().length === 0))
+    || (record.seizureLocation !== null
+      && (typeof record.seizureLocation !== 'string' || record.seizureLocation.trim().length === 0))
+  ))) {
+    throw new Error('precursor bridge contains an invalid transit or seizure location')
   }
-  if (corridors.length > 0 && nonExactRecordCount === 0
-    && (quantityAggregation.status !== 'computed_exact_only'
-      || quantityAggregation.summedQuantityKg !== sumExactQuantityKg(corridors))) {
-    throw new Error('exact-only precursor quantity total is inconsistent')
+  if (corridors.some((record) => (
+    !FLOW_RECORD_KINDS.has(record.recordKind)
+    || !FLOW_AGGREGATION_ELIGIBILITIES.has(record.aggregationEligibility)
+    || (record.aggregationGroup !== null && !FLOW_AGGREGATION_GROUPS.has(record.aggregationGroup))
+    || (record.quantityRelation !== 'exact' && record.aggregationEligibility !== 'ineligible_non_exact')
+    || (record.quantityRelation === 'exact' && record.aggregationEligibility === 'ineligible_non_exact')
+    || (record.recordKind === 'derived_subtotal' && record.aggregationEligibility !== 'ineligible_derived')
+    || (record.recordKind !== 'derived_subtotal' && record.aggregationEligibility === 'ineligible_derived')
+    || (record.recordKind === 'derived_subtotal' && record.aggregationGroup !== null)
+    || (record.aggregationEligibility === 'ineligible_incompatible_basis' && record.aggregationGroup !== null)
+    || (record.aggregationEligibility === 'eligible' && !isAggregationEligible(record))
+  ))) {
+    throw new Error('precursor bridge contains invalid aggregation semantics')
   }
-  if (corridors.length === 0
-    && (quantityAggregation.status !== 'not_computed_no_records'
-      || quantityAggregation.summedQuantityKg !== null)) {
-    throw new Error('empty precursor quantity input may not produce a total')
+  const expectedQuantityAggregation = quantityAggregationFor(corridors)
+  const aggregationKeys = [
+    'status',
+    'exactRecordCount',
+    'nonExactRecordCount',
+    'eligibleRecordCount',
+    'excludedRecordCount',
+    'aggregationGroup',
+    'summedQuantityKg',
+  ]
+  if (aggregationKeys.some((key) => (
+    quantityAggregation[key] !== expectedQuantityAggregation[key]
+  ))) {
+    throw new Error('precursor quantity aggregation does not match the canonical eligibility contract')
   }
   if (contextRecords.some((record) => (
     Object.hasOwn(record, 'quantityKg')

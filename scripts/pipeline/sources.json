@@ -130,7 +130,7 @@
     {
       "id": "un-comtrade",
       "name": "UN Statistics Division — UN Comtrade Database and API",
-      "url": "https://comtrade.un.org/",
+      "url": "https://comtradeplus.un.org/",
       "format": "json/csv API; aggregate trade statistics",
       "cadence": "continuous as reporters submit data",
       "license": "UN Comtrade usage agreement; large original-data redistribution can require a separate licence, while transformed data is treated differently",
@@ -317,8 +317,8 @@
       "cadence": "annual",
       "license": "US Government work — public domain",
       "automation": "manual",
-      "availability": "Public official threat assessment; narrative analysis and selected examples, not a complete record-level shipment dataset or an adjudicated finding.",
-      "feeds": "Analyst context only. Any claim must be attributed as DEA's assessment; the automated China dossier does not currently ingest it.",
+      "availability": "Official threat assessment requiring manual retrieval; DEA's document host returned HTTP 403 to the automated verification client on 2026-08-12. Narrative analysis and selected examples are not a complete record-level shipment dataset or an adjudicated finding.",
+      "feeds": "ANALYST WORK-QUEUE ONLY — absent from the current deterministic newsroom capability contract. Any claim must be attributed as DEA's assessment; the automated China dossier does not currently ingest it.",
       "transform": "scripts/convert/from-pdf.mjs, corridor rows via the flows schema"
     },
     {
@@ -330,7 +330,7 @@
       "license": "DOJ-authored US Government work is public domain; linked filings can carry separate access and privacy considerations",
       "automation": "manual",
       "availability": "Public announcements and selected pleadings; disposition must be checked against the court docket.",
-      "feeds": "NEWSROOM CAPABILITY ONLY. Complaints and indictments are allegations and defendants are presumed innocent unless and until guilt is adjudicated; never promote a charge into a finding.",
+      "feeds": "ANALYST WORK-QUEUE ONLY — absent from the current deterministic newsroom capability contract. Complaints and indictments are allegations and defendants are presumed innocent unless and until guilt is adjudicated; never promote a charge into a finding.",
       "transform": "none — requires manual case-status and disposition review"
     },
     {

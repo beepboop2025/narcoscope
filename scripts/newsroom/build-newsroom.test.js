@@ -91,7 +91,10 @@ describe('NarcoScope deterministic evidence newsroom', () => {
       publicRecordLevelShipments: false,
     })
     expect(byId['gacc-customs-statistics']).toMatchObject({ newsroomRole: 'capability_only', upstreamGroup: 'cn-gacc' })
-    expect(byId['un-comtrade'].licensing.status).toBe('usage_agreement_and_redistribution_limits')
+    expect(byId['un-comtrade']).toMatchObject({
+      url: 'https://comtradeplus.un.org/',
+      licensing: { status: 'usage_agreement_and_redistribution_limits' },
+    })
     for (const id of ['incb-pics', 'incb-pen-online']) {
       expect(byId[id].availability).toMatchObject({
         status: 'restricted_non_public',
@@ -101,18 +104,22 @@ describe('NarcoScope deterministic evidence newsroom', () => {
       expect(byId[id].newsroomRole).toBe('unavailable')
     }
     expect(byId['uscourts-pacer'].availability.status).toBe('account_and_fee_restricted')
-    expect(byId['doj-precursor-case-releases'].newsroomUse.prohibitedClaims.join(' ')).toMatch(/indictment proves|establishes guilt/i)
-    expect(byId['dea-ndta'].newsroomUse.status).toBe('capability_only')
+    expect(byId).not.toHaveProperty('doj-precursor-case-releases')
+    expect(byId).not.toHaveProperty('dea-ndta')
   })
 
-  it('preserves approximate source grain and refuses the invalid bilateral subtotal', () => {
+  it('preserves qualified source grain and refuses the invalid bilateral subtotal', () => {
     expect(() => assertMachineBrief(machineBrief)).not.toThrow()
     const incidents = machineBrief.evidenceLanes.officialEnforcementIncidents
 
     expect(incidents.chinaEuAggregate).toMatchObject({
       reportedQuantityKg: 5000,
-      quantityRelation: 'approx',
+      quantityRelation: 'less_than',
       recordKind: 'multi_incident_aggregate',
+      transit: null,
+      seizureLocation: null,
+      aggregationEligibility: 'ineligible_non_exact',
+      aggregationGroup: 'meth_pre_precursor_substance_mass',
       incidentCount: 9,
       sourceLocator: { paragraph: 94 },
     })
@@ -126,6 +133,9 @@ describe('NarcoScope deterministic evidence newsroom', () => {
     })
     expect(incidents.quantityAggregation).toMatchObject({
       status: 'not_computed_non_exact_inputs',
+      eligibleRecordCount: 0,
+      excludedRecordCount: 1,
+      aggregationGroup: null,
       summedQuantityKg: null,
     })
     expect(incidents.bilateralSubtotalComputed).toBe(false)
@@ -148,7 +158,12 @@ describe('NarcoScope deterministic evidence newsroom', () => {
   })
 
   it('requires a distinct analysis gate, sentence citations, countercase and limitations', () => {
-    expect(() => assertAutomatedEvidenceAnalysis(dossier, machineBrief, inputs.capabilities.data)).not.toThrow()
+    expect(() => assertAutomatedEvidenceAnalysis(
+      dossier,
+      machineBrief,
+      inputs.capabilities.data,
+      inputs.previousDossier?.data,
+    )).not.toThrow()
     const sentences = [
       ...dossier.sections.flatMap((section) => section.sentences),
       ...dossier.countercase.sentences,
@@ -245,10 +260,46 @@ describe('NarcoScope deterministic evidence newsroom', () => {
       date: '2026-08-13',
       revisionHash: changedBrief.revisionHash,
     })
+    const capabilityLocators = changedDossier.sections
+      .flatMap((section) => section.sentences)
+      .flatMap((sentence) => sentence.citationLocators)
+      .filter((citation) => citation.locator.startsWith('registered '))
+    expect(capabilityLocators.length).toBeGreaterThan(0)
+    expect(capabilityLocators.every((citation) => citation.locator.endsWith('as of 2026-08-13'))).toBe(true)
 
     const stableInputs = structuredClone(changedInputs)
     stableInputs.previousDossier = { data: changedDossier }
     expect(buildEvidenceAnalysis(changedBrief, stableInputs)).toEqual(changedDossier)
+  })
+
+  it('rejects invalid prior history, revision replay and backwards publication time', () => {
+    const invalidPrior = structuredClone(dossier)
+    invalidPrior.publicationRecord.updateHistory[0].summary = 'Rewritten initial publication.'
+    const invalidInputs = structuredClone(inputs)
+    invalidInputs.previousDossier = { data: rehash(invalidPrior) }
+    expect(() => buildEvidenceAnalysis(machineBrief, invalidInputs))
+      .toThrow(/checked-in prior dossier is invalid|initial publication summary is invalid/)
+
+    const advancedInputs = structuredClone(inputs)
+    advancedInputs.previousDossier = { data: dossier }
+    advancedInputs.bridge.data.dataAsOf = '2026-08-13'
+    advancedInputs.bridge.descriptor.sha256 = 'a'.repeat(64)
+    advancedInputs.capabilities.data.asOf = '2026-08-13'
+    advancedInputs.capabilities.descriptor.sha256 = 'b'.repeat(64)
+    const advancedBrief = buildMachineBrief(advancedInputs)
+    const advancedDossier = buildEvidenceAnalysis(advancedBrief, advancedInputs)
+
+    const replayInputs = structuredClone(inputs)
+    replayInputs.previousDossier = { data: advancedDossier }
+    expect(() => buildEvidenceAnalysis(machineBrief, replayInputs))
+      .toThrow(/prior revision hash cannot be replayed/)
+
+    const backwardsInputs = structuredClone(inputs)
+    backwardsInputs.previousDossier = { data: advancedDossier }
+    backwardsInputs.bridge.descriptor.sha256 = 'c'.repeat(64)
+    const backwardsBrief = buildMachineBrief(backwardsInputs)
+    expect(() => buildEvidenceAnalysis(backwardsBrief, backwardsInputs))
+      .toThrow(/cannot move updatedAt backwards/)
   })
 
   it('does not let capability-only citations satisfy a synthesis claim', () => {
@@ -311,7 +362,8 @@ describe('NarcoScope deterministic evidence newsroom', () => {
     expect(html).toContain('aria-label="Verification receipt summary"')
     expect(html).toContain('aria-labelledby="china-eu-aggregate-title"')
     expect(html).toContain('aria-labelledby="operation-pseudonym-context-title"')
-    expect(html).toContain('<caption>China-to-EU aggregate retained at source precision in tonnes, approximate</caption>')
+    expect(html).toContain('<caption>China-to-EU aggregate retained at source precision in tonnes, upper bound</caption>')
+    expect(html).toContain('.citation-locator { position:absolute;')
     expect(html).toContain('aria-labelledby="cdc-harm-trend-title"')
     expect(html).toContain('This revisable mortality series has no exporter, shipment, precursor or origin field')
     expect(html).toContain('paragraph 94; PDF page 44; printed page 26')
@@ -339,6 +391,7 @@ describe('NarcoScope deterministic evidence newsroom', () => {
     const filesExceptManifest = Object.keys(built.files).filter((file) => file !== 'manifest.json').sort()
     expect(built.manifest.artifacts.map((item) => item.file)).toEqual(filesExceptManifest)
     expect(built.manifest.gates.map((gate) => gate.status)).toEqual(['passed', 'passed', 'passed'])
+    expect(built.manifest.gates.every((gate) => Number.isInteger(gate.assertionCount) && gate.assertionCount > 0)).toBe(true)
     expect(built.manifest.revisionHash).toBe(machineBrief.revisionHash)
     expect(built.manifest.contentHash).toBe(dossier.contentHash)
     expect(built.manifest.verificationReceipt).toMatchObject({
