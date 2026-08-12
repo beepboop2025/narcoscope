@@ -30,9 +30,16 @@
     "mcp": "https://narcoscope.com/mcp",
     "json_feed": "https://narcoscope.com/news/feed.json",
     "atom_feed": "https://narcoscope.com/news/feed.xml",
+    "telegram_bot": "https://t.me/NarcoScopeEvidenceBot",
+    "telegram_channel": "https://t.me/EvidenceSignalDesk",
     "source": "https://github.com/beepboop2025/narcoscope"
   },
   "related": [
+    {
+      "name": "Palimpsest",
+      "relationship": "Relevant China information-control and publication-gap context for the public precursor record",
+      "url": "https://palimpsest.info/"
+    },
     {
       "name": "My Quant Doesn't Speak English",
       "relationship": "Independent editorial desk for financial-system, institution-risk, and market-liquidity investigations",
