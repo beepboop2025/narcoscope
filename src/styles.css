@@ -163,6 +163,32 @@ a:hover { text-decoration: underline; }
   line-height: 1.65;
 }
 
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin: -0.5rem 0 1.75rem;
+}
+.hero-action {
+  appearance: none;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.42);
+  color: var(--white);
+  cursor: pointer;
+  font: 400 0.78rem/1 var(--font-body);
+  padding: 0.72rem 1rem;
+  text-decoration: none;
+  backdrop-filter: blur(8px);
+}
+.hero-action:hover { border-color: var(--accent); text-decoration: none; }
+.hero-action--primary {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--black);
+  font-weight: 700;
+}
+
 /* ---- tabs ---------------------------------------------------------------- */
 .tabs {
   position: relative; z-index: 2;
@@ -528,6 +554,13 @@ h3 { font-family: var(--font-display); font-weight: 400; font-size: 1.2rem; lett
 
 /* ---- footer -------------------------------------------------------------- */
 .app-footer { margin-top: 2.5rem; border-top: 1px solid var(--border); padding-top: 1.25rem; }
+.product-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem 1rem;
+  margin-top: 1rem;
+  font-size: 0.76rem;
+}
 .disclaimer {
   background: linear-gradient(180deg, rgba(255,171,152,0.08), rgba(255,171,152,0.03));
   border: 1px solid rgba(255, 171, 152, 0.3); color: #f2cdbf;

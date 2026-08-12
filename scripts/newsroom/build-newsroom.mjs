@@ -1467,6 +1467,15 @@ export function renderArticleHtml(dossier) {
   <title>${escapeHtml(dossier.title)} · NarcoScope</title>
   <meta name="description" content="${escapeHtml(dossier.dek)}">
   <link rel="canonical" href="${canonicalUrl}">
+  <meta name="robots" content="index,follow,max-snippet:-1">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="NarcoScope">
+  <meta property="og:title" content="${escapeHtml(dossier.title)}">
+  <meta property="og:description" content="${escapeHtml(dossier.dek)}">
+  <meta property="og:url" content="${canonicalUrl}">
+  <meta property="article:published_time" content="${escapeHtml(dossier.publishedAt)}">
+  <meta property="article:modified_time" content="${escapeHtml(dossier.updatedAt)}">
+  <meta name="twitter:card" content="summary">
   <link rel="alternate" type="application/feed+json" href="${SITE_ORIGIN}/news/feed.json" title="NarcoScope evidence newsroom">
   <link rel="alternate" type="application/atom+xml" href="${SITE_ORIGIN}/news/feed.xml" title="NarcoScope evidence newsroom">
   <script type="application/ld+json">${structuredData}</script>

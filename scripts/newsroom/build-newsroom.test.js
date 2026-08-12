@@ -371,6 +371,8 @@ describe('NarcoScope deterministic evidence newsroom', () => {
     expect(html).toContain('No expert or affected-person testimony is included')
     expect(html).toContain('Corrections and update history')
     expect(html).toContain('initial publication')
+    expect(html).toContain('<meta property="og:type" content="article">')
+    expect(html).toContain(`<meta property="article:modified_time" content="${dossier.updatedAt}">`)
     expect(jsonFeed.items[0]._narcoscope).toMatchObject({
       contentClass: 'automated_evidence_analysis',
       revisionHash: dossier.revisionHash,

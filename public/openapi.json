@@ -1,0 +1,96 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "NarcoScope Public Evidence API",
+    "version": "1.0.0",
+    "description": "Read-only access to NarcoScope's aggregate official-data overview, citation-gated evidence newsroom, and public Palimpsest bridge. No endpoint provides point-of-sale, real-time, navigable, synthesis-route, or yield information."
+  },
+  "servers": [
+    { "url": "https://narcoscope.com/api/v1" }
+  ],
+  "externalDocs": {
+    "description": "API and MCP quickstart",
+    "url": "https://narcoscope.com/developers/"
+  },
+  "components": {
+    "schemas": {
+      "Envelope": {
+        "type": "object",
+        "required": ["ok", "resource", "data"],
+        "properties": {
+          "ok": { "type": "boolean", "const": true },
+          "resource": { "type": "string" },
+          "data": { "type": "object", "additionalProperties": true }
+        },
+        "additionalProperties": false
+      },
+      "Error": {
+        "type": "object",
+        "required": ["ok", "error", "message"],
+        "properties": {
+          "ok": { "type": "boolean", "const": false },
+          "error": { "type": "string" },
+          "message": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "responses": {
+      "Success": {
+        "description": "Published NarcoScope artifact",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Envelope" } } }
+      },
+      "BadRequest": {
+        "description": "Invalid resource parameters",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+      }
+    }
+  },
+  "paths": {
+    "/capabilities": {
+      "get": {
+        "operationId": "listNarcoScopeCapabilities",
+        "summary": "Discover product capabilities, access points, audiences, and safety boundaries",
+        "responses": { "200": { "$ref": "#/components/responses/Success" } }
+      }
+    },
+    "/overview": {
+      "get": {
+        "operationId": "getNarcoScopeOverview",
+        "summary": "Read bounded headline aggregates from the bundled official datasets",
+        "responses": { "200": { "$ref": "#/components/responses/Success" } }
+      }
+    },
+    "/newsroom": {
+      "get": {
+        "operationId": "getNarcoScopeNewsroom",
+        "summary": "List deterministic analyses and their publication-gate receipts",
+        "parameters": [
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "minimum": 1, "maximum": 25, "default": 10 } }
+        ],
+        "responses": { "200": { "$ref": "#/components/responses/Success" } }
+      }
+    },
+    "/story": {
+      "get": {
+        "operationId": "getNarcoScopeStory",
+        "summary": "Read one newsroom story as metadata, machine brief, or cited dossier",
+        "parameters": [
+          { "name": "slug", "in": "query", "required": true, "schema": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" } },
+          { "name": "artifact", "in": "query", "schema": { "type": "string", "enum": ["metadata", "machine-brief", "dossier"], "default": "machine-brief" } }
+        ],
+        "responses": {
+          "200": { "$ref": "#/components/responses/Success" },
+          "400": { "$ref": "#/components/responses/BadRequest" }
+        }
+      }
+    },
+    "/palimpsest-bridge": {
+      "get": {
+        "operationId": "getNarcoScopePalimpsestBridge",
+        "summary": "Read the official-only China aggregate and its claim boundaries",
+        "responses": { "200": { "$ref": "#/components/responses/Success" } }
+      }
+    }
+  }
+}

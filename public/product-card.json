@@ -1,0 +1,36 @@
+{
+  "schema": "product-card.v1",
+  "name": "NarcoScope",
+  "category": "public-interest evidence explorer",
+  "headline": "Drug-market records you can inspect, cite, and challenge.",
+  "description": "NarcoScope translates hard-to-read official drug-market records into maps, comparisons, plain-language explanations, and deterministic evidence analyses without turning administrative data into claims it cannot support.",
+  "audiences": ["journalists", "researchers", "policy teams", "public-interest investigators"],
+  "use_cases": [
+    "Compare official retail-price, seizure, mortality, wastewater, and designation records.",
+    "Read newsroom analyses with sentence-level citations, correction history, and explicit abstentions.",
+    "Import a public aggregate China record into an evidence workflow through the Palimpsest bridge.",
+    "Give an AI agent read-only access to bounded, source-linked artifacts through MCP or OpenAPI."
+  ],
+  "proof": [
+    "Every newsroom sentence and data row is citation-gated before publication.",
+    "Official, illustrative, stale, unavailable, and capability-only inputs stay visibly distinct.",
+    "Machine briefs, cited dossiers, JSON Feed, Atom, OpenAPI, and MCP resolve to the same published artifacts."
+  ],
+  "boundaries": [
+    "No point-of-sale, real-time, sub-street, or navigable location information.",
+    "No precursor synthesis routes, chemistry, or yields.",
+    "Seizure changes are not treated as trafficking-volume changes without independent modalities.",
+    "A designation or reported origin is not an adjudication of guilt or causal proof."
+  ],
+  "access": {
+    "website": "https://narcoscope.com",
+    "developers": "https://narcoscope.com/developers/",
+    "api": "https://narcoscope.com/api/v1/capabilities",
+    "openapi": "https://narcoscope.com/openapi.json",
+    "mcp": "https://narcoscope.com/mcp",
+    "json_feed": "https://narcoscope.com/news/feed.json",
+    "atom_feed": "https://narcoscope.com/news/feed.xml",
+    "source": "https://github.com/beepboop2025/narcoscope"
+  },
+  "pricing": "free public good"
+}

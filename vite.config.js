@@ -10,7 +10,11 @@ export default defineConfig({
     // `// @vitest-environment happy-dom` docblock, so the two coexist without a
     // second config.
     environment: 'node',
-    include: ['src/**/*.test.{js,ts,jsx,tsx}', 'scripts/**/*.test.{js,ts,mjs}'],
+    include: [
+      'src/**/*.test.{js,ts,jsx,tsx}',
+      'scripts/**/*.test.{js,ts,mjs}',
+      'api/**/*.test.{js,mjs}',
+    ],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'text-summary'],

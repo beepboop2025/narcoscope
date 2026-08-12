@@ -130,11 +130,18 @@ export default function App() {
           </div>
           <Reveal delay={420}>
             <p className="lede">
-              Street prices, precursor flows, trafficking corridors, overdose mortality
-              and sanctions designations — drawn from public UNODC, INCB, CDC and US
-              Treasury data and translated into plain language. Aggregate statistics
-              for awareness, education, and research only.
+              Inspect the official record behind drug prices, precursor incidents,
+              seizures, overdose mortality, wastewater and public designations. Every
+              analysis shows its sources, missing joins and the point where the evidence
+              stops. Aggregate statistics for awareness, education, and research only.
             </p>
+            <div className="hero-actions" aria-label="NarcoScope entry points">
+              <button type="button" className="hero-action hero-action--primary" onClick={() => selectTab('newsroom')}>
+                Read the evidence newsroom
+              </button>
+              <a className="hero-action" href="/developers/">Connect API + MCP</a>
+              <a className="hero-action" href="/news/feed.json">Follow the feed</a>
+            </div>
           </Reveal>
         </div>
         <nav className="tabs">
@@ -195,6 +202,14 @@ export default function App() {
               </span>
             ))}
           </div>
+          <nav className="product-links" aria-label="NarcoScope product links">
+            <a href="/#newsroom">Evidence newsroom</a>
+            <a href="/developers/">API + MCP</a>
+            <a href="/openapi.json">OpenAPI</a>
+            <a href="/server.json">MCP manifest</a>
+            <a href="/product-card.json">Product card</a>
+            <a href="https://github.com/beepboop2025/narcoscope" target="_blank" rel="noreferrer">Source code</a>
+          </nav>
         </footer>
       </Reveal>
     </div>

@@ -1,0 +1,18 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.beepboop2025/narcoscope",
+  "title": "NarcoScope — official drug-market evidence explorer",
+  "description": "Aggregate official drug-market evidence, cited analyses, and explicit claim boundaries.",
+  "version": "1.0.0",
+  "repository": {
+    "url": "https://github.com/beepboop2025/narcoscope",
+    "source": "github"
+  },
+  "websiteUrl": "https://narcoscope.com",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://narcoscope.com/mcp"
+    }
+  ]
+}

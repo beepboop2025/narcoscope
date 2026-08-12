@@ -1,0 +1,13 @@
+{
+  "schema": "ai-catalog.v1",
+  "name": "NarcoScope",
+  "description": "Official drug-market evidence made legible with source, freshness, and claim boundaries intact.",
+  "canonical": "https://narcoscope.com/product-card.json",
+  "llms": "https://narcoscope.com/llms.txt",
+  "openapi": "https://narcoscope.com/openapi.json",
+  "mcp": "https://narcoscope.com/server.json",
+  "feeds": [
+    "https://narcoscope.com/news/feed.json",
+    "https://narcoscope.com/news/feed.xml"
+  ]
+}

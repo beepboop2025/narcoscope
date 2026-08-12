@@ -3,5 +3,13 @@
   "framework": "vite",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
-  "rewrites": [{ "source": "/(.*)", "destination": "/" }]
+  "functions": {
+    "api/mcp.mjs": { "includeFiles": "{public/news/**,public/data/**,src/data/overview.json}" },
+    "api/v1.mjs": { "includeFiles": "{public/news/**,public/data/**,src/data/overview.json}" }
+  },
+  "rewrites": [
+    { "source": "/mcp", "destination": "/api/mcp" },
+    { "source": "/api/v1/:resource", "destination": "/api/v1?resource=:resource" },
+    { "source": "/(.*)", "destination": "/" }
+  ]
 }

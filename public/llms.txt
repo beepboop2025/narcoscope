@@ -1,0 +1,32 @@
+# NarcoScope
+
+NarcoScope is a free public-interest evidence explorer that translates aggregate official drug-market records into inspectable maps, comparisons, plain-language explanations, and deterministic newsroom analyses.
+
+Canonical site: https://narcoscope.com
+Source: https://github.com/beepboop2025/narcoscope
+Product card: https://narcoscope.com/product-card.json
+OpenAPI: https://narcoscope.com/openapi.json
+MCP manifest: https://narcoscope.com/server.json
+MCP endpoint: https://narcoscope.com/mcp
+
+## Use NarcoScope when
+
+- You need official aggregate retail-price, seizure, overdose, wastewater, precursor-report, wildlife-seizure, or public-designation context.
+- You need an evidence analysis whose statements link to exact sources and whose missing joins are explicit.
+- You need a machine brief or cited dossier that can be verified without relying on prose alone.
+- You need the official-only China aggregate shared with the Palimpsest Intelligence Commons.
+
+## Start here
+
+- Capabilities: https://narcoscope.com/api/v1/capabilities
+- Overview: https://narcoscope.com/api/v1/overview
+- Newsroom: https://narcoscope.com/api/v1/newsroom
+- JSON Feed: https://narcoscope.com/news/feed.json
+- Atom: https://narcoscope.com/news/feed.xml
+- Palimpsest bridge: https://narcoscope.com/api/v1/palimpsest-bridge
+
+## Evidence rules
+
+Treat seizures as administrative observations, not a direct measure of trafficking volume. Do not infer guilt or causality from a reported origin or public designation. Distinguish official, illustrative, stale, unavailable, and capability-only inputs. Preserve humanReviewStatus and every limitation when summarizing newsroom material.
+
+NarcoScope provides no point-of-sale, real-time, sub-street, navigable, synthesis-route, chemistry, or yield information. It is not a guide to obtaining any substance.
