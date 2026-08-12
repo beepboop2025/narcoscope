@@ -62,8 +62,8 @@
         &lt;/figcaption&gt;
         &lt;div class=&quot;visual-table-scroll&quot;&gt;
           &lt;table&gt;
-            &lt;caption&gt;China-to-EU aggregate retained at source precision in tonnes, approximate&lt;/caption&gt;
-            &lt;thead&gt;&lt;tr&gt;&lt;th scope=&quot;col&quot;&gt;Year&lt;/th&gt;&lt;th scope=&quot;col&quot;&gt;Record&lt;/th&gt;&lt;th scope=&quot;col&quot;&gt;tonnes, approximate&lt;/th&gt;&lt;th scope=&quot;col&quot;&gt;Relative scale&lt;/th&gt;&lt;th scope=&quot;col&quot;&gt;Source&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
+            &lt;caption&gt;China-to-EU aggregate retained at source precision in tonnes, upper bound&lt;/caption&gt;
+            &lt;thead&gt;&lt;tr&gt;&lt;th scope=&quot;col&quot;&gt;Year&lt;/th&gt;&lt;th scope=&quot;col&quot;&gt;Record&lt;/th&gt;&lt;th scope=&quot;col&quot;&gt;tonnes, upper bound&lt;/th&gt;&lt;th scope=&quot;col&quot;&gt;Relative scale&lt;/th&gt;&lt;th scope=&quot;col&quot;&gt;Source&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
             &lt;tbody&gt;
           &lt;tr&gt;
             &lt;th scope=&quot;row&quot;&gt;2025&lt;/th&gt;
@@ -75,7 +75,7 @@
             &lt;/tbody&gt;
           &lt;/table&gt;
         &lt;/div&gt;
-        &lt;p class=&quot;visual-note&quot;&gt;&lt;strong&gt;Boundary:&lt;/strong&gt; The report says “nearly 5 tons” across nine incidents. The bar is an approximate aggregate, not an exact shipment mass.&lt;/p&gt;
+        &lt;p class=&quot;visual-note&quot;&gt;&lt;strong&gt;Boundary:&lt;/strong&gt; The report says “nearly 5 tons” across nine incidents. The bar retains that less-than upper bound and is not an exact shipment mass.&lt;/p&gt;
       &lt;/figure&gt;
       &lt;figure class=&quot;evidence-visual&quot; aria-labelledby=&quot;operation-pseudonym-context-title&quot; aria-describedby=&quot;operation-pseudonym-context-description&quot;&gt;
         &lt;figcaption&gt;
@@ -211,7 +211,7 @@
       &lt;h2&gt;What the INCB report actually says&lt;/h2&gt;
       &lt;p id=&quot;S007&quot;&gt;INCB reported that, during the first ten months of 2025, 9 incidents involving nearly 5 tonnes of two related methamphetamine pre-precursors were communicated through PICS. &lt;span class=&quot;citations&quot;&gt;&lt;a class=&quot;citation&quot; href=&quot;#SRC-INCB-PRECURSORS-2025&quot; aria-label=&quot;Source 3&quot; title=&quot;paragraph 94; PDF page 44; printed page 26&quot;&gt;[3]&lt;/a&gt;&lt;span class=&quot;citation-locator&quot;&gt;paragraph 94; PDF page 44; printed page 26&lt;/span&gt;&lt;/span&gt;&lt;/p&gt;
       &lt;p id=&quot;S008&quot;&gt;The report said those substances were mislabelled, reportedly originated in China and were destined for countries in the European Union. &lt;span class=&quot;citations&quot;&gt;&lt;a class=&quot;citation&quot; href=&quot;#SRC-INCB-PRECURSORS-2025&quot; aria-label=&quot;Source 3&quot; title=&quot;paragraph 94; PDF page 44; printed page 26&quot;&gt;[3]&lt;/a&gt;&lt;span class=&quot;citation-locator&quot;&gt;paragraph 94; PDF page 44; printed page 26&lt;/span&gt;&lt;/span&gt;&lt;/p&gt;
-      &lt;p id=&quot;S009&quot;&gt;That figure is an approximate multi-incident aggregate, not an exact 5,000 kg shipment, and NarcoScope does not add it to other qualified quantities. &lt;span class=&quot;citations&quot;&gt;&lt;a class=&quot;citation&quot; href=&quot;#SRC-INCB-PRECURSORS-2025&quot; aria-label=&quot;Source 3&quot; title=&quot;paragraph 94; PDF page 44; printed page 26&quot;&gt;[3]&lt;/a&gt;&lt;span class=&quot;citation-locator&quot;&gt;paragraph 94; PDF page 44; printed page 26&lt;/span&gt;&lt;/span&gt;&lt;/p&gt;
+      &lt;p id=&quot;S009&quot;&gt;That figure is a less-than multi-incident aggregate, not an exact 5,000 kg shipment, and NarcoScope does not add it to other qualified quantities. &lt;span class=&quot;citations&quot;&gt;&lt;a class=&quot;citation&quot; href=&quot;#SRC-INCB-PRECURSORS-2025&quot; aria-label=&quot;Source 3&quot; title=&quot;paragraph 94; PDF page 44; printed page 26&quot;&gt;[3]&lt;/a&gt;&lt;span class=&quot;citation-locator&quot;&gt;paragraph 94; PDF page 44; printed page 26&lt;/span&gt;&lt;/span&gt;&lt;/p&gt;
       &lt;p id=&quot;S010&quot;&gt;For Operation Pseudonym, INCB said four participating countries reported 168 seizures, most in Australia and New Zealand, and reported China and India as origins in those two countries. &lt;span class=&quot;citations&quot;&gt;&lt;a class=&quot;citation&quot; href=&quot;#SRC-INCB-PRECURSORS-2025&quot; aria-label=&quot;Source 3&quot; title=&quot;paragraph 46; PDF page 31; printed page 13&quot;&gt;[3]&lt;/a&gt;&lt;span class=&quot;citation-locator&quot;&gt;paragraph 46; PDF page 31; printed page 13&lt;/span&gt;&lt;/span&gt;&lt;/p&gt;
       &lt;p id=&quot;S011&quot;&gt;The public report does not allocate those seizures or their mass by origin-and-destination pair; Australia’s and New Zealand’s annual totals are separate aggregates and are excluded here. &lt;span class=&quot;citations&quot;&gt;&lt;a class=&quot;citation&quot; href=&quot;#SRC-INCB-PRECURSORS-2025&quot; aria-label=&quot;Source 3&quot; title=&quot;paragraph 46; PDF page 31; printed page 13&quot;&gt;[3]&lt;/a&gt;&lt;span class=&quot;citation-locator&quot;&gt;paragraph 46; PDF page 31; printed page 13&lt;/span&gt;&lt;a class=&quot;citation&quot; href=&quot;#SRC-INCB-PRECURSORS-2025&quot; aria-label=&quot;Source 3&quot; title=&quot;paragraphs 67 and 71–72; printed pages 19–20&quot;&gt;[3]&lt;/a&gt;&lt;span class=&quot;citation-locator&quot;&gt;paragraphs 67 and 71–72; printed pages 19–20&lt;/span&gt;&lt;/span&gt;&lt;/p&gt;
     &lt;/section&gt;
@@ -242,7 +242,7 @@
       &lt;p class=&quot;lane&quot;&gt;limitations&lt;/p&gt;
       &lt;h2&gt;Limitations&lt;/h2&gt;
       &lt;ul class=&quot;limitations&quot;&gt;&lt;li id=&quot;L001&quot;&gt;The INCB extract covers selected reported incidents and cannot estimate all precursor trade, diversion or successful movement. &lt;span class=&quot;citations&quot;&gt;&lt;a class=&quot;citation&quot; href=&quot;#SRC-INCB-PRECURSORS-2025&quot; aria-label=&quot;Source 3&quot; title=&quot;paragraph 94; PDF page 44; printed page 26&quot;&gt;[3]&lt;/a&gt;&lt;span class=&quot;citation-locator&quot;&gt;paragraph 94; PDF page 44; printed page 26&lt;/span&gt;&lt;/span&gt;&lt;/li&gt;
-      &lt;li id=&quot;L002&quot;&gt;Nearly five tonnes preserves the report’s approximate precision and must not be represented as one exact shipment. &lt;span class=&quot;citations&quot;&gt;&lt;a class=&quot;citation&quot; href=&quot;#SRC-INCB-PRECURSORS-2025&quot; aria-label=&quot;Source 3&quot; title=&quot;paragraph 94; PDF page 44; printed page 26&quot;&gt;[3]&lt;/a&gt;&lt;span class=&quot;citation-locator&quot;&gt;paragraph 94; PDF page 44; printed page 26&lt;/span&gt;&lt;/span&gt;&lt;/li&gt;
+      &lt;li id=&quot;L002&quot;&gt;Nearly five tonnes preserves the report’s less-than precision and must not be represented as one exact shipment. &lt;span class=&quot;citations&quot;&gt;&lt;a class=&quot;citation&quot; href=&quot;#SRC-INCB-PRECURSORS-2025&quot; aria-label=&quot;Source 3&quot; title=&quot;paragraph 94; PDF page 44; printed page 26&quot;&gt;[3]&lt;/a&gt;&lt;span class=&quot;citation-locator&quot;&gt;paragraph 94; PDF page 44; printed page 26&lt;/span&gt;&lt;/span&gt;&lt;/li&gt;
       &lt;li id=&quot;L003&quot;&gt;No admitted GACC or UN Comtrade chemical-product series supplies a lawful industrial-trade denominator. &lt;span class=&quot;citations&quot;&gt;&lt;a class=&quot;citation&quot; href=&quot;#SRC-GACC-STATS&quot; aria-label=&quot;Source 1&quot; title=&quot;registered capability and access boundary; as of 2026-08-12&quot;&gt;[1]&lt;/a&gt;&lt;span class=&quot;citation-locator&quot;&gt;registered capability and access boundary; as of 2026-08-12&lt;/span&gt;&lt;a class=&quot;citation&quot; href=&quot;#SRC-UN-COMTRADE&quot; aria-label=&quot;Source 2&quot; title=&quot;registered capability and access boundary; as of 2026-08-12&quot;&gt;[2]&lt;/a&gt;&lt;span class=&quot;citation-locator&quot;&gt;registered capability and access boundary; as of 2026-08-12&lt;/span&gt;&lt;/span&gt;&lt;/li&gt;
       &lt;li id=&quot;L004&quot;&gt;Operation Pseudonym names China and India as reported origins but does not publish bilateral count or mass allocations in paragraph 46. &lt;span class=&quot;citations&quot;&gt;&lt;a class=&quot;citation&quot; href=&quot;#SRC-INCB-PRECURSORS-2025&quot; aria-label=&quot;Source 3&quot; title=&quot;paragraph 46; PDF page 31; printed page 13&quot;&gt;[3]&lt;/a&gt;&lt;span class=&quot;citation-locator&quot;&gt;paragraph 46; PDF page 31; printed page 13&lt;/span&gt;&lt;/span&gt;&lt;/li&gt;
       &lt;li id=&quot;L005&quot;&gt;CDC T40.4 mortality is provisional and has no record-level join to the INCB incidents. &lt;span class=&quot;citations&quot;&gt;&lt;a class=&quot;citation&quot; href=&quot;#SRC-CDC-VSRR&quot; aria-label=&quot;Source 6&quot; title=&quot;United States; 12 month-ending December; synthetic_opioids (T40.4 excluding methadone); 2015–2025&quot;&gt;[6]&lt;/a&gt;&lt;span class=&quot;citation-locator&quot;&gt;United States; 12 month-ending December; synthetic_opioids (T40.4 excluding methadone); 2015–2025&lt;/span&gt;&lt;a class=&quot;citation&quot; href=&quot;#SRC-INCB-PRECURSORS-2025&quot; aria-label=&quot;Source 3&quot; title=&quot;paragraph 94; PDF page 44; printed page 26&quot;&gt;[3]&lt;/a&gt;&lt;span class=&quot;citation-locator&quot;&gt;paragraph 94; PDF page 44; printed page 26&lt;/span&gt;&lt;/span&gt;&lt;/li&gt;
@@ -258,7 +258,7 @@
         &lt;small&gt;Public web tables and releases; the English interactive-table surface is not a stable bulk API.&lt;/small&gt;
       &lt;/li&gt;
       &lt;li id=&quot;SRC-UN-COMTRADE&quot;&gt;
-        &lt;a href=&quot;https://comtrade.un.org/&quot; rel=&quot;noreferrer&quot;&gt;[2] United Nations Statistics Division — UN Comtrade Database and API&lt;/a&gt;
+        &lt;a href=&quot;https://comtradeplus.un.org/&quot; rel=&quot;noreferrer&quot;&gt;[2] United Nations Statistics Division — UN Comtrade Database and API&lt;/a&gt;
         &lt;span&gt;capability_only · un-unsd-comtrade · public_aggregate&lt;/span&gt;
         &lt;small&gt;A keyless preview API is public and limited; free registered API access has quotas; bulk access and some redistribution require a subscription or licence.&lt;/small&gt;
       &lt;/li&gt;
@@ -301,11 +301,17 @@
         &lt;span&gt;Initial deterministic publication from the cited checked-in official-source snapshots.&lt;/span&gt;
         &lt;code&gt;92dc194dc5087203186932d00440ba682e939495a7b36146bfd169480b58549b&lt;/code&gt;
       &lt;/li&gt;
+      &lt;li&gt;
+        &lt;time datetime=&quot;2026-08-12&quot;&gt;2026-08-12&lt;/time&gt;
+        &lt;strong&gt;data refresh&lt;/strong&gt;
+        &lt;span&gt;Deterministic source refresh; evidence, qualification and publication receipts were recomputed.&lt;/span&gt;
+        &lt;code&gt;ac3c3bac4574313ffacb3bb10ceb2e7a932be7e43d9a6123f5b0fee9ed7792ed&lt;/code&gt;
+      &lt;/li&gt;
       &lt;/ol&gt;
     &lt;/section&gt;
     &lt;footer class=&quot;hashes&quot;&gt;
-      &lt;span&gt;Revision &lt;code&gt;92dc194dc5087203186932d00440ba682e939495a7b36146bfd169480b58549b&lt;/code&gt;&lt;/span&gt;
-      &lt;span&gt;Content &lt;code&gt;056b117f4a3301a9971e75bd64aac53d0aa252166a9fd55dc449cd57fbd9e4ab&lt;/code&gt;&lt;/span&gt;
+      &lt;span&gt;Revision &lt;code&gt;ac3c3bac4574313ffacb3bb10ceb2e7a932be7e43d9a6123f5b0fee9ed7792ed&lt;/code&gt;&lt;/span&gt;
+      &lt;span&gt;Content &lt;code&gt;3b225acdf4c1aff4a41eb1e8699115f9b12a935d7db6d7b09669d32bf8702873&lt;/code&gt;&lt;/span&gt;
       &lt;a href=&quot;/news/china-linked-precursor-incidents-official-record.machine-brief.json&quot;&gt;Machine brief&lt;/a&gt;
       &lt;a href=&quot;/news/china-linked-precursor-incidents-official-record.dossier.json&quot;&gt;Dossier JSON&lt;/a&gt;
       &lt;a href=&quot;/news/feed.json&quot;&gt;JSON feed&lt;/a&gt;

@@ -5,7 +5,7 @@ import { cleanup, render, screen, within } from '@testing-library/react'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import EvidenceNewsroom from './EvidenceNewsroom'
+import EvidenceNewsroom, { formatNewsroomNumber } from './EvidenceNewsroom'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 let index
@@ -33,6 +33,11 @@ afterEach(() => {
 })
 
 describe('Evidence Newsroom', () => {
+  it('preserves source decimals while grouping thousands', () => {
+    expect(formatNewsroomNumber(1234567.8901)).toBe('1,234,567.8901')
+    expect(formatNewsroomNumber(-1234.5678)).toBe('-1,234.5678')
+  })
+
   it('renders the gated article, verification receipt and bounded quantities', async () => {
     render(<EvidenceNewsroom />)
 
@@ -62,7 +67,7 @@ describe('Evidence Newsroom', () => {
     expect(harmFigure.getAttribute('aria-describedby')).toBe('news-visual-cdc-harm-trend-description')
 
     const incidentTable = within(incidentFigure).getByRole('table', {
-      name: 'China-to-EU aggregate retained at source precision in tonnes, approximate',
+      name: 'China-to-EU aggregate retained at source precision in tonnes, upper bound',
     })
     const harmTable = within(harmFigure).getByRole('table', {
       name: 'US T40.4 mortality: every available December checkpoint in provisional deaths',
@@ -83,7 +88,9 @@ describe('Evidence Newsroom', () => {
     expect(screen.getAllByText(/active evidence ·/i).length).toBe(2)
     expect(screen.getAllByText(/unavailable ·/i).length).toBe(3)
     expect(screen.getByRole('link', { name: 'Machine brief' }).getAttribute('href')).toMatch(/machine-brief\.json$/)
-    expect(screen.getAllByText(/paragraph 94; PDF page 44; printed page 26/i).length).toBeGreaterThan(0)
+    const locators = screen.getAllByText(/paragraph 94; PDF page 44; printed page 26/i)
+    expect(locators.length).toBeGreaterThan(0)
+    expect(locators.some((locator) => locator.classList.contains('sr-only'))).toBe(true)
   })
 
   it('discloses publication history, right-to-reply status and absent testimony without simulated voices', async () => {

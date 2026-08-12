@@ -71,6 +71,27 @@ export type FlowRecordKind =
   | 'annual_aggregate'
   | 'derived_subtotal'
 
+/**
+ * Canonical quantity bases that may be compared within (but never across)
+ * groups. Free-text `quantityBasis` remains the human-readable audit trail.
+ */
+export const FLOW_AGGREGATION_GROUPS = [
+  'mdma_precursor_substance_mass',
+  'meth_pre_precursor_substance_mass',
+  'pseudoephedrine_preparation_gross_mass',
+  'potassium_permanganate_substance_mass',
+  'pseudoephedrine_preparation_mass',
+] as const
+
+export type FlowAggregationGroup = (typeof FLOW_AGGREGATION_GROUPS)[number]
+
+/** Why an audited row may or may not enter a compatible exact subtotal. */
+export type FlowAggregationEligibility =
+  | 'eligible'
+  | 'ineligible_non_exact'
+  | 'ineligible_derived'
+  | 'ineligible_incompatible_basis'
+
 /** A locator that remains stable when the report is cited outside this application. */
 export interface DocumentSourceLocator {
   /** One-based page number in the PDF file. */
@@ -85,6 +106,8 @@ export interface FlowRecord {
   origin: string
   transit: string | null
   destination: string
+  /** Where the seizure occurred, when the source states it; not a routing role. */
+  seizureLocation?: string | null
   year: number
   quantityKg: number
   /** Optional for user-imported legacy CSV; required by AuditedFlowRecord. */
@@ -92,6 +115,10 @@ export interface FlowRecord {
   /** What the reported kilograms measure, including derivation or gross-weight caveats. */
   quantityBasis?: string
   recordKind?: FlowRecordKind
+  /** Optional for legacy imports; required and audited on curated rows. */
+  aggregationEligibility?: FlowAggregationEligibility
+  /** A canonical compatible basis; null means no safe aggregation group exists. */
+  aggregationGroup?: FlowAggregationGroup | null
   /** Null means the source does not allocate an incident count at this row's grain. */
   incidentCount?: number | null
   /** Attribution for the corridor figure (publisher of the seizure/incident report). */
@@ -104,15 +131,37 @@ export interface FlowRecord {
 
 /** Fully sourced curated flow row. Public bridge generation accepts only this shape. */
 export interface AuditedFlowRecord extends FlowRecord {
+  seizureLocation: string | null
   quantityRelation: QuantityRelation
   quantityBasis: string
   recordKind: FlowRecordKind
+  aggregationEligibility: FlowAggregationEligibility
+  aggregationGroup: FlowAggregationGroup | null
   incidentCount: number | null
   sourceName: string
   sourceUrl: string
   sourceDocumentSha256: string
   sourceRetrievedAt: string
   sourceLocator: DocumentSourceLocator
+}
+
+/**
+ * The one canonical summability predicate used by the app. Exactness alone is
+ * insufficient: the row must opt in, name a known compatible basis, and must
+ * not be a derived subtotal.
+ */
+export function isFlowAggregationEligible(record: FlowRecord): record is FlowRecord & {
+  quantityRelation: 'exact'
+  recordKind: Exclude<FlowRecordKind, 'derived_subtotal'>
+  aggregationEligibility: 'eligible'
+  aggregationGroup: FlowAggregationGroup
+} {
+  return record.quantityRelation === 'exact'
+    && record.recordKind != null
+    && record.recordKind !== 'derived_subtotal'
+    && record.aggregationEligibility === 'eligible'
+    && record.aggregationGroup != null
+    && (FLOW_AGGREGATION_GROUPS as readonly string[]).includes(record.aggregationGroup)
 }
 
 /**
