@@ -39,7 +39,12 @@ systemctl enable --now narcoscope-scamshield-import.timer
 input=/var/lib/scamshield/handoffs/narcoscope/scamshield-monitoring-summary.json
 if [[ -f "$input" ]]; then
   systemctl start narcoscope-scamshield-import.service
-  systemctl --no-pager --full status narcoscope-scamshield-import.service | head -20
+  result="$(systemctl show narcoscope-scamshield-import.service --property=Result --value)"
+  [[ "$result" == "success" ]] || {
+    echo "Initial ScamShield import did not complete successfully: $result" >&2
+    exit 1
+  }
+  echo "Initial ScamShield private import completed successfully."
 else
   echo "Timer enabled; waiting for ScamShield to create the private handoff."
 fi

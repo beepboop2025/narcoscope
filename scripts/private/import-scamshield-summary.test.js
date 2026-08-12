@@ -130,4 +130,14 @@ describe('ScamShield private analyst import', () => {
     expect(collector).not.toContain('/var/lib/narcoscope-analyst')
     expect(collector).not.toContain('scripts/private')
   })
+
+  it('treats a completed oneshot import as a successful install', () => {
+    const here = path.dirname(fileURLToPath(import.meta.url))
+    const installer = fs.readFileSync(
+      path.resolve(here, '../../deploy/private-import/install.sh'),
+      'utf8',
+    )
+    expect(installer).toContain('--property=Result --value')
+    expect(installer).not.toContain('systemctl --no-pager --full status')
+  })
 })
