@@ -202,6 +202,14 @@ export default function App() {
               </span>
             ))}
           </div>
+          <aside className="network-note" aria-labelledby="network-note-title">
+            <span id="network-note-title">Independent evidence network</span>
+            <p>
+              For financial-system plumbing, institution risk and market exits,{' '}
+              <a href="https://myquantdoesntspeakenglish.com/">My Quant Doesn’t Speak English</a>{' '}
+              collects the Seiche, LiquiLens and Undertow investigations. Different subject; the same rule that evidence must stay inspectable.
+            </p>
+          </aside>
           <nav className="product-links" aria-label="NarcoScope product links">
             <a href="/#newsroom">Evidence newsroom</a>
             <a href="/developers/">API + MCP</a>

@@ -32,5 +32,12 @@
     "atom_feed": "https://narcoscope.com/news/feed.xml",
     "source": "https://github.com/beepboop2025/narcoscope"
   },
+  "related": [
+    {
+      "name": "My Quant Doesn't Speak English",
+      "relationship": "Independent editorial desk for financial-system, institution-risk, and market-liquidity investigations",
+      "url": "https://myquantdoesntspeakenglish.com/"
+    }
+  ],
   "pricing": "free public good"
 }
