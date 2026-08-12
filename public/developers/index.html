@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NarcoScope API + MCP — build on evidence, not scraped prose</title>
+  <meta name="description" content="Connect a read-only API or MCP client to NarcoScope's official aggregate evidence, citation-gated newsroom, and Palimpsest bridge.">
+  <link rel="canonical" href="https://narcoscope.com/developers/">
+  <meta name="robots" content="index,follow,max-snippet:-1">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="NarcoScope">
+  <meta property="og:title" content="Build on NarcoScope evidence, not scraped prose">
+  <meta property="og:description" content="One read-only API and MCP contract for official aggregates, cited newsroom artifacts, and explicit limits.">
+  <meta property="og:url" content="https://narcoscope.com/developers/">
+  <meta name="twitter:card" content="summary">
+  <style>
+    :root{color-scheme:dark;--bg:#050709;--panel:#0d1216;--line:#26343c;--ink:#f4f7f7;--muted:#a5b2b8;--cyan:#79e8ee;--coral:#ffb020}
+    *{box-sizing:border-box}body{margin:0;background:radial-gradient(60rem 35rem at 85% -10%,#07333b55,transparent),var(--bg);color:var(--ink);font:16px/1.6 system-ui,sans-serif}main{width:min(980px,calc(100% - 32px));margin:auto;padding:72px 0 96px}a{color:var(--cyan)}.eyebrow{color:var(--coral);font-size:.78rem;letter-spacing:.14em;text-transform:uppercase}h1{max-width:15ch;font:400 clamp(2.6rem,8vw,5.6rem)/.98 Georgia,serif;margin:.2em 0}h2{font:400 2rem Georgia,serif;margin:0 0 .5rem}.lede{max-width:65ch;color:var(--muted);font-size:1.16rem}.actions{display:flex;gap:12px;flex-wrap:wrap;margin:30px 0 58px}.button{border:1px solid var(--line);padding:10px 15px;border-radius:999px;text-decoration:none}.primary{color:#001014;background:var(--cyan);border-color:var(--cyan);font-weight:700}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:18px}.card{background:#0d1216cc;border:1px solid var(--line);border-radius:16px;padding:22px}.card p{color:var(--muted)}code,pre{font:14px/1.5 ui-monospace,SFMono-Regular,monospace}pre{overflow:auto;background:#020405;border:1px solid var(--line);border-radius:12px;padding:16px;color:#d5fbfd}.boundary{border-left:3px solid var(--coral);padding-left:20px;margin-top:54px}.small{font-size:.9rem;color:var(--muted)}
+  </style>
+</head>
+<body><main>
+  <p class="eyebrow">NarcoScope for developers and agents</p>
+  <h1>Build on evidence, not scraped prose.</h1>
+  <p class="lede">One read-only contract exposes NarcoScope’s official aggregate overview, citation-gated newsroom, and Palimpsest bridge. The REST API and MCP tools resolve to the same published artifacts, so citations and limitations survive the handoff.</p>
+  <div class="actions">
+    <a class="button primary" href="/api/v1/capabilities">Inspect the live contract</a>
+    <a class="button" href="/openapi.json">Import OpenAPI</a>
+    <a class="button" href="/server.json">View MCP manifest</a>
+    <a class="button" href="https://github.com/beepboop2025/narcoscope">Read the source</a>
+  </div>
+
+  <div class="grid">
+    <section class="card"><h2>REST</h2><p>Start with a small overview or list the newsroom. Responses are cacheable, public JSON.</p><pre>curl https://narcoscope.com/api/v1/overview</pre></section>
+    <section class="card"><h2>MCP</h2><p>Connect over stateless Streamable HTTP. Start with <code>list_capabilities</code> or <code>get_newsroom</code>.</p><pre>{"mcpServers":{"narcoscope":{"url":"https://narcoscope.com/mcp"}}}</pre></section>
+    <section class="card"><h2>Feeds</h2><p>Follow stable item IDs and exact story URLs. Every newsroom item links to a machine brief and cited dossier.</p><pre>/news/feed.json
+/news/feed.xml</pre></section>
+  </div>
+
+  <section class="boundary">
+    <h2>The safety boundary is part of the API.</h2>
+    <p class="lede">NarcoScope exposes aggregate published evidence—not point-of-sale, real-time, sub-street, navigable, synthesis-route, chemistry, or yield information. A seizure is an administrative observation, not a direct market-size estimate. An origin label or public designation is not guilt or causal proof.</p>
+  </section>
+  <p class="small">Free public good · no API key · read only · <a href="/">Open NarcoScope</a></p>
+</main></body>
+</html>
