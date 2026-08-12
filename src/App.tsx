@@ -11,6 +11,7 @@ import { usePrefersReducedMotion } from './motion/usePrefersReducedMotion'
 import SpringText from './motion/SpringText'
 import Reveal from './motion/Reveal'
 import HeroScene from './hero/HeroScene'
+import AuthorityBar from './components/AuthorityBar'
 
 const WorldMap = lazy(() => import('./components/WorldMap'))
 const MyanmarFocus = lazy(() => import('./components/MyanmarFocus'))
@@ -265,9 +266,14 @@ export default function App() {
               </button>
               <a className="hero-action" href="/developers/">Connect API + MCP</a>
               <a className="hero-action" href="/news/feed.json">Follow the feed</a>
+              <a className="hero-action" href="/research/">Research guides</a>
               <a className="hero-action hero-action--telegram" href="https://t.me/NarcoScopeEvidenceBot?start=ref_site_hero">Open the Telegram bot</a>
               <a className="hero-action hero-action--signal" href="https://t.me/EvidenceSignalDesk">Join Evidence Signal</a>
             </div>
+            <AuthorityBar
+              tab={tab}
+              label={TABS.find((item) => item.id === tab)?.label ?? 'Official drug-market evidence'}
+            />
           </Reveal>
         </div>
         <nav className="tabs">
@@ -341,6 +347,7 @@ export default function App() {
           </aside>
           <nav className="product-links" aria-label="NarcoScope product links">
             <a href="/#newsroom">Evidence newsroom</a>
+            <a href="/research/">Research guides</a>
             <a href="/developers/">API + MCP</a>
             <a href="/openapi.json">OpenAPI</a>
             <a href="/server.json">MCP manifest</a>
