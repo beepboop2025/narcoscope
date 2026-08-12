@@ -1,0 +1,765 @@
+{
+  "schemaVersion": "narcoscope.newsroom.manifest.v1",
+  "pipelineVersion": "narcoscope.newsroom.pipeline.v2",
+  "generatedAt": "2026-08-12T00:00:00.000Z",
+  "articleId": "narcoscope.newsroom.china-linked-precursor-incidents-official-record",
+  "revisionHash": "92dc194dc5087203186932d00440ba682e939495a7b36146bfd169480b58549b",
+  "contentHash": "056b117f4a3301a9971e75bd64aac53d0aa252166a9fd55dc449cd57fbd9e4ab",
+  "verificationReceipt": {
+    "receiptVersion": "narcoscope.newsroom.verification-receipt.v1",
+    "evaluationProfile": {
+      "id": "bounded-official-record-analysis.v1",
+      "activeEvidenceDefinition": "A checked-in official input used to derive a claim in this build.",
+      "independenceDefinition": "Distinct upstream issuing or statistical authority group.",
+      "methodologicalContextMinimumIndependentActiveGroups": 2,
+      "attributedObservationMinimumIndependentActiveGroups": 1,
+      "capabilityOnlyAndUnavailableContribution": 0
+    },
+    "citationCoverage": {
+      "totalSentenceCount": 28,
+      "citedSentenceCount": 28,
+      "percent": 100
+    },
+    "visualCitationCoverage": {
+      "totalDataRowCount": 13,
+      "citedDataRowCount": 13,
+      "percent": 100
+    },
+    "sourceInventory": {
+      "activeEvidenceSourceCount": 2,
+      "capabilityOnlySourceCount": 2,
+      "unavailableSourceCount": 3,
+      "activeIndependenceGroups": [
+        "un-incb",
+        "us-cdc-nchs"
+      ],
+      "activeIndependenceGroupCount": 2,
+      "independentlyCorroboratedEventClaimCount": 0
+    },
+    "synthesisEvaluation": {
+      "synthesisSentenceCount": 8,
+      "passedSentenceCount": 8,
+      "minimumObservedActiveGroupCount": 2
+    },
+    "claimSupport": [
+      {
+        "sentenceId": "S001",
+        "claimType": "scope",
+        "supportProfile": "multi_source_methodological_context",
+        "findingStatus": "multi_source_methodological_context",
+        "corroborationClaimed": false,
+        "minimumIndependentActiveGroups": 2,
+        "activeSourceIds": [
+          "SRC-CDC-VSRR",
+          "SRC-INCB-PRECURSORS-2025"
+        ],
+        "activeIndependenceGroups": [
+          "un-incb",
+          "us-cdc-nchs"
+        ],
+        "activeGroupCount": 2,
+        "capabilityOnlySourceIds": [],
+        "unavailableSourceIds": [],
+        "capabilitySourcesCountTowardCorroboration": false,
+        "unavailableSourcesCountTowardCorroboration": false,
+        "supportMetadataMatches": true,
+        "passed": true
+      },
+      {
+        "sentenceId": "S002",
+        "claimType": "missing_join",
+        "supportProfile": "multi_source_methodological_context",
+        "findingStatus": "multi_source_methodological_context",
+        "corroborationClaimed": false,
+        "minimumIndependentActiveGroups": 2,
+        "activeSourceIds": [
+          "SRC-CDC-VSRR",
+          "SRC-INCB-PRECURSORS-2025"
+        ],
+        "activeIndependenceGroups": [
+          "un-incb",
+          "us-cdc-nchs"
+        ],
+        "activeGroupCount": 2,
+        "capabilityOnlySourceIds": [
+          "SRC-GACC-STATS",
+          "SRC-UN-COMTRADE"
+        ],
+        "unavailableSourceIds": [],
+        "capabilitySourcesCountTowardCorroboration": false,
+        "unavailableSourcesCountTowardCorroboration": false,
+        "supportMetadataMatches": true,
+        "passed": true
+      },
+      {
+        "sentenceId": "S003",
+        "claimType": "definition",
+        "supportProfile": "attributed_observation",
+        "findingStatus": "attributed_official_record",
+        "corroborationClaimed": false,
+        "minimumIndependentActiveGroups": 1,
+        "activeSourceIds": [
+          "SRC-INCB-PRECURSORS-2025"
+        ],
+        "activeIndependenceGroups": [
+          "un-incb"
+        ],
+        "activeGroupCount": 1,
+        "capabilityOnlySourceIds": [],
+        "unavailableSourceIds": [],
+        "capabilitySourcesCountTowardCorroboration": false,
+        "unavailableSourcesCountTowardCorroboration": false,
+        "supportMetadataMatches": true,
+        "passed": true
+      },
+      {
+        "sentenceId": "S004",
+        "claimType": "source_capability",
+        "supportProfile": "capability_boundary",
+        "findingStatus": "capability_or_access_boundary",
+        "corroborationClaimed": false,
+        "minimumIndependentActiveGroups": 0,
+        "activeSourceIds": [],
+        "activeIndependenceGroups": [],
+        "activeGroupCount": 0,
+        "capabilityOnlySourceIds": [
+          "SRC-GACC-STATS",
+          "SRC-UN-COMTRADE"
+        ],
+        "unavailableSourceIds": [],
+        "capabilitySourcesCountTowardCorroboration": false,
+        "unavailableSourcesCountTowardCorroboration": false,
+        "supportMetadataMatches": true,
+        "passed": true
+      },
+      {
+        "sentenceId": "S005",
+        "claimType": "coverage_gap",
+        "supportProfile": "capability_boundary",
+        "findingStatus": "capability_or_access_boundary",
+        "corroborationClaimed": false,
+        "minimumIndependentActiveGroups": 0,
+        "activeSourceIds": [],
+        "activeIndependenceGroups": [],
+        "activeGroupCount": 0,
+        "capabilityOnlySourceIds": [
+          "SRC-GACC-STATS",
+          "SRC-UN-COMTRADE"
+        ],
+        "unavailableSourceIds": [],
+        "capabilitySourcesCountTowardCorroboration": false,
+        "unavailableSourcesCountTowardCorroboration": false,
+        "supportMetadataMatches": true,
+        "passed": true
+      },
+      {
+        "sentenceId": "S006",
+        "claimType": "interpretive_limit",
+        "supportProfile": "capability_boundary",
+        "findingStatus": "capability_or_access_boundary",
+        "corroborationClaimed": false,
+        "minimumIndependentActiveGroups": 0,
+        "activeSourceIds": [],
+        "activeIndependenceGroups": [],
+        "activeGroupCount": 0,
+        "capabilityOnlySourceIds": [
+          "SRC-GACC-STATS",
+          "SRC-UN-COMTRADE"
+        ],
+        "unavailableSourceIds": [],
+        "capabilitySourcesCountTowardCorroboration": false,
+        "unavailableSourcesCountTowardCorroboration": false,
+        "supportMetadataMatches": true,
+        "passed": true
+      },
+      {
+        "sentenceId": "S007",
+        "claimType": "reported_measurement",
+        "supportProfile": "attributed_observation",
+        "findingStatus": "attributed_official_record",
+        "corroborationClaimed": false,
+        "minimumIndependentActiveGroups": 1,
+        "activeSourceIds": [
+          "SRC-INCB-PRECURSORS-2025"
+        ],
+        "activeIndependenceGroups": [
+          "un-incb"
+        ],
+        "activeGroupCount": 1,
+        "capabilityOnlySourceIds": [],
+        "unavailableSourceIds": [],
+        "capabilitySourcesCountTowardCorroboration": false,
+        "unavailableSourcesCountTowardCorroboration": false,
+        "supportMetadataMatches": true,
+        "passed": true
+      },
+      {
+        "sentenceId": "S008",
+        "claimType": "attribution_boundary",
+        "supportProfile": "attributed_observation",
+        "findingStatus": "attributed_official_record",
+        "corroborationClaimed": false,
+        "minimumIndependentActiveGroups": 1,
+        "activeSourceIds": [
+          "SRC-INCB-PRECURSORS-2025"
+        ],
+        "activeIndependenceGroups": [
+          "un-incb"
+        ],
+        "activeGroupCount": 1,
+        "capabilityOnlySourceIds": [],
+        "unavailableSourceIds": [],
+        "capabilitySourcesCountTowardCorroboration": false,
+        "unavailableSourcesCountTowardCorroboration": false,
+        "supportMetadataMatches": true,
+        "passed": true
+      },
+      {
+        "sentenceId": "S009",
+        "claimType": "subtotal_boundary",
+        "supportProfile": "attributed_observation",
+        "findingStatus": "attributed_official_record",
+        "corroborationClaimed": false,
+        "minimumIndependentActiveGroups": 1,
+        "activeSourceIds": [
+          "SRC-INCB-PRECURSORS-2025"
+        ],
+        "activeIndependenceGroups": [
+          "un-incb"
+        ],
+        "activeGroupCount": 1,
+        "capabilityOnlySourceIds": [],
+        "unavailableSourceIds": [],
+        "capabilitySourcesCountTowardCorroboration": false,
+        "unavailableSourcesCountTowardCorroboration": false,
+        "supportMetadataMatches": true,
+        "passed": true
+      },
+      {
+        "sentenceId": "S010",
+        "claimType": "reported_measurement",
+        "supportProfile": "attributed_observation",
+        "findingStatus": "attributed_official_record",
+        "corroborationClaimed": false,
+        "minimumIndependentActiveGroups": 1,
+        "activeSourceIds": [
+          "SRC-INCB-PRECURSORS-2025"
+        ],
+        "activeIndependenceGroups": [
+          "un-incb"
+        ],
+        "activeGroupCount": 1,
+        "capabilityOnlySourceIds": [],
+        "unavailableSourceIds": [],
+        "capabilitySourcesCountTowardCorroboration": false,
+        "unavailableSourcesCountTowardCorroboration": false,
+        "supportMetadataMatches": true,
+        "passed": true
+      },
+      {
+        "sentenceId": "S011",
+        "claimType": "coverage_limit",
+        "supportProfile": "attributed_observation",
+        "findingStatus": "attributed_official_record",
+        "corroborationClaimed": false,
+        "minimumIndependentActiveGroups": 1,
+        "activeSourceIds": [
+          "SRC-INCB-PRECURSORS-2025"
+        ],
+        "activeIndependenceGroups": [
+          "un-incb"
+        ],
+        "activeGroupCount": 1,
+        "capabilityOnlySourceIds": [],
+        "unavailableSourceIds": [],
+        "capabilitySourcesCountTowardCorroboration": false,
+        "unavailableSourcesCountTowardCorroboration": false,
+        "supportMetadataMatches": true,
+        "passed": true
+      },
+      {
+        "sentenceId": "S012",
+        "claimType": "trend",
+        "supportProfile": "attributed_observation",
+        "findingStatus": "attributed_official_record",
+        "corroborationClaimed": false,
+        "minimumIndependentActiveGroups": 1,
+        "activeSourceIds": [
+          "SRC-CDC-VSRR"
+        ],
+        "activeIndependenceGroups": [
+          "us-cdc-nchs"
+        ],
+        "activeGroupCount": 1,
+        "capabilityOnlySourceIds": [],
+        "unavailableSourceIds": [],
+        "capabilitySourcesCountTowardCorroboration": false,
+        "unavailableSourcesCountTowardCorroboration": false,
+        "supportMetadataMatches": true,
+        "passed": true
+      },
+      {
+        "sentenceId": "S013",
+        "claimType": "definition",
+        "supportProfile": "attributed_observation",
+        "findingStatus": "attributed_official_record",
+        "corroborationClaimed": false,
+        "minimumIndependentActiveGroups": 1,
+        "activeSourceIds": [
+          "SRC-CDC-VSRR"
+        ],
+        "activeIndependenceGroups": [
+          "us-cdc-nchs"
+        ],
+        "activeGroupCount": 1,
+        "capabilityOnlySourceIds": [],
+        "unavailableSourceIds": [],
+        "capabilitySourcesCountTowardCorroboration": false,
+        "unavailableSourcesCountTowardCorroboration": false,
+        "supportMetadataMatches": true,
+        "passed": true
+      },
+      {
+        "sentenceId": "S014",
+        "claimType": "separation",
+        "supportProfile": "multi_source_methodological_context",
+        "findingStatus": "multi_source_methodological_context",
+        "corroborationClaimed": false,
+        "minimumIndependentActiveGroups": 2,
+        "activeSourceIds": [
+          "SRC-CDC-VSRR",
+          "SRC-INCB-PRECURSORS-2025"
+        ],
+        "activeIndependenceGroups": [
+          "un-incb",
+          "us-cdc-nchs"
+        ],
+        "activeGroupCount": 2,
+        "capabilityOnlySourceIds": [],
+        "unavailableSourceIds": [],
+        "capabilitySourcesCountTowardCorroboration": false,
+        "unavailableSourcesCountTowardCorroboration": false,
+        "supportMetadataMatches": true,
+        "passed": true
+      },
+      {
+        "sentenceId": "S015",
+        "claimType": "coverage_limit",
+        "supportProfile": "attributed_observation",
+        "findingStatus": "attributed_official_record",
+        "corroborationClaimed": false,
+        "minimumIndependentActiveGroups": 1,
+        "activeSourceIds": [
+          "SRC-CDC-VSRR"
+        ],
+        "activeIndependenceGroups": [
+          "us-cdc-nchs"
+        ],
+        "activeGroupCount": 1,
+        "capabilityOnlySourceIds": [],
+        "unavailableSourceIds": [],
+        "capabilitySourcesCountTowardCorroboration": false,
+        "unavailableSourcesCountTowardCorroboration": false,
+        "supportMetadataMatches": true,
+        "passed": true
+      },
+      {
+        "sentenceId": "S016",
+        "claimType": "reported_measurement",
+        "supportProfile": "attributed_observation",
+        "findingStatus": "attributed_official_record",
+        "corroborationClaimed": false,
+        "minimumIndependentActiveGroups": 1,
+        "activeSourceIds": [
+          "SRC-INCB-PRECURSORS-2025"
+        ],
+        "activeIndependenceGroups": [
+          "un-incb"
+        ],
+        "activeGroupCount": 1,
+        "capabilityOnlySourceIds": [],
+        "unavailableSourceIds": [],
+        "capabilitySourcesCountTowardCorroboration": false,
+        "unavailableSourcesCountTowardCorroboration": false,
+        "supportMetadataMatches": true,
+        "passed": true
+      },
+      {
+        "sentenceId": "S017",
+        "claimType": "causal_boundary",
+        "supportProfile": "multi_source_methodological_context",
+        "findingStatus": "multi_source_methodological_context",
+        "corroborationClaimed": false,
+        "minimumIndependentActiveGroups": 2,
+        "activeSourceIds": [
+          "SRC-CDC-VSRR",
+          "SRC-INCB-PRECURSORS-2025"
+        ],
+        "activeIndependenceGroups": [
+          "un-incb",
+          "us-cdc-nchs"
+        ],
+        "activeGroupCount": 2,
+        "capabilityOnlySourceIds": [],
+        "unavailableSourceIds": [],
+        "capabilitySourcesCountTowardCorroboration": false,
+        "unavailableSourcesCountTowardCorroboration": false,
+        "supportMetadataMatches": true,
+        "passed": true
+      },
+      {
+        "sentenceId": "S018",
+        "claimType": "causal_boundary",
+        "supportProfile": "multi_source_methodological_context",
+        "findingStatus": "multi_source_methodological_context",
+        "corroborationClaimed": false,
+        "minimumIndependentActiveGroups": 2,
+        "activeSourceIds": [
+          "SRC-CDC-VSRR",
+          "SRC-INCB-PRECURSORS-2025"
+        ],
+        "activeIndependenceGroups": [
+          "un-incb",
+          "us-cdc-nchs"
+        ],
+        "activeGroupCount": 2,
+        "capabilityOnlySourceIds": [
+          "SRC-GACC-STATS",
+          "SRC-UN-COMTRADE"
+        ],
+        "unavailableSourceIds": [],
+        "capabilitySourcesCountTowardCorroboration": false,
+        "unavailableSourcesCountTowardCorroboration": false,
+        "supportMetadataMatches": true,
+        "passed": true
+      },
+      {
+        "sentenceId": "S019",
+        "claimType": "conclusion",
+        "supportProfile": "multi_source_methodological_context",
+        "findingStatus": "multi_source_methodological_context",
+        "corroborationClaimed": false,
+        "minimumIndependentActiveGroups": 2,
+        "activeSourceIds": [
+          "SRC-CDC-VSRR",
+          "SRC-INCB-PRECURSORS-2025"
+        ],
+        "activeIndependenceGroups": [
+          "un-incb",
+          "us-cdc-nchs"
+        ],
+        "activeGroupCount": 2,
+        "capabilityOnlySourceIds": [],
+        "unavailableSourceIds": [],
+        "capabilitySourcesCountTowardCorroboration": false,
+        "unavailableSourcesCountTowardCorroboration": false,
+        "supportMetadataMatches": true,
+        "passed": true
+      },
+      {
+        "sentenceId": "C001",
+        "claimType": "alternative_explanation",
+        "supportProfile": "multi_source_methodological_context",
+        "findingStatus": "multi_source_methodological_context",
+        "corroborationClaimed": false,
+        "minimumIndependentActiveGroups": 2,
+        "activeSourceIds": [
+          "SRC-CDC-VSRR",
+          "SRC-INCB-PRECURSORS-2025"
+        ],
+        "activeIndependenceGroups": [
+          "un-incb",
+          "us-cdc-nchs"
+        ],
+        "activeGroupCount": 2,
+        "capabilityOnlySourceIds": [],
+        "unavailableSourceIds": [],
+        "capabilitySourcesCountTowardCorroboration": false,
+        "unavailableSourcesCountTowardCorroboration": false,
+        "supportMetadataMatches": true,
+        "passed": true
+      },
+      {
+        "sentenceId": "C002",
+        "claimType": "missing_evidence",
+        "supportProfile": "capability_boundary",
+        "findingStatus": "capability_or_access_boundary",
+        "corroborationClaimed": false,
+        "minimumIndependentActiveGroups": 0,
+        "activeSourceIds": [],
+        "activeIndependenceGroups": [],
+        "activeGroupCount": 0,
+        "capabilityOnlySourceIds": [
+          "SRC-GACC-STATS",
+          "SRC-UN-COMTRADE"
+        ],
+        "unavailableSourceIds": [
+          "SRC-INCB-PEN-CAPABILITY",
+          "SRC-INCB-PICS-CAPABILITY",
+          "SRC-USCOURTS-PACER"
+        ],
+        "capabilitySourcesCountTowardCorroboration": false,
+        "unavailableSourcesCountTowardCorroboration": false,
+        "supportMetadataMatches": true,
+        "passed": true
+      },
+      {
+        "sentenceId": "C003",
+        "claimType": "access_limit",
+        "supportProfile": "capability_boundary",
+        "findingStatus": "capability_or_access_boundary",
+        "corroborationClaimed": false,
+        "minimumIndependentActiveGroups": 0,
+        "activeSourceIds": [],
+        "activeIndependenceGroups": [],
+        "activeGroupCount": 0,
+        "capabilityOnlySourceIds": [],
+        "unavailableSourceIds": [
+          "SRC-INCB-PEN-CAPABILITY",
+          "SRC-INCB-PICS-CAPABILITY",
+          "SRC-USCOURTS-PACER"
+        ],
+        "capabilitySourcesCountTowardCorroboration": false,
+        "unavailableSourcesCountTowardCorroboration": false,
+        "supportMetadataMatches": true,
+        "passed": true
+      },
+      {
+        "sentenceId": "L001",
+        "claimType": "selection",
+        "supportProfile": "attributed_observation",
+        "findingStatus": "attributed_official_record",
+        "corroborationClaimed": false,
+        "minimumIndependentActiveGroups": 1,
+        "activeSourceIds": [
+          "SRC-INCB-PRECURSORS-2025"
+        ],
+        "activeIndependenceGroups": [
+          "un-incb"
+        ],
+        "activeGroupCount": 1,
+        "capabilityOnlySourceIds": [],
+        "unavailableSourceIds": [],
+        "capabilitySourcesCountTowardCorroboration": false,
+        "unavailableSourcesCountTowardCorroboration": false,
+        "supportMetadataMatches": true,
+        "passed": true
+      },
+      {
+        "sentenceId": "L002",
+        "claimType": "origin",
+        "supportProfile": "attributed_observation",
+        "findingStatus": "attributed_official_record",
+        "corroborationClaimed": false,
+        "minimumIndependentActiveGroups": 1,
+        "activeSourceIds": [
+          "SRC-INCB-PRECURSORS-2025"
+        ],
+        "activeIndependenceGroups": [
+          "un-incb"
+        ],
+        "activeGroupCount": 1,
+        "capabilityOnlySourceIds": [],
+        "unavailableSourceIds": [],
+        "capabilitySourcesCountTowardCorroboration": false,
+        "unavailableSourcesCountTowardCorroboration": false,
+        "supportMetadataMatches": true,
+        "passed": true
+      },
+      {
+        "sentenceId": "L003",
+        "claimType": "trade_denominator",
+        "supportProfile": "capability_boundary",
+        "findingStatus": "capability_or_access_boundary",
+        "corroborationClaimed": false,
+        "minimumIndependentActiveGroups": 0,
+        "activeSourceIds": [],
+        "activeIndependenceGroups": [],
+        "activeGroupCount": 0,
+        "capabilityOnlySourceIds": [
+          "SRC-GACC-STATS",
+          "SRC-UN-COMTRADE"
+        ],
+        "unavailableSourceIds": [],
+        "capabilitySourcesCountTowardCorroboration": false,
+        "unavailableSourcesCountTowardCorroboration": false,
+        "supportMetadataMatches": true,
+        "passed": true
+      },
+      {
+        "sentenceId": "L004",
+        "claimType": "attribution_boundary",
+        "supportProfile": "attributed_observation",
+        "findingStatus": "attributed_official_record",
+        "corroborationClaimed": false,
+        "minimumIndependentActiveGroups": 1,
+        "activeSourceIds": [
+          "SRC-INCB-PRECURSORS-2025"
+        ],
+        "activeIndependenceGroups": [
+          "un-incb"
+        ],
+        "activeGroupCount": 1,
+        "capabilityOnlySourceIds": [],
+        "unavailableSourceIds": [],
+        "capabilitySourcesCountTowardCorroboration": false,
+        "unavailableSourcesCountTowardCorroboration": false,
+        "supportMetadataMatches": true,
+        "passed": true
+      },
+      {
+        "sentenceId": "L005",
+        "claimType": "harm_join",
+        "supportProfile": "multi_source_methodological_context",
+        "findingStatus": "multi_source_methodological_context",
+        "corroborationClaimed": false,
+        "minimumIndependentActiveGroups": 2,
+        "activeSourceIds": [
+          "SRC-CDC-VSRR",
+          "SRC-INCB-PRECURSORS-2025"
+        ],
+        "activeIndependenceGroups": [
+          "un-incb",
+          "us-cdc-nchs"
+        ],
+        "activeGroupCount": 2,
+        "capabilityOnlySourceIds": [],
+        "unavailableSourceIds": [],
+        "capabilitySourcesCountTowardCorroboration": false,
+        "unavailableSourcesCountTowardCorroboration": false,
+        "supportMetadataMatches": true,
+        "passed": true
+      },
+      {
+        "sentenceId": "L006",
+        "claimType": "restricted_sources",
+        "supportProfile": "capability_boundary",
+        "findingStatus": "capability_or_access_boundary",
+        "corroborationClaimed": false,
+        "minimumIndependentActiveGroups": 0,
+        "activeSourceIds": [],
+        "activeIndependenceGroups": [],
+        "activeGroupCount": 0,
+        "capabilityOnlySourceIds": [],
+        "unavailableSourceIds": [
+          "SRC-INCB-PEN-CAPABILITY",
+          "SRC-INCB-PICS-CAPABILITY",
+          "SRC-USCOURTS-PACER"
+        ],
+        "capabilitySourcesCountTowardCorroboration": false,
+        "unavailableSourcesCountTowardCorroboration": false,
+        "supportMetadataMatches": true,
+        "passed": true
+      }
+    ],
+    "countercase": {
+      "present": true,
+      "sentenceCount": 3,
+      "citedSentenceCount": 3
+    },
+    "editorialCompleteness": {
+      "correctionsStatus": "none_recorded",
+      "updateHistoryEventCount": 1,
+      "initialPublicationRecorded": true,
+      "rightToReplyStatus": "not_required",
+      "outreachPerformed": false,
+      "expertTestimonyIncluded": false,
+      "affectedPersonTestimonyIncluded": false,
+      "simulatedHumanVoicesIncluded": false,
+      "passed": true
+    },
+    "bannedClaimScan": {
+      "rulesetVersion": "bounded-claims-and-safe-grain.v1",
+      "ruleCount": 8,
+      "matches": [],
+      "passed": true
+    },
+    "safetyEvaluation": {
+      "chemistryInstructionsIncluded": false,
+      "navigableOperationalDetailsIncluded": false,
+      "passed": true
+    },
+    "deterministicHashes": {
+      "algorithm": "sha256",
+      "revisionHash": "92dc194dc5087203186932d00440ba682e939495a7b36146bfd169480b58549b",
+      "machineBriefContentHash": "6e6ade655ca827910a509a5eb6e8dcc98a0696525b5318e0cef037155de19958",
+      "dossierContentHashScope": "canonical JSON of the dossier including this receipt and excluding the top-level contentHash field",
+      "dossierContentHash": "056b117f4a3301a9971e75bd64aac53d0aa252166a9fd55dc449cd57fbd9e4ab"
+    },
+    "failures": [],
+    "passed": true
+  },
+  "inputs": [
+    {
+      "id": "china-public-aggregate-bridge",
+      "path": "public/data/narcoscope-palimpsest-v1.json",
+      "bytes": 23313,
+      "sha256": "112f172ccdf894fb61a58c5e4c58c5d7310b140fdf2b4f4285ac95975dbf11d2"
+    },
+    {
+      "id": "cdc-vsrr-offline-snapshot",
+      "path": "src/data/overdose.json",
+      "bytes": 486962,
+      "sha256": "310601476916f14e332261e7cd03bb4c9e06cc78cad85f9543e5f20a0c2df810"
+    },
+    {
+      "id": "official-source-capabilities",
+      "path": "scripts/newsroom/source-capabilities.json",
+      "bytes": 16205,
+      "sha256": "994dcf2fdccc98b05bf5b5983e64eb457e78880cedf0cb51599b09c4265e0ac0"
+    }
+  ],
+  "gates": [
+    {
+      "gateId": "source-capability-registry-gate.v1",
+      "status": "passed",
+      "assertionCount": 118
+    },
+    {
+      "gateId": "machine-brief-gate.v1",
+      "status": "passed",
+      "assertionCount": 24
+    },
+    {
+      "gateId": "automated-evidence-analysis-gate.v1",
+      "status": "passed",
+      "assertionCount": 171,
+      "citationCoveragePct": 100,
+      "synthesisSentenceCount": 8,
+      "minimumActiveIndependenceGroups": 2,
+      "bannedClaimMatches": 0
+    }
+  ],
+  "artifacts": [
+    {
+      "file": "china-linked-precursor-incidents-official-record.dossier.json",
+      "bytes": 75417,
+      "sha256": "79e4999f5103bf3a2dd668c2feacc1224cd81b91ed2b4c739214d805841781df"
+    },
+    {
+      "file": "china-linked-precursor-incidents-official-record.html",
+      "bytes": 46073,
+      "sha256": "d94f46dc6ea1c3d6e5ff3f5cc0504e77f85524a2a6fa53c4b1abbdb255b0be22"
+    },
+    {
+      "file": "china-linked-precursor-incidents-official-record.machine-brief.json",
+      "bytes": 8334,
+      "sha256": "80c4eba1a90a39a6ca93d8b2c8cd5769465be5f94b02cfcdf97ff26af152e158"
+    },
+    {
+      "file": "feed.json",
+      "bytes": 42846,
+      "sha256": "3e219336556a01976ff1a683d02c7927fb24d960f4c683d5d697dd7bca077d76"
+    },
+    {
+      "file": "feed.xml",
+      "bytes": 52627,
+      "sha256": "7a2784f79f7e075b243354b48e137fe7b96dc4553cbe7de37d03b7bf64912d41"
+    },
+    {
+      "file": "index.json",
+      "bytes": 1746,
+      "sha256": "2136fcd147ae7e48ddb7d19d9ae522744cef245a6f0452a9d9a05dbe7deb00f9"
+    }
+  ]
+}

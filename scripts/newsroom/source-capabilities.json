@@ -1,0 +1,331 @@
+{
+  "schemaVersion": "narcoscope.newsroom.source-capabilities.v1",
+  "asOf": "2026-08-12",
+  "policy": {
+    "authority": "Official publisher or issuing court only",
+    "publicEvidenceRule": "A source can support a published automated analysis only when the cited material is publicly reachable and its retained grain passes the newsroom safety gate.",
+    "allegationRule": "A complaint, indictment, press release or threat assessment is an official record of what an authority alleged or assessed; it is not an adjudication of guilt or proof of the alleged conduct.",
+    "restrictedSystemRule": "Restricted operational systems are registered as missing capabilities and are never represented as public evidence.",
+    "safeGrainRule": "Retain country, partner, broad precursor class, year and aggregate quantity only; exclude entities, addresses, live routing, synthesis routes, conversion ratios and yields."
+  },
+  "capabilities": [
+    {
+      "id": "gacc-customs-statistics",
+      "publisher": "General Administration of Customs of the People's Republic of China",
+      "title": "China Customs Statistics",
+      "url": "https://english.customs.gov.cn/Statistics/Statistics",
+      "authorityType": "official_statistics",
+      "evidenceClass": "lawful_trade_context",
+      "upstreamGroup": "cn-gacc",
+      "newsroomRole": "capability_only",
+      "availability": {
+        "status": "public_aggregate",
+        "access": "Public web tables and releases; the English interactive-table surface is not a stable bulk API.",
+        "automation": "manual_snapshot_required",
+        "recordGrain": "Aggregate merchandise trade by period, commodity and partner where released",
+        "publicRecordLevelShipments": false
+      },
+      "licensing": {
+        "status": "reuse_terms_not_identified",
+        "statement": "Official statistics are publicly viewable, but NarcoScope has not identified terms authorizing bulk redistribution; link and cite unless permission is confirmed."
+      },
+      "newsroomUse": {
+        "status": "capability_only",
+        "allowedClaims": [
+          "The publisher makes official aggregate merchandise-trade statistics available.",
+          "No GACC product series is present in the current NarcoScope dossier."
+        ],
+        "prohibitedClaims": [
+          "Aggregate customs statistics identify illicit end use.",
+          "Aggregate customs statistics identify a company, shipment or INCB incident."
+        ]
+      }
+    },
+    {
+      "id": "un-comtrade",
+      "publisher": "United Nations Statistics Division",
+      "title": "UN Comtrade Database and API",
+      "url": "https://comtrade.un.org/",
+      "authorityType": "official_statistics",
+      "evidenceClass": "lawful_trade_context",
+      "upstreamGroup": "un-unsd-comtrade",
+      "newsroomRole": "capability_only",
+      "availability": {
+        "status": "public_aggregate",
+        "access": "A keyless preview API is public and limited; free registered API access has quotas; bulk access and some redistribution require a subscription or licence.",
+        "automation": "api_key_for_repeatable_extract",
+        "recordGrain": "Reporter, partner, product classification, flow and period aggregates",
+        "publicRecordLevelShipments": false
+      },
+      "licensing": {
+        "status": "usage_agreement_and_redistribution_limits",
+        "statement": "Use is governed by the UN Comtrade usage agreement; redistribution of large original extracts can require a separate licence, while transformed data is treated differently."
+      },
+      "newsroomUse": {
+        "status": "capability_only",
+        "allowedClaims": [
+          "UN Comtrade exposes official aggregate trade statistics by product and partner.",
+          "No Comtrade chemical-product extract is present in the current NarcoScope dossier."
+        ],
+        "prohibitedClaims": [
+          "An HS aggregate establishes legal or illegal end use.",
+          "An aggregate row can be joined to a specific enforcement incident without a shared record identifier."
+        ]
+      }
+    },
+    {
+      "id": "incb-precursors-public-report",
+      "publisher": "International Narcotics Control Board",
+      "title": "Precursors Report 2025",
+      "url": "https://www.incb.org/incb/uploads/documents/Publications/AnnualReports/AR2025/Precursors_Report/E_INCB_2025_4_eng.pdf",
+      "authorityType": "official_international_report",
+      "evidenceClass": "official_enforcement_incidents",
+      "upstreamGroup": "un-incb",
+      "newsroomRole": "active_evidence",
+      "availability": {
+        "status": "public_report",
+        "access": "Public annual PDF; selected aggregates retain printed page and paragraph locators, quantity relations and extraction derivations.",
+        "automation": "offline_checked_snapshot",
+        "recordGrain": "Reported origin, destination, broad precursor class, reporting period, aggregate or incident count, quantity relation and basis",
+        "publicRecordLevelShipments": false
+      },
+      "licensing": {
+        "status": "un_publication_attribution",
+        "statement": "Public UN publication; NarcoScope republishes a small attributed factual extract, not the report text."
+      },
+      "newsroomUse": {
+        "status": "active_input",
+        "allowedClaims": [
+          "The report documents selected incidents or aggregates at the stated source grain and precision.",
+          "Operation Pseudonym reported China and India as origins in Australia and New Zealand without allocating the 168 seizures or their mass between either origin."
+        ],
+        "prohibitedClaims": [
+          "Selected incidents estimate total trade or successful movement.",
+          "A reported origin establishes responsibility, intent or guilt.",
+          "Incident quantity can be converted into end-drug output."
+        ]
+      }
+    },
+    {
+      "id": "incb-pics",
+      "publisher": "International Narcotics Control Board",
+      "title": "Precursors Incident Communication System (PICS)",
+      "url": "https://www.incb.org/incb/uploads/documents/PRECURSORS/Tools_and_Resources/Article_12_Resources_and_Tools_Oct2025.pdf",
+      "authorityType": "restricted_operational_system",
+      "evidenceClass": "official_enforcement_incidents",
+      "upstreamGroup": "un-incb",
+      "newsroomRole": "unavailable",
+      "availability": {
+        "status": "restricted_non_public",
+        "access": "Secure system for registered government regulatory, customs, drug-control and law-enforcement users.",
+        "automation": "unavailable",
+        "recordGrain": "Operational incident and suspicious-shipment information",
+        "publicRecordLevelShipments": false
+      },
+      "licensing": {
+        "status": "not_applicable_non_public",
+        "statement": "Operational records are not a public dataset and are not licensed for NarcoScope redistribution."
+      },
+      "newsroomUse": {
+        "status": "unavailable",
+        "allowedClaims": [
+          "PICS is a restricted capability absent from this dossier."
+        ],
+        "prohibitedClaims": [
+          "NarcoScope has searched or exhausted PICS.",
+          "Absence from the public report means absence from PICS."
+        ]
+      }
+    },
+    {
+      "id": "incb-pen-online",
+      "publisher": "International Narcotics Control Board",
+      "title": "Pre-Export Notification Online (PEN Online)",
+      "url": "https://www.incb.org/incb/uploads/documents/PRECURSORS/Tools_and_Resources/Article_12_Resources_and_Tools_Oct2025.pdf",
+      "authorityType": "restricted_regulatory_system",
+      "evidenceClass": "lawful_regulatory_trade",
+      "upstreamGroup": "un-incb",
+      "newsroomRole": "unavailable",
+      "availability": {
+        "status": "restricted_non_public",
+        "access": "Secure pre-export-notification system for registered competent national authorities.",
+        "automation": "unavailable",
+        "recordGrain": "Regulatory pre-export notifications for controlled precursor shipments",
+        "publicRecordLevelShipments": false
+      },
+      "licensing": {
+        "status": "not_applicable_non_public",
+        "statement": "Notification records are not a public dataset and are not licensed for NarcoScope redistribution."
+      },
+      "newsroomUse": {
+        "status": "unavailable",
+        "allowedClaims": [
+          "PEN Online is a restricted capability absent from this dossier."
+        ],
+        "prohibitedClaims": [
+          "NarcoScope can verify a shipment's notification or authorization status in PEN Online.",
+          "No public PEN record means no notification existed."
+        ]
+      }
+    },
+    {
+      "id": "cdc-vsrr-overdose",
+      "publisher": "US Centers for Disease Control and Prevention, National Center for Health Statistics",
+      "title": "VSRR Provisional Drug Overdose Death Counts",
+      "url": "https://data.cdc.gov/resource/xkb8-kh2a.json",
+      "authorityType": "official_vital_statistics",
+      "evidenceClass": "harm_data",
+      "upstreamGroup": "us-cdc-nchs",
+      "newsroomRole": "active_evidence",
+      "availability": {
+        "status": "public_api",
+        "access": "Keyless Socrata API with a checked-in offline snapshot.",
+        "automation": "keyless_api_and_offline_snapshot",
+        "recordGrain": "US jurisdiction, 12-month-ending period and ICD-10 substance class",
+        "publicRecordLevelShipments": false
+      },
+      "licensing": {
+        "status": "us_government_public_domain",
+        "statement": "US Government work; source attribution and provisional-data caveats are retained."
+      },
+      "newsroomUse": {
+        "status": "active_input",
+        "allowedClaims": [
+          "The series describes provisional US mortality trends at the stated grain."
+        ],
+        "prohibitedClaims": [
+          "Mortality rows identify a supplier, shipment, precursor or country of origin.",
+          "Temporal proximity establishes causation."
+        ]
+      }
+    },
+    {
+      "id": "ofac-sdn",
+      "publisher": "US Department of the Treasury, Office of Foreign Assets Control",
+      "title": "Specially Designated Nationals List",
+      "url": "https://sanctionslist.ofac.treas.gov/Home/SdnList",
+      "authorityType": "official_administrative_action",
+      "evidenceClass": "official_designations",
+      "upstreamGroup": "us-treasury-ofac",
+      "newsroomRole": "active_evidence",
+      "availability": {
+        "status": "public_files",
+        "access": "Public list files with a checked-in privacy-minimized aggregate snapshot.",
+        "automation": "keyless_download_and_offline_snapshot",
+        "recordGrain": "Designated subject, program and country-of-record address; only aggregates enter the newsroom",
+        "publicRecordLevelShipments": false
+      },
+      "licensing": {
+        "status": "us_government_public_domain",
+        "statement": "US Government work; NarcoScope excludes addresses, identifiers and other sensitive fields."
+      },
+      "newsroomUse": {
+        "status": "active_input",
+        "allowedClaims": [
+          "OFAC took a published administrative action under a named program.",
+          "The aggregate counts records carrying China in OFAC's country-of-record address data."
+        ],
+        "prohibitedClaims": [
+          "A designation is an adjudication of guilt.",
+          "Country of record establishes nationality.",
+          "A designation record is linked to an INCB incident or CDC death."
+        ]
+      }
+    },
+    {
+      "id": "dea-ndta",
+      "publisher": "US Drug Enforcement Administration",
+      "title": "2025 National Drug Threat Assessment",
+      "url": "https://www.dea.gov/sites/default/files/2025-07/2025NationalDrugThreatAssessment.pdf",
+      "authorityType": "official_threat_assessment",
+      "evidenceClass": "official_assessment",
+      "upstreamGroup": "us-doj-dea",
+      "newsroomRole": "capability_only",
+      "availability": {
+        "status": "public_report",
+        "access": "Public report; narrative assessment rather than a record-level shipment dataset.",
+        "automation": "manual_review_only",
+        "recordGrain": "Narrative national threat assessment with selected examples",
+        "publicRecordLevelShipments": false
+      },
+      "licensing": {
+        "status": "us_government_public_domain_with_third_party_caveat",
+        "statement": "US Government work except where third-party material is identified; cite the report and do not treat narrative as a reusable shipment table."
+      },
+      "newsroomUse": {
+        "status": "capability_only",
+        "allowedClaims": [
+          "DEA published the stated assessment."
+        ],
+        "prohibitedClaims": [
+          "An agency assessment is an adjudicated finding.",
+          "Narrative scope can be silently converted into a complete incident series."
+        ]
+      }
+    },
+    {
+      "id": "doj-precursor-case-releases",
+      "publisher": "US Department of Justice",
+      "title": "Official case announcements and linked charging documents",
+      "url": "https://www.justice.gov/archives/opa/pr/justice-department-announces-charges-against-china-based-chemical-manufacturing-companies",
+      "authorityType": "official_litigation_record",
+      "evidenceClass": "allegations_and_case_status",
+      "upstreamGroup": "us-doj-litigation",
+      "newsroomRole": "capability_only",
+      "availability": {
+        "status": "public_web_documents",
+        "access": "Public press releases and selected linked pleadings; disposition must be checked against the court docket.",
+        "automation": "manual_case_status_review",
+        "recordGrain": "Case, defendant, charge, filing and stated procedural status",
+        "publicRecordLevelShipments": false
+      },
+      "licensing": {
+        "status": "us_government_public_domain_with_filing_caveat",
+        "statement": "DOJ-authored text is a US Government work; linked court filings can carry separate access and privacy considerations."
+      },
+      "newsroomUse": {
+        "status": "capability_only",
+        "allowedClaims": [
+          "DOJ announced a charge or filed allegation when quoted with its procedural status.",
+          "A conviction, plea, dismissal or judgment may be reported only from a disposition record."
+        ],
+        "prohibitedClaims": [
+          "A complaint or indictment proves the allegation.",
+          "A press release alone establishes guilt or current case disposition."
+        ]
+      }
+    },
+    {
+      "id": "uscourts-pacer",
+      "publisher": "Administrative Office of the United States Courts",
+      "title": "Public Access to Court Electronic Records (PACER)",
+      "url": "https://pacer.uscourts.gov/policy-procedures",
+      "authorityType": "official_court_record_system",
+      "evidenceClass": "adjudicated_and_procedural_records",
+      "upstreamGroup": "us-federal-judiciary",
+      "newsroomRole": "unavailable",
+      "availability": {
+        "status": "account_and_fee_restricted",
+        "access": "Public registration is available, but searches and documents can incur fees; repeated automated access is restricted by PACER policy and sealed records are unavailable.",
+        "automation": "unavailable_for_automated_newsroom",
+        "recordGrain": "Docket, filing, order, opinion and disposition by federal case",
+        "publicRecordLevelShipments": false
+      },
+      "licensing": {
+        "status": "public_record_access_not_bulk_licence",
+        "statement": "Court records are public subject to sealing, privacy rules, access fees and PACER policy; this registry entry is not a bulk-redistribution licence."
+      },
+      "newsroomUse": {
+        "status": "unavailable",
+        "allowedClaims": [
+          "PACER is the authoritative docket capability and is absent from this automated build.",
+          "A checked judicial disposition can establish procedural outcome."
+        ],
+        "prohibitedClaims": [
+          "The automated newsroom has exhaustively checked federal dockets.",
+          "A missing public filing establishes that no case or disposition exists."
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,232 @@
+{
+  "schemaVersion": "narcoscope.newsroom.machine-brief.v1",
+  "artifactId": "narcoscope.newsroom.china-linked-precursor-incidents-official-record.machine-brief",
+  "articleId": "narcoscope.newsroom.china-linked-precursor-incidents-official-record",
+  "slug": "china-linked-precursor-incidents-official-record",
+  "contentClass": "machine_brief",
+  "publishability": "not_publishable_as_analysis_without_second_gate",
+  "dataAsOf": "2026-08-12",
+  "generatedAt": "2026-08-12T00:00:00.000Z",
+  "revisionHash": "92dc194dc5087203186932d00440ba682e939495a7b36146bfd169480b58549b",
+  "inputArtifacts": [
+    {
+      "id": "china-public-aggregate-bridge",
+      "path": "public/data/narcoscope-palimpsest-v1.json",
+      "bytes": 23313,
+      "sha256": "112f172ccdf894fb61a58c5e4c58c5d7310b140fdf2b4f4285ac95975dbf11d2"
+    },
+    {
+      "id": "cdc-vsrr-offline-snapshot",
+      "path": "src/data/overdose.json",
+      "bytes": 486962,
+      "sha256": "310601476916f14e332261e7cd03bb4c9e06cc78cad85f9543e5f20a0c2df810"
+    },
+    {
+      "id": "official-source-capabilities",
+      "path": "scripts/newsroom/source-capabilities.json",
+      "bytes": 16205,
+      "sha256": "994dcf2fdccc98b05bf5b5983e64eb457e78880cedf0cb51599b09c4265e0ac0"
+    }
+  ],
+  "evidenceLanes": {
+    "lawfulIndustrialTrade": {
+      "evidenceStatus": "not_measured_in_current_inputs",
+      "registeredCapabilities": [
+        "gacc-customs-statistics",
+        "un-comtrade"
+      ],
+      "publicRecordLevelShipmentJoinAvailable": false,
+      "denominatorAvailable": false,
+      "interpretation": "Aggregate trade capabilities exist, but this build contains no product-level lawful-trade denominator and no end-use field."
+    },
+    "officialEnforcementIncidents": {
+      "sourceCapability": "incb-precursors-public-report",
+      "document": {
+        "url": "https://www.incb.org/incb/uploads/documents/Publications/AnnualReports/AR2025/Precursors_Report/E_INCB_2025_4_eng.pdf",
+        "sha256": "8397f2799116fe33ce6851ec2c7e03a042886fb9c048f72cdb259724de5ddd6e",
+        "retrievedAt": "2026-08-12T13:50:25Z"
+      },
+      "retainedQuantitativeRecordCount": 1,
+      "retainedContextRecordCount": 1,
+      "chinaEuAggregate": {
+        "reportedOrigin": "China",
+        "destination": "European Union",
+        "year": 2025,
+        "precursorClass": "meth_pre_precursors",
+        "reportedQuantityKg": 5000,
+        "quantityRelation": "approx",
+        "quantityBasis": "Combined substance mass across nine PICS incidents; the source reports nearly 5 tons.",
+        "recordKind": "multi_incident_aggregate",
+        "incidentCount": 9,
+        "sourceLocator": {
+          "pdfPage": 44,
+          "printedPage": 26,
+          "paragraph": 94
+        }
+      },
+      "operationPseudonymContext": {
+        "contextId": "operation-pseudonym-australia-new-zealand-origins-2024",
+        "origins": [
+          "China",
+          "India"
+        ],
+        "destinations": [
+          "Australia",
+          "New Zealand"
+        ],
+        "year": 2024,
+        "allocationStatus": "not_reported_by_origin_destination_pair",
+        "operationReportedSeizureCount": 168,
+        "countScope": "four_reporting_countries_operation_total",
+        "summary": "INCB reports that four participating countries recorded 168 seizures during Operation Pseudonym, most in Australia and New Zealand, and that origins for substances in both countries were reported as China and India. The report does not allocate seizure count or mass by origin-and-destination pair.",
+        "sourceLocator": {
+          "pdfPage": 31,
+          "printedPage": 13,
+          "paragraph": 46
+        },
+        "quantityKg": null,
+        "incidentCountByOriginDestinationPair": null
+      },
+      "quantityAggregation": {
+        "status": "not_computed_non_exact_inputs",
+        "exactRecordCount": 0,
+        "nonExactRecordCount": 1,
+        "summedQuantityKg": null
+      },
+      "bilateralSubtotalComputed": false,
+      "completeFlowSeries": false,
+      "successfulMovementMeasure": false
+    },
+    "harmTrend": {
+      "sourceCapability": "cdc-vsrr-overdose",
+      "geography": "United States",
+      "measure": "provisional deaths involving synthetic opioids excluding methadone (T40.4) in 12-month-ending December windows",
+      "observations": [
+        {
+          "year": 2015,
+          "periodEndMonth": 12,
+          "provisionalDeaths": 9610,
+          "predictedDeaths": 9683,
+          "percentComplete": 100
+        },
+        {
+          "year": 2016,
+          "periodEndMonth": 12,
+          "provisionalDeaths": 19500,
+          "predictedDeaths": 19676,
+          "percentComplete": 100
+        },
+        {
+          "year": 2017,
+          "periodEndMonth": 12,
+          "provisionalDeaths": 28659,
+          "predictedDeaths": 28844,
+          "percentComplete": 100
+        },
+        {
+          "year": 2018,
+          "periodEndMonth": 12,
+          "provisionalDeaths": 31525,
+          "predictedDeaths": 31724,
+          "percentComplete": 100
+        },
+        {
+          "year": 2019,
+          "periodEndMonth": 12,
+          "provisionalDeaths": 36603,
+          "predictedDeaths": 36895,
+          "percentComplete": 100
+        },
+        {
+          "year": 2020,
+          "periodEndMonth": 12,
+          "provisionalDeaths": 56894,
+          "predictedDeaths": 57265,
+          "percentComplete": 100
+        },
+        {
+          "year": 2021,
+          "periodEndMonth": 12,
+          "provisionalDeaths": 71143,
+          "predictedDeaths": 71746,
+          "percentComplete": 100
+        },
+        {
+          "year": 2022,
+          "periodEndMonth": 12,
+          "provisionalDeaths": 74829,
+          "predictedDeaths": 75453,
+          "percentComplete": 100
+        },
+        {
+          "year": 2023,
+          "periodEndMonth": 12,
+          "provisionalDeaths": 74091,
+          "predictedDeaths": 74792,
+          "percentComplete": 100
+        },
+        {
+          "year": 2024,
+          "periodEndMonth": 12,
+          "provisionalDeaths": 48662,
+          "predictedDeaths": 48913,
+          "percentComplete": 100
+        },
+        {
+          "year": 2025,
+          "periodEndMonth": 12,
+          "provisionalDeaths": 38056,
+          "predictedDeaths": 38280,
+          "percentComplete": 100
+        }
+      ],
+      "provisional": true,
+      "revisionsExpected": true,
+      "selectionRule": "Every available United States row for a 12-month-ending December period, partialYear=false, and substance=synthetic_opioids.",
+      "containsOriginOrShipmentFields": false,
+      "causalAttributionAvailable": false
+    }
+  },
+  "missingRecordLevelJoins": [
+    {
+      "from": "lawfulIndustrialTrade",
+      "to": "officialEnforcementIncidents",
+      "available": false
+    },
+    {
+      "from": "officialEnforcementIncidents",
+      "to": "harmTrend",
+      "available": false
+    }
+  ],
+  "adjudicationCoverage": {
+    "dojCaseAnnouncements": "registered_capability_not_ingested",
+    "federalCourtDockets": "registered_capability_unavailable_to_automation",
+    "adjudicatedFindingsInBrief": false
+  },
+  "safety": {
+    "retainedGrain": "country, broad precursor class, reporting period, aggregate quantity relation, incident count and printed source locator",
+    "excludedDetails": [
+      "subject identities",
+      "addresses and identifiers",
+      "live or subnational shipment routing",
+      "synthesis routes",
+      "conversion ratios",
+      "yields"
+    ],
+    "chemistryInstructionsIncluded": false,
+    "navigableOperationalDetailsIncluded": false
+  },
+  "limitations": [
+    "The selected INCB aggregate is not a census of precursor movements or lawful trade.",
+    "Nearly five tonnes is an approximate aggregate across nine incidents, not one exact shipment.",
+    "Operation Pseudonym does not allocate the 168 seizures or any mass by China/India and Australia/New Zealand origin-destination pair.",
+    "CDC mortality is a separate provisional, revisable harm series with no shipment or origin fields.",
+    "PICS, PEN Online and automated PACER review are unavailable to this public offline build."
+  ],
+  "gate": {
+    "gateId": "machine-brief-gate.v1",
+    "status": "passed"
+  },
+  "contentHash": "6e6ade655ca827910a509a5eb6e8dcc98a0696525b5318e0cef037155de19958"
+}

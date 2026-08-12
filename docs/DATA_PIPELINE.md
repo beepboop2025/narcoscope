@@ -12,8 +12,11 @@ sources.json  ──►  run.mjs fetches (data-raw/, gitignored)
                         ▼
         src/data/*.{ts,json}  (bundled, versioned, PR-reviewable)
                         │
-                        ▼
-        tsc + vitest (dataset-integrity tests = validation gate)
+                        ├──► public/data/* (official-record bridge)
+                        └──► public/news/* (gated evidence newsroom)
+                                      │
+                                      ▼
+        news:check + tsc + vitest (determinism and validation gates)
 ```
 
 **Design rule: data changes are commits, not runtime mutations.** The app stays
@@ -26,10 +29,18 @@ where every number comes from.
 ```bash
 node scripts/pipeline/run.mjs             # fetch + transform + validate
 node scripts/pipeline/run.mjs --offline   # reuse data-raw/ (no network)
+npm run news:build                        # rebuild static newsroom artifacts
+npm run news:check                        # detect a stale newsroom bundle
 ```
 
 The GitHub Action `.github/workflows/data-refresh.yml` runs this quarterly and
 opens a PR only when the regenerated data differs.
+
+The evidence newsroom is a deterministic downstream publication step. It reads
+only checked-in official data plus its capability registry, creates a gated
+machine brief and automated evidence analysis, and writes the reviewable bundle
+to `public/news/`. See [`EVIDENCE_NEWSROOM.md`](./EVIDENCE_NEWSROOM.md) for the
+independence, citation and claims-safety rules.
 
 ## Fully automated today (no credentials)
 

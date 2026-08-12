@@ -29,6 +29,8 @@ const StateOverdose = lazy(() => import('./components/StateOverdose'))
 const PriceHistory = lazy(() => import('./components/PriceHistory'))
 // Lazy: reads the ~210 kB seizure dataset (shared with the Flow Map chunk).
 const SeizureTrends = lazy(() => import('./components/SeizureTrends'))
+// Lazy: fetches the deterministic public/news dossier only when the newsroom is opened.
+const EvidenceNewsroom = lazy(() => import('./components/EvidenceNewsroom'))
 
 const TABS = [
   { id: 'overview', label: 'Overview' },
@@ -44,7 +46,16 @@ const TABS = [
   { id: 'wildlife', label: 'Wildlife Seizures' },
   { id: 'myanmar', label: 'Myanmar Focus' },
   { id: 'intel', label: 'Enterprise Intel' },
+  { id: 'newsroom', label: 'Evidence Newsroom' },
 ] as const
+
+const tabIds = new Set<string>(TABS.map((item) => item.id))
+
+function initialTab(): string {
+  if (typeof window === 'undefined') return 'overview'
+  const requested = window.location.hash.replace(/^#\/?/, '')
+  return tabIds.has(requested) ? requested : 'overview'
+}
 
 /** Springs its contents in on mount — remounted per tab (key) for a crossfade. */
 function TabPanel({ children }: { children: ReactNode }) {
@@ -60,8 +71,13 @@ function TabPanel({ children }: { children: ReactNode }) {
 
 export default function App() {
   const { isSample } = useData()
-  const [tab, setTab] = useState<string>('overview')
+  const [tab, setTab] = useState<string>(initialTab)
   useSmoothScroll()
+
+  const selectTab = (nextTab: string) => {
+    setTab(nextTab)
+    if (typeof window !== 'undefined') window.history.replaceState(null, '', `#${nextTab}`)
+  }
 
   return (
     <div className="app tk">
@@ -105,7 +121,8 @@ export default function App() {
               key={t.id}
               type="button"
               className={`tab-btn ${tab === t.id ? 'active' : ''}`}
-              onClick={() => setTab(t.id)}
+              aria-current={tab === t.id ? 'page' : undefined}
+              onClick={() => selectTab(t.id)}
             >
               {t.label}
             </button>
@@ -129,6 +146,7 @@ export default function App() {
             {tab === 'wildlife' && <WildlifeSeizures />}
             {tab === 'myanmar' && <MyanmarFocus />}
             {tab === 'intel' && <IntelligenceBriefing />}
+            {tab === 'newsroom' && <EvidenceNewsroom />}
           </TabPanel>
         </Suspense>
       </main>

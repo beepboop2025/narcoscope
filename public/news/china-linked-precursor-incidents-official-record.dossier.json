@@ -1,0 +1,2023 @@
+{
+  "schemaVersion": "narcoscope.newsroom.evidence-analysis.v1",
+  "artifactId": "narcoscope.newsroom.china-linked-precursor-incidents-official-record.dossier",
+  "articleId": "narcoscope.newsroom.china-linked-precursor-incidents-official-record",
+  "slug": "china-linked-precursor-incidents-official-record",
+  "contentClass": "automated_evidence_analysis",
+  "editorialStatus": {
+    "automationDisclosure": "Written by deterministic typed templates from checked-in official-source aggregates; no generative model is used at build time.",
+    "humanReviewStatus": "not_recorded",
+    "evidenceStandard": "bounded_official_record",
+    "causalAttribution": "not_established",
+    "adjudicatedGuilt": "not_assessed",
+    "gateStatus": "passed",
+    "independentlyCorroboratedEventClaimCount": 0
+  },
+  "publicationRecord": {
+    "historyContract": "append-only.v1",
+    "corrections": {
+      "status": "none_recorded",
+      "policy": "Corrections and material updates append to this history; revision and content hashes identify each deterministic build."
+    },
+    "rightToReply": {
+      "status": "not_required",
+      "rationale": "This aggregate analysis makes no named allegation about a person or organization.",
+      "outreachPerformed": false
+    },
+    "testimony": {
+      "expertTestimonyIncluded": false,
+      "affectedPersonTestimonyIncluded": false,
+      "simulatedHumanVoicesIncluded": false,
+      "disclosure": "No expert or affected-person testimony is included, and the automated newsroom does not simulate those voices."
+    },
+    "updateHistory": [
+      {
+        "eventType": "initial_publication",
+        "date": "2026-08-12",
+        "summary": "Initial deterministic publication from the cited checked-in official-source snapshots.",
+        "revisionHash": "92dc194dc5087203186932d00440ba682e939495a7b36146bfd169480b58549b"
+      }
+    ]
+  },
+  "promotion": {
+    "fromContentClass": "machine_brief",
+    "machineBriefUrl": "/news/china-linked-precursor-incidents-official-record.machine-brief.json",
+    "machineBriefContentHash": "6e6ade655ca827910a509a5eb6e8dcc98a0696525b5318e0cef037155de19958",
+    "requiredGate": "automated-evidence-analysis-gate.v1"
+  },
+  "title": "What the 2025 INCB precursor report says about China-linked incidents—and what it does not prove",
+  "dek": "Nine reported incidents, nearly five tonnes, and one crucial missing join: the official record identifies an origin, but it does not establish a causal chain to US deaths or measure lawful industrial trade.",
+  "byline": "NarcoScope automated evidence desk",
+  "publishedAt": "2026-08-12T00:00:00.000Z",
+  "updatedAt": "2026-08-12T00:00:00.000Z",
+  "dataAsOf": "2026-08-12",
+  "revisionHash": "92dc194dc5087203186932d00440ba682e939495a7b36146bfd169480b58549b",
+  "keyFigures": [
+    {
+      "id": "china-eu-approximate-mass",
+      "value": 5,
+      "unit": "tonnes, nearly",
+      "label": "combined across nine PICS incidents",
+      "attributionBoundary": "reported_origin_not_causal_attribution",
+      "citationIds": [
+        "SRC-INCB-PRECURSORS-2025"
+      ],
+      "citationLocators": [
+        {
+          "sourceId": "SRC-INCB-PRECURSORS-2025",
+          "locator": "paragraph 94; PDF page 44; printed page 26"
+        }
+      ]
+    },
+    {
+      "id": "china-eu-incident-count",
+      "value": 9,
+      "unit": "incidents",
+      "label": "reported in the first ten months of 2025",
+      "attributionBoundary": "multi_incident_aggregate",
+      "citationIds": [
+        "SRC-INCB-PRECURSORS-2025"
+      ],
+      "citationLocators": [
+        {
+          "sourceId": "SRC-INCB-PRECURSORS-2025",
+          "locator": "paragraph 94; PDF page 44; printed page 26"
+        }
+      ]
+    },
+    {
+      "id": "operation-pseudonym-count",
+      "value": 168,
+      "unit": "seizures",
+      "label": "four-country operation total; not a China-to-Oceania count",
+      "attributionBoundary": "origin_destination_unallocated",
+      "citationIds": [
+        "SRC-INCB-PRECURSORS-2025"
+      ],
+      "citationLocators": [
+        {
+          "sourceId": "SRC-INCB-PRECURSORS-2025",
+          "locator": "paragraph 46; PDF page 31; printed page 13"
+        }
+      ]
+    },
+    {
+      "id": "us-t40-4-deaths-latest",
+      "value": 38056,
+      "unit": "provisional deaths",
+      "label": "US T40.4 excluding methadone, 12 months ending December 2025",
+      "attributionBoundary": "harm_context_not_origin_evidence",
+      "citationIds": [
+        "SRC-CDC-VSRR"
+      ],
+      "citationLocators": [
+        {
+          "sourceId": "SRC-CDC-VSRR",
+          "locator": "United States; 12 month-ending December; synthetic_opioids (T40.4 excluding methadone); 2015–2025"
+        }
+      ]
+    }
+  ],
+  "visuals": [
+    {
+      "id": "china-eu-aggregate",
+      "kind": "single_record",
+      "title": "China-to-EU aggregate retained at source precision",
+      "description": "One multi-incident aggregate. The comparison value is displayed as nearly five tonnes, never as one exact shipment.",
+      "unit": "tonnes, approximate",
+      "causalJoinToHarm": false,
+      "items": [
+        {
+          "id": "incb-94",
+          "year": 2025,
+          "category": "multi_incident_aggregate",
+          "label": "9 incidents; China → European Union",
+          "value": 5,
+          "citationIds": [
+            "SRC-INCB-PRECURSORS-2025"
+          ],
+          "citationLocators": [
+            {
+              "sourceId": "SRC-INCB-PRECURSORS-2025",
+              "locator": "paragraph 94; PDF page 44; printed page 26"
+            }
+          ]
+        }
+      ],
+      "note": "The report says “nearly 5 tons” across nine incidents. The bar is an approximate aggregate, not an exact shipment mass."
+    },
+    {
+      "id": "operation-pseudonym-context",
+      "kind": "single_record",
+      "title": "Operation Pseudonym: the allocation gap",
+      "description": "The operation-wide count is retained separately because the report does not allocate it by China/India origin and Australia/New Zealand destination pair.",
+      "unit": "operation-wide seizures",
+      "causalJoinToHarm": false,
+      "items": [
+        {
+          "id": "incb-46",
+          "year": 2024,
+          "category": "unallocated_context",
+          "label": "Four participating countries; majority reported by Australia and New Zealand",
+          "value": 168,
+          "citationIds": [
+            "SRC-INCB-PRECURSORS-2025"
+          ],
+          "citationLocators": [
+            {
+              "sourceId": "SRC-INCB-PRECURSORS-2025",
+              "locator": "paragraph 46; PDF page 31; printed page 13"
+            }
+          ]
+        }
+      ],
+      "note": "Australia’s and New Zealand’s annual seizure totals are excluded from bilateral arithmetic; they are different aggregates."
+    },
+    {
+      "id": "cdc-harm-trend",
+      "kind": "bar_timeline",
+      "title": "US T40.4 mortality: every available December checkpoint",
+      "description": "CDC provisional 12-month-ending December counts for synthetic opioids excluding methadone, 2015–2025.",
+      "unit": "provisional deaths",
+      "causalJoinToIncidents": false,
+      "items": [
+        {
+          "id": "cdc-2015",
+          "year": 2015,
+          "category": "harm_context_only",
+          "label": "12 months ending December 2015",
+          "value": 9610,
+          "citationIds": [
+            "SRC-CDC-VSRR"
+          ],
+          "citationLocators": [
+            {
+              "sourceId": "SRC-CDC-VSRR",
+              "locator": "United States; 12 month-ending December; synthetic_opioids (T40.4 excluding methadone); 2015–2025"
+            }
+          ]
+        },
+        {
+          "id": "cdc-2016",
+          "year": 2016,
+          "category": "harm_context_only",
+          "label": "12 months ending December 2016",
+          "value": 19500,
+          "citationIds": [
+            "SRC-CDC-VSRR"
+          ],
+          "citationLocators": [
+            {
+              "sourceId": "SRC-CDC-VSRR",
+              "locator": "United States; 12 month-ending December; synthetic_opioids (T40.4 excluding methadone); 2015–2025"
+            }
+          ]
+        },
+        {
+          "id": "cdc-2017",
+          "year": 2017,
+          "category": "harm_context_only",
+          "label": "12 months ending December 2017",
+          "value": 28659,
+          "citationIds": [
+            "SRC-CDC-VSRR"
+          ],
+          "citationLocators": [
+            {
+              "sourceId": "SRC-CDC-VSRR",
+              "locator": "United States; 12 month-ending December; synthetic_opioids (T40.4 excluding methadone); 2015–2025"
+            }
+          ]
+        },
+        {
+          "id": "cdc-2018",
+          "year": 2018,
+          "category": "harm_context_only",
+          "label": "12 months ending December 2018",
+          "value": 31525,
+          "citationIds": [
+            "SRC-CDC-VSRR"
+          ],
+          "citationLocators": [
+            {
+              "sourceId": "SRC-CDC-VSRR",
+              "locator": "United States; 12 month-ending December; synthetic_opioids (T40.4 excluding methadone); 2015–2025"
+            }
+          ]
+        },
+        {
+          "id": "cdc-2019",
+          "year": 2019,
+          "category": "harm_context_only",
+          "label": "12 months ending December 2019",
+          "value": 36603,
+          "citationIds": [
+            "SRC-CDC-VSRR"
+          ],
+          "citationLocators": [
+            {
+              "sourceId": "SRC-CDC-VSRR",
+              "locator": "United States; 12 month-ending December; synthetic_opioids (T40.4 excluding methadone); 2015–2025"
+            }
+          ]
+        },
+        {
+          "id": "cdc-2020",
+          "year": 2020,
+          "category": "harm_context_only",
+          "label": "12 months ending December 2020",
+          "value": 56894,
+          "citationIds": [
+            "SRC-CDC-VSRR"
+          ],
+          "citationLocators": [
+            {
+              "sourceId": "SRC-CDC-VSRR",
+              "locator": "United States; 12 month-ending December; synthetic_opioids (T40.4 excluding methadone); 2015–2025"
+            }
+          ]
+        },
+        {
+          "id": "cdc-2021",
+          "year": 2021,
+          "category": "harm_context_only",
+          "label": "12 months ending December 2021",
+          "value": 71143,
+          "citationIds": [
+            "SRC-CDC-VSRR"
+          ],
+          "citationLocators": [
+            {
+              "sourceId": "SRC-CDC-VSRR",
+              "locator": "United States; 12 month-ending December; synthetic_opioids (T40.4 excluding methadone); 2015–2025"
+            }
+          ]
+        },
+        {
+          "id": "cdc-2022",
+          "year": 2022,
+          "category": "harm_context_only",
+          "label": "12 months ending December 2022",
+          "value": 74829,
+          "citationIds": [
+            "SRC-CDC-VSRR"
+          ],
+          "citationLocators": [
+            {
+              "sourceId": "SRC-CDC-VSRR",
+              "locator": "United States; 12 month-ending December; synthetic_opioids (T40.4 excluding methadone); 2015–2025"
+            }
+          ]
+        },
+        {
+          "id": "cdc-2023",
+          "year": 2023,
+          "category": "harm_context_only",
+          "label": "12 months ending December 2023",
+          "value": 74091,
+          "citationIds": [
+            "SRC-CDC-VSRR"
+          ],
+          "citationLocators": [
+            {
+              "sourceId": "SRC-CDC-VSRR",
+              "locator": "United States; 12 month-ending December; synthetic_opioids (T40.4 excluding methadone); 2015–2025"
+            }
+          ]
+        },
+        {
+          "id": "cdc-2024",
+          "year": 2024,
+          "category": "harm_context_only",
+          "label": "12 months ending December 2024",
+          "value": 48662,
+          "citationIds": [
+            "SRC-CDC-VSRR"
+          ],
+          "citationLocators": [
+            {
+              "sourceId": "SRC-CDC-VSRR",
+              "locator": "United States; 12 month-ending December; synthetic_opioids (T40.4 excluding methadone); 2015–2025"
+            }
+          ]
+        },
+        {
+          "id": "cdc-2025",
+          "year": 2025,
+          "category": "harm_context_only",
+          "label": "12 months ending December 2025",
+          "value": 38056,
+          "citationIds": [
+            "SRC-CDC-VSRR"
+          ],
+          "citationLocators": [
+            {
+              "sourceId": "SRC-CDC-VSRR",
+              "locator": "United States; 12 month-ending December; synthetic_opioids (T40.4 excluding methadone); 2015–2025"
+            }
+          ]
+        }
+      ],
+      "note": "This revisable mortality series has no exporter, shipment, precursor or origin field and is not joined to either INCB record."
+    }
+  ],
+  "sections": [
+    {
+      "id": "method-and-boundary",
+      "evidenceLane": "methodology",
+      "heading": "The join the evidence does not permit",
+      "sentences": [
+        {
+          "id": "S001",
+          "evidenceLane": "methodology",
+          "claimType": "scope",
+          "templateId": "narcoscope.claim.scope.v1",
+          "causalPredicate": "none",
+          "corroborationKey": null,
+          "support": {
+            "profile": "multi_source_methodological_context",
+            "findingStatus": "multi_source_methodological_context",
+            "minimumIndependentActiveGroups": 2,
+            "corroborationClaimed": false
+          },
+          "text": "This analysis keeps an INCB precursor report and a CDC mortality series in separate evidence lanes because they describe different populations, units and events.",
+          "citationIds": [
+            "SRC-INCB-PRECURSORS-2025",
+            "SRC-CDC-VSRR"
+          ],
+          "citationLocators": [
+            {
+              "sourceId": "SRC-INCB-PRECURSORS-2025",
+              "locator": "paragraph 94; PDF page 44; printed page 26"
+            },
+            {
+              "sourceId": "SRC-CDC-VSRR",
+              "locator": "United States; 12 month-ending December; synthetic_opioids (T40.4 excluding methadone); 2015–2025"
+            }
+          ]
+        },
+        {
+          "id": "S002",
+          "evidenceLane": "methodology",
+          "claimType": "missing_join",
+          "templateId": "narcoscope.claim.missing_join.v1",
+          "causalPredicate": "explicit_non_attribution",
+          "corroborationKey": null,
+          "support": {
+            "profile": "multi_source_methodological_context",
+            "findingStatus": "multi_source_methodological_context",
+            "minimumIndependentActiveGroups": 2,
+            "corroborationClaimed": false
+          },
+          "text": "The checked inputs share no incident, shipment, exporter or case identifier that could connect the precursor aggregate to a lawful trade record or a death.",
+          "citationIds": [
+            "SRC-INCB-PRECURSORS-2025",
+            "SRC-CDC-VSRR",
+            "SRC-GACC-STATS",
+            "SRC-UN-COMTRADE"
+          ],
+          "citationLocators": [
+            {
+              "sourceId": "SRC-INCB-PRECURSORS-2025",
+              "locator": "paragraph 94; PDF page 44; printed page 26"
+            },
+            {
+              "sourceId": "SRC-CDC-VSRR",
+              "locator": "United States; 12 month-ending December; synthetic_opioids (T40.4 excluding methadone); 2015–2025"
+            },
+            {
+              "sourceId": "SRC-GACC-STATS",
+              "locator": "registered capability and access boundary; as of 2026-08-12"
+            },
+            {
+              "sourceId": "SRC-UN-COMTRADE",
+              "locator": "registered capability and access boundary; as of 2026-08-12"
+            }
+          ]
+        },
+        {
+          "id": "S003",
+          "evidenceLane": "methodology",
+          "claimType": "definition",
+          "templateId": "narcoscope.claim.definition.v1",
+          "causalPredicate": "none",
+          "corroborationKey": null,
+          "support": {
+            "profile": "attributed_observation",
+            "findingStatus": "attributed_official_record",
+            "minimumIndependentActiveGroups": 1,
+            "corroborationClaimed": false
+          },
+          "text": "Here, “China-linked” means only that the INCB report says substances reportedly originated in China; it is not a finding about a country, industry, company or person.",
+          "citationIds": [
+            "SRC-INCB-PRECURSORS-2025"
+          ],
+          "citationLocators": [
+            {
+              "sourceId": "SRC-INCB-PRECURSORS-2025",
+              "locator": "paragraph 94; PDF page 44; printed page 26"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "lawful-industrial-trade",
+      "evidenceLane": "lawful_trade",
+      "heading": "Lawful industrial trade: the missing denominator",
+      "sentences": [
+        {
+          "id": "S004",
+          "evidenceLane": "lawful_trade",
+          "claimType": "source_capability",
+          "templateId": "narcoscope.claim.source_capability.v1",
+          "causalPredicate": "none",
+          "corroborationKey": null,
+          "support": {
+            "profile": "capability_boundary",
+            "findingStatus": "capability_or_access_boundary",
+            "minimumIndependentActiveGroups": 0,
+            "corroborationClaimed": false
+          },
+          "text": "GACC publishes official merchandise-trade statistics, while UN Comtrade exposes aggregate trade by reporter, partner, product and period.",
+          "citationIds": [
+            "SRC-GACC-STATS",
+            "SRC-UN-COMTRADE"
+          ],
+          "citationLocators": [
+            {
+              "sourceId": "SRC-GACC-STATS",
+              "locator": "registered capability and access boundary; as of 2026-08-12"
+            },
+            {
+              "sourceId": "SRC-UN-COMTRADE",
+              "locator": "registered capability and access boundary; as of 2026-08-12"
+            }
+          ]
+        },
+        {
+          "id": "S005",
+          "evidenceLane": "lawful_trade",
+          "claimType": "coverage_gap",
+          "templateId": "narcoscope.claim.coverage_gap.v1",
+          "causalPredicate": "none",
+          "corroborationKey": null,
+          "support": {
+            "profile": "capability_boundary",
+            "findingStatus": "capability_or_access_boundary",
+            "minimumIndependentActiveGroups": 0,
+            "corroborationClaimed": false
+          },
+          "text": "NarcoScope has not admitted a chemical-product series from either capability into this dossier, so lawful trade is not quantified here.",
+          "citationIds": [
+            "SRC-GACC-STATS",
+            "SRC-UN-COMTRADE"
+          ],
+          "citationLocators": [
+            {
+              "sourceId": "SRC-GACC-STATS",
+              "locator": "registered capability and access boundary; as of 2026-08-12"
+            },
+            {
+              "sourceId": "SRC-UN-COMTRADE",
+              "locator": "registered capability and access boundary; as of 2026-08-12"
+            }
+          ]
+        },
+        {
+          "id": "S006",
+          "evidenceLane": "lawful_trade",
+          "claimType": "interpretive_limit",
+          "templateId": "narcoscope.claim.interpretive_limit.v1",
+          "causalPredicate": "none",
+          "corroborationKey": null,
+          "support": {
+            "profile": "capability_boundary",
+            "findingStatus": "capability_or_access_boundary",
+            "minimumIndependentActiveGroups": 0,
+            "corroborationClaimed": false
+          },
+          "text": "Those registered aggregate capabilities do not provide a public shipment-level end-use ledger, so they cannot classify an export as licit or diverted in this build.",
+          "citationIds": [
+            "SRC-GACC-STATS",
+            "SRC-UN-COMTRADE"
+          ],
+          "citationLocators": [
+            {
+              "sourceId": "SRC-GACC-STATS",
+              "locator": "registered capability and access boundary; as of 2026-08-12"
+            },
+            {
+              "sourceId": "SRC-UN-COMTRADE",
+              "locator": "registered capability and access boundary; as of 2026-08-12"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "official-enforcement-incidents",
+      "evidenceLane": "official_incidents",
+      "heading": "What the INCB report actually says",
+      "sentences": [
+        {
+          "id": "S007",
+          "evidenceLane": "official_incidents",
+          "claimType": "reported_measurement",
+          "templateId": "narcoscope.claim.reported_measurement.v1",
+          "causalPredicate": "none",
+          "corroborationKey": null,
+          "support": {
+            "profile": "attributed_observation",
+            "findingStatus": "attributed_official_record",
+            "minimumIndependentActiveGroups": 1,
+            "corroborationClaimed": false
+          },
+          "text": "INCB reported that, during the first ten months of 2025, 9 incidents involving nearly 5 tonnes of two related methamphetamine pre-precursors were communicated through PICS.",
+          "citationIds": [
+            "SRC-INCB-PRECURSORS-2025"
+          ],
+          "citationLocators": [
+            {
+              "sourceId": "SRC-INCB-PRECURSORS-2025",
+              "locator": "paragraph 94; PDF page 44; printed page 26"
+            }
+          ]
+        },
+        {
+          "id": "S008",
+          "evidenceLane": "official_incidents",
+          "claimType": "attribution_boundary",
+          "templateId": "narcoscope.claim.attribution_boundary.v1",
+          "causalPredicate": "none",
+          "corroborationKey": null,
+          "support": {
+            "profile": "attributed_observation",
+            "findingStatus": "attributed_official_record",
+            "minimumIndependentActiveGroups": 1,
+            "corroborationClaimed": false
+          },
+          "text": "The report said those substances were mislabelled, reportedly originated in China and were destined for countries in the European Union.",
+          "citationIds": [
+            "SRC-INCB-PRECURSORS-2025"
+          ],
+          "citationLocators": [
+            {
+              "sourceId": "SRC-INCB-PRECURSORS-2025",
+              "locator": "paragraph 94; PDF page 44; printed page 26"
+            }
+          ]
+        },
+        {
+          "id": "S009",
+          "evidenceLane": "official_incidents",
+          "claimType": "subtotal_boundary",
+          "templateId": "narcoscope.claim.subtotal_boundary.v1",
+          "causalPredicate": "none",
+          "corroborationKey": null,
+          "support": {
+            "profile": "attributed_observation",
+            "findingStatus": "attributed_official_record",
+            "minimumIndependentActiveGroups": 1,
+            "corroborationClaimed": false
+          },
+          "text": "That figure is an approximate multi-incident aggregate, not an exact 5,000 kg shipment, and NarcoScope does not add it to other qualified quantities.",
+          "citationIds": [
+            "SRC-INCB-PRECURSORS-2025"
+          ],
+          "citationLocators": [
+            {
+              "sourceId": "SRC-INCB-PRECURSORS-2025",
+              "locator": "paragraph 94; PDF page 44; printed page 26"
+            }
+          ]
+        },
+        {
+          "id": "S010",
+          "evidenceLane": "official_incidents",
+          "claimType": "reported_measurement",
+          "templateId": "narcoscope.claim.reported_measurement.v1",
+          "causalPredicate": "none",
+          "corroborationKey": null,
+          "support": {
+            "profile": "attributed_observation",
+            "findingStatus": "attributed_official_record",
+            "minimumIndependentActiveGroups": 1,
+            "corroborationClaimed": false
+          },
+          "text": "For Operation Pseudonym, INCB said four participating countries reported 168 seizures, most in Australia and New Zealand, and reported China and India as origins in those two countries.",
+          "citationIds": [
+            "SRC-INCB-PRECURSORS-2025"
+          ],
+          "citationLocators": [
+            {
+              "sourceId": "SRC-INCB-PRECURSORS-2025",
+              "locator": "paragraph 46; PDF page 31; printed page 13"
+            }
+          ]
+        },
+        {
+          "id": "S011",
+          "evidenceLane": "official_incidents",
+          "claimType": "coverage_limit",
+          "templateId": "narcoscope.claim.coverage_limit.v1",
+          "causalPredicate": "none",
+          "corroborationKey": null,
+          "support": {
+            "profile": "attributed_observation",
+            "findingStatus": "attributed_official_record",
+            "minimumIndependentActiveGroups": 1,
+            "corroborationClaimed": false
+          },
+          "text": "The public report does not allocate those seizures or their mass by origin-and-destination pair; Australia’s and New Zealand’s annual totals are separate aggregates and are excluded here.",
+          "citationIds": [
+            "SRC-INCB-PRECURSORS-2025",
+            "SRC-INCB-PRECURSORS-2025"
+          ],
+          "citationLocators": [
+            {
+              "sourceId": "SRC-INCB-PRECURSORS-2025",
+              "locator": "paragraph 46; PDF page 31; printed page 13"
+            },
+            {
+              "sourceId": "SRC-INCB-PRECURSORS-2025",
+              "locator": "paragraphs 67 and 71–72; printed pages 19–20"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "harm-data",
+      "evidenceLane": "harm",
+      "heading": "The US harm trend is real—and separate",
+      "sentences": [
+        {
+          "id": "S012",
+          "evidenceLane": "harm",
+          "claimType": "trend",
+          "templateId": "narcoscope.claim.trend.v1",
+          "causalPredicate": "none",
+          "corroborationKey": null,
+          "support": {
+            "profile": "attributed_observation",
+            "findingStatus": "attributed_official_record",
+            "minimumIndependentActiveGroups": 1,
+            "corroborationClaimed": false
+          },
+          "text": "Across every retained December checkpoint, CDC’s provisional US count involving synthetic opioids excluding methadone rose from 9,610 in 2015 to a peak of 74,829 in 2022, then fell 49.1% to 38,056 in 2025.",
+          "citationIds": [
+            "SRC-CDC-VSRR"
+          ],
+          "citationLocators": [
+            {
+              "sourceId": "SRC-CDC-VSRR",
+              "locator": "United States; 12 month-ending December; synthetic_opioids (T40.4 excluding methadone); 2015–2025"
+            }
+          ]
+        },
+        {
+          "id": "S013",
+          "evidenceLane": "harm",
+          "claimType": "definition",
+          "templateId": "narcoscope.claim.definition.v1",
+          "causalPredicate": "none",
+          "corroborationKey": null,
+          "support": {
+            "profile": "attributed_observation",
+            "findingStatus": "attributed_official_record",
+            "minimumIndependentActiveGroups": 1,
+            "corroborationClaimed": false
+          },
+          "text": "The category is “synthetic opioids excluding methadone (T40.4),” not all synthetic opioids and not a measure of precursor supply.",
+          "citationIds": [
+            "SRC-CDC-VSRR"
+          ],
+          "citationLocators": [
+            {
+              "sourceId": "SRC-CDC-VSRR",
+              "locator": "United States; 12 month-ending December; synthetic_opioids (T40.4 excluding methadone); 2015–2025"
+            }
+          ]
+        },
+        {
+          "id": "S014",
+          "evidenceLane": "harm",
+          "claimType": "separation",
+          "templateId": "narcoscope.claim.separation.v1",
+          "causalPredicate": "explicit_non_attribution",
+          "corroborationKey": null,
+          "support": {
+            "profile": "multi_source_methodological_context",
+            "findingStatus": "multi_source_methodological_context",
+            "minimumIndependentActiveGroups": 2,
+            "corroborationClaimed": false
+          },
+          "text": "The CDC rows contain no exporter, shipment, precursor or country-of-origin field, so the series is harm context rather than corroboration of the INCB incidents.",
+          "citationIds": [
+            "SRC-CDC-VSRR",
+            "SRC-INCB-PRECURSORS-2025"
+          ],
+          "citationLocators": [
+            {
+              "sourceId": "SRC-CDC-VSRR",
+              "locator": "United States; 12 month-ending December; synthetic_opioids (T40.4 excluding methadone); 2015–2025"
+            },
+            {
+              "sourceId": "SRC-INCB-PRECURSORS-2025",
+              "locator": "paragraph 94; PDF page 44; printed page 26"
+            }
+          ]
+        },
+        {
+          "id": "S015",
+          "evidenceLane": "harm",
+          "claimType": "coverage_limit",
+          "templateId": "narcoscope.claim.coverage_limit.v1",
+          "causalPredicate": "none",
+          "corroborationKey": null,
+          "support": {
+            "profile": "attributed_observation",
+            "findingStatus": "attributed_official_record",
+            "minimumIndependentActiveGroups": 1,
+            "corroborationClaimed": false
+          },
+          "text": "The counts are provisional and can be revised; the chart shows every available national December checkpoint instead of selecting only three years.",
+          "citationIds": [
+            "SRC-CDC-VSRR"
+          ],
+          "citationLocators": [
+            {
+              "sourceId": "SRC-CDC-VSRR",
+              "locator": "United States; 12 month-ending December; synthetic_opioids (T40.4 excluding methadone); 2015–2025"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bounded-conclusion",
+      "evidenceLane": "what_cannot_show",
+      "heading": "The evidence gap is the finding",
+      "sentences": [
+        {
+          "id": "S016",
+          "evidenceLane": "what_cannot_show",
+          "claimType": "reported_measurement",
+          "templateId": "narcoscope.claim.reported_measurement.v1",
+          "causalPredicate": "none",
+          "corroborationKey": null,
+          "support": {
+            "profile": "attributed_observation",
+            "findingStatus": "attributed_official_record",
+            "minimumIndependentActiveGroups": 1,
+            "corroborationClaimed": false
+          },
+          "text": "The official record supports one attributed finding: INCB reported a China-origin aggregate of nearly five tonnes across nine incidents bound for European Union countries.",
+          "citationIds": [
+            "SRC-INCB-PRECURSORS-2025"
+          ],
+          "citationLocators": [
+            {
+              "sourceId": "SRC-INCB-PRECURSORS-2025",
+              "locator": "paragraph 94; PDF page 44; printed page 26"
+            }
+          ]
+        },
+        {
+          "id": "S017",
+          "evidenceLane": "what_cannot_show",
+          "claimType": "causal_boundary",
+          "templateId": "narcoscope.claim.causal_boundary.v1",
+          "causalPredicate": "explicit_non_attribution",
+          "corroborationKey": null,
+          "support": {
+            "profile": "multi_source_methodological_context",
+            "findingStatus": "multi_source_methodological_context",
+            "minimumIndependentActiveGroups": 2,
+            "corroborationClaimed": false
+          },
+          "text": "It supports zero independently corroborated event claims because no second admitted source confirms the same incident set at compatible grain.",
+          "citationIds": [
+            "SRC-INCB-PRECURSORS-2025",
+            "SRC-CDC-VSRR"
+          ],
+          "citationLocators": [
+            {
+              "sourceId": "SRC-INCB-PRECURSORS-2025",
+              "locator": "paragraph 94; PDF page 44; printed page 26"
+            },
+            {
+              "sourceId": "SRC-CDC-VSRR",
+              "locator": "United States; 12 month-ending December; synthetic_opioids (T40.4 excluding methadone); 2015–2025"
+            }
+          ]
+        },
+        {
+          "id": "S018",
+          "evidenceLane": "what_cannot_show",
+          "claimType": "causal_boundary",
+          "templateId": "narcoscope.claim.causal_boundary.v1",
+          "causalPredicate": "explicit_non_attribution",
+          "corroborationKey": null,
+          "support": {
+            "profile": "multi_source_methodological_context",
+            "findingStatus": "multi_source_methodological_context",
+            "minimumIndependentActiveGroups": 2,
+            "corroborationClaimed": false
+          },
+          "text": "The available sources do not establish a record-level causal chain from lawful production or export to an incident, an organization or a death.",
+          "citationIds": [
+            "SRC-GACC-STATS",
+            "SRC-UN-COMTRADE",
+            "SRC-INCB-PRECURSORS-2025",
+            "SRC-CDC-VSRR"
+          ],
+          "citationLocators": [
+            {
+              "sourceId": "SRC-GACC-STATS",
+              "locator": "registered capability and access boundary; as of 2026-08-12"
+            },
+            {
+              "sourceId": "SRC-UN-COMTRADE",
+              "locator": "registered capability and access boundary; as of 2026-08-12"
+            },
+            {
+              "sourceId": "SRC-INCB-PRECURSORS-2025",
+              "locator": "paragraph 94; PDF page 44; printed page 26"
+            },
+            {
+              "sourceId": "SRC-CDC-VSRR",
+              "locator": "United States; 12 month-ending December; synthetic_opioids (T40.4 excluding methadone); 2015–2025"
+            }
+          ]
+        },
+        {
+          "id": "S019",
+          "evidenceLane": "what_cannot_show",
+          "claimType": "conclusion",
+          "templateId": "narcoscope.claim.conclusion.v1",
+          "causalPredicate": "explicit_non_attribution",
+          "corroborationKey": null,
+          "support": {
+            "profile": "multi_source_methodological_context",
+            "findingStatus": "multi_source_methodological_context",
+            "minimumIndependentActiveGroups": 2,
+            "corroborationClaimed": false
+          },
+          "text": "The defensible automated conclusion is therefore narrower than a national accusation: the report identifies a pattern worth investigating and the public data needed to test its consequences are missing.",
+          "citationIds": [
+            "SRC-INCB-PRECURSORS-2025",
+            "SRC-CDC-VSRR"
+          ],
+          "citationLocators": [
+            {
+              "sourceId": "SRC-INCB-PRECURSORS-2025",
+              "locator": "paragraph 94; PDF page 44; printed page 26"
+            },
+            {
+              "sourceId": "SRC-CDC-VSRR",
+              "locator": "United States; 12 month-ending December; synthetic_opioids (T40.4 excluding methadone); 2015–2025"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "countercase": {
+    "id": "countercase",
+    "evidenceLane": "countercase",
+    "heading": "Countercase and evidence still needed",
+    "sentences": [
+      {
+        "id": "C001",
+        "evidenceLane": "countercase",
+        "claimType": "alternative_explanation",
+        "templateId": "narcoscope.claim.alternative_explanation.v1",
+        "causalPredicate": "none",
+        "corroborationKey": null,
+        "support": {
+          "profile": "multi_source_methodological_context",
+          "findingStatus": "multi_source_methodological_context",
+          "minimumIndependentActiveGroups": 2,
+          "corroborationClaimed": false
+        },
+        "text": "The INCB aggregate and the separately declining CDC series are compatible with many explanations, including enforcement, reporting, market and treatment changes; this build cannot choose among them.",
+        "citationIds": [
+          "SRC-INCB-PRECURSORS-2025",
+          "SRC-CDC-VSRR"
+        ],
+        "citationLocators": [
+          {
+            "sourceId": "SRC-INCB-PRECURSORS-2025",
+            "locator": "paragraph 94; PDF page 44; printed page 26"
+          },
+          {
+            "sourceId": "SRC-CDC-VSRR",
+            "locator": "United States; 12 month-ending December; synthetic_opioids (T40.4 excluding methadone); 2015–2025"
+          }
+        ]
+      },
+      {
+        "id": "C002",
+        "evidenceLane": "countercase",
+        "claimType": "missing_evidence",
+        "templateId": "narcoscope.claim.missing_evidence.v1",
+        "causalPredicate": "none",
+        "corroborationKey": null,
+        "support": {
+          "profile": "capability_boundary",
+          "findingStatus": "capability_or_access_boundary",
+          "minimumIndependentActiveGroups": 0,
+          "corroborationClaimed": false
+        },
+        "text": "A stronger test would require a lawful-trade denominator, shipment-level regulatory notifications, incident identifiers and adjudicated outcomes with defensible shared keys.",
+        "citationIds": [
+          "SRC-GACC-STATS",
+          "SRC-UN-COMTRADE",
+          "SRC-INCB-PICS-CAPABILITY",
+          "SRC-INCB-PEN-CAPABILITY",
+          "SRC-USCOURTS-PACER"
+        ],
+        "citationLocators": [
+          {
+            "sourceId": "SRC-GACC-STATS",
+            "locator": "registered capability and access boundary; as of 2026-08-12"
+          },
+          {
+            "sourceId": "SRC-UN-COMTRADE",
+            "locator": "registered capability and access boundary; as of 2026-08-12"
+          },
+          {
+            "sourceId": "SRC-INCB-PICS-CAPABILITY",
+            "locator": "registered restricted-system capability; as of 2026-08-12"
+          },
+          {
+            "sourceId": "SRC-INCB-PEN-CAPABILITY",
+            "locator": "registered restricted-system capability; as of 2026-08-12"
+          },
+          {
+            "sourceId": "SRC-USCOURTS-PACER",
+            "locator": "registered account-and-fee access boundary; as of 2026-08-12"
+          }
+        ]
+      },
+      {
+        "id": "C003",
+        "evidenceLane": "countercase",
+        "claimType": "access_limit",
+        "templateId": "narcoscope.claim.access_limit.v1",
+        "causalPredicate": "none",
+        "corroborationKey": null,
+        "support": {
+          "profile": "capability_boundary",
+          "findingStatus": "capability_or_access_boundary",
+          "minimumIndependentActiveGroups": 0,
+          "corroborationClaimed": false
+        },
+        "text": "PICS and PEN Online are restricted to registered authorities, while PACER requires account-based access and can impose fees; none is represented as an available public record-level join.",
+        "citationIds": [
+          "SRC-INCB-PICS-CAPABILITY",
+          "SRC-INCB-PEN-CAPABILITY",
+          "SRC-USCOURTS-PACER"
+        ],
+        "citationLocators": [
+          {
+            "sourceId": "SRC-INCB-PICS-CAPABILITY",
+            "locator": "registered restricted-system capability; as of 2026-08-12"
+          },
+          {
+            "sourceId": "SRC-INCB-PEN-CAPABILITY",
+            "locator": "registered restricted-system capability; as of 2026-08-12"
+          },
+          {
+            "sourceId": "SRC-USCOURTS-PACER",
+            "locator": "registered account-and-fee access boundary; as of 2026-08-12"
+          }
+        ]
+      }
+    ]
+  },
+  "limitations": [
+    {
+      "id": "L001",
+      "evidenceLane": "limitations",
+      "claimType": "selection",
+      "templateId": "narcoscope.claim.selection.v1",
+      "causalPredicate": "none",
+      "corroborationKey": null,
+      "support": {
+        "profile": "attributed_observation",
+        "findingStatus": "attributed_official_record",
+        "minimumIndependentActiveGroups": 1,
+        "corroborationClaimed": false
+      },
+      "text": "The INCB extract covers selected reported incidents and cannot estimate all precursor trade, diversion or successful movement.",
+      "citationIds": [
+        "SRC-INCB-PRECURSORS-2025"
+      ],
+      "citationLocators": [
+        {
+          "sourceId": "SRC-INCB-PRECURSORS-2025",
+          "locator": "paragraph 94; PDF page 44; printed page 26"
+        }
+      ]
+    },
+    {
+      "id": "L002",
+      "evidenceLane": "limitations",
+      "claimType": "origin",
+      "templateId": "narcoscope.claim.origin.v1",
+      "causalPredicate": "none",
+      "corroborationKey": null,
+      "support": {
+        "profile": "attributed_observation",
+        "findingStatus": "attributed_official_record",
+        "minimumIndependentActiveGroups": 1,
+        "corroborationClaimed": false
+      },
+      "text": "Nearly five tonnes preserves the report’s approximate precision and must not be represented as one exact shipment.",
+      "citationIds": [
+        "SRC-INCB-PRECURSORS-2025"
+      ],
+      "citationLocators": [
+        {
+          "sourceId": "SRC-INCB-PRECURSORS-2025",
+          "locator": "paragraph 94; PDF page 44; printed page 26"
+        }
+      ]
+    },
+    {
+      "id": "L003",
+      "evidenceLane": "limitations",
+      "claimType": "trade_denominator",
+      "templateId": "narcoscope.claim.trade_denominator.v1",
+      "causalPredicate": "none",
+      "corroborationKey": null,
+      "support": {
+        "profile": "capability_boundary",
+        "findingStatus": "capability_or_access_boundary",
+        "minimumIndependentActiveGroups": 0,
+        "corroborationClaimed": false
+      },
+      "text": "No admitted GACC or UN Comtrade chemical-product series supplies a lawful industrial-trade denominator.",
+      "citationIds": [
+        "SRC-GACC-STATS",
+        "SRC-UN-COMTRADE"
+      ],
+      "citationLocators": [
+        {
+          "sourceId": "SRC-GACC-STATS",
+          "locator": "registered capability and access boundary; as of 2026-08-12"
+        },
+        {
+          "sourceId": "SRC-UN-COMTRADE",
+          "locator": "registered capability and access boundary; as of 2026-08-12"
+        }
+      ]
+    },
+    {
+      "id": "L004",
+      "evidenceLane": "limitations",
+      "claimType": "attribution_boundary",
+      "templateId": "narcoscope.claim.attribution_boundary.v1",
+      "causalPredicate": "none",
+      "corroborationKey": null,
+      "support": {
+        "profile": "attributed_observation",
+        "findingStatus": "attributed_official_record",
+        "minimumIndependentActiveGroups": 1,
+        "corroborationClaimed": false
+      },
+      "text": "Operation Pseudonym names China and India as reported origins but does not publish bilateral count or mass allocations in paragraph 46.",
+      "citationIds": [
+        "SRC-INCB-PRECURSORS-2025"
+      ],
+      "citationLocators": [
+        {
+          "sourceId": "SRC-INCB-PRECURSORS-2025",
+          "locator": "paragraph 46; PDF page 31; printed page 13"
+        }
+      ]
+    },
+    {
+      "id": "L005",
+      "evidenceLane": "limitations",
+      "claimType": "harm_join",
+      "templateId": "narcoscope.claim.harm_join.v1",
+      "causalPredicate": "explicit_non_attribution",
+      "corroborationKey": null,
+      "support": {
+        "profile": "multi_source_methodological_context",
+        "findingStatus": "multi_source_methodological_context",
+        "minimumIndependentActiveGroups": 2,
+        "corroborationClaimed": false
+      },
+      "text": "CDC T40.4 mortality is provisional and has no record-level join to the INCB incidents.",
+      "citationIds": [
+        "SRC-CDC-VSRR",
+        "SRC-INCB-PRECURSORS-2025"
+      ],
+      "citationLocators": [
+        {
+          "sourceId": "SRC-CDC-VSRR",
+          "locator": "United States; 12 month-ending December; synthetic_opioids (T40.4 excluding methadone); 2015–2025"
+        },
+        {
+          "sourceId": "SRC-INCB-PRECURSORS-2025",
+          "locator": "paragraph 94; PDF page 44; printed page 26"
+        }
+      ]
+    },
+    {
+      "id": "L006",
+      "evidenceLane": "limitations",
+      "claimType": "restricted_sources",
+      "templateId": "narcoscope.claim.restricted_sources.v1",
+      "causalPredicate": "none",
+      "corroborationKey": null,
+      "support": {
+        "profile": "capability_boundary",
+        "findingStatus": "capability_or_access_boundary",
+        "minimumIndependentActiveGroups": 0,
+        "corroborationClaimed": false
+      },
+      "text": "Restricted PICS and PEN Online data and automated federal docket review are outside this public offline build.",
+      "citationIds": [
+        "SRC-INCB-PICS-CAPABILITY",
+        "SRC-INCB-PEN-CAPABILITY",
+        "SRC-USCOURTS-PACER"
+      ],
+      "citationLocators": [
+        {
+          "sourceId": "SRC-INCB-PICS-CAPABILITY",
+          "locator": "registered restricted-system capability; as of 2026-08-12"
+        },
+        {
+          "sourceId": "SRC-INCB-PEN-CAPABILITY",
+          "locator": "registered restricted-system capability; as of 2026-08-12"
+        },
+        {
+          "sourceId": "SRC-USCOURTS-PACER",
+          "locator": "registered account-and-fee access boundary; as of 2026-08-12"
+        }
+      ]
+    }
+  ],
+  "safety": {
+    "retainedGrain": "country, broad precursor class, reporting period, aggregate quantity relation, incident count and printed source locator",
+    "excludedDetails": [
+      "subject identities",
+      "addresses and identifiers",
+      "live or subnational shipment routing",
+      "synthesis routes",
+      "conversion ratios",
+      "yields"
+    ],
+    "chemistryInstructionsIncluded": false,
+    "navigableOperationalDetailsIncluded": false
+  },
+  "sources": [
+    {
+      "id": "SRC-GACC-STATS",
+      "registryId": "gacc-customs-statistics",
+      "publisher": "General Administration of Customs of the People's Republic of China",
+      "title": "China Customs Statistics",
+      "url": "https://english.customs.gov.cn/Statistics/Statistics",
+      "evidenceClass": "lawful_trade_context",
+      "upstreamGroup": "cn-gacc",
+      "newsroomRole": "capability_only",
+      "availabilityStatus": "public_aggregate",
+      "newsroomUseStatus": "capability_only",
+      "accessNote": "Public web tables and releases; the English interactive-table surface is not a stable bulk API.",
+      "licensingNote": "Official statistics are publicly viewable, but NarcoScope has not identified terms authorizing bulk redistribution; link and cite unless permission is confirmed.",
+      "documentSha256": null,
+      "retrievedAt": null
+    },
+    {
+      "id": "SRC-UN-COMTRADE",
+      "registryId": "un-comtrade",
+      "publisher": "United Nations Statistics Division",
+      "title": "UN Comtrade Database and API",
+      "url": "https://comtrade.un.org/",
+      "evidenceClass": "lawful_trade_context",
+      "upstreamGroup": "un-unsd-comtrade",
+      "newsroomRole": "capability_only",
+      "availabilityStatus": "public_aggregate",
+      "newsroomUseStatus": "capability_only",
+      "accessNote": "A keyless preview API is public and limited; free registered API access has quotas; bulk access and some redistribution require a subscription or licence.",
+      "licensingNote": "Use is governed by the UN Comtrade usage agreement; redistribution of large original extracts can require a separate licence, while transformed data is treated differently.",
+      "documentSha256": null,
+      "retrievedAt": null
+    },
+    {
+      "id": "SRC-INCB-PRECURSORS-2025",
+      "registryId": "incb-precursors-public-report",
+      "publisher": "International Narcotics Control Board",
+      "title": "Precursors Report 2025",
+      "url": "https://www.incb.org/incb/uploads/documents/Publications/AnnualReports/AR2025/Precursors_Report/E_INCB_2025_4_eng.pdf",
+      "evidenceClass": "official_enforcement_incidents",
+      "upstreamGroup": "un-incb",
+      "newsroomRole": "active_evidence",
+      "availabilityStatus": "public_report",
+      "newsroomUseStatus": "active_input",
+      "accessNote": "Public annual PDF; selected aggregates retain printed page and paragraph locators, quantity relations and extraction derivations.",
+      "licensingNote": "Public UN publication; NarcoScope republishes a small attributed factual extract, not the report text.",
+      "documentSha256": "8397f2799116fe33ce6851ec2c7e03a042886fb9c048f72cdb259724de5ddd6e",
+      "retrievedAt": "2026-08-12T13:50:25Z"
+    },
+    {
+      "id": "SRC-INCB-PICS-CAPABILITY",
+      "registryId": "incb-pics",
+      "publisher": "International Narcotics Control Board",
+      "title": "Precursors Incident Communication System (PICS)",
+      "url": "https://www.incb.org/incb/uploads/documents/PRECURSORS/Tools_and_Resources/Article_12_Resources_and_Tools_Oct2025.pdf",
+      "evidenceClass": "official_enforcement_incidents",
+      "upstreamGroup": "un-incb",
+      "newsroomRole": "unavailable",
+      "availabilityStatus": "restricted_non_public",
+      "newsroomUseStatus": "unavailable",
+      "accessNote": "Secure system for registered government regulatory, customs, drug-control and law-enforcement users.",
+      "licensingNote": "Operational records are not a public dataset and are not licensed for NarcoScope redistribution.",
+      "documentSha256": null,
+      "retrievedAt": null
+    },
+    {
+      "id": "SRC-INCB-PEN-CAPABILITY",
+      "registryId": "incb-pen-online",
+      "publisher": "International Narcotics Control Board",
+      "title": "Pre-Export Notification Online (PEN Online)",
+      "url": "https://www.incb.org/incb/uploads/documents/PRECURSORS/Tools_and_Resources/Article_12_Resources_and_Tools_Oct2025.pdf",
+      "evidenceClass": "lawful_regulatory_trade",
+      "upstreamGroup": "un-incb",
+      "newsroomRole": "unavailable",
+      "availabilityStatus": "restricted_non_public",
+      "newsroomUseStatus": "unavailable",
+      "accessNote": "Secure pre-export-notification system for registered competent national authorities.",
+      "licensingNote": "Notification records are not a public dataset and are not licensed for NarcoScope redistribution.",
+      "documentSha256": null,
+      "retrievedAt": null
+    },
+    {
+      "id": "SRC-CDC-VSRR",
+      "registryId": "cdc-vsrr-overdose",
+      "publisher": "US Centers for Disease Control and Prevention, National Center for Health Statistics",
+      "title": "VSRR Provisional Drug Overdose Death Counts",
+      "url": "https://data.cdc.gov/resource/xkb8-kh2a.json",
+      "evidenceClass": "harm_data",
+      "upstreamGroup": "us-cdc-nchs",
+      "newsroomRole": "active_evidence",
+      "availabilityStatus": "public_api",
+      "newsroomUseStatus": "active_input",
+      "accessNote": "Keyless Socrata API with a checked-in offline snapshot.",
+      "licensingNote": "US Government work; source attribution and provisional-data caveats are retained.",
+      "documentSha256": null,
+      "retrievedAt": null
+    },
+    {
+      "id": "SRC-USCOURTS-PACER",
+      "registryId": "uscourts-pacer",
+      "publisher": "Administrative Office of the United States Courts",
+      "title": "Public Access to Court Electronic Records (PACER)",
+      "url": "https://pacer.uscourts.gov/policy-procedures",
+      "evidenceClass": "adjudicated_and_procedural_records",
+      "upstreamGroup": "us-federal-judiciary",
+      "newsroomRole": "unavailable",
+      "availabilityStatus": "account_and_fee_restricted",
+      "newsroomUseStatus": "unavailable",
+      "accessNote": "Public registration is available, but searches and documents can incur fees; repeated automated access is restricted by PACER policy and sealed records are unavailable.",
+      "licensingNote": "Court records are public subject to sealing, privacy rules, access fees and PACER policy; this registry entry is not a bulk-redistribution licence.",
+      "documentSha256": null,
+      "retrievedAt": null
+    }
+  ],
+  "gate": {
+    "gateId": "automated-evidence-analysis-gate.v1",
+    "status": "passed",
+    "machineBriefGate": "machine-brief-gate.v1"
+  },
+  "verificationReceipt": {
+    "receiptVersion": "narcoscope.newsroom.verification-receipt.v1",
+    "evaluationProfile": {
+      "id": "bounded-official-record-analysis.v1",
+      "activeEvidenceDefinition": "A checked-in official input used to derive a claim in this build.",
+      "independenceDefinition": "Distinct upstream issuing or statistical authority group.",
+      "methodologicalContextMinimumIndependentActiveGroups": 2,
+      "attributedObservationMinimumIndependentActiveGroups": 1,
+      "capabilityOnlyAndUnavailableContribution": 0
+    },
+    "citationCoverage": {
+      "totalSentenceCount": 28,
+      "citedSentenceCount": 28,
+      "percent": 100
+    },
+    "visualCitationCoverage": {
+      "totalDataRowCount": 13,
+      "citedDataRowCount": 13,
+      "percent": 100
+    },
+    "sourceInventory": {
+      "activeEvidenceSourceCount": 2,
+      "capabilityOnlySourceCount": 2,
+      "unavailableSourceCount": 3,
+      "activeIndependenceGroups": [
+        "un-incb",
+        "us-cdc-nchs"
+      ],
+      "activeIndependenceGroupCount": 2,
+      "independentlyCorroboratedEventClaimCount": 0
+    },
+    "synthesisEvaluation": {
+      "synthesisSentenceCount": 8,
+      "passedSentenceCount": 8,
+      "minimumObservedActiveGroupCount": 2
+    },
+    "claimSupport": [
+      {
+        "sentenceId": "S001",
+        "claimType": "scope",
+        "supportProfile": "multi_source_methodological_context",
+        "findingStatus": "multi_source_methodological_context",
+        "corroborationClaimed": false,
+        "minimumIndependentActiveGroups": 2,
+        "activeSourceIds": [
+          "SRC-CDC-VSRR",
+          "SRC-INCB-PRECURSORS-2025"
+        ],
+        "activeIndependenceGroups": [
+          "un-incb",
+          "us-cdc-nchs"
+        ],
+        "activeGroupCount": 2,
+        "capabilityOnlySourceIds": [],
+        "unavailableSourceIds": [],
+        "capabilitySourcesCountTowardCorroboration": false,
+        "unavailableSourcesCountTowardCorroboration": false,
+        "supportMetadataMatches": true,
+        "passed": true
+      },
+      {
+        "sentenceId": "S002",
+        "claimType": "missing_join",
+        "supportProfile": "multi_source_methodological_context",
+        "findingStatus": "multi_source_methodological_context",
+        "corroborationClaimed": false,
+        "minimumIndependentActiveGroups": 2,
+        "activeSourceIds": [
+          "SRC-CDC-VSRR",
+          "SRC-INCB-PRECURSORS-2025"
+        ],
+        "activeIndependenceGroups": [
+          "un-incb",
+          "us-cdc-nchs"
+        ],
+        "activeGroupCount": 2,
+        "capabilityOnlySourceIds": [
+          "SRC-GACC-STATS",
+          "SRC-UN-COMTRADE"
+        ],
+        "unavailableSourceIds": [],
+        "capabilitySourcesCountTowardCorroboration": false,
+        "unavailableSourcesCountTowardCorroboration": false,
+        "supportMetadataMatches": true,
+        "passed": true
+      },
+      {
+        "sentenceId": "S003",
+        "claimType": "definition",
+        "supportProfile": "attributed_observation",
+        "findingStatus": "attributed_official_record",
+        "corroborationClaimed": false,
+        "minimumIndependentActiveGroups": 1,
+        "activeSourceIds": [
+          "SRC-INCB-PRECURSORS-2025"
+        ],
+        "activeIndependenceGroups": [
+          "un-incb"
+        ],
+        "activeGroupCount": 1,
+        "capabilityOnlySourceIds": [],
+        "unavailableSourceIds": [],
+        "capabilitySourcesCountTowardCorroboration": false,
+        "unavailableSourcesCountTowardCorroboration": false,
+        "supportMetadataMatches": true,
+        "passed": true
+      },
+      {
+        "sentenceId": "S004",
+        "claimType": "source_capability",
+        "supportProfile": "capability_boundary",
+        "findingStatus": "capability_or_access_boundary",
+        "corroborationClaimed": false,
+        "minimumIndependentActiveGroups": 0,
+        "activeSourceIds": [],
+        "activeIndependenceGroups": [],
+        "activeGroupCount": 0,
+        "capabilityOnlySourceIds": [
+          "SRC-GACC-STATS",
+          "SRC-UN-COMTRADE"
+        ],
+        "unavailableSourceIds": [],
+        "capabilitySourcesCountTowardCorroboration": false,
+        "unavailableSourcesCountTowardCorroboration": false,
+        "supportMetadataMatches": true,
+        "passed": true
+      },
+      {
+        "sentenceId": "S005",
+        "claimType": "coverage_gap",
+        "supportProfile": "capability_boundary",
+        "findingStatus": "capability_or_access_boundary",
+        "corroborationClaimed": false,
+        "minimumIndependentActiveGroups": 0,
+        "activeSourceIds": [],
+        "activeIndependenceGroups": [],
+        "activeGroupCount": 0,
+        "capabilityOnlySourceIds": [
+          "SRC-GACC-STATS",
+          "SRC-UN-COMTRADE"
+        ],
+        "unavailableSourceIds": [],
+        "capabilitySourcesCountTowardCorroboration": false,
+        "unavailableSourcesCountTowardCorroboration": false,
+        "supportMetadataMatches": true,
+        "passed": true
+      },
+      {
+        "sentenceId": "S006",
+        "claimType": "interpretive_limit",
+        "supportProfile": "capability_boundary",
+        "findingStatus": "capability_or_access_boundary",
+        "corroborationClaimed": false,
+        "minimumIndependentActiveGroups": 0,
+        "activeSourceIds": [],
+        "activeIndependenceGroups": [],
+        "activeGroupCount": 0,
+        "capabilityOnlySourceIds": [
+          "SRC-GACC-STATS",
+          "SRC-UN-COMTRADE"
+        ],
+        "unavailableSourceIds": [],
+        "capabilitySourcesCountTowardCorroboration": false,
+        "unavailableSourcesCountTowardCorroboration": false,
+        "supportMetadataMatches": true,
+        "passed": true
+      },
+      {
+        "sentenceId": "S007",
+        "claimType": "reported_measurement",
+        "supportProfile": "attributed_observation",
+        "findingStatus": "attributed_official_record",
+        "corroborationClaimed": false,
+        "minimumIndependentActiveGroups": 1,
+        "activeSourceIds": [
+          "SRC-INCB-PRECURSORS-2025"
+        ],
+        "activeIndependenceGroups": [
+          "un-incb"
+        ],
+        "activeGroupCount": 1,
+        "capabilityOnlySourceIds": [],
+        "unavailableSourceIds": [],
+        "capabilitySourcesCountTowardCorroboration": false,
+        "unavailableSourcesCountTowardCorroboration": false,
+        "supportMetadataMatches": true,
+        "passed": true
+      },
+      {
+        "sentenceId": "S008",
+        "claimType": "attribution_boundary",
+        "supportProfile": "attributed_observation",
+        "findingStatus": "attributed_official_record",
+        "corroborationClaimed": false,
+        "minimumIndependentActiveGroups": 1,
+        "activeSourceIds": [
+          "SRC-INCB-PRECURSORS-2025"
+        ],
+        "activeIndependenceGroups": [
+          "un-incb"
+        ],
+        "activeGroupCount": 1,
+        "capabilityOnlySourceIds": [],
+        "unavailableSourceIds": [],
+        "capabilitySourcesCountTowardCorroboration": false,
+        "unavailableSourcesCountTowardCorroboration": false,
+        "supportMetadataMatches": true,
+        "passed": true
+      },
+      {
+        "sentenceId": "S009",
+        "claimType": "subtotal_boundary",
+        "supportProfile": "attributed_observation",
+        "findingStatus": "attributed_official_record",
+        "corroborationClaimed": false,
+        "minimumIndependentActiveGroups": 1,
+        "activeSourceIds": [
+          "SRC-INCB-PRECURSORS-2025"
+        ],
+        "activeIndependenceGroups": [
+          "un-incb"
+        ],
+        "activeGroupCount": 1,
+        "capabilityOnlySourceIds": [],
+        "unavailableSourceIds": [],
+        "capabilitySourcesCountTowardCorroboration": false,
+        "unavailableSourcesCountTowardCorroboration": false,
+        "supportMetadataMatches": true,
+        "passed": true
+      },
+      {
+        "sentenceId": "S010",
+        "claimType": "reported_measurement",
+        "supportProfile": "attributed_observation",
+        "findingStatus": "attributed_official_record",
+        "corroborationClaimed": false,
+        "minimumIndependentActiveGroups": 1,
+        "activeSourceIds": [
+          "SRC-INCB-PRECURSORS-2025"
+        ],
+        "activeIndependenceGroups": [
+          "un-incb"
+        ],
+        "activeGroupCount": 1,
+        "capabilityOnlySourceIds": [],
+        "unavailableSourceIds": [],
+        "capabilitySourcesCountTowardCorroboration": false,
+        "unavailableSourcesCountTowardCorroboration": false,
+        "supportMetadataMatches": true,
+        "passed": true
+      },
+      {
+        "sentenceId": "S011",
+        "claimType": "coverage_limit",
+        "supportProfile": "attributed_observation",
+        "findingStatus": "attributed_official_record",
+        "corroborationClaimed": false,
+        "minimumIndependentActiveGroups": 1,
+        "activeSourceIds": [
+          "SRC-INCB-PRECURSORS-2025"
+        ],
+        "activeIndependenceGroups": [
+          "un-incb"
+        ],
+        "activeGroupCount": 1,
+        "capabilityOnlySourceIds": [],
+        "unavailableSourceIds": [],
+        "capabilitySourcesCountTowardCorroboration": false,
+        "unavailableSourcesCountTowardCorroboration": false,
+        "supportMetadataMatches": true,
+        "passed": true
+      },
+      {
+        "sentenceId": "S012",
+        "claimType": "trend",
+        "supportProfile": "attributed_observation",
+        "findingStatus": "attributed_official_record",
+        "corroborationClaimed": false,
+        "minimumIndependentActiveGroups": 1,
+        "activeSourceIds": [
+          "SRC-CDC-VSRR"
+        ],
+        "activeIndependenceGroups": [
+          "us-cdc-nchs"
+        ],
+        "activeGroupCount": 1,
+        "capabilityOnlySourceIds": [],
+        "unavailableSourceIds": [],
+        "capabilitySourcesCountTowardCorroboration": false,
+        "unavailableSourcesCountTowardCorroboration": false,
+        "supportMetadataMatches": true,
+        "passed": true
+      },
+      {
+        "sentenceId": "S013",
+        "claimType": "definition",
+        "supportProfile": "attributed_observation",
+        "findingStatus": "attributed_official_record",
+        "corroborationClaimed": false,
+        "minimumIndependentActiveGroups": 1,
+        "activeSourceIds": [
+          "SRC-CDC-VSRR"
+        ],
+        "activeIndependenceGroups": [
+          "us-cdc-nchs"
+        ],
+        "activeGroupCount": 1,
+        "capabilityOnlySourceIds": [],
+        "unavailableSourceIds": [],
+        "capabilitySourcesCountTowardCorroboration": false,
+        "unavailableSourcesCountTowardCorroboration": false,
+        "supportMetadataMatches": true,
+        "passed": true
+      },
+      {
+        "sentenceId": "S014",
+        "claimType": "separation",
+        "supportProfile": "multi_source_methodological_context",
+        "findingStatus": "multi_source_methodological_context",
+        "corroborationClaimed": false,
+        "minimumIndependentActiveGroups": 2,
+        "activeSourceIds": [
+          "SRC-CDC-VSRR",
+          "SRC-INCB-PRECURSORS-2025"
+        ],
+        "activeIndependenceGroups": [
+          "un-incb",
+          "us-cdc-nchs"
+        ],
+        "activeGroupCount": 2,
+        "capabilityOnlySourceIds": [],
+        "unavailableSourceIds": [],
+        "capabilitySourcesCountTowardCorroboration": false,
+        "unavailableSourcesCountTowardCorroboration": false,
+        "supportMetadataMatches": true,
+        "passed": true
+      },
+      {
+        "sentenceId": "S015",
+        "claimType": "coverage_limit",
+        "supportProfile": "attributed_observation",
+        "findingStatus": "attributed_official_record",
+        "corroborationClaimed": false,
+        "minimumIndependentActiveGroups": 1,
+        "activeSourceIds": [
+          "SRC-CDC-VSRR"
+        ],
+        "activeIndependenceGroups": [
+          "us-cdc-nchs"
+        ],
+        "activeGroupCount": 1,
+        "capabilityOnlySourceIds": [],
+        "unavailableSourceIds": [],
+        "capabilitySourcesCountTowardCorroboration": false,
+        "unavailableSourcesCountTowardCorroboration": false,
+        "supportMetadataMatches": true,
+        "passed": true
+      },
+      {
+        "sentenceId": "S016",
+        "claimType": "reported_measurement",
+        "supportProfile": "attributed_observation",
+        "findingStatus": "attributed_official_record",
+        "corroborationClaimed": false,
+        "minimumIndependentActiveGroups": 1,
+        "activeSourceIds": [
+          "SRC-INCB-PRECURSORS-2025"
+        ],
+        "activeIndependenceGroups": [
+          "un-incb"
+        ],
+        "activeGroupCount": 1,
+        "capabilityOnlySourceIds": [],
+        "unavailableSourceIds": [],
+        "capabilitySourcesCountTowardCorroboration": false,
+        "unavailableSourcesCountTowardCorroboration": false,
+        "supportMetadataMatches": true,
+        "passed": true
+      },
+      {
+        "sentenceId": "S017",
+        "claimType": "causal_boundary",
+        "supportProfile": "multi_source_methodological_context",
+        "findingStatus": "multi_source_methodological_context",
+        "corroborationClaimed": false,
+        "minimumIndependentActiveGroups": 2,
+        "activeSourceIds": [
+          "SRC-CDC-VSRR",
+          "SRC-INCB-PRECURSORS-2025"
+        ],
+        "activeIndependenceGroups": [
+          "un-incb",
+          "us-cdc-nchs"
+        ],
+        "activeGroupCount": 2,
+        "capabilityOnlySourceIds": [],
+        "unavailableSourceIds": [],
+        "capabilitySourcesCountTowardCorroboration": false,
+        "unavailableSourcesCountTowardCorroboration": false,
+        "supportMetadataMatches": true,
+        "passed": true
+      },
+      {
+        "sentenceId": "S018",
+        "claimType": "causal_boundary",
+        "supportProfile": "multi_source_methodological_context",
+        "findingStatus": "multi_source_methodological_context",
+        "corroborationClaimed": false,
+        "minimumIndependentActiveGroups": 2,
+        "activeSourceIds": [
+          "SRC-CDC-VSRR",
+          "SRC-INCB-PRECURSORS-2025"
+        ],
+        "activeIndependenceGroups": [
+          "un-incb",
+          "us-cdc-nchs"
+        ],
+        "activeGroupCount": 2,
+        "capabilityOnlySourceIds": [
+          "SRC-GACC-STATS",
+          "SRC-UN-COMTRADE"
+        ],
+        "unavailableSourceIds": [],
+        "capabilitySourcesCountTowardCorroboration": false,
+        "unavailableSourcesCountTowardCorroboration": false,
+        "supportMetadataMatches": true,
+        "passed": true
+      },
+      {
+        "sentenceId": "S019",
+        "claimType": "conclusion",
+        "supportProfile": "multi_source_methodological_context",
+        "findingStatus": "multi_source_methodological_context",
+        "corroborationClaimed": false,
+        "minimumIndependentActiveGroups": 2,
+        "activeSourceIds": [
+          "SRC-CDC-VSRR",
+          "SRC-INCB-PRECURSORS-2025"
+        ],
+        "activeIndependenceGroups": [
+          "un-incb",
+          "us-cdc-nchs"
+        ],
+        "activeGroupCount": 2,
+        "capabilityOnlySourceIds": [],
+        "unavailableSourceIds": [],
+        "capabilitySourcesCountTowardCorroboration": false,
+        "unavailableSourcesCountTowardCorroboration": false,
+        "supportMetadataMatches": true,
+        "passed": true
+      },
+      {
+        "sentenceId": "C001",
+        "claimType": "alternative_explanation",
+        "supportProfile": "multi_source_methodological_context",
+        "findingStatus": "multi_source_methodological_context",
+        "corroborationClaimed": false,
+        "minimumIndependentActiveGroups": 2,
+        "activeSourceIds": [
+          "SRC-CDC-VSRR",
+          "SRC-INCB-PRECURSORS-2025"
+        ],
+        "activeIndependenceGroups": [
+          "un-incb",
+          "us-cdc-nchs"
+        ],
+        "activeGroupCount": 2,
+        "capabilityOnlySourceIds": [],
+        "unavailableSourceIds": [],
+        "capabilitySourcesCountTowardCorroboration": false,
+        "unavailableSourcesCountTowardCorroboration": false,
+        "supportMetadataMatches": true,
+        "passed": true
+      },
+      {
+        "sentenceId": "C002",
+        "claimType": "missing_evidence",
+        "supportProfile": "capability_boundary",
+        "findingStatus": "capability_or_access_boundary",
+        "corroborationClaimed": false,
+        "minimumIndependentActiveGroups": 0,
+        "activeSourceIds": [],
+        "activeIndependenceGroups": [],
+        "activeGroupCount": 0,
+        "capabilityOnlySourceIds": [
+          "SRC-GACC-STATS",
+          "SRC-UN-COMTRADE"
+        ],
+        "unavailableSourceIds": [
+          "SRC-INCB-PEN-CAPABILITY",
+          "SRC-INCB-PICS-CAPABILITY",
+          "SRC-USCOURTS-PACER"
+        ],
+        "capabilitySourcesCountTowardCorroboration": false,
+        "unavailableSourcesCountTowardCorroboration": false,
+        "supportMetadataMatches": true,
+        "passed": true
+      },
+      {
+        "sentenceId": "C003",
+        "claimType": "access_limit",
+        "supportProfile": "capability_boundary",
+        "findingStatus": "capability_or_access_boundary",
+        "corroborationClaimed": false,
+        "minimumIndependentActiveGroups": 0,
+        "activeSourceIds": [],
+        "activeIndependenceGroups": [],
+        "activeGroupCount": 0,
+        "capabilityOnlySourceIds": [],
+        "unavailableSourceIds": [
+          "SRC-INCB-PEN-CAPABILITY",
+          "SRC-INCB-PICS-CAPABILITY",
+          "SRC-USCOURTS-PACER"
+        ],
+        "capabilitySourcesCountTowardCorroboration": false,
+        "unavailableSourcesCountTowardCorroboration": false,
+        "supportMetadataMatches": true,
+        "passed": true
+      },
+      {
+        "sentenceId": "L001",
+        "claimType": "selection",
+        "supportProfile": "attributed_observation",
+        "findingStatus": "attributed_official_record",
+        "corroborationClaimed": false,
+        "minimumIndependentActiveGroups": 1,
+        "activeSourceIds": [
+          "SRC-INCB-PRECURSORS-2025"
+        ],
+        "activeIndependenceGroups": [
+          "un-incb"
+        ],
+        "activeGroupCount": 1,
+        "capabilityOnlySourceIds": [],
+        "unavailableSourceIds": [],
+        "capabilitySourcesCountTowardCorroboration": false,
+        "unavailableSourcesCountTowardCorroboration": false,
+        "supportMetadataMatches": true,
+        "passed": true
+      },
+      {
+        "sentenceId": "L002",
+        "claimType": "origin",
+        "supportProfile": "attributed_observation",
+        "findingStatus": "attributed_official_record",
+        "corroborationClaimed": false,
+        "minimumIndependentActiveGroups": 1,
+        "activeSourceIds": [
+          "SRC-INCB-PRECURSORS-2025"
+        ],
+        "activeIndependenceGroups": [
+          "un-incb"
+        ],
+        "activeGroupCount": 1,
+        "capabilityOnlySourceIds": [],
+        "unavailableSourceIds": [],
+        "capabilitySourcesCountTowardCorroboration": false,
+        "unavailableSourcesCountTowardCorroboration": false,
+        "supportMetadataMatches": true,
+        "passed": true
+      },
+      {
+        "sentenceId": "L003",
+        "claimType": "trade_denominator",
+        "supportProfile": "capability_boundary",
+        "findingStatus": "capability_or_access_boundary",
+        "corroborationClaimed": false,
+        "minimumIndependentActiveGroups": 0,
+        "activeSourceIds": [],
+        "activeIndependenceGroups": [],
+        "activeGroupCount": 0,
+        "capabilityOnlySourceIds": [
+          "SRC-GACC-STATS",
+          "SRC-UN-COMTRADE"
+        ],
+        "unavailableSourceIds": [],
+        "capabilitySourcesCountTowardCorroboration": false,
+        "unavailableSourcesCountTowardCorroboration": false,
+        "supportMetadataMatches": true,
+        "passed": true
+      },
+      {
+        "sentenceId": "L004",
+        "claimType": "attribution_boundary",
+        "supportProfile": "attributed_observation",
+        "findingStatus": "attributed_official_record",
+        "corroborationClaimed": false,
+        "minimumIndependentActiveGroups": 1,
+        "activeSourceIds": [
+          "SRC-INCB-PRECURSORS-2025"
+        ],
+        "activeIndependenceGroups": [
+          "un-incb"
+        ],
+        "activeGroupCount": 1,
+        "capabilityOnlySourceIds": [],
+        "unavailableSourceIds": [],
+        "capabilitySourcesCountTowardCorroboration": false,
+        "unavailableSourcesCountTowardCorroboration": false,
+        "supportMetadataMatches": true,
+        "passed": true
+      },
+      {
+        "sentenceId": "L005",
+        "claimType": "harm_join",
+        "supportProfile": "multi_source_methodological_context",
+        "findingStatus": "multi_source_methodological_context",
+        "corroborationClaimed": false,
+        "minimumIndependentActiveGroups": 2,
+        "activeSourceIds": [
+          "SRC-CDC-VSRR",
+          "SRC-INCB-PRECURSORS-2025"
+        ],
+        "activeIndependenceGroups": [
+          "un-incb",
+          "us-cdc-nchs"
+        ],
+        "activeGroupCount": 2,
+        "capabilityOnlySourceIds": [],
+        "unavailableSourceIds": [],
+        "capabilitySourcesCountTowardCorroboration": false,
+        "unavailableSourcesCountTowardCorroboration": false,
+        "supportMetadataMatches": true,
+        "passed": true
+      },
+      {
+        "sentenceId": "L006",
+        "claimType": "restricted_sources",
+        "supportProfile": "capability_boundary",
+        "findingStatus": "capability_or_access_boundary",
+        "corroborationClaimed": false,
+        "minimumIndependentActiveGroups": 0,
+        "activeSourceIds": [],
+        "activeIndependenceGroups": [],
+        "activeGroupCount": 0,
+        "capabilityOnlySourceIds": [],
+        "unavailableSourceIds": [
+          "SRC-INCB-PEN-CAPABILITY",
+          "SRC-INCB-PICS-CAPABILITY",
+          "SRC-USCOURTS-PACER"
+        ],
+        "capabilitySourcesCountTowardCorroboration": false,
+        "unavailableSourcesCountTowardCorroboration": false,
+        "supportMetadataMatches": true,
+        "passed": true
+      }
+    ],
+    "countercase": {
+      "present": true,
+      "sentenceCount": 3,
+      "citedSentenceCount": 3
+    },
+    "editorialCompleteness": {
+      "correctionsStatus": "none_recorded",
+      "updateHistoryEventCount": 1,
+      "initialPublicationRecorded": true,
+      "rightToReplyStatus": "not_required",
+      "outreachPerformed": false,
+      "expertTestimonyIncluded": false,
+      "affectedPersonTestimonyIncluded": false,
+      "simulatedHumanVoicesIncluded": false,
+      "passed": true
+    },
+    "bannedClaimScan": {
+      "rulesetVersion": "bounded-claims-and-safe-grain.v1",
+      "ruleCount": 8,
+      "matches": [],
+      "passed": true
+    },
+    "safetyEvaluation": {
+      "chemistryInstructionsIncluded": false,
+      "navigableOperationalDetailsIncluded": false,
+      "passed": true
+    },
+    "deterministicHashes": {
+      "algorithm": "sha256",
+      "revisionHash": "92dc194dc5087203186932d00440ba682e939495a7b36146bfd169480b58549b",
+      "machineBriefContentHash": "6e6ade655ca827910a509a5eb6e8dcc98a0696525b5318e0cef037155de19958",
+      "dossierContentHashScope": "canonical JSON of the dossier including this receipt and excluding the top-level contentHash field"
+    },
+    "failures": [],
+    "passed": true
+  },
+  "contentHash": "056b117f4a3301a9971e75bd64aac53d0aa252166a9fd55dc449cd57fbd9e4ab"
+}

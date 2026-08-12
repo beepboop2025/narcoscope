@@ -103,13 +103,65 @@
     {
       "id": "incb-precursors",
       "name": "INCB Precursors Annual Report (seizure/shipment tables)",
-      "url": "https://www.incb.org/incb/en/precursors/technical_reports/precursors-technical-reports.html",
-      "format": "pdf (annex tables)",
+      "url": "https://www.incb.org/incb/uploads/documents/Publications/AnnualReports/AR2025/Precursors_Report/E_INCB_2025_4_eng.pdf",
+      "format": "pdf (paragraph-located narrative records; SHA-256 pinned in src/data/flows.ts)",
       "cadence": "annual (~March)",
       "license": "UN open data, attribution",
       "automation": "manual",
-      "feeds": "FLOW_RECORDS (Precursor Flows tab + globe corridor arcs) — INGESTED 2026-07-03: 8 corridor records extracted from the 2025 report narrative (paragraph-cited). Refresh annually (~March) by re-reading the trafficking chapters; the manufacturing annex (VIII) is deliberately excluded by the ethical grain guard.",
+      "availability": "Public annual report; it contains selected narrative incidents and aggregates, not the restricted operational records in PICS or PEN Online.",
+      "feeds": "FLOW_RECORDS (Precursor Flows tab + globe corridor arcs) — AUDITED 2026-08-12: 6 qualified quantitative records and 1 non-summable qualitative context record extracted from the 2025 report narrative with PDF page, printed page and paragraph locators. Refresh annually (~March) by re-reading the trafficking chapters; the manufacturing annex (VIII) is deliberately excluded by the ethical grain guard.",
       "transform": "scripts/convert/from-pdf.mjs, corridor rows via the flows CSV schema"
+    },
+    {
+      "_section": "CHINA TRADE AND PRECURSOR-CONTROL CAPABILITIES — registered so the automated newsroom distinguishes lawful aggregate trade, public incident reporting and non-public operational systems. Detailed claim permissions live in scripts/newsroom/source-capabilities.json."
+    },
+    {
+      "id": "gacc-customs-statistics",
+      "name": "General Administration of Customs of China — China Customs Statistics",
+      "url": "https://english.customs.gov.cn/Statistics/Statistics",
+      "format": "web tables / periodic releases",
+      "cadence": "monthly and annual",
+      "license": "Publicly viewable official statistics; bulk-redistribution terms not identified — link and cite, do not bundle until reuse permission is confirmed",
+      "automation": "manual",
+      "availability": "Public aggregates; the English interactive-table surface is not a stable bulk API and does not expose a public shipment-level ledger.",
+      "feeds": "NEWSROOM CAPABILITY ONLY — possible lawful-trade denominator after a product-code methodology and reuse review; no extract is in the current dossier.",
+      "transform": "none — define a safe, aggregate product-code crosswalk and licensing review before ingestion"
+    },
+    {
+      "id": "un-comtrade",
+      "name": "UN Statistics Division — UN Comtrade Database and API",
+      "url": "https://comtrade.un.org/",
+      "format": "json/csv API; aggregate trade statistics",
+      "cadence": "continuous as reporters submit data",
+      "license": "UN Comtrade usage agreement; large original-data redistribution can require a separate licence, while transformed data is treated differently",
+      "automation": "api-key",
+      "availability": "Keyless preview is limited; repeatable free API access requires registration and a key; bulk access is premium. Data is aggregate by reporter/partner/product/period, not shipment-level.",
+      "feeds": "NEWSROOM CAPABILITY ONLY — candidate lawful-trade denominator; no chemical-product extract is in the current dossier and HS aggregates cannot establish end use.",
+      "transform": "none — pin reporter, partner, HS edition/code, period, mirror-statistics policy and redistribution treatment before ingestion"
+    },
+    {
+      "id": "incb-pics",
+      "name": "INCB Precursors Incident Communication System (PICS)",
+      "url": "https://www.incb.org/incb/uploads/documents/PRECURSORS/Tools_and_Resources/Article_12_Resources_and_Tools_Oct2025.pdf",
+      "format": "secure operational system",
+      "cadence": "real-time operational use",
+      "license": "Not a public dataset; no NarcoScope redistribution right",
+      "automation": "manual",
+      "availability": "UNAVAILABLE TO THIS PROJECT — restricted to registered government regulatory, customs, drug-control and law-enforcement users.",
+      "feeds": "MISSING CAPABILITY ONLY. Never claim that public-report coverage exhausts PICS, and never represent PICS as searched.",
+      "transform": "none — non-public operational system"
+    },
+    {
+      "id": "incb-pen-online",
+      "name": "INCB Pre-Export Notification Online (PEN Online)",
+      "url": "https://www.incb.org/incb/uploads/documents/PRECURSORS/Tools_and_Resources/Article_12_Resources_and_Tools_Oct2025.pdf",
+      "format": "secure regulatory notification system",
+      "cadence": "per planned controlled-precursor export",
+      "license": "Not a public dataset; no NarcoScope redistribution right",
+      "automation": "manual",
+      "availability": "UNAVAILABLE TO THIS PROJECT — restricted to registered competent national authorities.",
+      "feeds": "MISSING CAPABILITY ONLY. The newsroom cannot verify whether a shipment was notified or authorized, and absence of a public record does not mean no notification existed.",
+      "transform": "none — non-public regulatory system"
     },
     {
       "id": "euda-price-purity",
@@ -155,6 +207,7 @@
       "cadence": "monthly",
       "license": "US Government work — public domain (17 U.S.C. §105)",
       "automation": "auto",
+      "availability": "Public keyless Socrata API plus a checked-in offline snapshot; aggregate vital-statistics data has no exporter, shipment, precursor or country-of-origin field.",
       "feeds": "src/data/overdose.json — the mortality modality on the Triangulation tab. US national + 50 states + DC + NYC, by ICD-10 substance class, 12-month-ending windows, 2015-present.",
       "transform": "scripts/convert/cdc-overdose-to-json.mjs",
       "notes": "Provisional: recent windows are incomplete (percentComplete carried per record). Suppressed cells are dropped, never zero-filled. T43.6 'psychostimulants' is a class code, NOT a synonym for methamphetamine — the substitution is made explicitly and reversibly in triangulate.ts's DRUG_BRIDGE, never at ingest."
@@ -216,6 +269,7 @@
       "cadence": "continuous (OFAC updates on designation/delisting)",
       "license": "US Government work — public domain (17 U.S.C. §105)",
       "automation": "auto",
+      "availability": "Public list files; NarcoScope's newsroom uses only privacy-minimized aggregate counts. A designation is an administrative action, not an adjudication of guilt, and country-of-record address data is not nationality.",
       "feeds": "src/data/designations.json — the Designations tab. Filtered to SDNTK (Kingpin Act), SDNT, ILLICIT-DRUGS-EO14059 (fentanyl authority) and TCO (transnational criminal organisations).",
       "transform": "scripts/convert/ofac-designations-to-json.mjs",
       "notes": "Fetched from Treasury DIRECTLY rather than via OpenSanctions: public domain with no licence condition, which is the only footing on which this can ship in an MIT repo. alt.csv gives OFAC's own alias equivalences, which solves the transliteration-variant entity-resolution problem with published ground truth instead of inference. Addresses, passport/ID numbers and dates of birth are present upstream and deliberately NOT extracted."
@@ -258,13 +312,38 @@
     {
       "id": "dea-ndta",
       "name": "DEA National Drug Threat Assessment",
-      "url": "https://www.dea.gov/resources/national-drug-threat-assessment",
+      "url": "https://www.dea.gov/sites/default/files/2025-07/2025NationalDrugThreatAssessment.pdf",
       "format": "pdf",
       "cadence": "annual",
       "license": "US Government work — public domain",
       "automation": "manual",
-      "feeds": "Analyst context: Chinese precursor supply chains, cartel synthesis, fentanyl analogue flows. Corridor rows extractable to the flows CSV schema where DEA states an explicit origin/destination.",
+      "availability": "Public official threat assessment; narrative analysis and selected examples, not a complete record-level shipment dataset or an adjudicated finding.",
+      "feeds": "Analyst context only. Any claim must be attributed as DEA's assessment; the automated China dossier does not currently ingest it.",
       "transform": "scripts/convert/from-pdf.mjs, corridor rows via the flows schema"
+    },
+    {
+      "id": "doj-precursor-case-releases",
+      "name": "US Department of Justice — precursor case announcements and linked charging documents",
+      "url": "https://www.justice.gov/archives/opa/pr/justice-department-announces-charges-against-china-based-chemical-manufacturing-companies",
+      "format": "web press releases + linked court filings",
+      "cadence": "event-driven",
+      "license": "DOJ-authored US Government work is public domain; linked filings can carry separate access and privacy considerations",
+      "automation": "manual",
+      "availability": "Public announcements and selected pleadings; disposition must be checked against the court docket.",
+      "feeds": "NEWSROOM CAPABILITY ONLY. Complaints and indictments are allegations and defendants are presumed innocent unless and until guilt is adjudicated; never promote a charge into a finding.",
+      "transform": "none — requires manual case-status and disposition review"
+    },
+    {
+      "id": "uscourts-pacer",
+      "name": "US Courts — Public Access to Court Electronic Records (PACER)",
+      "url": "https://pacer.uscourts.gov/policy-procedures",
+      "format": "account-based docket and document system",
+      "cadence": "event-driven by court filing",
+      "license": "Public court-record access subject to sealing, privacy rules, fees and PACER policy; not a bulk-redistribution licence",
+      "automation": "manual",
+      "availability": "UNAVAILABLE TO THE AUTOMATED NEWSROOM — account required, searches/documents can incur fees, repeated automated access is restricted, and sealed records are unavailable.",
+      "feeds": "MISSING ADJUDICATION CAPABILITY. A manually checked disposition can establish procedural outcome; the current dossier contains no court-record findings.",
+      "transform": "none — manual, case-specific review only"
     },
     {
       "id": "hidta-threat-assessments",

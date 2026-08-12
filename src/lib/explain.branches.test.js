@@ -44,26 +44,24 @@ describe('explainPrices — single-country fallback', () => {
   })
 })
 
-describe('explainFlows — China origin share', () => {
-  it('reports the rounded percentage of seized volume originating in China', () => {
+describe('explainFlows — qualified aggregate boundary', () => {
+  it('does not infer a country share from curated corridor quantities', () => {
     const flows = [
-      { origin: 'China', destination: 'Mexico', transit: null, quantityKg: 750, drug: 'x' },
-      { origin: 'India', destination: 'Mexico', transit: null, quantityKg: 250, drug: 'x' },
+      { origin: 'China', destination: 'Mexico', transit: null, quantityKg: 750, quantityRelation: 'exact', drug: 'x' },
+      { origin: 'India', destination: 'Mexico', transit: null, quantityKg: 250, quantityRelation: 'exact', drug: 'x' },
     ]
     const s = explainFlows(flows, 'the records shown')
-    // 750 / 1000 = 75%.
-    assert.ok(s.includes('China is the listed origin of 75%'))
-    // Top corridor is the larger China shipment.
-    assert.ok(s.includes('China → Mexico'))
+    assert.ok(s.includes('1.0 tonnes across 2 exact records'))
+    assert.equal(s.includes('China is the listed origin'), false)
+    assert.equal(s.includes('China → Mexico'), false)
   })
 
   it('omits the China sentence entirely when no flow originates in China', () => {
     const flows = [
-      { origin: 'India', destination: 'Mexico', transit: 'UAE', quantityKg: 100, drug: 'x' },
+      { origin: 'India', destination: 'Mexico', transit: 'UAE', quantityKg: 100, quantityRelation: 'exact', drug: 'x' },
     ]
     const s = explainFlows(flows, 'the records shown')
     assert.equal(s.includes('China is the listed origin'), false)
-    // Transit annotation should render for the single corridor.
-    assert.ok(s.includes('(via UAE)'))
+    assert.ok(s.includes('100 kg across 1 exact record'))
   })
 })

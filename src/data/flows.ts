@@ -3,13 +3,11 @@
 // =============================================================================
 //
 // DATA PROVENANCE:
-//   • FLOW_RECORDS — OFFICIAL. Corridor statements extracted verbatim from the
-//     INCB Precursors Report 2025 (published Feb 2026; paragraph numbers cited
-//     per record):
-//     https://www.incb.org/incb/en/precursors/technical_reports/precursors-technical-reports.html
-//     Each record is a seizure/incident corridor the Board itself reports at
-//     country grain. Quantities are as stated (one is gross preparation
-//     weight, noted inline).
+//   • FLOW_RECORDS — OFFICIAL. Corridor statements extracted from the INCB
+//     Precursors Report 2025 (published Feb 2026). Every row preserves the
+//     exact PDF, document hash, retrieval time, paragraph and physical/printed
+//     page locator. Approximate values and bounds remain machine-readable and
+//     must never be silently added as exact quantities.
 //   • PRECURSOR_PRICE_RECORDS — ILLUSTRATIVE. INCB does not publish precursor
 //     prices; pending a citable source, these remain labelled samples.
 //
@@ -20,7 +18,8 @@
 // =============================================================================
 
 import type {
-  PrecursorMeta, FlowRecord, PrecursorPriceRecord, Centroid,
+  PrecursorMeta, AuditedFlowRecord, FlowContextRecord,
+  PrecursorPriceRecord, Centroid,
 } from '../types'
 
 export const PRECURSORS: PrecursorMeta[] = [
@@ -32,41 +31,109 @@ export const PRECURSORS: PrecursorMeta[] = [
   { id: 'cocaine_precursors', label: 'Cocaine precursors (oxidizers)', endDrug: 'Cocaine', incbScheduled: true },
 ]
 
-// Aggregate corridor records — every row is a corridor the INCB Precursors
-// Report 2025 states explicitly (paragraph cited). quantityKg = seized or
-// interdicted amount reported for that corridor/incident.
-const INCB25 = {
+export const INCB_REPORT_2025 = {
   sourceName: 'INCB Precursors Report 2025',
-  sourceUrl: 'https://www.incb.org/incb/en/precursors/technical_reports/precursors-technical-reports.html',
-}
-export const FLOW_RECORDS: FlowRecord[] = [
+  sourceUrl: 'https://www.incb.org/incb/uploads/documents/Publications/AnnualReports/AR2025/Precursors_Report/E_INCB_2025_4_eng.pdf',
+  sourceDocumentSha256: '8397f2799116fe33ce6851ec2c7e03a042886fb9c048f72cdb259724de5ddd6e',
+  sourceRetrievedAt: '2026-08-12T13:50:25Z',
+} as const
+
+// Quantitative corridor records. A row may represent a single incident, an
+// incident aggregate, an annual aggregate or a transparent derived subtotal;
+// `recordKind`, `incidentCount`, `quantityRelation` and `quantityBasis` retain
+// those distinctions rather than forcing unlike source statements together.
+export const FLOW_RECORDS: AuditedFlowRecord[] = [
   // ¶92: six PICS seizures of 3,4-MDP-2-P ethyl glycidate totalling <1,500 kg
-  // in the first 10 months of 2025; two thirds seized in Thailand, "destined
-  // for Myanmar" — a rare official designer-precursor corridor into the
-  // Golden Triangle.
-  { precursor: 'mdma_precursors', origin: 'Thailand', transit: null, destination: 'Myanmar', year: 2025, quantityKg: 1000, ...INCB25 },
+  // in the first 10 months of 2025. Two thirds of the amount was in the first
+  // Thailand incident and was destined for Myanmar, so the derived corridor
+  // value is a strict upper bound, not an exact 1,000 kg observation.
+  {
+    precursor: 'mdma_precursors', origin: 'Not reported', transit: 'Thailand',
+    destination: 'Myanmar', year: 2025, quantityKg: 1000,
+    quantityRelation: 'less_than',
+    quantityBasis: 'Derived upper bound for the amount seized in Thailand: two thirds of a six-seizure aggregate reported as less than 1,500 kg of substance.',
+    recordKind: 'single_incident', incidentCount: 1,
+    sourceLocator: { pdfPage: 43, printedPage: 25, paragraph: 92 },
+    ...INCB_REPORT_2025,
+  },
   // ¶94: nine incidents, ~5 tons of 4-phenylacetoacetic acid esters (new meth
   // pre-precursors), mislabelled, "originated in China and were destined for
   // countries in the European Union".
-  { precursor: 'meth_pre_precursors', origin: 'China', transit: null, destination: 'European Union', year: 2025, quantityKg: 5000, ...INCB25 },
+  {
+    precursor: 'meth_pre_precursors', origin: 'China', transit: null,
+    destination: 'European Union', year: 2025, quantityKg: 5000,
+    quantityRelation: 'approx',
+    quantityBasis: 'Combined substance mass across nine PICS incidents; the source reports nearly 5 tons.',
+    recordKind: 'multi_incident_aggregate', incidentCount: 9,
+    sourceLocator: { pdfPage: 44, printedPage: 26, paragraph: 94 },
+    ...INCB_REPORT_2025,
+  },
   // ¶47: >15 tons GROSS WEIGHT of a pseudoephedrine preparation, originated
   // in Morocco, transiting Türkiye, destined for Iran; no pre-export
   // notification; far exceeded Iran's annual legitimate requirement.
-  { precursor: 'meth_precursors', origin: 'Morocco', transit: 'Türkiye', destination: 'Iran', year: 2025, quantityKg: 15000, ...INCB25 },
-  // ¶46 + ¶67 (Operation Pseudonym): ephedrines seized in Australia (~1 t in
-  // 2024) and New Zealand (1.2 t), origins "reported as being China and
-  // India" — encoded with the joint origin string the Board uses.
-  { precursor: 'meth_precursors', origin: 'China / India', transit: null, destination: 'Australia', year: 2024, quantityKg: 1000, ...INCB25 },
-  { precursor: 'meth_precursors', origin: 'China / India', transit: null, destination: 'New Zealand', year: 2024, quantityKg: 1200, ...INCB25 },
+  {
+    precursor: 'meth_precursors', origin: 'Morocco', transit: 'Türkiye',
+    destination: 'Iran', year: 2025, quantityKg: 15000,
+    quantityRelation: 'greater_than',
+    quantityBasis: 'Gross weight of a pharmaceutical preparation containing pseudoephedrine, not net pseudoephedrine mass.',
+    recordKind: 'single_incident', incidentCount: 1,
+    sourceLocator: { pdfPage: 31, printedPage: 13, paragraph: 47 },
+    ...INCB_REPORT_2025,
+  },
   // ¶112: Ecuador reported ~2 t of potassium permanganate seized in 2024,
   // all as a transit country "with consignments destined for Colombia".
-  { precursor: 'cocaine_precursors', origin: 'Ecuador', transit: null, destination: 'Colombia', year: 2024, quantityKg: 2000, ...INCB25 },
+  {
+    precursor: 'cocaine_precursors', origin: 'Not reported', transit: 'Ecuador',
+    destination: 'Colombia', year: 2024, quantityKg: 2000,
+    quantityRelation: 'approx',
+    quantityBasis: 'Annual potassium permanganate seizure mass reported by Ecuador; the source reports about 2 tons.',
+    recordKind: 'annual_aggregate', incidentCount: null,
+    sourceLocator: { pdfPage: 47, printedPage: 29, paragraph: 112 },
+    ...INCB_REPORT_2025,
+  },
   // ¶74: DR Congo's first form-D submission: 110 kg ephedrine + 240 kg
   // pseudoephedrine preparations, "originated in India".
-  { precursor: 'meth_precursors', origin: 'India', transit: null, destination: 'Democratic Republic of the Congo', year: 2024, quantityKg: 350, ...INCB25 },
+  {
+    precursor: 'meth_precursors', origin: 'India', transit: null,
+    destination: 'Democratic Republic of the Congo', year: 2024, quantityKg: 350,
+    quantityRelation: 'exact',
+    quantityBasis: 'Derived subtotal of 110 kg of ephedrine preparations and 240 kg of pseudoephedrine preparations reported as originating in India.',
+    recordKind: 'derived_subtotal', incidentCount: null,
+    sourceLocator: { pdfPage: 39, printedPage: 21, paragraph: 74 },
+    ...INCB_REPORT_2025,
+  },
   // ¶76: Germany, six incidents, 40 kg of pseudoephedrine preparations
   // "originating in Egypt ... concealed in coffee bags".
-  { precursor: 'meth_precursors', origin: 'Egypt', transit: null, destination: 'Germany', year: 2024, quantityKg: 40, ...INCB25 },
+  {
+    precursor: 'meth_precursors', origin: 'Egypt', transit: null,
+    destination: 'Germany', year: 2024, quantityKg: 40,
+    quantityRelation: 'exact',
+    quantityBasis: 'Combined pseudoephedrine-preparation mass across six incidents.',
+    recordKind: 'multi_incident_aggregate', incidentCount: 6,
+    sourceLocator: { pdfPage: 39, printedPage: 21, paragraph: 76 },
+    ...INCB_REPORT_2025,
+  },
+]
+
+// Operation Pseudonym cannot be represented as a quantitative bilateral
+// corridor. Paragraph 46 reports a four-country operation total and names two
+// origins for Australian/New Zealand seizures, but never allocates count or
+// mass by origin/destination pair. Keep the statement as non-summable context.
+export const FLOW_CONTEXT_RECORDS: FlowContextRecord[] = [
+  {
+    contextId: 'operation-pseudonym-australia-new-zealand-origins-2024',
+    precursor: 'meth_precursors',
+    origins: ['China', 'India'],
+    destinations: ['Australia', 'New Zealand'],
+    year: 2024,
+    recordKind: 'qualitative_context',
+    allocationStatus: 'not_reported_by_origin_destination_pair',
+    operationReportedSeizureCount: 168,
+    countScope: 'four_reporting_countries_operation_total',
+    summary: 'INCB reports that four participating countries recorded 168 seizures during Operation Pseudonym, most in Australia and New Zealand, and that origins for substances in both countries were reported as China and India. The report does not allocate seizure count or mass by origin-and-destination pair.',
+    sourceLocator: { pdfPage: 31, printedPage: 13, paragraph: 46 },
+    ...INCB_REPORT_2025,
+  },
 ]
 
 // Precursor PRICES — aggregate, country + year, USD per kilogram. A spiking
@@ -85,9 +152,7 @@ export const PRECURSOR_PRICE_RECORDS: PrecursorPriceRecord[] = [
 ]
 
 // Approximate lat/lng centroids for the map view. 'European Union' is a
-// display anchor (Brussels) for corridors INCB reports at EU grain; the
-// 'China / India' joint-origin string has no anchor, so those corridors
-// appear in the table but draw no arc (deliberate: we don't invent a split).
+// display anchor (Brussels) for corridors INCB reports at EU grain.
 export const COUNTRY_CENTROIDS: Record<string, Centroid> = {
   'China': { lat: 35.9, lng: 104.2 },
   'India': { lat: 22.0, lng: 79.0 },
