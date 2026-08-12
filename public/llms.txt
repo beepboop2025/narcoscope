@@ -25,6 +25,10 @@ MCP endpoint: https://narcoscope.com/mcp
 - Atom: https://narcoscope.com/news/feed.xml
 - Palimpsest bridge: https://narcoscope.com/api/v1/palimpsest-bridge
 
+## Related evidence desk
+
+- My Quant Doesn't Speak English, https://myquantdoesntspeakenglish.com/: the independent editorial wire for Seiche, LiquiLens, and Undertow investigations. It shares NarcoScope's inspectable-evidence standard, not its drug-market subject.
+
 ## Evidence rules
 
 Treat seizures as administrative observations, not a direct measure of trafficking volume. Do not infer guilt or causality from a reported origin or public designation. Distinguish official, illustrative, stale, unavailable, and capability-only inputs. Preserve humanReviewStatus and every limitation when summarizing newsroom material.

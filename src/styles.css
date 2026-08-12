@@ -568,6 +568,15 @@ h3 { font-family: var(--font-display); font-weight: 400; font-size: 1.2rem; lett
 }
 .sources { margin-top: 0.65rem; }
 .sources a { color: var(--tk-text-1); }
+.network-note {
+  display: grid; grid-template-columns: 12rem minmax(0, 1fr); gap: 1rem;
+  margin-top: 1rem; padding: 0.9rem 1rem; border-left: 2px solid var(--accent);
+  background: linear-gradient(90deg, rgba(6, 214, 224, 0.08), rgba(6, 214, 224, 0.015));
+}
+.network-note > span { color: var(--accent); font-size: 0.7rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+.network-note p { margin: 0; color: var(--tk-text-2); font-size: 0.78rem; }
+.network-note a { color: var(--tk-text-0); text-decoration: underline; text-underline-offset: 0.16em; }
+@media (max-width: 576px) { .network-note { grid-template-columns: 1fr; } }
 
 /* ---- deterministic evidence newsroom ------------------------------------- */
 .newsroom { max-width: 62rem; margin: 0 auto; }
