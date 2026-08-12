@@ -1,4 +1,4 @@
-import { useEffect, useState, lazy, Suspense, type ReactNode } from 'react'
+import { useEffect, useRef, useState, lazy, Suspense, type KeyboardEvent, type ReactNode } from 'react'
 import { useSpring, animated } from '@react-spring/web'
 import Overview from './components/Overview'
 import Explorer from './components/Explorer'
@@ -123,9 +123,34 @@ const CORRIDOR_STAGES = [
   },
 ] as const
 
+export function resolveCorridorTabIndex(
+  key: string,
+  currentIndex: number,
+  tabCount = CORRIDOR_STAGES.length,
+): number | null {
+  if (tabCount < 1) return null
+  if (key === 'ArrowRight') return (currentIndex + 1) % tabCount
+  if (key === 'ArrowLeft') return (currentIndex - 1 + tabCount) % tabCount
+  if (key === 'Home') return 0
+  if (key === 'End') return tabCount - 1
+  return null
+}
+
 function EvidenceCorridor() {
   const [activeId, setActiveId] = useState<(typeof CORRIDOR_STAGES)[number]['id']>('record')
+  const tabRefs = useRef<Array<HTMLButtonElement | null>>([])
   const active = CORRIDOR_STAGES.find((stage) => stage.id === activeId) ?? CORRIDOR_STAGES[0]
+
+  const handleStageKeyDown = (event: KeyboardEvent<HTMLButtonElement>, currentIndex: number) => {
+    const nextIndex = resolveCorridorTabIndex(event.key, currentIndex)
+    if (nextIndex === null) return
+    const nextStage = CORRIDOR_STAGES[nextIndex]
+    if (!nextStage) return
+    event.preventDefault()
+    setActiveId(nextStage.id)
+    tabRefs.current[nextIndex]?.focus()
+  }
+
   return (
     <section className="evidence-corridor" aria-labelledby="corridor-title">
       <header className="corridor-header">
@@ -141,23 +166,32 @@ function EvidenceCorridor() {
       <div className="corridor-instrument">
         <div className="corridor-route" role="tablist" aria-label="Evidence corridor stages">
           <span className="corridor-line" aria-hidden="true" />
-          {CORRIDOR_STAGES.map((stage) => (
+          {CORRIDOR_STAGES.map((stage, index) => (
             <button
               key={stage.id}
+              id={`corridor-tab-${stage.id}`}
+              ref={(node) => { tabRefs.current[index] = node }}
               type="button"
               role="tab"
               aria-selected={active.id === stage.id}
               aria-controls="corridor-detail"
+              tabIndex={active.id === stage.id ? 0 : -1}
               className={active.id === stage.id ? 'active' : ''}
               onClick={() => setActiveId(stage.id)}
               onPointerEnter={() => setActiveId(stage.id)}
+              onKeyDown={(event) => handleStageKeyDown(event, index)}
             >
               <b>{stage.index}</b>
               <span>{stage.eyebrow}</span>
             </button>
           ))}
         </div>
-        <article className={`corridor-detail corridor-detail--${active.id}`} id="corridor-detail" role="tabpanel">
+        <article
+          className={`corridor-detail corridor-detail--${active.id}`}
+          id="corridor-detail"
+          role="tabpanel"
+          aria-labelledby={`corridor-tab-${active.id}`}
+        >
           <div><span>{active.index} / {active.eyebrow}</span><h3>{active.title}</h3></div>
           <div><p>{active.copy}</p><nav><a href={active.href}>{active.cta} ↗</a><a href={active.auxHref}>{active.auxLabel}</a></nav></div>
         </article>
