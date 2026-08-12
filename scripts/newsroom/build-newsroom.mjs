@@ -166,8 +166,15 @@ function gateFailure(gateId, errors) {
   return error
 }
 
+const gateAssertionCounts = new WeakMap()
+
 function requireGate(errors, condition, message) {
+  gateAssertionCounts.set(errors, (gateAssertionCounts.get(errors) ?? 0) + 1)
   if (!condition) errors.push(message)
+}
+
+function gateAssertionCount(errors) {
+  return gateAssertionCounts.get(errors) ?? 0
 }
 
 function requireExactKeys(errors, value, expectedKeys, pathLabel) {
@@ -231,12 +238,11 @@ export function assertCapabilityRegistry(registry) {
     'incb-pen-online',
     'cdc-vsrr-overdose',
     'ofac-sdn',
-    'dea-ndta',
-    'doj-precursor-case-releases',
     'uscourts-pacer',
   ]
 
   requireGate(errors, registry?.schemaVersion === 'narcoscope.newsroom.source-capabilities.v1', 'unexpected registry schema')
+  requireGate(errors, /^\d{4}-\d{2}-\d{2}$/.test(registry?.asOf ?? ''), 'registry asOf must be an ISO calendar date')
   requireGate(errors, duplicateValues(capabilities.map((item) => item.id)).length === 0, 'capability ids must be unique')
   for (const id of required) requireGate(errors, Boolean(byId[id]), `required capability is absent: ${id}`)
   for (const item of capabilities) {
@@ -258,7 +264,7 @@ export function assertCapabilityRegistry(registry) {
     requireGate(errors, byId[id]?.newsroomRole === 'unavailable', `${id} must count as zero corroboration`)
     requireGate(errors, byId[id]?.newsroomUse?.status === 'unavailable', `${id} cannot be promoted as newsroom evidence`)
   }
-  for (const id of ['gacc-customs-statistics', 'un-comtrade', 'dea-ndta', 'doj-precursor-case-releases']) {
+  for (const id of ['gacc-customs-statistics', 'un-comtrade']) {
     requireGate(errors, byId[id]?.newsroomRole === 'capability_only', `${id} must count as zero corroboration until ingested`)
   }
   for (const id of ['incb-precursors-public-report', 'cdc-vsrr-overdose', 'ofac-sdn']) {
@@ -269,7 +275,7 @@ export function assertCapabilityRegistry(registry) {
   requireGate(errors, byId['un-comtrade']?.availability?.publicRecordLevelShipments === false, 'Comtrade capability must stay aggregate')
 
   if (errors.length > 0) throw gateFailure(gateId, errors)
-  return { gateId, status: 'passed', assertionCount: 18 + capabilities.length * 10 }
+  return { gateId, status: 'passed', assertionCount: gateAssertionCount(errors) }
 }
 
 function capabilityMap(inputs) {
@@ -372,13 +378,17 @@ export function buildMachineBrief(inputs) {
         retainedContextRecordCount: incidentDataset.data.includedContextRecordCount,
         chinaEuAggregate: {
           reportedOrigin: chinaEuAggregate.reportedOrigin,
+          transit: chinaEuAggregate.transit,
           destination: chinaEuAggregate.destination,
+          seizureLocation: chinaEuAggregate.seizureLocation,
           year: chinaEuAggregate.year,
           precursorClass: chinaEuAggregate.precursor,
           reportedQuantityKg: chinaEuAggregate.quantityKg,
           quantityRelation: chinaEuAggregate.quantityRelation,
           quantityBasis: chinaEuAggregate.quantityBasis,
           recordKind: chinaEuAggregate.recordKind,
+          aggregationEligibility: chinaEuAggregate.aggregationEligibility,
+          aggregationGroup: chinaEuAggregate.aggregationGroup,
           incidentCount: chinaEuAggregate.incidentCount,
           sourceLocator: chinaEuAggregate.sourceLocator,
         },
@@ -417,7 +427,7 @@ export function buildMachineBrief(inputs) {
       { from: 'officialEnforcementIncidents', to: 'harmTrend', available: false },
     ],
     adjudicationCoverage: {
-      dojCaseAnnouncements: 'registered_capability_not_ingested',
+      dojCaseAnnouncements: 'not_in_current_capability_contract',
       federalCourtDockets: 'registered_capability_unavailable_to_automation',
       adjudicatedFindingsInBrief: false,
     },
@@ -436,7 +446,7 @@ export function buildMachineBrief(inputs) {
     },
     limitations: [
       'The selected INCB aggregate is not a census of precursor movements or lawful trade.',
-      'Nearly five tonnes is an approximate aggregate across nine incidents, not one exact shipment.',
+      'Nearly five tonnes is a source-qualified upper bound across nine incidents, not one exact shipment.',
       `Operation Pseudonym does not allocate the ${operationPseudonymContext.operationReportedSeizureCount} seizures or any mass by China/India and Australia/New Zealand origin-destination pair.`,
       'CDC mortality is a separate provisional, revisable harm series with no shipment or origin fields.',
       'PICS, PEN Online and automated PACER review are unavailable to this public offline build.',
@@ -455,6 +465,7 @@ export function assertMachineBrief(brief) {
   const lanes = brief?.evidenceLanes ?? {}
   const incidents = lanes.officialEnforcementIncidents ?? {}
   const harm = lanes.harmTrend ?? {}
+  const forbiddenBriefKeys = findForbiddenKeys(brief)
 
   requireExactKeys(errors, brief, [
     'schemaVersion', 'artifactId', 'articleId', 'slug', 'contentClass',
@@ -479,9 +490,10 @@ export function assertMachineBrief(brief) {
     'url', 'sha256', 'retrievedAt',
   ], 'official source document')
   requireExactKeys(errors, incidents.chinaEuAggregate, [
-    'reportedOrigin', 'destination', 'year', 'precursorClass',
-    'reportedQuantityKg', 'quantityRelation', 'quantityBasis', 'recordKind',
-    'incidentCount', 'sourceLocator',
+    'reportedOrigin', 'transit', 'destination', 'seizureLocation', 'year',
+    'precursorClass', 'reportedQuantityKg', 'quantityRelation', 'quantityBasis',
+    'recordKind', 'aggregationEligibility', 'aggregationGroup', 'incidentCount',
+    'sourceLocator',
   ], 'China-to-EU aggregate')
   requireExactKeys(errors, incidents.chinaEuAggregate?.sourceLocator, [
     'pdfPage', 'printedPage', 'paragraph',
@@ -495,7 +507,8 @@ export function assertMachineBrief(brief) {
     'pdfPage', 'printedPage', 'paragraph',
   ], 'Operation Pseudonym source locator')
   requireExactKeys(errors, incidents.quantityAggregation, [
-    'status', 'exactRecordCount', 'nonExactRecordCount', 'summedQuantityKg',
+    'status', 'exactRecordCount', 'nonExactRecordCount', 'eligibleRecordCount',
+    'excludedRecordCount', 'aggregationGroup', 'summedQuantityKg',
   ], 'qualified quantity aggregation')
   requireExactKeys(errors, harm, [
     'sourceCapability', 'geography', 'measure', 'observations', 'provisional',
@@ -517,8 +530,12 @@ export function assertMachineBrief(brief) {
   requireGate(errors, /^https:\/\/www\.incb\.org\/.+\.pdf$/.test(incidents?.document?.url ?? ''), 'exact public INCB PDF URL is required')
   requireGate(errors, /^[a-f0-9]{64}$/.test(incidents?.document?.sha256 ?? ''), 'INCB PDF content hash is required')
   requireGate(errors, /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(incidents?.document?.retrievedAt ?? ''), 'INCB PDF retrieval time is required')
-  requireGate(errors, incidents?.chinaEuAggregate?.quantityRelation === 'approx', 'INCB aggregate must retain its approximate quantity relation')
+  requireGate(errors, incidents?.chinaEuAggregate?.quantityRelation === 'less_than', 'INCB aggregate must retain the source\'s less-than quantity relation')
   requireGate(errors, incidents?.chinaEuAggregate?.recordKind === 'multi_incident_aggregate', 'INCB quantity must remain a multi-incident aggregate')
+  requireGate(errors, incidents?.chinaEuAggregate?.transit === null, 'the China-to-EU aggregate cannot acquire an unstated transit country')
+  requireGate(errors, incidents?.chinaEuAggregate?.seizureLocation === null, 'the China-to-EU aggregate cannot acquire an unstated seizure location')
+  requireGate(errors, incidents?.chinaEuAggregate?.aggregationEligibility === 'ineligible_non_exact', 'the less-than China-to-EU aggregate must remain ineligible for additive aggregation')
+  requireGate(errors, incidents?.chinaEuAggregate?.aggregationGroup === 'meth_pre_precursor_substance_mass', 'the China-to-EU aggregate must retain its canonical comparison group')
   requireGate(errors, Number.isInteger(incidents?.chinaEuAggregate?.incidentCount) && incidents.chinaEuAggregate.incidentCount > 1, 'INCB aggregate must retain its incident count')
   requireGate(errors, Number.isFinite(incidents?.chinaEuAggregate?.reportedQuantityKg) && incidents.chinaEuAggregate.reportedQuantityKg > 0, 'INCB aggregate must retain a positive reported comparison value')
   requireGate(errors, incidents?.chinaEuAggregate?.sourceLocator?.paragraph === 94, 'INCB aggregate must retain paragraph 94 locator')
@@ -528,7 +545,15 @@ export function assertMachineBrief(brief) {
   requireGate(errors, incidents?.operationPseudonymContext?.quantityKg === null, 'Operation Pseudonym context cannot acquire a quantity')
   requireGate(errors, incidents?.operationPseudonymContext?.incidentCountByOriginDestinationPair === null, 'Operation Pseudonym context cannot acquire a bilateral incident count')
   requireGate(errors, incidents?.operationPseudonymContext?.sourceLocator?.paragraph === 46, 'Operation Pseudonym must retain paragraph 46 locator')
-  requireGate(errors, incidents?.quantityAggregation?.status === 'not_computed_non_exact_inputs' && incidents?.quantityAggregation?.summedQuantityKg === null, 'non-exact precursor quantities must not be summed')
+  requireGate(
+    errors,
+    incidents?.quantityAggregation?.status === 'not_computed_non_exact_inputs'
+      && incidents?.quantityAggregation?.eligibleRecordCount === 0
+      && incidents?.quantityAggregation?.excludedRecordCount === incidents?.retainedQuantitativeRecordCount
+      && incidents?.quantityAggregation?.aggregationGroup === null
+      && incidents?.quantityAggregation?.summedQuantityKg === null,
+    'non-exact precursor quantities must remain excluded from additive aggregation',
+  )
   requireGate(errors, incidents?.bilateralSubtotalComputed === false, 'a bilateral subtotal must not be computed')
   requireGate(errors, incidents?.completeFlowSeries === false, 'selected incidents cannot become a complete flow series')
   requireGate(errors, lanes?.lawfulIndustrialTrade?.evidenceStatus === 'not_measured_in_current_inputs', 'lawful-trade lane must stay explicitly unmeasured')
@@ -542,11 +567,11 @@ export function assertMachineBrief(brief) {
   requireGate(errors, brief?.adjudicationCoverage?.adjudicatedFindingsInBrief === false, 'no adjudication is present in this brief')
   requireGate(errors, brief?.safety?.chemistryInstructionsIncluded === false, 'chemistry instructions are forbidden')
   requireGate(errors, brief?.safety?.navigableOperationalDetailsIncluded === false, 'navigable operational detail is forbidden')
-  requireGate(errors, findForbiddenKeys(brief).length === 0, `forbidden subject/location keys found: ${findForbiddenKeys(brief).join(', ')}`)
+  requireGate(errors, forbiddenBriefKeys.length === 0, `forbidden subject/location keys found: ${forbiddenBriefKeys.join(', ')}`)
   requireGate(errors, brief?.gate?.gateId === gateId && brief?.gate?.status === 'passed', 'machine-brief gate marker is absent')
 
   if (errors.length > 0) throw gateFailure(gateId, errors)
-  return { gateId, status: 'passed', assertionCount: 24 }
+  return { gateId, status: 'passed', assertionCount: gateAssertionCount(errors) }
 }
 
 const SOURCE_IDS = Object.freeze({
@@ -756,6 +781,7 @@ export function buildEvidenceAnalysis(brief, inputs) {
   const latestHarm = harm.observations.at(-1)
   const decline = Math.abs(round(((latestHarm.provisionalDeaths / peakHarm.provisionalDeaths) - 1) * 100))
   const publication = publicationState(brief, inputs.previousDossier?.data)
+  const capabilityAsOf = inputs.capabilities.data.asOf
   const sourceCapabilities = [
     'gacc-customs-statistics', 'un-comtrade', 'incb-precursors-public-report',
     'incb-pics', 'incb-pen-online', 'cdc-vsrr-overdose', 'uscourts-pacer',
@@ -770,11 +796,11 @@ export function buildEvidenceAnalysis(brief, inputs) {
   const INCB_46 = { sourceId: 'SRC-INCB-PRECURSORS-2025', locator: 'paragraph 46; PDF page 31; printed page 13' }
   const INCB_ANNUAL = { sourceId: 'SRC-INCB-PRECURSORS-2025', locator: 'paragraphs 67 and 71–72; printed pages 19–20' }
   const CDC_SERIES = { sourceId: 'SRC-CDC-VSRR', locator: `United States; 12 month-ending December; synthetic_opioids (T40.4 excluding methadone); ${firstHarm.year}–${latestHarm.year}` }
-  const GACC_CAP = { sourceId: 'SRC-GACC-STATS', locator: 'registered capability and access boundary; as of 2026-08-12' }
-  const COMTRADE_CAP = { sourceId: 'SRC-UN-COMTRADE', locator: 'registered capability and access boundary; as of 2026-08-12' }
-  const PICS_CAP = { sourceId: 'SRC-INCB-PICS-CAPABILITY', locator: 'registered restricted-system capability; as of 2026-08-12' }
-  const PEN_CAP = { sourceId: 'SRC-INCB-PEN-CAPABILITY', locator: 'registered restricted-system capability; as of 2026-08-12' }
-  const PACER_CAP = { sourceId: 'SRC-USCOURTS-PACER', locator: 'registered account-and-fee access boundary; as of 2026-08-12' }
+  const GACC_CAP = { sourceId: 'SRC-GACC-STATS', locator: `registered capability and access boundary; as of ${capabilityAsOf}` }
+  const COMTRADE_CAP = { sourceId: 'SRC-UN-COMTRADE', locator: `registered capability and access boundary; as of ${capabilityAsOf}` }
+  const PICS_CAP = { sourceId: 'SRC-INCB-PICS-CAPABILITY', locator: `registered restricted-system capability; as of ${capabilityAsOf}` }
+  const PEN_CAP = { sourceId: 'SRC-INCB-PEN-CAPABILITY', locator: `registered restricted-system capability; as of ${capabilityAsOf}` }
+  const PACER_CAP = { sourceId: 'SRC-USCOURTS-PACER', locator: `registered account-and-fee access boundary; as of ${capabilityAsOf}` }
 
   const base = {
     schemaVersion: DOSSIER_SCHEMA_VERSION,
@@ -824,7 +850,7 @@ export function buildEvidenceAnalysis(brief, inputs) {
     dataAsOf: brief.dataAsOf,
     revisionHash: brief.revisionHash,
     keyFigures: [
-      { id: 'china-eu-approximate-mass', value: incident.reportedQuantityKg / 1000, unit: 'tonnes, nearly', label: 'combined across nine PICS incidents', attributionBoundary: 'reported_origin_not_causal_attribution', citationIds: [INCB_94.sourceId], citationLocators: [INCB_94] },
+      { id: 'china-eu-upper-bound-mass', value: incident.reportedQuantityKg / 1000, unit: 'tonnes, nearly', label: 'combined across nine PICS incidents', attributionBoundary: 'reported_origin_not_causal_attribution', citationIds: [INCB_94.sourceId], citationLocators: [INCB_94] },
       { id: 'china-eu-incident-count', value: incident.incidentCount, unit: 'incidents', label: 'reported in the first ten months of 2025', attributionBoundary: 'multi_incident_aggregate', citationIds: [INCB_94.sourceId], citationLocators: [INCB_94] },
       { id: 'operation-pseudonym-count', value: operation.operationReportedSeizureCount, unit: 'seizures', label: 'four-country operation total; not a China-to-Oceania count', attributionBoundary: 'origin_destination_unallocated', citationIds: [INCB_46.sourceId], citationLocators: [INCB_46] },
       { id: 'us-t40-4-deaths-latest', value: latestHarm.provisionalDeaths, unit: 'provisional deaths', label: `US T40.4 excluding methadone, 12 months ending December ${latestHarm.year}`, attributionBoundary: 'harm_context_not_origin_evidence', citationIds: [CDC_SERIES.sourceId], citationLocators: [CDC_SERIES] },
@@ -833,9 +859,9 @@ export function buildEvidenceAnalysis(brief, inputs) {
       {
         id: 'china-eu-aggregate', kind: 'single_record', title: 'China-to-EU aggregate retained at source precision',
         description: 'One multi-incident aggregate. The comparison value is displayed as nearly five tonnes, never as one exact shipment.',
-        unit: 'tonnes, approximate', causalJoinToHarm: false,
+        unit: 'tonnes, upper bound', causalJoinToHarm: false,
         items: [{ id: 'incb-94', year: incident.year, category: 'multi_incident_aggregate', label: `${incident.incidentCount} incidents; ${incident.reportedOrigin} → ${incident.destination}`, value: incident.reportedQuantityKg / 1000, citationIds: [INCB_94.sourceId], citationLocators: [INCB_94] }],
-        note: 'The report says “nearly 5 tons” across nine incidents. The bar is an approximate aggregate, not an exact shipment mass.',
+        note: 'The report says “nearly 5 tons” across nine incidents. The bar retains that less-than upper bound and is not an exact shipment mass.',
       },
       {
         id: 'operation-pseudonym-context', kind: 'single_record', title: 'Operation Pseudonym: the allocation gap',
@@ -874,7 +900,7 @@ export function buildEvidenceAnalysis(brief, inputs) {
         sentences: [
           sentence('S007', 'official_incidents', 'reported_measurement', `INCB reported that, during the first ten months of 2025, ${formatNumber(incident.incidentCount)} incidents involving nearly ${formatNumber(incident.reportedQuantityKg / 1000)} tonnes of two related methamphetamine pre-precursors were communicated through PICS.`, [INCB_94]),
           sentence('S008', 'official_incidents', 'attribution_boundary', 'The report said those substances were mislabelled, reportedly originated in China and were destined for countries in the European Union.', [INCB_94]),
-          sentence('S009', 'official_incidents', 'subtotal_boundary', 'That figure is an approximate multi-incident aggregate, not an exact 5,000 kg shipment, and NarcoScope does not add it to other qualified quantities.', [INCB_94]),
+          sentence('S009', 'official_incidents', 'subtotal_boundary', 'That figure is a less-than multi-incident aggregate, not an exact 5,000 kg shipment, and NarcoScope does not add it to other qualified quantities.', [INCB_94]),
           sentence('S010', 'official_incidents', 'reported_measurement', `For Operation Pseudonym, INCB said four participating countries reported ${operation.operationReportedSeizureCount} seizures, most in Australia and New Zealand, and reported China and India as origins in those two countries.`, [INCB_46]),
           sentence('S011', 'official_incidents', 'coverage_limit', 'The public report does not allocate those seizures or their mass by origin-and-destination pair; Australia’s and New Zealand’s annual totals are separate aggregates and are excluded here.', [INCB_46, INCB_ANNUAL]),
         ],
@@ -908,7 +934,7 @@ export function buildEvidenceAnalysis(brief, inputs) {
     },
     limitations: [
       sentence('L001', 'limitations', 'selection', 'The INCB extract covers selected reported incidents and cannot estimate all precursor trade, diversion or successful movement.', [INCB_94]),
-      sentence('L002', 'limitations', 'origin', 'Nearly five tonnes preserves the report’s approximate precision and must not be represented as one exact shipment.', [INCB_94]),
+      sentence('L002', 'limitations', 'origin', 'Nearly five tonnes preserves the report’s less-than precision and must not be represented as one exact shipment.', [INCB_94]),
       sentence('L003', 'limitations', 'trade_denominator', 'No admitted GACC or UN Comtrade chemical-product series supplies a lawful industrial-trade denominator.', [GACC_CAP, COMTRADE_CAP]),
       sentence('L004', 'limitations', 'attribution_boundary', 'Operation Pseudonym names China and India as reported origins but does not publish bilateral count or mass allocations in paragraph 46.', [INCB_46]),
       sentence('L005', 'limitations', 'harm_join', 'CDC T40.4 mortality is provisional and has no record-level join to the INCB incidents.', [CDC_SERIES, INCB_94]),
@@ -1154,6 +1180,8 @@ export function assertAutomatedEvidenceAnalysis(dossier, brief, registry, previo
   const text = sentences.map((item) => item.text).join(' ')
   const lanes = new Set((dossier?.sections ?? []).map((section) => section.evidenceLane))
   const requiredLanes = ['methodology', 'lawful_trade', 'official_incidents', 'harm', 'what_cannot_show']
+  const historyFailures = publicationHistoryFailures(dossier)
+  const forbiddenDossierKeys = findForbiddenKeys(dossier)
 
   requireGate(errors, dossier?.schemaVersion === DOSSIER_SCHEMA_VERSION, 'unexpected dossier schema')
   requireGate(errors, dossier?.contentClass === 'automated_evidence_analysis', 'analysis content class is required')
@@ -1174,7 +1202,7 @@ export function assertAutomatedEvidenceAnalysis(dossier, brief, registry, previo
   requireGate(errors, /does not simulate those voices/i.test(dossier?.publicationRecord?.testimony?.disclosure ?? ''), 'testimony disclosure is required')
   requireGate(errors, dossier?.publicationRecord?.updateHistory?.[0]?.eventType === 'initial_publication', 'initial publication history is required')
   requireGate(errors, dossier?.publicationRecord?.updateHistory?.at(-1)?.revisionHash === dossier?.revisionHash, 'latest publication history event must pin the revision hash')
-  requireGate(errors, publicationHistoryFailures(dossier).length === 0, `publication history is invalid: ${publicationHistoryFailures(dossier).join('; ')}`)
+  requireGate(errors, historyFailures.length === 0, `publication history is invalid: ${historyFailures.join('; ')}`)
   requireGate(errors, dossier?.promotion?.fromContentClass === 'machine_brief', 'analysis must record machine-brief promotion')
   requireGate(errors, dossier?.promotion?.machineBriefContentHash === brief?.contentHash, 'analysis must pin the gated machine brief')
   requireGate(errors, dossier?.revisionHash === brief?.revisionHash, 'analysis and machine brief revision hashes must match')
@@ -1214,7 +1242,7 @@ export function assertAutomatedEvidenceAnalysis(dossier, brief, registry, previo
   }
   requireGate(errors, dossier?.countercase?.sentences?.length >= 2, 'countercase is required')
   requireGate(errors, dossier?.limitations?.length >= 5, 'at least five limitations are required')
-  requireGate(errors, dossier?.keyFigures?.find((item) => item.id === 'china-eu-approximate-mass')?.value === brief.evidenceLanes.officialEnforcementIncidents.chinaEuAggregate.reportedQuantityKg / 1000, 'INCB approximate-tonnage figure must derive from the brief')
+  requireGate(errors, dossier?.keyFigures?.find((item) => item.id === 'china-eu-upper-bound-mass')?.value === brief.evidenceLanes.officialEnforcementIncidents.chinaEuAggregate.reportedQuantityKg / 1000, 'INCB upper-bound tonnage figure must derive from the brief')
   requireGate(errors, dossier?.keyFigures?.find((item) => item.id === 'china-eu-incident-count')?.value === brief.evidenceLanes.officialEnforcementIncidents.chinaEuAggregate.incidentCount, 'INCB incident count must derive from the brief')
   requireGate(errors, dossier?.keyFigures?.find((item) => item.id === 'operation-pseudonym-count')?.value === brief.evidenceLanes.officialEnforcementIncidents.operationPseudonymContext.operationReportedSeizureCount, 'Operation Pseudonym count must derive from the brief')
   requireGate(errors, /does not allocate those seizures or their mass/i.test(text), 'Operation Pseudonym allocation boundary is required')
@@ -1225,7 +1253,7 @@ export function assertAutomatedEvidenceAnalysis(dossier, brief, registry, previo
   requireGate(errors, dossier?.sources?.find((item) => item.registryId === 'incb-pen-online')?.newsroomUseStatus === 'unavailable', 'PEN Online must be cited only as unavailable capability')
   requireGate(errors, dossier?.safety?.chemistryInstructionsIncluded === false, 'chemistry instructions are forbidden')
   requireGate(errors, dossier?.safety?.navigableOperationalDetailsIncluded === false, 'navigable operational details are forbidden')
-  requireGate(errors, findForbiddenKeys(dossier).length === 0, `forbidden subject/location keys found: ${findForbiddenKeys(dossier).join(', ')}`)
+  requireGate(errors, forbiddenDossierKeys.length === 0, `forbidden subject/location keys found: ${forbiddenDossierKeys.join(', ')}`)
 
   const receipt = buildVerificationReceipt(dossier, registry)
   requireGate(errors, receipt.passed, `verification receipt failed: ${receipt.failures.join('; ')}`)
@@ -1263,7 +1291,7 @@ export function assertAutomatedEvidenceAnalysis(dossier, brief, registry, previo
   return {
     gateId,
     status: 'passed',
-    assertionCount: 59 + sentences.length * 4,
+    assertionCount: gateAssertionCount(errors),
     citationCoveragePct: receipt.citationCoverage.percent,
     synthesisSentenceCount: receipt.synthesisEvaluation.synthesisSentenceCount,
     minimumActiveIndependenceGroups: receipt.synthesisEvaluation.minimumObservedActiveGroupCount,
@@ -1477,13 +1505,14 @@ export function renderArticleHtml(dossier) {
     .evidence-visual caption { text-align:left; color:var(--muted); padding-bottom:.35rem; }
     .evidence-visual th,.evidence-visual td { padding:.45rem .3rem; border-bottom:1px solid var(--line); text-align:left; vertical-align:middle; }
     .evidence-visual thead th { color:var(--muted); font-weight:500; }
-    .visual-category { display:block; color:var(--warn); font-size:.62rem; text-transform:uppercase; letter-spacing:.05em; }
+    .visual-category { display:block; color:var(--warn); font-size:.7rem; text-transform:uppercase; letter-spacing:.05em; }
     .visual-value { color:#fff; font-variant-numeric:tabular-nums; white-space:nowrap; }
     .visual-bar-cell { min-width:72px; }
     .visual-bar { display:block; width:100%; height:.45rem; border-radius:999px; background:#1b1b1b; overflow:hidden; }
     .visual-bar i { display:block; height:100%; border-radius:inherit; background:linear-gradient(90deg,var(--live),var(--warn)); }
     .visual-note { margin:.75rem 0 0; }
     .citation { margin-left:.18rem; font-size:.75rem; text-decoration:none; }
+    .citation-locator { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
     .limitations { padding-left:1.25rem; }
     .limitations li { margin:.65rem 0; }
     .source-list { padding-left:1.25rem; }

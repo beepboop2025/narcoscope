@@ -8,6 +8,7 @@
 
 import { affordabilityDays } from './metrics'
 import type {
+  FlowAggregationGroup,
   FlowRecord,
   MmConflictEventRecord,
   MmFlowRecord,
@@ -15,6 +16,7 @@ import type {
   MmRegionRecord,
   PriceRecord,
 } from '../types'
+import { isFlowAggregationEligible } from '../types'
 
 const fmtUsd = (v: number | null): string => (v == null ? 'n/a' : `$${Math.round(v).toLocaleString()}`)
 
@@ -60,18 +62,61 @@ export function explainPrices(rows: PriceRecord[] | null | undefined, drugLabel:
 }
 
 /** Precursor flows: record counts and an exact-only subtotal when explicitly qualified. */
+export interface FlowAggregationSummary {
+  aggregationGroup: FlowAggregationGroup | null
+  aggregationGroupCount: number
+  eligibleRecordCount: number
+  excludedRecordCount: number
+  summedQuantityKg: number | null
+}
+
+export function flowAggregationGroupLabel(group: FlowAggregationGroup): string {
+  const labels: Record<FlowAggregationGroup, string> = {
+    mdma_precursor_substance_mass: 'MDMA precursor substance mass',
+    meth_pre_precursor_substance_mass: 'methamphetamine pre-precursor substance mass',
+    pseudoephedrine_preparation_gross_mass: 'pseudoephedrine-preparation gross mass',
+    potassium_permanganate_substance_mass: 'potassium permanganate substance mass',
+    pseudoephedrine_preparation_mass: 'pseudoephedrine-preparation mass',
+  }
+  return labels[group]
+}
+
+/**
+ * Produces one subtotal only when the explicitly eligible exact rows share one
+ * canonical compatible basis. All other rows remain excluded from that sum.
+ */
+export function summarizeFlowAggregation(flows: FlowRecord[]): FlowAggregationSummary {
+  const eligible = flows.filter(isFlowAggregationEligible)
+  const groups = [...new Set(eligible.map((record) => record.aggregationGroup))]
+  const aggregationGroup = groups.length === 1 ? groups[0] : null
+  return {
+    aggregationGroup,
+    aggregationGroupCount: groups.length,
+    eligibleRecordCount: eligible.length,
+    excludedRecordCount: flows.length - eligible.length,
+    summedQuantityKg: aggregationGroup == null
+      ? null
+      : eligible
+        .filter((record) => record.aggregationGroup === aggregationGroup)
+        .reduce((total, record) => total + record.quantityKg, 0),
+  }
+}
+
 export function explainFlows(
   flows: FlowRecord[] | null | undefined,
   scopeLabel = 'the records shown',
 ): string | null {
   if (!flows || flows.length === 0) return `No trafficking corridors are recorded for ${scopeLabel}.`
-  const exact = flows.filter((record) => record.quantityRelation === 'exact')
-  const qualified = flows.length - exact.length
-  const exactTotal = exact.reduce((total, record) => total + record.quantityKg, 0)
-  const exactText = exact.length > 0
-    ? `${humanizeMass(exactTotal)} across ${exact.length} exact record${exact.length === 1 ? '' : 's'}`
-    : 'no exact-only subtotal'
-  return `The ${scopeLabel} view contains ${flows.length} source-grained record${flows.length === 1 ? '' : 's'}: ${exactText}; ${qualified} approximate, bounded or unqualified record${qualified === 1 ? ' is' : 's are'} kept separate. Values with different precision, incident grain or quantity bases are not combined into a route share or “largest shipment.”`
+  const aggregation = summarizeFlowAggregation(flows)
+  let subtotalText: string
+  if (aggregation.summedQuantityKg != null && aggregation.aggregationGroup != null) {
+    subtotalText = `${humanizeMass(aggregation.summedQuantityKg)} across ${aggregation.eligibleRecordCount} aggregation-eligible exact record${aggregation.eligibleRecordCount === 1 ? '' : 's'} in the ${flowAggregationGroupLabel(aggregation.aggregationGroup)} group`
+  } else if (aggregation.aggregationGroupCount > 1) {
+    subtotalText = `no cross-group subtotal; ${aggregation.eligibleRecordCount} eligible exact records remain split across ${aggregation.aggregationGroupCount} canonical aggregation groups`
+  } else {
+    subtotalText = 'no compatible exact subtotal'
+  }
+  return `The ${scopeLabel} view contains ${flows.length} source-grained record${flows.length === 1 ? '' : 's'}: ${subtotalText}; ${aggregation.excludedRecordCount} non-exact, derived, incompatible-basis or unqualified record${aggregation.excludedRecordCount === 1 ? ' is' : 's are'} kept separate. Values with different precision, incident grain or quantity bases are not combined into a route share or “largest shipment.”`
 }
 
 /** Myanmar focus: where activity/cultivation peaks + the busiest exit route. */

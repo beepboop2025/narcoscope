@@ -420,7 +420,7 @@
         "retrievedAt": "2026-08-12T13:50:25Z",
         "input": {
           "path": "src/data/flows.ts",
-          "sha256": "2f50c75aae185a87def5565797daa5b164c97f951361095195240569a30071b0"
+          "sha256": "00799d3f4c7756a7790ccea8e1d0b8c4ac5fa97f7b7df26fe972d074864bc4dc"
         }
       },
       "data": {
@@ -430,6 +430,9 @@
           "status": "not_computed_non_exact_inputs",
           "exactRecordCount": 0,
           "nonExactRecordCount": 1,
+          "eligibleRecordCount": 0,
+          "excludedRecordCount": 1,
+          "aggregationGroup": null,
           "summedQuantityKg": null
         },
         "corridors": [
@@ -438,12 +441,15 @@
             "reportedOrigin": "China",
             "transit": null,
             "destination": "European Union",
+            "seizureLocation": null,
             "year": 2025,
             "precursor": "meth_pre_precursors",
             "quantityKg": 5000,
-            "quantityRelation": "approx",
-            "quantityBasis": "Combined substance mass across nine PICS incidents; the source reports nearly 5 tons.",
+            "quantityRelation": "less_than",
+            "quantityBasis": "Combined substance mass across nine PICS incidents; the source reports nearly 5 tons, retained as a less-than 5,000 kg bound.",
             "recordKind": "multi_incident_aggregate",
+            "aggregationEligibility": "ineligible_non_exact",
+            "aggregationGroup": "meth_pre_precursor_substance_mass",
             "incidentCount": 9,
             "sourceLocator": {
               "pdfPage": 44,
@@ -481,7 +487,7 @@
       "limitations": [
         "These are selected reported incidents, not a complete flow series or an estimate of total precursor trade.",
         "Operation Pseudonym does not allocate seizure counts or mass by origin-and-destination pair, so its China/India and Australia/New Zealand statement is retained only as non-summable context.",
-        "Approximate quantities and bounds are never added into an exact total.",
+        "Only exact rows explicitly eligible for one canonical aggregation group enter a subtotal; bounds, derivations and incompatible bases remain excluded.",
         "Quantities describe seizures or incidents and do not measure successful movement or end-drug output."
       ]
     },

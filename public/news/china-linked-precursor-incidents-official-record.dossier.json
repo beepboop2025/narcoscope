@@ -36,13 +36,19 @@
         "date": "2026-08-12",
         "summary": "Initial deterministic publication from the cited checked-in official-source snapshots.",
         "revisionHash": "92dc194dc5087203186932d00440ba682e939495a7b36146bfd169480b58549b"
+      },
+      {
+        "eventType": "data_refresh",
+        "date": "2026-08-12",
+        "summary": "Deterministic source refresh; evidence, qualification and publication receipts were recomputed.",
+        "revisionHash": "ac3c3bac4574313ffacb3bb10ceb2e7a932be7e43d9a6123f5b0fee9ed7792ed"
       }
     ]
   },
   "promotion": {
     "fromContentClass": "machine_brief",
     "machineBriefUrl": "/news/china-linked-precursor-incidents-official-record.machine-brief.json",
-    "machineBriefContentHash": "6e6ade655ca827910a509a5eb6e8dcc98a0696525b5318e0cef037155de19958",
+    "machineBriefContentHash": "dccd6f085a0b41015fbffed891dedeaba2defd191d3bbd29e346ad93ff0c9ada",
     "requiredGate": "automated-evidence-analysis-gate.v1"
   },
   "title": "What the 2025 INCB precursor report says about China-linked incidents—and what it does not prove",
@@ -51,10 +57,10 @@
   "publishedAt": "2026-08-12T00:00:00.000Z",
   "updatedAt": "2026-08-12T00:00:00.000Z",
   "dataAsOf": "2026-08-12",
-  "revisionHash": "92dc194dc5087203186932d00440ba682e939495a7b36146bfd169480b58549b",
+  "revisionHash": "ac3c3bac4574313ffacb3bb10ceb2e7a932be7e43d9a6123f5b0fee9ed7792ed",
   "keyFigures": [
     {
-      "id": "china-eu-approximate-mass",
+      "id": "china-eu-upper-bound-mass",
       "value": 5,
       "unit": "tonnes, nearly",
       "label": "combined across nine PICS incidents",
@@ -124,7 +130,7 @@
       "kind": "single_record",
       "title": "China-to-EU aggregate retained at source precision",
       "description": "One multi-incident aggregate. The comparison value is displayed as nearly five tonnes, never as one exact shipment.",
-      "unit": "tonnes, approximate",
+      "unit": "tonnes, upper bound",
       "causalJoinToHarm": false,
       "items": [
         {
@@ -144,7 +150,7 @@
           ]
         }
       ],
-      "note": "The report says “nearly 5 tons” across nine incidents. The bar is an approximate aggregate, not an exact shipment mass."
+      "note": "The report says “nearly 5 tons” across nine incidents. The bar retains that less-than upper bound and is not an exact shipment mass."
     },
     {
       "id": "operation-pseudonym-context",
@@ -621,7 +627,7 @@
             "minimumIndependentActiveGroups": 1,
             "corroborationClaimed": false
           },
-          "text": "That figure is an approximate multi-incident aggregate, not an exact 5,000 kg shipment, and NarcoScope does not add it to other qualified quantities.",
+          "text": "That figure is a less-than multi-incident aggregate, not an exact 5,000 kg shipment, and NarcoScope does not add it to other qualified quantities.",
           "citationIds": [
             "SRC-INCB-PRECURSORS-2025"
           ],
@@ -1076,7 +1082,7 @@
         "minimumIndependentActiveGroups": 1,
         "corroborationClaimed": false
       },
-      "text": "Nearly five tonnes preserves the report’s approximate precision and must not be represented as one exact shipment.",
+      "text": "Nearly five tonnes preserves the report’s less-than precision and must not be represented as one exact shipment.",
       "citationIds": [
         "SRC-INCB-PRECURSORS-2025"
       ],
@@ -1239,7 +1245,7 @@
       "registryId": "un-comtrade",
       "publisher": "United Nations Statistics Division",
       "title": "UN Comtrade Database and API",
-      "url": "https://comtrade.un.org/",
+      "url": "https://comtradeplus.un.org/",
       "evidenceClass": "lawful_trade_context",
       "upstreamGroup": "un-unsd-comtrade",
       "newsroomRole": "capability_only",
@@ -1990,7 +1996,7 @@
     },
     "editorialCompleteness": {
       "correctionsStatus": "none_recorded",
-      "updateHistoryEventCount": 1,
+      "updateHistoryEventCount": 2,
       "initialPublicationRecorded": true,
       "rightToReplyStatus": "not_required",
       "outreachPerformed": false,
@@ -2012,12 +2018,12 @@
     },
     "deterministicHashes": {
       "algorithm": "sha256",
-      "revisionHash": "92dc194dc5087203186932d00440ba682e939495a7b36146bfd169480b58549b",
-      "machineBriefContentHash": "6e6ade655ca827910a509a5eb6e8dcc98a0696525b5318e0cef037155de19958",
+      "revisionHash": "ac3c3bac4574313ffacb3bb10ceb2e7a932be7e43d9a6123f5b0fee9ed7792ed",
+      "machineBriefContentHash": "dccd6f085a0b41015fbffed891dedeaba2defd191d3bbd29e346ad93ff0c9ada",
       "dossierContentHashScope": "canonical JSON of the dossier including this receipt and excluding the top-level contentHash field"
     },
     "failures": [],
     "passed": true
   },
-  "contentHash": "056b117f4a3301a9971e75bd64aac53d0aa252166a9fd55dc449cd57fbd9e4ab"
+  "contentHash": "3b225acdf4c1aff4a41eb1e8699115f9b12a935d7db6d7b09669d32bf8702873"
 }

@@ -1,15 +1,20 @@
 import { useMemo, useState, type ChangeEvent } from 'react'
 import { PRECURSORS } from '../data/flows'
 import { useData } from '../lib/dataStore'
-import { explainFlows } from '../lib/explain'
+import {
+  explainFlows,
+  flowAggregationGroupLabel,
+  summarizeFlowAggregation,
+} from '../lib/explain'
 import Explainer from './Explainer'
 import CountUp from '../motion/CountUp'
 import type { FlowRecord } from '../types'
+import { isFlowAggregationEligible } from '../types'
 
 const fmtKg = (v: number): string => `${Number(v).toLocaleString()} kg`
 const fmtUsd = (v: number): string => `$${Number(v).toLocaleString()}`
 
-export const isExactFlowRecord = (record: FlowRecord): boolean => record.quantityRelation === 'exact'
+export const isAggregationEligibleFlowRecord = isFlowAggregationEligible
 
 export function formatFlowQuantity(record: FlowRecord): string {
   if (record.quantityRelation === 'approx') return `≈ ${fmtKg(record.quantityKg)}`
@@ -33,16 +38,7 @@ export default function Flows() {
   )
 
   // Headline figures for the stat band — recomputed (and re-animated) on filter.
-  const exactTotalSeized = useMemo(
-    () => flows
-      .filter(isExactFlowRecord)
-      .reduce((sum, record) => sum + record.quantityKg, 0),
-    [flows],
-  )
-  const exactRecordCount = useMemo(
-    () => flows.filter(isExactFlowRecord).length,
-    [flows],
-  )
+  const aggregation = useMemo(() => summarizeFlowAggregation(flows), [flows])
   const maxPrice = useMemo(
     () => prices.reduce((m, r) => Math.max(m, r.priceUsdPerKg), 0),
     [prices],
@@ -64,8 +60,18 @@ export default function Flows() {
 
       <div className="stat-band">
         <div className="stat">
-          <span className="stat-value"><CountUp value={exactTotalSeized} suffix=" kg" /></span>
-          <span className="stat-label">Exact-only subtotal ({exactRecordCount} records)</span>
+          <span className="stat-value">
+            {aggregation.summedQuantityKg == null
+              ? '—'
+              : <CountUp value={aggregation.summedQuantityKg} suffix=" kg" />}
+          </span>
+          <span className="stat-label">
+            {aggregation.aggregationGroup
+              ? `Compatible exact subtotal — ${flowAggregationGroupLabel(aggregation.aggregationGroup)} (${aggregation.eligibleRecordCount} records)`
+              : aggregation.aggregationGroupCount > 1
+                ? `No cross-group subtotal (${aggregation.aggregationGroupCount} compatible groups)`
+                : 'No compatible exact subtotal'}
+          </span>
         </div>
         <div className="stat">
           <span className="stat-value"><CountUp value={flows.length} group={false} /></span>
@@ -82,7 +88,7 @@ export default function Flows() {
       <h3>Trafficking corridors — reported incidents and aggregates (country-level)</h3>
       <table className="data-table">
         <thead>
-          <tr><th>Precursor</th><th>Origin</th><th>Transit</th><th>Destination</th><th>Year</th><th>Seized</th><th>Source</th></tr>
+          <tr><th>Precursor</th><th>Origin</th><th>Transit</th><th>Destination</th><th>Seizure location</th><th>Year</th><th>Seized</th><th>Source</th></tr>
         </thead>
         <tbody>
           {flows.map((r, i) => (
@@ -91,6 +97,7 @@ export default function Flows() {
               <td className={r.origin === 'China' ? 'hot' : ''}>{r.origin}</td>
               <td>{r.transit ?? '—'}</td>
               <td>{r.destination}</td>
+              <td>{r.seizureLocation ?? '—'}</td>
               <td>{r.year}</td>
               <td>{formatFlowQuantity(r)}</td>
               <td>{r.sourceName
@@ -122,9 +129,9 @@ export default function Flows() {
       <p className="note">
         Corridor rows are official: each is a seizure/incident corridor stated
         in the INCB Precursors Report 2025 (paragraph citations in the source
-        data). Approximate, bounded, and unqualified values are excluded from
-        the exact-only subtotal because their precision and quantity bases
-        cannot be safely added. Highlighted rows mark <strong>China</strong> as a reported
+        data). A subtotal is shown only for explicitly eligible exact rows in
+        one canonical quantity-basis group. Non-exact, derived, unqualified,
+        and cross-group values remain separate. Highlighted rows mark <strong>China</strong> as a reported
         origin. Precursor <em>prices</em> remain illustrative — INCB publishes
         no price series. See the Flow Map tab for corridor arcs.
       </p>

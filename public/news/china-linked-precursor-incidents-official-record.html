@@ -44,13 +44,14 @@
     .evidence-visual caption { text-align:left; color:var(--muted); padding-bottom:.35rem; }
     .evidence-visual th,.evidence-visual td { padding:.45rem .3rem; border-bottom:1px solid var(--line); text-align:left; vertical-align:middle; }
     .evidence-visual thead th { color:var(--muted); font-weight:500; }
-    .visual-category { display:block; color:var(--warn); font-size:.62rem; text-transform:uppercase; letter-spacing:.05em; }
+    .visual-category { display:block; color:var(--warn); font-size:.7rem; text-transform:uppercase; letter-spacing:.05em; }
     .visual-value { color:#fff; font-variant-numeric:tabular-nums; white-space:nowrap; }
     .visual-bar-cell { min-width:72px; }
     .visual-bar { display:block; width:100%; height:.45rem; border-radius:999px; background:#1b1b1b; overflow:hidden; }
     .visual-bar i { display:block; height:100%; border-radius:inherit; background:linear-gradient(90deg,var(--live),var(--warn)); }
     .visual-note { margin:.75rem 0 0; }
     .citation { margin-left:.18rem; font-size:.75rem; text-decoration:none; }
+    .citation-locator { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
     .limitations { padding-left:1.25rem; }
     .limitations li { margin:.65rem 0; }
     .source-list { padding-left:1.25rem; }
@@ -113,8 +114,8 @@
         </figcaption>
         <div class="visual-table-scroll">
           <table>
-            <caption>China-to-EU aggregate retained at source precision in tonnes, approximate</caption>
-            <thead><tr><th scope="col">Year</th><th scope="col">Record</th><th scope="col">tonnes, approximate</th><th scope="col">Relative scale</th><th scope="col">Source</th></tr></thead>
+            <caption>China-to-EU aggregate retained at source precision in tonnes, upper bound</caption>
+            <thead><tr><th scope="col">Year</th><th scope="col">Record</th><th scope="col">tonnes, upper bound</th><th scope="col">Relative scale</th><th scope="col">Source</th></tr></thead>
             <tbody>
           <tr>
             <th scope="row">2025</th>
@@ -126,7 +127,7 @@
             </tbody>
           </table>
         </div>
-        <p class="visual-note"><strong>Boundary:</strong> The report says “nearly 5 tons” across nine incidents. The bar is an approximate aggregate, not an exact shipment mass.</p>
+        <p class="visual-note"><strong>Boundary:</strong> The report says “nearly 5 tons” across nine incidents. The bar retains that less-than upper bound and is not an exact shipment mass.</p>
       </figure>
       <figure class="evidence-visual" aria-labelledby="operation-pseudonym-context-title" aria-describedby="operation-pseudonym-context-description">
         <figcaption>
@@ -262,7 +263,7 @@
       <h2>What the INCB report actually says</h2>
       <p id="S007">INCB reported that, during the first ten months of 2025, 9 incidents involving nearly 5 tonnes of two related methamphetamine pre-precursors were communicated through PICS. <span class="citations"><a class="citation" href="#SRC-INCB-PRECURSORS-2025" aria-label="Source 3" title="paragraph 94; PDF page 44; printed page 26">[3]</a><span class="citation-locator">paragraph 94; PDF page 44; printed page 26</span></span></p>
       <p id="S008">The report said those substances were mislabelled, reportedly originated in China and were destined for countries in the European Union. <span class="citations"><a class="citation" href="#SRC-INCB-PRECURSORS-2025" aria-label="Source 3" title="paragraph 94; PDF page 44; printed page 26">[3]</a><span class="citation-locator">paragraph 94; PDF page 44; printed page 26</span></span></p>
-      <p id="S009">That figure is an approximate multi-incident aggregate, not an exact 5,000 kg shipment, and NarcoScope does not add it to other qualified quantities. <span class="citations"><a class="citation" href="#SRC-INCB-PRECURSORS-2025" aria-label="Source 3" title="paragraph 94; PDF page 44; printed page 26">[3]</a><span class="citation-locator">paragraph 94; PDF page 44; printed page 26</span></span></p>
+      <p id="S009">That figure is a less-than multi-incident aggregate, not an exact 5,000 kg shipment, and NarcoScope does not add it to other qualified quantities. <span class="citations"><a class="citation" href="#SRC-INCB-PRECURSORS-2025" aria-label="Source 3" title="paragraph 94; PDF page 44; printed page 26">[3]</a><span class="citation-locator">paragraph 94; PDF page 44; printed page 26</span></span></p>
       <p id="S010">For Operation Pseudonym, INCB said four participating countries reported 168 seizures, most in Australia and New Zealand, and reported China and India as origins in those two countries. <span class="citations"><a class="citation" href="#SRC-INCB-PRECURSORS-2025" aria-label="Source 3" title="paragraph 46; PDF page 31; printed page 13">[3]</a><span class="citation-locator">paragraph 46; PDF page 31; printed page 13</span></span></p>
       <p id="S011">The public report does not allocate those seizures or their mass by origin-and-destination pair; Australia’s and New Zealand’s annual totals are separate aggregates and are excluded here. <span class="citations"><a class="citation" href="#SRC-INCB-PRECURSORS-2025" aria-label="Source 3" title="paragraph 46; PDF page 31; printed page 13">[3]</a><span class="citation-locator">paragraph 46; PDF page 31; printed page 13</span><a class="citation" href="#SRC-INCB-PRECURSORS-2025" aria-label="Source 3" title="paragraphs 67 and 71–72; printed pages 19–20">[3]</a><span class="citation-locator">paragraphs 67 and 71–72; printed pages 19–20</span></span></p>
     </section>
@@ -293,7 +294,7 @@
       <p class="lane">limitations</p>
       <h2>Limitations</h2>
       <ul class="limitations"><li id="L001">The INCB extract covers selected reported incidents and cannot estimate all precursor trade, diversion or successful movement. <span class="citations"><a class="citation" href="#SRC-INCB-PRECURSORS-2025" aria-label="Source 3" title="paragraph 94; PDF page 44; printed page 26">[3]</a><span class="citation-locator">paragraph 94; PDF page 44; printed page 26</span></span></li>
-      <li id="L002">Nearly five tonnes preserves the report’s approximate precision and must not be represented as one exact shipment. <span class="citations"><a class="citation" href="#SRC-INCB-PRECURSORS-2025" aria-label="Source 3" title="paragraph 94; PDF page 44; printed page 26">[3]</a><span class="citation-locator">paragraph 94; PDF page 44; printed page 26</span></span></li>
+      <li id="L002">Nearly five tonnes preserves the report’s less-than precision and must not be represented as one exact shipment. <span class="citations"><a class="citation" href="#SRC-INCB-PRECURSORS-2025" aria-label="Source 3" title="paragraph 94; PDF page 44; printed page 26">[3]</a><span class="citation-locator">paragraph 94; PDF page 44; printed page 26</span></span></li>
       <li id="L003">No admitted GACC or UN Comtrade chemical-product series supplies a lawful industrial-trade denominator. <span class="citations"><a class="citation" href="#SRC-GACC-STATS" aria-label="Source 1" title="registered capability and access boundary; as of 2026-08-12">[1]</a><span class="citation-locator">registered capability and access boundary; as of 2026-08-12</span><a class="citation" href="#SRC-UN-COMTRADE" aria-label="Source 2" title="registered capability and access boundary; as of 2026-08-12">[2]</a><span class="citation-locator">registered capability and access boundary; as of 2026-08-12</span></span></li>
       <li id="L004">Operation Pseudonym names China and India as reported origins but does not publish bilateral count or mass allocations in paragraph 46. <span class="citations"><a class="citation" href="#SRC-INCB-PRECURSORS-2025" aria-label="Source 3" title="paragraph 46; PDF page 31; printed page 13">[3]</a><span class="citation-locator">paragraph 46; PDF page 31; printed page 13</span></span></li>
       <li id="L005">CDC T40.4 mortality is provisional and has no record-level join to the INCB incidents. <span class="citations"><a class="citation" href="#SRC-CDC-VSRR" aria-label="Source 6" title="United States; 12 month-ending December; synthetic_opioids (T40.4 excluding methadone); 2015–2025">[6]</a><span class="citation-locator">United States; 12 month-ending December; synthetic_opioids (T40.4 excluding methadone); 2015–2025</span><a class="citation" href="#SRC-INCB-PRECURSORS-2025" aria-label="Source 3" title="paragraph 94; PDF page 44; printed page 26">[3]</a><span class="citation-locator">paragraph 94; PDF page 44; printed page 26</span></span></li>
@@ -309,7 +310,7 @@
         <small>Public web tables and releases; the English interactive-table surface is not a stable bulk API.</small>
       </li>
       <li id="SRC-UN-COMTRADE">
-        <a href="https://comtrade.un.org/" rel="noreferrer">[2] United Nations Statistics Division — UN Comtrade Database and API</a>
+        <a href="https://comtradeplus.un.org/" rel="noreferrer">[2] United Nations Statistics Division — UN Comtrade Database and API</a>
         <span>capability_only · un-unsd-comtrade · public_aggregate</span>
         <small>A keyless preview API is public and limited; free registered API access has quotas; bulk access and some redistribution require a subscription or licence.</small>
       </li>
@@ -352,11 +353,17 @@
         <span>Initial deterministic publication from the cited checked-in official-source snapshots.</span>
         <code>92dc194dc5087203186932d00440ba682e939495a7b36146bfd169480b58549b</code>
       </li>
+      <li>
+        <time datetime="2026-08-12">2026-08-12</time>
+        <strong>data refresh</strong>
+        <span>Deterministic source refresh; evidence, qualification and publication receipts were recomputed.</span>
+        <code>ac3c3bac4574313ffacb3bb10ceb2e7a932be7e43d9a6123f5b0fee9ed7792ed</code>
+      </li>
       </ol>
     </section>
     <footer class="hashes">
-      <span>Revision <code>92dc194dc5087203186932d00440ba682e939495a7b36146bfd169480b58549b</code></span>
-      <span>Content <code>056b117f4a3301a9971e75bd64aac53d0aa252166a9fd55dc449cd57fbd9e4ab</code></span>
+      <span>Revision <code>ac3c3bac4574313ffacb3bb10ceb2e7a932be7e43d9a6123f5b0fee9ed7792ed</code></span>
+      <span>Content <code>3b225acdf4c1aff4a41eb1e8699115f9b12a935d7db6d7b09669d32bf8702873</code></span>
       <a href="/news/china-linked-precursor-incidents-official-record.machine-brief.json">Machine brief</a>
       <a href="/news/china-linked-precursor-incidents-official-record.dossier.json">Dossier JSON</a>
       <a href="/news/feed.json">JSON feed</a>

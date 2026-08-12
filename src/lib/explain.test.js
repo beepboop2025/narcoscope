@@ -84,6 +84,9 @@ describe('explainFlows', () => {
         transit: 'Thailand',
         quantityKg: 5000,
         quantityRelation: 'exact',
+        recordKind: 'multi_incident_aggregate',
+        aggregationEligibility: 'eligible',
+        aggregationGroup: 'pseudoephedrine_preparation_mass',
         drug: 'Methamphetamine',
       },
       {
@@ -91,12 +94,16 @@ describe('explainFlows', () => {
         destination: 'Thailand',
         quantityKg: 2000,
         quantityRelation: 'exact',
+        recordKind: 'multi_incident_aggregate',
+        aggregationEligibility: 'eligible',
+        aggregationGroup: 'pseudoephedrine_preparation_mass',
         drug: 'Methamphetamine',
       },
     ]
     const sentence = explainFlows(flows, 'East Asia')
     assert.ok(sentence.includes('7.0 tonnes'))
-    assert.ok(sentence.includes('2 exact records'))
+    assert.ok(sentence.includes('2 aggregation-eligible exact records'))
+    assert.ok(sentence.includes('pseudoephedrine-preparation mass group'))
     assert.ok(sentence.includes('not combined into a route share'))
   })
 
@@ -112,8 +119,8 @@ describe('explainFlows', () => {
       { origin: 'Unknown', destination: 'Elsewhere', quantityKg: 900 },
     ], 'legacy imports')
 
-    assert.ok(sentence.includes('no exact-only subtotal'))
-    assert.ok(sentence.includes('1 approximate, bounded or unqualified record is kept separate'))
+    assert.ok(sentence.includes('no compatible exact subtotal'))
+    assert.ok(sentence.includes('1 non-exact, derived, incompatible-basis or unqualified record is kept separate'))
   })
 })
 

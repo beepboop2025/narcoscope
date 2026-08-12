@@ -122,7 +122,7 @@ export function CorridorMap() {
   const nodes = useMemo(() => {
     const recordsByCountry = new Map<string, Set<FlowRecord>>()
     flows.forEach((r) => {
-      [r.origin, r.transit, r.destination]
+      [r.origin, r.transit, r.destination, r.seizureLocation]
         .filter((s): s is string => Boolean(s))
         .forEach((name) => {
           const records = recordsByCountry.get(name) ?? new Set<FlowRecord>()
@@ -136,6 +136,7 @@ export function CorridorMap() {
         name,
         recordCount: records.size,
         isSource: flows.some((flow) => flow.origin === name),
+        isSeizureLocation: flows.some((flow) => flow.seizureLocation === name),
       }))
   }, [flows])
 
@@ -152,7 +153,8 @@ export function CorridorMap() {
         <span className="legend">
           <span className="swatch source" /> source country&nbsp;&nbsp;
           <span className="swatch transit" /> transit / destination&nbsp;&nbsp;
-          uniform arcs = record legs; node size = record count; masses are not summed
+          blue nodes = transit, destination, or seizure location&nbsp;&nbsp;
+          uniform arcs = stated route legs; node size = record count; masses are not summed
         </span>
       </div>
 
@@ -228,7 +230,7 @@ export function CorridorMap() {
             const r = 3 + Math.min(5, Math.sqrt(n.recordCount) * 2)
             return (
               <g key={n.name} transform={`translate(${point[0]} ${point[1]})`}>
-                <title>{`${n.name} — appears in ${n.recordCount} source-grained record${n.recordCount === 1 ? '' : 's'} (${n.isSource ? 'a listed source' : 'transit/destination'}); masses are not summed`}</title>
+                <title>{`${n.name} — appears in ${n.recordCount} source-grained record${n.recordCount === 1 ? '' : 's'} (${n.isSource ? 'a listed source' : n.isSeizureLocation ? 'a stated seizure location' : 'transit/destination'}); masses are not summed`}</title>
                 <circle
                   r={r}
                   fill={n.isSource ? '#ff7a59' : '#6ea8fe'}
@@ -247,6 +249,8 @@ export function CorridorMap() {
 
       <p className="note">
         Each arc is one leg of a country-level record from the cited INCB report.
+        Seizure locations appear as nodes but never become route legs unless the
+        report separately identifies that routing role.
         Sources glow <strong style={{ color: '#ff7a59' }}>orange</strong>. Uniform arc width
         and record-count nodes avoid turning approximate values, bounds, annual
         aggregates, and gross preparation weights into an invented throughput

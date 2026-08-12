@@ -1,4 +1,4 @@
-import { useState, lazy, Suspense, type ReactNode } from 'react'
+import { useEffect, useState, lazy, Suspense, type ReactNode } from 'react'
 import { useSpring, animated } from '@react-spring/web'
 import Overview from './components/Overview'
 import Explorer from './components/Explorer'
@@ -51,10 +51,17 @@ const TABS = [
 
 const tabIds = new Set<string>(TABS.map((item) => item.id))
 
+export function resolveTabFromHash(hash: string): string | null {
+  const requested = hash.replace(/^#\/?/, '')
+  if (requested === '') return 'overview'
+  if (tabIds.has(requested)) return requested
+  if (/^news-(?:source|sentence|visual)-/.test(requested)) return 'newsroom'
+  return null
+}
+
 function initialTab(): string {
   if (typeof window === 'undefined') return 'overview'
-  const requested = window.location.hash.replace(/^#\/?/, '')
-  return tabIds.has(requested) ? requested : 'overview'
+  return resolveTabFromHash(window.location.hash) ?? 'overview'
 }
 
 /** Springs its contents in on mount — remounted per tab (key) for a crossfade. */
@@ -74,9 +81,24 @@ export default function App() {
   const [tab, setTab] = useState<string>(initialTab)
   useSmoothScroll()
 
+  useEffect(() => {
+    const syncTabToLocation = () => {
+      const nextTab = resolveTabFromHash(window.location.hash)
+      if (nextTab) setTab(nextTab)
+    }
+    window.addEventListener('hashchange', syncTabToLocation)
+    window.addEventListener('popstate', syncTabToLocation)
+    return () => {
+      window.removeEventListener('hashchange', syncTabToLocation)
+      window.removeEventListener('popstate', syncTabToLocation)
+    }
+  }, [])
+
   const selectTab = (nextTab: string) => {
     setTab(nextTab)
-    if (typeof window !== 'undefined') window.history.replaceState(null, '', `#${nextTab}`)
+    if (typeof window !== 'undefined' && window.location.hash !== `#${nextTab}`) {
+      window.history.pushState(null, '', `#${nextTab}`)
+    }
   }
 
   return (
@@ -103,7 +125,7 @@ export default function App() {
                 ? 'Official: street prices (WDR 2025 Annex 8.1), seizure globe (Annex 7.1), overdose mortality (CDC VSRR), sanctions designations (US Treasury OFAC), Myanmar opium + conflict (Opium Survey 2025; Data: ACLED), precursor corridors (INCB Precursors Report 2025). Still illustrative: Myanmar region-level flow volumes and precursor prices. Not loaded: wastewater (no automatable publisher).'
                 : 'All datasets replaced via the CSV loader — verify against the cited official sources.'}
             >
-              {isSample ? 'Official data · corridors illustrative' : 'Live data'}
+              {isSample ? 'Official data · some inputs illustrative' : 'Live data'}
             </span>
           </div>
           <Reveal delay={420}>

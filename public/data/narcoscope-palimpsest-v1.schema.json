@@ -257,17 +257,43 @@
         "quantityAggregation": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["status", "exactRecordCount", "nonExactRecordCount", "summedQuantityKg"],
+          "required": [
+            "status",
+            "exactRecordCount",
+            "nonExactRecordCount",
+            "eligibleRecordCount",
+            "excludedRecordCount",
+            "aggregationGroup",
+            "summedQuantityKg"
+          ],
           "properties": {
             "status": {
               "enum": [
                 "computed_exact_only",
                 "not_computed_non_exact_inputs",
+                "not_computed_ineligible_exact_inputs",
+                "not_computed_mixed_aggregation_groups",
                 "not_computed_no_records"
               ]
             },
             "exactRecordCount": { "type": "integer", "minimum": 0 },
             "nonExactRecordCount": { "type": "integer", "minimum": 0 },
+            "eligibleRecordCount": { "type": "integer", "minimum": 0 },
+            "excludedRecordCount": { "type": "integer", "minimum": 0 },
+            "aggregationGroup": {
+              "oneOf": [
+                {
+                  "enum": [
+                    "mdma_precursor_substance_mass",
+                    "meth_pre_precursor_substance_mass",
+                    "pseudoephedrine_preparation_gross_mass",
+                    "potassium_permanganate_substance_mass",
+                    "pseudoephedrine_preparation_mass"
+                  ]
+                },
+                { "type": "null" }
+              ]
+            },
             "summedQuantityKg": { "type": ["number", "null"], "minimum": 0 }
           },
           "allOf": [
@@ -278,12 +304,24 @@
               },
               "then": {
                 "properties": {
-                  "nonExactRecordCount": { "const": 0 },
+                  "eligibleRecordCount": { "type": "integer", "minimum": 1 },
+                  "aggregationGroup": {
+                    "enum": [
+                      "mdma_precursor_substance_mass",
+                      "meth_pre_precursor_substance_mass",
+                      "pseudoephedrine_preparation_gross_mass",
+                      "potassium_permanganate_substance_mass",
+                      "pseudoephedrine_preparation_mass"
+                    ]
+                  },
                   "summedQuantityKg": { "type": "number" }
                 }
               },
               "else": {
-                "properties": { "summedQuantityKg": { "const": null } }
+                "properties": {
+                  "aggregationGroup": { "const": null },
+                  "summedQuantityKg": { "const": null }
+                }
               }
             }
           ]
@@ -298,12 +336,15 @@
               "reportedOrigin",
               "transit",
               "destination",
+              "seizureLocation",
               "year",
               "precursor",
               "quantityKg",
               "quantityRelation",
               "quantityBasis",
               "recordKind",
+              "aggregationEligibility",
+              "aggregationGroup",
               "incidentCount",
               "sourceLocator"
             ],
@@ -312,6 +353,7 @@
               "reportedOrigin": { "type": "string", "minLength": 1 },
               "transit": { "type": ["string", "null"], "minLength": 1 },
               "destination": { "type": "string", "minLength": 1 },
+              "seizureLocation": { "type": ["string", "null"], "minLength": 1 },
               "year": { "type": "integer", "minimum": 1900 },
               "precursor": { "type": "string", "minLength": 1 },
               "quantityKg": { "type": "number", "minimum": 0 },
@@ -327,9 +369,95 @@
                   "derived_subtotal"
                 ]
               },
+              "aggregationEligibility": {
+                "enum": [
+                  "eligible",
+                  "ineligible_non_exact",
+                  "ineligible_derived",
+                  "ineligible_incompatible_basis"
+                ]
+              },
+              "aggregationGroup": {
+                "oneOf": [
+                  {
+                    "enum": [
+                      "mdma_precursor_substance_mass",
+                      "meth_pre_precursor_substance_mass",
+                      "pseudoephedrine_preparation_gross_mass",
+                      "potassium_permanganate_substance_mass",
+                      "pseudoephedrine_preparation_mass"
+                    ]
+                  },
+                  { "type": "null" }
+                ]
+              },
               "incidentCount": { "type": ["integer", "null"], "minimum": 1 },
               "sourceLocator": { "$ref": "#/$defs/sourceLocator" }
-            }
+            },
+            "allOf": [
+              {
+                "if": {
+                  "properties": { "aggregationEligibility": { "const": "eligible" } },
+                  "required": ["aggregationEligibility"]
+                },
+                "then": {
+                  "properties": {
+                    "quantityRelation": { "const": "exact" },
+                    "recordKind": { "not": { "const": "derived_subtotal" } },
+                    "aggregationGroup": { "type": "string" }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": { "quantityRelation": { "const": "exact" } },
+                  "required": ["quantityRelation"]
+                },
+                "then": {
+                  "properties": {
+                    "aggregationEligibility": { "not": { "const": "ineligible_non_exact" } }
+                  }
+                },
+                "else": {
+                  "properties": {
+                    "aggregationEligibility": { "const": "ineligible_non_exact" }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": { "recordKind": { "const": "derived_subtotal" } },
+                  "required": ["recordKind"]
+                },
+                "then": {
+                  "properties": {
+                    "aggregationEligibility": { "const": "ineligible_derived" },
+                    "aggregationGroup": { "const": null }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": { "aggregationEligibility": { "const": "ineligible_derived" } },
+                  "required": ["aggregationEligibility"]
+                },
+                "then": {
+                  "properties": {
+                    "recordKind": { "const": "derived_subtotal" },
+                    "aggregationGroup": { "const": null }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": { "aggregationEligibility": { "const": "ineligible_incompatible_basis" } },
+                  "required": ["aggregationEligibility"]
+                },
+                "then": {
+                  "properties": { "aggregationGroup": { "const": null } }
+                }
+              }
+            ]
           }
         },
         "contextRecords": {

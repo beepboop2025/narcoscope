@@ -45,7 +45,7 @@
       "id": "un-comtrade",
       "publisher": "United Nations Statistics Division",
       "title": "UN Comtrade Database and API",
-      "url": "https://comtrade.un.org/",
+      "url": "https://comtradeplus.un.org/",
       "authorityType": "official_statistics",
       "evidenceClass": "lawful_trade_context",
       "upstreamGroup": "un-unsd-comtrade",
@@ -229,69 +229,6 @@
           "A designation is an adjudication of guilt.",
           "Country of record establishes nationality.",
           "A designation record is linked to an INCB incident or CDC death."
-        ]
-      }
-    },
-    {
-      "id": "dea-ndta",
-      "publisher": "US Drug Enforcement Administration",
-      "title": "2025 National Drug Threat Assessment",
-      "url": "https://www.dea.gov/sites/default/files/2025-07/2025NationalDrugThreatAssessment.pdf",
-      "authorityType": "official_threat_assessment",
-      "evidenceClass": "official_assessment",
-      "upstreamGroup": "us-doj-dea",
-      "newsroomRole": "capability_only",
-      "availability": {
-        "status": "public_report",
-        "access": "Public report; narrative assessment rather than a record-level shipment dataset.",
-        "automation": "manual_review_only",
-        "recordGrain": "Narrative national threat assessment with selected examples",
-        "publicRecordLevelShipments": false
-      },
-      "licensing": {
-        "status": "us_government_public_domain_with_third_party_caveat",
-        "statement": "US Government work except where third-party material is identified; cite the report and do not treat narrative as a reusable shipment table."
-      },
-      "newsroomUse": {
-        "status": "capability_only",
-        "allowedClaims": [
-          "DEA published the stated assessment."
-        ],
-        "prohibitedClaims": [
-          "An agency assessment is an adjudicated finding.",
-          "Narrative scope can be silently converted into a complete incident series."
-        ]
-      }
-    },
-    {
-      "id": "doj-precursor-case-releases",
-      "publisher": "US Department of Justice",
-      "title": "Official case announcements and linked charging documents",
-      "url": "https://www.justice.gov/archives/opa/pr/justice-department-announces-charges-against-china-based-chemical-manufacturing-companies",
-      "authorityType": "official_litigation_record",
-      "evidenceClass": "allegations_and_case_status",
-      "upstreamGroup": "us-doj-litigation",
-      "newsroomRole": "capability_only",
-      "availability": {
-        "status": "public_web_documents",
-        "access": "Public press releases and selected linked pleadings; disposition must be checked against the court docket.",
-        "automation": "manual_case_status_review",
-        "recordGrain": "Case, defendant, charge, filing and stated procedural status",
-        "publicRecordLevelShipments": false
-      },
-      "licensing": {
-        "status": "us_government_public_domain_with_filing_caveat",
-        "statement": "DOJ-authored text is a US Government work; linked court filings can carry separate access and privacy considerations."
-      },
-      "newsroomUse": {
-        "status": "capability_only",
-        "allowedClaims": [
-          "DOJ announced a charge or filed allegation when quoted with its procedural status.",
-          "A conviction, plea, dismissal or judgment may be reported only from a disposition record."
-        ],
-        "prohibitedClaims": [
-          "A complaint or indictment proves the allegation.",
-          "A press release alone establishes guilt or current case disposition."
         ]
       }
     },

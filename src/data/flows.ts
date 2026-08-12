@@ -40,31 +40,36 @@ export const INCB_REPORT_2025 = {
 
 // Quantitative corridor records. A row may represent a single incident, an
 // incident aggregate, an annual aggregate or a transparent derived subtotal;
-// `recordKind`, `incidentCount`, `quantityRelation` and `quantityBasis` retain
-// those distinctions rather than forcing unlike source statements together.
+// `recordKind`, `incidentCount`, `quantityRelation`, `quantityBasis` and the
+// explicit aggregation contract retain those distinctions rather than forcing
+// unlike source statements together.
 export const FLOW_RECORDS: AuditedFlowRecord[] = [
   // ¶92: six PICS seizures of 3,4-MDP-2-P ethyl glycidate totalling <1,500 kg
   // in the first 10 months of 2025. Two thirds of the amount was in the first
   // Thailand incident and was destined for Myanmar, so the derived corridor
   // value is a strict upper bound, not an exact 1,000 kg observation.
   {
-    precursor: 'mdma_precursors', origin: 'Not reported', transit: 'Thailand',
-    destination: 'Myanmar', year: 2025, quantityKg: 1000,
+    precursor: 'mdma_precursors', origin: 'Not reported', transit: null,
+    destination: 'Myanmar', seizureLocation: 'Thailand', year: 2025, quantityKg: 1000,
     quantityRelation: 'less_than',
     quantityBasis: 'Derived upper bound for the amount seized in Thailand: two thirds of a six-seizure aggregate reported as less than 1,500 kg of substance.',
     recordKind: 'single_incident', incidentCount: 1,
+    aggregationEligibility: 'ineligible_non_exact',
+    aggregationGroup: 'mdma_precursor_substance_mass',
     sourceLocator: { pdfPage: 43, printedPage: 25, paragraph: 92 },
     ...INCB_REPORT_2025,
   },
-  // ¶94: nine incidents, ~5 tons of 4-phenylacetoacetic acid esters (new meth
+  // ¶94: nine incidents, nearly 5 tons of 4-phenylacetoacetic acid esters (new meth
   // pre-precursors), mislabelled, "originated in China and were destined for
   // countries in the European Union".
   {
     precursor: 'meth_pre_precursors', origin: 'China', transit: null,
-    destination: 'European Union', year: 2025, quantityKg: 5000,
-    quantityRelation: 'approx',
-    quantityBasis: 'Combined substance mass across nine PICS incidents; the source reports nearly 5 tons.',
+    destination: 'European Union', seizureLocation: null, year: 2025, quantityKg: 5000,
+    quantityRelation: 'less_than',
+    quantityBasis: 'Combined substance mass across nine PICS incidents; the source reports nearly 5 tons, retained as a less-than 5,000 kg bound.',
     recordKind: 'multi_incident_aggregate', incidentCount: 9,
+    aggregationEligibility: 'ineligible_non_exact',
+    aggregationGroup: 'meth_pre_precursor_substance_mass',
     sourceLocator: { pdfPage: 44, printedPage: 26, paragraph: 94 },
     ...INCB_REPORT_2025,
   },
@@ -73,10 +78,12 @@ export const FLOW_RECORDS: AuditedFlowRecord[] = [
   // notification; far exceeded Iran's annual legitimate requirement.
   {
     precursor: 'meth_precursors', origin: 'Morocco', transit: 'Türkiye',
-    destination: 'Iran', year: 2025, quantityKg: 15000,
+    destination: 'Iran', seizureLocation: null, year: 2025, quantityKg: 15000,
     quantityRelation: 'greater_than',
     quantityBasis: 'Gross weight of a pharmaceutical preparation containing pseudoephedrine, not net pseudoephedrine mass.',
     recordKind: 'single_incident', incidentCount: 1,
+    aggregationEligibility: 'ineligible_non_exact',
+    aggregationGroup: 'pseudoephedrine_preparation_gross_mass',
     sourceLocator: { pdfPage: 31, printedPage: 13, paragraph: 47 },
     ...INCB_REPORT_2025,
   },
@@ -84,10 +91,12 @@ export const FLOW_RECORDS: AuditedFlowRecord[] = [
   // all as a transit country "with consignments destined for Colombia".
   {
     precursor: 'cocaine_precursors', origin: 'Not reported', transit: 'Ecuador',
-    destination: 'Colombia', year: 2024, quantityKg: 2000,
+    destination: 'Colombia', seizureLocation: 'Ecuador', year: 2024, quantityKg: 2000,
     quantityRelation: 'approx',
     quantityBasis: 'Annual potassium permanganate seizure mass reported by Ecuador; the source reports about 2 tons.',
     recordKind: 'annual_aggregate', incidentCount: null,
+    aggregationEligibility: 'ineligible_non_exact',
+    aggregationGroup: 'potassium_permanganate_substance_mass',
     sourceLocator: { pdfPage: 47, printedPage: 29, paragraph: 112 },
     ...INCB_REPORT_2025,
   },
@@ -95,10 +104,12 @@ export const FLOW_RECORDS: AuditedFlowRecord[] = [
   // pseudoephedrine preparations, "originated in India".
   {
     precursor: 'meth_precursors', origin: 'India', transit: null,
-    destination: 'Democratic Republic of the Congo', year: 2024, quantityKg: 350,
+    destination: 'Democratic Republic of the Congo',
+    seizureLocation: 'Democratic Republic of the Congo', year: 2024, quantityKg: 350,
     quantityRelation: 'exact',
     quantityBasis: 'Derived subtotal of 110 kg of ephedrine preparations and 240 kg of pseudoephedrine preparations reported as originating in India.',
     recordKind: 'derived_subtotal', incidentCount: null,
+    aggregationEligibility: 'ineligible_derived', aggregationGroup: null,
     sourceLocator: { pdfPage: 39, printedPage: 21, paragraph: 74 },
     ...INCB_REPORT_2025,
   },
@@ -106,10 +117,12 @@ export const FLOW_RECORDS: AuditedFlowRecord[] = [
   // "originating in Egypt ... concealed in coffee bags".
   {
     precursor: 'meth_precursors', origin: 'Egypt', transit: null,
-    destination: 'Germany', year: 2024, quantityKg: 40,
+    destination: 'Germany', seizureLocation: 'Germany', year: 2024, quantityKg: 40,
     quantityRelation: 'exact',
     quantityBasis: 'Combined pseudoephedrine-preparation mass across six incidents.',
     recordKind: 'multi_incident_aggregate', incidentCount: 6,
+    aggregationEligibility: 'eligible',
+    aggregationGroup: 'pseudoephedrine_preparation_mass',
     sourceLocator: { pdfPage: 39, printedPage: 21, paragraph: 76 },
     ...INCB_REPORT_2025,
   },

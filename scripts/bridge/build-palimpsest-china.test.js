@@ -42,6 +42,10 @@ describe('Palimpsest China aggregate bridge', () => {
     expect(schema.properties.schemaVersion.const).toBe(BRIDGE_SCHEMA_VERSION)
     expect(schema.$defs.precursorCorridorData.properties.corridors.items.properties.quantityRelation.enum)
       .toEqual(['exact', 'approx', 'less_than', 'greater_than'])
+    expect(schema.$defs.precursorCorridorData.properties.corridors.items.properties.aggregationEligibility.enum)
+      .toContain('eligible')
+    expect(schema.$defs.precursorCorridorData.properties.quantityAggregation.required)
+      .toEqual(expect.arrayContaining(['eligibleRecordCount', 'excludedRecordCount', 'aggregationGroup']))
     expect(schema.$defs.precursorCorridorData.properties.contextRecords.items.additionalProperties).toBe(false)
     expect(datasets.every((dataset) => dataset.sourceStatus === 'official')).toBe(true)
     expect(artifact.disclosure.illustrativeDataIncluded).toBe(false)
@@ -64,6 +68,9 @@ describe('Palimpsest China aggregate bridge', () => {
         status: 'not_computed_non_exact_inputs',
         exactRecordCount: 0,
         nonExactRecordCount: 1,
+        eligibleRecordCount: 0,
+        excludedRecordCount: 1,
+        aggregationGroup: null,
         summedQuantityKg: null,
       },
     })
@@ -90,42 +97,51 @@ describe('Palimpsest China aggregate bridge', () => {
       origin: record.origin,
       transit: record.transit,
       destination: record.destination,
+      seizureLocation: record.seizureLocation,
       quantityKg: record.quantityKg,
       quantityRelation: record.quantityRelation,
       recordKind: record.recordKind,
+      aggregationEligibility: record.aggregationEligibility,
+      aggregationGroup: record.aggregationGroup,
       incidentCount: record.incidentCount,
       sourceLocator: record.sourceLocator,
     }))
 
     expect(rows).toEqual([
       {
-        origin: 'Not reported', transit: 'Thailand', destination: 'Myanmar', quantityKg: 1000,
+        origin: 'Not reported', transit: null, destination: 'Myanmar', seizureLocation: 'Thailand', quantityKg: 1000,
         quantityRelation: 'less_than', recordKind: 'single_incident', incidentCount: 1,
+        aggregationEligibility: 'ineligible_non_exact', aggregationGroup: 'mdma_precursor_substance_mass',
         sourceLocator: { pdfPage: 43, printedPage: 25, paragraph: 92 },
       },
       {
-        origin: 'China', transit: null, destination: 'European Union', quantityKg: 5000,
-        quantityRelation: 'approx', recordKind: 'multi_incident_aggregate', incidentCount: 9,
+        origin: 'China', transit: null, destination: 'European Union', seizureLocation: null, quantityKg: 5000,
+        quantityRelation: 'less_than', recordKind: 'multi_incident_aggregate', incidentCount: 9,
+        aggregationEligibility: 'ineligible_non_exact', aggregationGroup: 'meth_pre_precursor_substance_mass',
         sourceLocator: { pdfPage: 44, printedPage: 26, paragraph: 94 },
       },
       {
-        origin: 'Morocco', transit: 'Türkiye', destination: 'Iran', quantityKg: 15000,
+        origin: 'Morocco', transit: 'Türkiye', destination: 'Iran', seizureLocation: null, quantityKg: 15000,
         quantityRelation: 'greater_than', recordKind: 'single_incident', incidentCount: 1,
+        aggregationEligibility: 'ineligible_non_exact', aggregationGroup: 'pseudoephedrine_preparation_gross_mass',
         sourceLocator: { pdfPage: 31, printedPage: 13, paragraph: 47 },
       },
       {
-        origin: 'Not reported', transit: 'Ecuador', destination: 'Colombia', quantityKg: 2000,
+        origin: 'Not reported', transit: 'Ecuador', destination: 'Colombia', seizureLocation: 'Ecuador', quantityKg: 2000,
         quantityRelation: 'approx', recordKind: 'annual_aggregate', incidentCount: null,
+        aggregationEligibility: 'ineligible_non_exact', aggregationGroup: 'potassium_permanganate_substance_mass',
         sourceLocator: { pdfPage: 47, printedPage: 29, paragraph: 112 },
       },
       {
-        origin: 'India', transit: null, destination: 'Democratic Republic of the Congo', quantityKg: 350,
+        origin: 'India', transit: null, destination: 'Democratic Republic of the Congo', seizureLocation: 'Democratic Republic of the Congo', quantityKg: 350,
         quantityRelation: 'exact', recordKind: 'derived_subtotal', incidentCount: null,
+        aggregationEligibility: 'ineligible_derived', aggregationGroup: null,
         sourceLocator: { pdfPage: 39, printedPage: 21, paragraph: 74 },
       },
       {
-        origin: 'Egypt', transit: null, destination: 'Germany', quantityKg: 40,
+        origin: 'Egypt', transit: null, destination: 'Germany', seizureLocation: 'Germany', quantityKg: 40,
         quantityRelation: 'exact', recordKind: 'multi_incident_aggregate', incidentCount: 6,
+        aggregationEligibility: 'eligible', aggregationGroup: 'pseudoephedrine_preparation_mass',
         sourceLocator: { pdfPage: 39, printedPage: 21, paragraph: 76 },
       },
     ])
@@ -180,16 +196,101 @@ describe('Palimpsest China aggregate bridge', () => {
 
   it('rejects non-exact quantity summation and public totals derived from qualified values', () => {
     expect(sumExactQuantityKg([
-      { origin: 'A', destination: 'B', quantityKg: 2, quantityRelation: 'exact' },
-      { origin: 'C', destination: 'D', quantityKg: 3, quantityRelation: 'exact' },
+      { origin: 'A', destination: 'B', quantityKg: 2, quantityRelation: 'exact', recordKind: 'single_incident', aggregationEligibility: 'eligible', aggregationGroup: 'pseudoephedrine_preparation_mass' },
+      { origin: 'C', destination: 'D', quantityKg: 3, quantityRelation: 'exact', recordKind: 'multi_incident_aggregate', aggregationEligibility: 'eligible', aggregationGroup: 'pseudoephedrine_preparation_mass' },
     ])).toBe(5)
     expect(() => sumExactQuantityKg([
       { origin: 'China', destination: 'European Union', quantityKg: 5000, quantityRelation: 'approx' },
     ])).toThrow(/cannot sum non-exact quantity/)
+    expect(() => sumExactQuantityKg([
+      { origin: 'A', destination: 'B', quantityKg: 2, quantityRelation: 'exact', recordKind: 'derived_subtotal', aggregationEligibility: 'ineligible_derived', aggregationGroup: null },
+    ])).toThrow(/aggregation-ineligible/)
+    expect(() => sumExactQuantityKg([
+      { origin: 'A', destination: 'B', quantityKg: 2, quantityRelation: 'exact', recordKind: 'single_incident', aggregationEligibility: 'eligible', aggregationGroup: 'pseudoephedrine_preparation_mass' },
+      { origin: 'C', destination: 'D', quantityKg: 3, quantityRelation: 'exact', recordKind: 'single_incident', aggregationEligibility: 'eligible', aggregationGroup: 'potassium_permanganate_substance_mass' },
+    ])).toThrow(/incompatible aggregation groups/)
 
     const unsafe = structuredClone(artifact)
     unsafe.datasets.precursorCorridorIncidents.data.quantityAggregation.summedQuantityKg = 5000
-    expect(() => assertPublicBridgeBoundary(unsafe)).toThrow(/may not enter a reported quantity total/)
+    expect(() => assertPublicBridgeBoundary(unsafe)).toThrow(/canonical eligibility contract/)
+  })
+
+  it('computes a compatible exact-only group and reports no total when no China corridor remains', () => {
+    const exactOnly = structuredClone(inputs)
+    const chinaRow = exactOnly.flows.records.find((record) => record.origin === 'China')
+    chinaRow.quantityRelation = 'exact'
+    chinaRow.quantityBasis = 'Synthetic exact fixture for aggregation branch coverage.'
+    chinaRow.aggregationEligibility = 'eligible'
+    const exactArtifact = buildPalimpsestChinaArtifact(exactOnly)
+    expect(exactArtifact.datasets.precursorCorridorIncidents.data.quantityAggregation).toEqual({
+      status: 'computed_exact_only',
+      exactRecordCount: 1,
+      nonExactRecordCount: 0,
+      eligibleRecordCount: 1,
+      excludedRecordCount: 0,
+      aggregationGroup: 'meth_pre_precursor_substance_mass',
+      summedQuantityKg: 5000,
+    })
+    expect(() => assertPublicBridgeBoundary(exactArtifact)).not.toThrow()
+
+    const incompatibleExact = structuredClone(inputs)
+    const incompatibleChinaRow = incompatibleExact.flows.records
+      .find((record) => record.origin === 'China')
+    incompatibleChinaRow.quantityRelation = 'exact'
+    incompatibleChinaRow.quantityBasis = 'Synthetic incompatible-basis fixture.'
+    incompatibleChinaRow.aggregationEligibility = 'ineligible_incompatible_basis'
+    incompatibleChinaRow.aggregationGroup = null
+    const incompatibleArtifact = buildPalimpsestChinaArtifact(incompatibleExact)
+    expect(incompatibleArtifact.datasets.precursorCorridorIncidents.data.quantityAggregation)
+      .toMatchObject({
+        status: 'not_computed_ineligible_exact_inputs',
+        eligibleRecordCount: 0,
+        excludedRecordCount: 1,
+        aggregationGroup: null,
+        summedQuantityKg: null,
+      })
+
+    const mixedGroups = structuredClone(exactOnly)
+    const secondChinaRow = {
+      ...structuredClone(mixedGroups.flows.records.find((record) => record.origin === 'China')),
+      precursor: 'meth_precursors',
+      destination: 'Germany',
+      quantityKg: 40,
+      quantityBasis: 'Synthetic second compatible group fixture.',
+      aggregationGroup: 'pseudoephedrine_preparation_mass',
+    }
+    mixedGroups.flows.records.push(secondChinaRow)
+    const mixedArtifact = buildPalimpsestChinaArtifact(mixedGroups)
+    expect(mixedArtifact.datasets.precursorCorridorIncidents.data.quantityAggregation)
+      .toMatchObject({
+        status: 'not_computed_mixed_aggregation_groups',
+        eligibleRecordCount: 2,
+        excludedRecordCount: 0,
+        aggregationGroup: null,
+        summedQuantityKg: null,
+      })
+    expect(() => assertPublicBridgeBoundary(mixedArtifact)).not.toThrow()
+
+    const noChina = structuredClone(inputs)
+    noChina.flows.records = noChina.flows.records
+      .filter((record) => !record.origin.split('/').map((part) => part.trim()).includes('China'))
+    const emptyArtifact = buildPalimpsestChinaArtifact(noChina)
+    expect(emptyArtifact.datasets.precursorCorridorIncidents.data.quantityAggregation).toEqual({
+      status: 'not_computed_no_records',
+      exactRecordCount: 0,
+      nonExactRecordCount: 0,
+      eligibleRecordCount: 0,
+      excludedRecordCount: 0,
+      aggregationGroup: null,
+      summedQuantityKg: null,
+    })
+    expect(emptyArtifact.datasets.precursorCorridorIncidents.temporalCoverage).toEqual({
+      kind: 'year_range',
+      fromYear: 2024,
+      toYear: 2024,
+      snapshotDate: null,
+    })
+    expect(() => assertPublicBridgeBoundary(emptyArtifact)).not.toThrow()
   })
 
   it('runtime-validates every audited flow row and qualitative context before filtering', () => {
@@ -207,6 +308,29 @@ describe('Palimpsest China aggregate bridge', () => {
     summableContext.flows.contextRecords[0].quantityKg = 168
     expect(() => buildPalimpsestChinaArtifact(summableContext))
       .toThrow(/must remain non-summable/)
+
+    const missingOrigin = structuredClone(inputs)
+    missingOrigin.flows.records[0].origin = ''
+    expect(() => buildPalimpsestChinaArtifact(missingOrigin))
+      .toThrow(/lacks a reported origin and destination/)
+
+    const missingDestination = structuredClone(inputs)
+    missingDestination.flows.records[0].destination = undefined
+    expect(() => buildPalimpsestChinaArtifact(missingDestination))
+      .toThrow(/lacks a reported origin and destination/)
+
+    const unsafeDerived = structuredClone(inputs)
+    const derived = unsafeDerived.flows.records.find((record) => record.recordKind === 'derived_subtotal')
+    derived.aggregationEligibility = 'eligible'
+    expect(() => buildPalimpsestChinaArtifact(unsafeDerived))
+      .toThrow(/not eligible for a compatible exact subtotal|must exclude a derived subtotal/)
+
+    const groupedDerived = structuredClone(inputs)
+    groupedDerived.flows.records
+      .find((record) => record.recordKind === 'derived_subtotal')
+      .aggregationGroup = 'pseudoephedrine_preparation_mass'
+    expect(() => buildPalimpsestChinaArtifact(groupedDerived))
+      .toThrow(/may not assign a canonical aggregation group to a derived subtotal/)
   })
 
   it('does not leak a designation name, alias or identifier into the aggregate', () => {
@@ -232,5 +356,26 @@ describe('Palimpsest China aggregate bridge', () => {
     expect(serialized).not.toContain('999999999')
     expect(serialized).not.toContain('"entityNumber":')
     expect(serialized).not.toContain('"aliases":')
+  })
+
+  it('rejects a public derived subtotal that names a canonical aggregation group', () => {
+    const unsafe = structuredClone(artifact)
+    const corridor = unsafe.datasets.precursorCorridorIncidents.data.corridors[0]
+    corridor.quantityRelation = 'exact'
+    corridor.recordKind = 'derived_subtotal'
+    corridor.aggregationEligibility = 'ineligible_derived'
+    corridor.aggregationGroup = 'meth_pre_precursor_substance_mass'
+    unsafe.datasets.precursorCorridorIncidents.data.quantityAggregation = {
+      status: 'not_computed_ineligible_exact_inputs',
+      exactRecordCount: 1,
+      nonExactRecordCount: 0,
+      eligibleRecordCount: 0,
+      excludedRecordCount: 1,
+      aggregationGroup: null,
+      summedQuantityKg: null,
+    }
+
+    expect(() => assertPublicBridgeBoundary(unsafe))
+      .toThrow(/invalid aggregation semantics/)
   })
 })
