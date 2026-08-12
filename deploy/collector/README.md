@@ -3,6 +3,29 @@
 Keeps the live site's data fresh by running the open-data pipeline on a schedule
 and pushing validated changes, which trigger a Vercel redeploy.
 
+## Production topology
+
+```text
+narcoscope.com ──► Vercel project `narcoscope.io` ──► static app + newsroom
+                         ▲
+                         │ deploy on validated main push
+                         │
+Hetzner `ubuntu-8gb-fsn1-2` ──► GitHub main
+        daily collector only · Palimpsest.info project
+```
+
+The public domain does **not** point at the collector. The collector has no web
+service and needs no inbound port other than SSH; it fetches public datasets,
+validates the full repository, and pushes only an accepted refresh. This keeps a
+bad upstream file away from both Git and production.
+
+Current production is already on Hetzner: `narcoscope-collector.timer` is enabled
+and active on `ubuntu-8gb-fsn1-2` in the **Palimpsest.info** project. Its accepted
+state lives in Git and the public site remains stateless. Split NarcoScope into a
+dedicated project/server only when it gains a database, analyst-only data, or a
+resource-isolation requirement; the present collector does not justify a second
+billable server.
+
 ## What it does, each run
 
 1. Resets to current `origin/main`.

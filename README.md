@@ -8,7 +8,7 @@
 
 # 🌍 NarcoScope
 
-**Live: [drug-price-observatory.vercel.app](https://drug-price-observatory.vercel.app)** · permanent home: **narcoscope.io** (domain reserved, coming soon)
+**Live: [narcoscope.com](https://narcoscope.com)** · evidence newsroom: **[narcoscope.com/#newsroom](https://narcoscope.com/#newsroom)**
 
 An educational, public-good **data explorer** that makes the world's drug-trade
 data *legible*. UNODC, INCB, and EUDA already publish street (retail) prices,
