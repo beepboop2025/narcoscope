@@ -24,6 +24,7 @@
   ],
   "access": {
     "website": "https://narcoscope.com",
+    "research_guides": "https://narcoscope.com/research/",
     "developers": "https://narcoscope.com/developers/",
     "api": "https://narcoscope.com/api/v1/capabilities",
     "openapi": "https://narcoscope.com/openapi.json",

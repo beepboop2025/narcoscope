@@ -6,6 +6,7 @@
   "llms": "https://narcoscope.com/llms.txt",
   "openapi": "https://narcoscope.com/openapi.json",
   "mcp": "https://narcoscope.com/server.json",
+  "research": "https://narcoscope.com/research/",
   "feeds": [
     "https://narcoscope.com/news/feed.json",
     "https://narcoscope.com/news/feed.xml"

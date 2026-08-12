@@ -190,6 +190,28 @@ a:hover { text-decoration: underline; }
 }
 .hero-action--telegram { border-color: rgba(6, 214, 224, 0.7); color: var(--accent); }
 .hero-action--signal { border-color: rgba(255, 176, 32, 0.65); color: var(--hot); }
+.authority-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.7rem;
+  margin: -0.7rem 0 1.5rem;
+  min-height: 2rem;
+}
+.authority-bar button {
+  appearance: none;
+  border: 0;
+  border-bottom: 1px solid transparent;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font: 500 0.7rem/1.2 var(--font-body);
+  padding: 0.3rem 0;
+}
+.authority-bar button:hover,
+.authority-bar button:focus-visible { color: var(--accent); border-bottom-color: var(--accent); }
+.authority-bar button + button::before { content: '·'; color: var(--border); margin-right: 0.7rem; }
+.authority-bar__status { color: var(--accent); font-size: 0.68rem; min-width: 8rem; }
 
 /* ---- tabs ---------------------------------------------------------------- */
 .tabs {
