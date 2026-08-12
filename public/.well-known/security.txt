@@ -1,0 +1,5 @@
+Contact: mailto:mrinallovesbhature@gmail.com
+Contact: https://github.com/beepboop2025/narcoscope/security/advisories/new
+Canonical: https://drug-price-observatory.vercel.app/.well-known/security.txt
+Expires: 2027-08-06T23:59:59Z
+Preferred-Languages: en
