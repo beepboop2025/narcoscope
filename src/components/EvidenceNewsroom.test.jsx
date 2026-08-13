@@ -105,4 +105,17 @@ describe('Evidence Newsroom', () => {
     expect(screen.getByText('initial publication')).toBeTruthy()
     expect(screen.getByText(/Initial deterministic publication/)).toBeTruthy()
   })
+
+  it('maps findings, countercase and receipts into a navigable evidence spine', async () => {
+    render(<EvidenceNewsroom />)
+    await screen.findByRole('heading', { name: dossier.title })
+
+    const rail = screen.getByRole('complementary', { name: 'Article evidence map' })
+    const links = within(rail).getAllByRole('link')
+    expect(links.length).toBe(dossier.sections.length + 4)
+    expect(within(rail).getByText(/1 countercase/i)).toBeTruthy()
+    expect(within(rail).getByText('100% cited')).toBeTruthy()
+    expect(links.some((link) => link.getAttribute('href') === '#news-limitations')).toBe(true)
+    expect(links.some((link) => link.getAttribute('href') === '#news-sources')).toBe(true)
+  })
 })

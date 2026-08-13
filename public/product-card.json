@@ -24,6 +24,7 @@
   ],
   "access": {
     "website": "https://narcoscope.com",
+    "research_guides": "https://narcoscope.com/research/",
     "developers": "https://narcoscope.com/developers/",
     "api": "https://narcoscope.com/api/v1/capabilities",
     "openapi": "https://narcoscope.com/openapi.json",
@@ -33,6 +34,11 @@
     "source": "https://github.com/beepboop2025/narcoscope"
   },
   "related": [
+    {
+      "name": "Palimpsest",
+      "relationship": "Sister evidence desk for China information controls, network interference, and sealed AI evaluations; adjacent context is not automatic corroboration",
+      "url": "https://palimpsest.info/"
+    },
     {
       "name": "My Quant Doesn't Speak English",
       "relationship": "Independent editorial desk for financial-system, institution-risk, and market-liquidity investigations",

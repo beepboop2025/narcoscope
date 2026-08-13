@@ -18,6 +18,11 @@ MCP endpoint: https://narcoscope.com/mcp
 
 ## Start here
 
+- Research guide hub: https://narcoscope.com/research/
+- Official drug price data guide: https://narcoscope.com/research/drug-price-data/
+- Official drug seizure data guide: https://narcoscope.com/research/drug-seizure-data/
+- Provisional US overdose data guide: https://narcoscope.com/research/overdose-data/
+- Public precursor incident evidence guide: https://narcoscope.com/research/precursor-incidents/
 - Capabilities: https://narcoscope.com/api/v1/capabilities
 - Overview: https://narcoscope.com/api/v1/overview
 - Newsroom: https://narcoscope.com/api/v1/newsroom
@@ -27,6 +32,7 @@ MCP endpoint: https://narcoscope.com/mcp
 
 ## Related evidence desk
 
+- Palimpsest, https://palimpsest.info/: the sister evidence desk for China information controls, network interference, and sealed AI evaluations. Its context is adjacent to NarcoScope and is never treated as corroboration automatically.
 - My Quant Doesn't Speak English, https://myquantdoesntspeakenglish.com/: the independent editorial wire for Seiche, LiquiLens, and Undertow investigations. It shares NarcoScope's inspectable-evidence standard, not its drug-market subject.
 
 ## Evidence rules

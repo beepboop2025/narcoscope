@@ -217,6 +217,59 @@ function EvidenceVisual({
   )
 }
 
+function NewsroomRail({ dossier }: { dossier: NewsDossier }) {
+  const items = useMemo(() => [
+    ...dossier.sections.map((section) => ({ id: `news-${section.id}`, label: section.heading, kind: section.evidenceLane })),
+    { id: 'news-countercase', label: dossier.countercase.heading, kind: 'countercase' },
+    { id: 'news-limitations', label: 'Limitations', kind: 'claim boundary' },
+    { id: 'news-sources', label: 'Sources and capability boundaries', kind: 'citation ledger' },
+    { id: 'news-corrections', label: 'Corrections and update history', kind: 'publication record' },
+  ], [dossier])
+  const [activeId, setActiveId] = useState(items[0]?.id ?? 'news-limitations')
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || !('IntersectionObserver' in window)) return
+    const targets = items
+      .map((item) => document.getElementById(item.id))
+      .filter((item): item is HTMLElement => Boolean(item))
+    const observer = new IntersectionObserver((entries) => {
+      const visible = entries
+        .filter((entry) => entry.isIntersecting)
+        .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)
+      if (visible[0]?.target.id) setActiveId(visible[0].target.id)
+    }, { rootMargin: '-18% 0px -67% 0px', threshold: [0, 0.2, 0.6] })
+    targets.forEach((target) => observer.observe(target))
+    return () => observer.disconnect()
+  }, [items])
+
+  return (
+    <aside className="newsroom-rail" aria-label="Article evidence map">
+      <div className="newsroom-rail__head">
+        <p>Evidence map</p>
+        <span>{dossier.sections.length} findings · 1 countercase</span>
+      </div>
+      <nav>
+        {items.map((item, index) => (
+          <a
+            key={item.id}
+            href={`#${item.id}`}
+            className={activeId === item.id ? 'is-active' : undefined}
+            aria-current={activeId === item.id ? 'location' : undefined}
+          >
+            <span>{String(index + 1).padStart(2, '0')}</span>
+            <span><small>{item.kind.replaceAll('_', ' ')}</small>{item.label}</span>
+          </a>
+        ))}
+      </nav>
+      <div className="newsroom-rail__receipt">
+        <span>Receipt</span>
+        <strong>{dossier.verificationReceipt.citationCoverage.percent}% cited</strong>
+        <small>Data as of {dossier.dataAsOf}</small>
+      </div>
+    </aside>
+  )
+}
+
 export default function EvidenceNewsroom() {
   const [loaded, setLoaded] = useState<LoadedNews | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -302,6 +355,10 @@ export default function EvidenceNewsroom() {
           <li><strong>{dossier.verificationReceipt.bannedClaimScan.matches.length}</strong><span>banned-claim matches</span></li>
         </ul>
       </header>
+
+      <div className="newsroom-reading-grid">
+        <NewsroomRail dossier={dossier} />
+        <div className="newsroom-reading-body">
 
       <ul className="newsroom-figures" aria-label="Key bounded figures">
         {dossier.keyFigures.map((figure) => (
@@ -399,6 +456,8 @@ export default function EvidenceNewsroom() {
         <span title={dossier.revisionHash}>Revision {dossier.revisionHash.slice(0, 12)}</span>
         <span title={dossier.contentHash}>Content {dossier.contentHash.slice(0, 12)}</span>
       </footer>
+        </div>
+      </div>
     </article>
   )
 }
