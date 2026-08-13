@@ -31,12 +31,14 @@
     "mcp": "https://narcoscope.com/mcp",
     "json_feed": "https://narcoscope.com/news/feed.json",
     "atom_feed": "https://narcoscope.com/news/feed.xml",
+    "telegram_bot": "https://t.me/NarcoScopeEvidenceBot",
+    "telegram_channel": "https://t.me/EvidenceSignalDesk",
     "source": "https://github.com/beepboop2025/narcoscope"
   },
   "related": [
     {
       "name": "Palimpsest",
-      "relationship": "Sister evidence desk for China information controls, network interference, and sealed AI evaluations; adjacent context is not automatic corroboration",
+      "relationship": "Sister evidence desk for China information controls, network interference, publication gaps, and sealed AI evaluations; adjacent context is not automatic corroboration",
       "url": "https://palimpsest.info/"
     },
     {

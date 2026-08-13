@@ -150,7 +150,10 @@ export default function App() {
                     Read the lead investigation
                   </button>
                   <a className="hero-action" href="/developers/">Connect API + MCP</a>
+                  <a className="hero-action" href="/news/feed.json">Follow the feed</a>
                   <a className="hero-action" href="/research/">Research guides</a>
+                  <a className="hero-action hero-action--telegram" href="https://t.me/NarcoScopeEvidenceBot?start=ref_site_hero">Open the Telegram bot</a>
+                  <a className="hero-action hero-action--signal" href="https://t.me/EvidenceSignalDesk">Join Evidence Signal</a>
                 </div>
                 <AuthorityBar
                   tab={tab}
