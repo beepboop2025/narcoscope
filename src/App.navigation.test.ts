@@ -7,6 +7,8 @@ describe('App hash navigation', () => {
     expect(resolveTabFromHash('#/newsroom')).toBe('newsroom')
     expect(resolveTabFromHash('#news-source-SRC-INCB-PRECURSORS-2025')).toBe('newsroom')
     expect(resolveTabFromHash('#news-sentence-S007')).toBe('newsroom')
+    expect(resolveTabFromHash('#news-limitations')).toBe('newsroom')
+    expect(resolveTabFromHash('#news-corrections')).toBe('newsroom')
     expect(resolveTabFromHash('')).toBe('overview')
     expect(resolveTabFromHash('#not-a-route')).toBeNull()
   })

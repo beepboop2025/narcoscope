@@ -38,7 +38,7 @@ MCP endpoint: https://narcoscope.com/mcp
 
 ## Related evidence desk
 
-- Palimpsest, https://palimpsest.info/: the relevant evidence desk for China information controls and publication gaps alongside NarcoScope's public precursor record.
+- Palimpsest, https://palimpsest.info/: the sister evidence desk for China information controls, network interference, publication gaps, and sealed AI evaluations. Its context sits beside NarcoScope's public precursor record and is never treated as corroboration automatically.
 - My Quant Doesn't Speak English, https://myquantdoesntspeakenglish.com/: the independent editorial wire for Seiche, LiquiLens, and Undertow investigations. It shares NarcoScope's inspectable-evidence standard, not its drug-market subject.
 
 ## Evidence rules
