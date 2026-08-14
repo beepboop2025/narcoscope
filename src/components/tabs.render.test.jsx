@@ -30,6 +30,7 @@ import Explorer from './Explorer'
 import Flows from './Flows'
 import DataLoader from './DataLoader'
 import { LOADABLE_DATASET_KEYS } from '../data/loadableDatasets'
+import overview from '../data/overview.json'
 
 beforeAll(() => {
   // recharts' ResponsiveContainer measures its parent; happy-dom reports 0, and
@@ -128,10 +129,14 @@ describe('Overview landing', () => {
     expect(screen.getByText(/overdose epidemic/i)).toBeTruthy()
   })
 
-  it('shows real bound figures, not placeholders', () => {
+  it('shows the current leading substance figure from the generated overview', () => {
     render(<Overview />)
-    // Fentanyl is the leading substance and its real count must be on screen.
-    expect(screen.getByText(/38,056|38056/)).toBeTruthy()
+    const leading = overview.overdoseBySubstance[0]
+    expect(Number.isFinite(leading?.deaths) && leading.deaths > 0).toBe(true)
+
+    const row = screen.getByText(leading.label).closest('.bar-row')
+    expect(row).toBeTruthy()
+    expect(row.querySelector('.bar-value')?.textContent).toContain(leading.deaths.toLocaleString())
   })
 })
 

@@ -2,12 +2,14 @@
 Description=NarcoScope open-data collector (fetch, validate, push)
 After=network-online.target
 Wants=network-online.target
+OnFailure=narcoscope-collector-alert.service
 
 [Service]
 Type=oneshot
 Environment=NARCOSCOPE_REPO=/opt/narcoscope
 Environment=NARCOSCOPE_DEPLOY_KEY=/root/.ssh/narcoscope_deploy
 Environment=NARCOSCOPE_BRANCH=main
+Environment=NARCOSCOPE_RUN_ROOT=/var/tmp
 # Node/npm live under the default PATH plus wherever nodesource installs them.
 Environment=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 ExecStart=/opt/narcoscope/deploy/collector/collect.sh

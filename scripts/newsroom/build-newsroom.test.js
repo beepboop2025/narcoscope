@@ -38,6 +38,24 @@ const rehash = (value) => {
   return { ...base, contentHash: sha256(canonicalJson(base)) }
 }
 
+const addUtcDays = (isoDate, days) => {
+  const value = new Date(`${isoDate}T00:00:00.000Z`)
+  value.setUTCDate(value.getUTCDate() + days)
+  return value.toISOString().slice(0, 10)
+}
+
+const inputsForRevision = (baseInputs, { previousDossier, asOf, hashSeed }) => {
+  const changed = structuredClone(baseInputs)
+  changed.previousDossier = { data: previousDossier }
+  changed.bridge.data.dataAsOf = asOf
+  changed.overdose.data.meta.downloaded = asOf
+  changed.capabilities.data.asOf = asOf
+  changed.bridge.descriptor.sha256 = sha256(`${hashSeed}:bridge`)
+  changed.overdose.descriptor.sha256 = sha256(`${hashSeed}:overdose`)
+  changed.capabilities.descriptor.sha256 = sha256(`${hashSeed}:capabilities`)
+  return changed
+}
+
 beforeAll(async () => {
   inputs = await loadNewsroomInputs(root)
   machineBrief = buildMachineBrief(inputs)
@@ -147,9 +165,42 @@ describe('NarcoScope deterministic evidence newsroom', () => {
 
   it('keeps CDC harm measurements separate from origin and causal attribution', () => {
     const harm = machineBrief.evidenceLanes.harmTrend
-    expect(harm.observations).toHaveLength(11)
-    expect(harm.observations[0]).toMatchObject({ year: 2015, provisionalDeaths: 9610 })
-    expect(harm.observations.at(-1)).toMatchObject({ year: 2025, provisionalDeaths: 38056 })
+    const expectedFromSnapshot = inputs.overdose.data.records
+      .filter((record) => record.jurisdiction === 'US'
+        && record.substance === 'synthetic_opioids'
+        && record.periodEndMonth === 12
+        && record.partialYear === false)
+      .map((record) => ({
+        year: record.year,
+        periodEndMonth: record.periodEndMonth,
+        provisionalDeaths: record.deaths,
+        predictedDeaths: record.predictedDeaths,
+        percentComplete: record.percentComplete,
+      }))
+      .sort((a, b) => a.year - b.year)
+
+    expect(harm.observations).toEqual(expectedFromSnapshot)
+    expect(harm.observations.length).toBeGreaterThanOrEqual(2)
+    expect(harm.observations.every((point) => point.periodEndMonth === 12)).toBe(true)
+    expect(harm.observations.every((point) => Number.isInteger(point.provisionalDeaths) && point.provisionalDeaths > 0)).toBe(true)
+
+    const fixtureInputs = structuredClone(inputs)
+    fixtureInputs.previousDossier = undefined
+    fixtureInputs.overdose.data.meta.downloaded = '2030-01-02'
+    fixtureInputs.overdose.descriptor.sha256 = 'f'.repeat(64)
+    fixtureInputs.overdose.data.records = [
+      { jurisdiction: 'US', substance: 'synthetic_opioids', year: 2029, periodEndMonth: 12, partialYear: false, deaths: 120, predictedDeaths: 121, percentComplete: 99.9 },
+      { jurisdiction: 'CA', substance: 'synthetic_opioids', year: 2030, periodEndMonth: 12, partialYear: false, deaths: 999, predictedDeaths: null, percentComplete: 100 },
+      { jurisdiction: 'US', substance: 'cocaine', year: 2030, periodEndMonth: 12, partialYear: false, deaths: 888, predictedDeaths: null, percentComplete: 100 },
+      { jurisdiction: 'US', substance: 'synthetic_opioids', year: 2030, periodEndMonth: 11, partialYear: false, deaths: 777, predictedDeaths: null, percentComplete: 100 },
+      { jurisdiction: 'US', substance: 'synthetic_opioids', year: 2030, periodEndMonth: 3, partialYear: true, deaths: 666, predictedDeaths: null, percentComplete: 80 },
+      { jurisdiction: 'US', substance: 'synthetic_opioids', year: 2028, periodEndMonth: 12, partialYear: false, deaths: 100, predictedDeaths: null, percentComplete: 100 },
+    ]
+    const fixtureHarm = buildMachineBrief(fixtureInputs).evidenceLanes.harmTrend
+    expect(fixtureHarm.observations).toEqual([
+      { year: 2028, periodEndMonth: 12, provisionalDeaths: 100, predictedDeaths: null, percentComplete: 100 },
+      { year: 2029, periodEndMonth: 12, provisionalDeaths: 120, predictedDeaths: 121, percentComplete: 99.9 },
+    ])
     expect(harm).not.toHaveProperty('percentChange2022To2025')
     expect(harm.measure).toContain('excluding methadone (T40.4)')
     expect(harm.revisionsExpected).toBe(true)
@@ -201,7 +252,11 @@ describe('NarcoScope deterministic evidence newsroom', () => {
     })
     expect(dossier.verificationReceipt).toMatchObject({
       citationCoverage: { totalSentenceCount: 28, citedSentenceCount: 28, percent: 100 },
-      visualCitationCoverage: { totalDataRowCount: 13, citedDataRowCount: 13, percent: 100 },
+      visualCitationCoverage: {
+        totalDataRowCount: dossier.visuals.flatMap((visual) => visual.items).length,
+        citedDataRowCount: dossier.visuals.flatMap((visual) => visual.items).length,
+        percent: 100,
+      },
       sourceInventory: {
         activeEvidenceSourceCount: 2,
         capabilityOnlySourceCount: 2,
@@ -237,12 +292,11 @@ describe('NarcoScope deterministic evidence newsroom', () => {
   })
 
   it('preserves immutable publication history across a changed source revision', () => {
-    const changedInputs = structuredClone(inputs)
-    changedInputs.previousDossier = { data: dossier }
-    changedInputs.bridge.data.dataAsOf = '2026-08-13'
-    changedInputs.bridge.descriptor.sha256 = 'a'.repeat(64)
-    changedInputs.capabilities.data.asOf = '2026-08-13'
-    changedInputs.capabilities.descriptor.sha256 = 'b'.repeat(64)
+    const changedInputs = inputsForRevision(inputs, {
+      previousDossier: dossier,
+      asOf: addUtcDays(machineBrief.dataAsOf, 1),
+      hashSeed: 'a',
+    })
 
     const changedBrief = buildMachineBrief(changedInputs)
     const changedDossier = buildEvidenceAnalysis(changedBrief, changedInputs)
@@ -257,7 +311,7 @@ describe('NarcoScope deterministic evidence newsroom', () => {
       .toEqual(dossier.publicationRecord.updateHistory)
     expect(changedDossier.publicationRecord.updateHistory.at(-1)).toMatchObject({
       eventType: 'data_refresh',
-      date: '2026-08-13',
+      date: changedBrief.dataAsOf,
       revisionHash: changedBrief.revisionHash,
     })
     const capabilityLocators = changedDossier.sections
@@ -265,7 +319,7 @@ describe('NarcoScope deterministic evidence newsroom', () => {
       .flatMap((sentence) => sentence.citationLocators)
       .filter((citation) => citation.locator.startsWith('registered '))
     expect(capabilityLocators.length).toBeGreaterThan(0)
-    expect(capabilityLocators.every((citation) => citation.locator.endsWith('as of 2026-08-13'))).toBe(true)
+    expect(capabilityLocators.every((citation) => citation.locator.endsWith(`as of ${changedBrief.dataAsOf}`))).toBe(true)
 
     const stableInputs = structuredClone(changedInputs)
     stableInputs.previousDossier = { data: changedDossier }
@@ -280,12 +334,11 @@ describe('NarcoScope deterministic evidence newsroom', () => {
     expect(() => buildEvidenceAnalysis(machineBrief, invalidInputs))
       .toThrow(/checked-in prior dossier is invalid|initial publication summary is invalid/)
 
-    const advancedInputs = structuredClone(inputs)
-    advancedInputs.previousDossier = { data: dossier }
-    advancedInputs.bridge.data.dataAsOf = '2026-08-13'
-    advancedInputs.bridge.descriptor.sha256 = 'a'.repeat(64)
-    advancedInputs.capabilities.data.asOf = '2026-08-13'
-    advancedInputs.capabilities.descriptor.sha256 = 'b'.repeat(64)
+    const advancedInputs = inputsForRevision(inputs, {
+      previousDossier: dossier,
+      asOf: addUtcDays(machineBrief.dataAsOf, 1),
+      hashSeed: 'a',
+    })
     const advancedBrief = buildMachineBrief(advancedInputs)
     const advancedDossier = buildEvidenceAnalysis(advancedBrief, advancedInputs)
 
@@ -294,9 +347,11 @@ describe('NarcoScope deterministic evidence newsroom', () => {
     expect(() => buildEvidenceAnalysis(machineBrief, replayInputs))
       .toThrow(/prior revision hash cannot be replayed/)
 
-    const backwardsInputs = structuredClone(inputs)
-    backwardsInputs.previousDossier = { data: advancedDossier }
-    backwardsInputs.bridge.descriptor.sha256 = 'c'.repeat(64)
+    const backwardsInputs = inputsForRevision(inputs, {
+      previousDossier: advancedDossier,
+      asOf: machineBrief.dataAsOf,
+      hashSeed: 'd',
+    })
     const backwardsBrief = buildMachineBrief(backwardsInputs)
     expect(() => buildEvidenceAnalysis(backwardsBrief, backwardsInputs))
       .toThrow(/cannot move updatedAt backwards/)

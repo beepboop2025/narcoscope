@@ -72,8 +72,10 @@ describe('Evidence Newsroom', () => {
     const harmTable = within(harmFigure).getByRole('table', {
       name: 'US T40.4 mortality: every available December checkpoint in provisional deaths',
     })
+    const harmVisual = dossier.visuals.find((visual) => visual.id === 'cdc-harm-trend')
     expect(within(incidentTable).getAllByRole('row')).toHaveLength(2)
-    expect(within(harmTable).getAllByRole('row')).toHaveLength(12)
+    expect(harmVisual).toBeTruthy()
+    expect(within(harmTable).getAllByRole('row')).toHaveLength(harmVisual.items.length + 1)
     expect(within(operationFigure).getByText(/annual seizure totals are excluded/i)).toBeTruthy()
     expect(within(harmFigure).getByText(/not joined to either INCB record/i)).toBeTruthy()
   })

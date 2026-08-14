@@ -1,0 +1,19 @@
+[Unit]
+Description=Record and alert on NarcoScope collector failure
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+Environment=NARCOSCOPE_STATE_DIR=/var/lib/narcoscope-collector
+EnvironmentFile=-/etc/narcoscope/collector-alert.env
+ExecStart=/opt/narcoscope/deploy/collector/alert.sh
+StateDirectory=narcoscope-collector
+StateDirectoryMode=0700
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+LockPersonality=true
+MemoryDenyWriteExecute=true
