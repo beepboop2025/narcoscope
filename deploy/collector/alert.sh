@@ -3,10 +3,12 @@
 # receipt to a configured HTTPS webhook. The webhook URL is read from a root-only
 # systemd environment file and is never printed.
 set -euo pipefail
+umask 077
 
 STATE_DIR="${NARCOSCOPE_STATE_DIR:-/var/lib/narcoscope-collector}"
 WEBHOOK_URL="${NARCOSCOPE_ALERT_WEBHOOK_URL:-}"
 MARKER="$STATE_DIR/last-failure.json"
+STATUS="$STATE_DIR/status.json"
 
 log_error() {
   printf '[%s] %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$*" >&2
@@ -20,16 +22,25 @@ log_error() {
   exit 1
 }
 mkdir -p -- "$STATE_DIR"
-TEMP_MARKER="$(mktemp "${STATE_DIR%/}/last-failure.json.XXXXXX")"
-cleanup() { rm -f -- "$TEMP_MARKER"; }
-trap cleanup EXIT
+chmod 0700 "$STATE_DIR"
+
+atomic_failure_receipt() {
+  local target="$1"
+  local schema="$2"
+  local body="$3"
+  local temp_marker
+  temp_marker="$(mktemp "${STATE_DIR%/}/.${target##*/}.XXXXXX")"
+  printf '{"schemaVersion":"%s","service":"narcoscope-collector.service",%s}\n' \
+    "$schema" "$body" > "$temp_marker"
+  chmod 0600 "$temp_marker"
+  mv -f -- "$temp_marker" "$target"
+}
 
 FAILED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-printf '{"schemaVersion":"narcoscope.collector.failure.v1","service":"narcoscope-collector.service","failedAt":"%s","text":"NarcoScope collector failed at %s. Check the systemd journal."}\n' \
-  "$FAILED_AT" "$FAILED_AT" > "$TEMP_MARKER"
-chmod 0600 "$TEMP_MARKER"
-mv -f -- "$TEMP_MARKER" "$MARKER"
-trap - EXIT
+atomic_failure_receipt "$MARKER" "narcoscope.collector.failure.v1" \
+  "\"failedAt\":\"$FAILED_AT\",\"text\":\"NarcoScope collector failed at $FAILED_AT. Check the systemd journal.\""
+atomic_failure_receipt "$STATUS" "narcoscope.collector.status.v1" \
+  "\"status\":\"failed\",\"recordedAt\":\"$FAILED_AT\",\"failedAt\":\"$FAILED_AT\""
 
 log_error "collector failure recorded at $MARKER"
 

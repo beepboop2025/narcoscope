@@ -50,7 +50,18 @@ A failed run triggers `narcoscope-collector-alert.service`. It atomically writes
 destination is configured. If a root-only environment file supplies an HTTPS
 webhook, the same bounded receipt is posted there. It contains only the service
 name, failure time, and a prompt to check the journal. No dataset or credential
-is included.
+is included. `last-failure.json` is intentionally historical and is not cleared.
+Monitor `/var/lib/narcoscope-collector/status.json` for current health instead.
+Every accepted run atomically changes that receipt to `status: "ok"` and writes
+`last-success.json`; a failed run changes it to `status: "failed"`.
+
+The systemd oneshot unit serializes timer and manual service starts. The script
+also holds an atomic runtime lock, so a direct shell invocation cannot race the
+unit. A colliding run exits with status 75 before fetching or generating data.
+The final Git push is non-forced, so it is rejected if `origin/main` advances
+after the collector fetches it. If a process is killed without running its exit
+trap, `/run/lock/narcoscope-collector` remains as a fail-closed lock. Confirm no
+collector process is alive before removing it; `/run` is cleared on reboot.
 
 ## One-time provisioning (as root on the box)
 
@@ -95,17 +106,77 @@ systemctl start narcoscope-collector.service          # run now
 journalctl -u narcoscope-collector -f                 # watch
 systemctl list-timers narcoscope-collector.timer      # when next
 systemctl status narcoscope-collector-alert.service   # last alert delivery
-cat /var/lib/narcoscope-collector/last-failure.json   # local failure receipt
+cat /var/lib/narcoscope-collector/status.json         # current health receipt
+cat /var/lib/narcoscope-collector/last-failure.json   # historical failure
+cat /var/lib/narcoscope-collector/last-success.json   # last resolution
 systemctl disable --now narcoscope-collector.timer    # stop 24/7 collection
 ```
 
-If an older collector has already left `/opt/narcoscope` dirty, disable the
-timer and archive the entire checkout plus `git status` and a binary diff before
-recovery. Do not run the older script again: its startup reset discards the
-failed generated state. Install this version only from a clean checkout after
-the archived copy has been hashed and retained. For a controlled first run, use
-`NARCOSCOPE_ENABLE_TIMER=0 bash deploy/collector/install.sh`, start the service
-once manually, inspect the journal and remote diff, then enable the timer.
+### Recover a dirty service checkout
+
+Do not pull, reset, clean, or install in place when an older collector has left
+`/opt/narcoscope` dirty. The following procedure preserves the entire failed
+checkout, including untracked files, and binds replacement code to one reviewed
+commit already present on `origin/main`.
+
+First set `NARCOSCOPE_APPROVED_SHA` to the full 40-character reviewed main SHA.
+Run as root on the collector host:
+
+```bash
+set -euo pipefail
+NARCOSCOPE_APPROVED_SHA='<full reviewed origin/main SHA>'
+[[ "$NARCOSCOPE_APPROVED_SHA" =~ ^[0-9a-f]{40}$ ]]
+
+systemctl disable --now narcoscope-collector.timer
+systemctl stop narcoscope-collector.service
+! systemctl is-active --quiet narcoscope-collector.service
+
+NARCOSCOPE_RECOVERY_STAMP="$(date -u +%Y%m%dT%H%M%SZ)"
+NARCOSCOPE_EVIDENCE_DIR="/var/backups/narcoscope/${NARCOSCOPE_RECOVERY_STAMP}"
+NARCOSCOPE_CANDIDATE="/opt/narcoscope.candidate-${NARCOSCOPE_RECOVERY_STAMP}"
+NARCOSCOPE_RETAINED="/opt/narcoscope.failed-${NARCOSCOPE_RECOVERY_STAMP}"
+install -d -m 0700 "$NARCOSCOPE_EVIDENCE_DIR"
+
+git -C /opt/narcoscope status --porcelain=v1 -uall \
+  > "$NARCOSCOPE_EVIDENCE_DIR/status.txt"
+git -C /opt/narcoscope diff --binary HEAD \
+  > "$NARCOSCOPE_EVIDENCE_DIR/tracked.patch"
+git -C /opt/narcoscope rev-parse HEAD \
+  > "$NARCOSCOPE_EVIDENCE_DIR/original-head.txt"
+tar --acls --xattrs -C /opt -cpf \
+  "$NARCOSCOPE_EVIDENCE_DIR/checkout.tar" narcoscope
+sha256sum "$NARCOSCOPE_EVIDENCE_DIR/checkout.tar" \
+  > "$NARCOSCOPE_EVIDENCE_DIR/checkout.tar.sha256"
+
+git clone git@github.com:beepboop2025/narcoscope.git "$NARCOSCOPE_CANDIDATE"
+test "$(git -C "$NARCOSCOPE_CANDIDATE" rev-parse origin/main)" = "$NARCOSCOPE_APPROVED_SHA"
+git -C "$NARCOSCOPE_CANDIDATE" checkout --detach "$NARCOSCOPE_APPROVED_SHA"
+test "$(git -C "$NARCOSCOPE_CANDIDATE" rev-parse HEAD)" = "$NARCOSCOPE_APPROVED_SHA"
+test -z "$(git -C "$NARCOSCOPE_CANDIDATE" status --porcelain=v1 -uall)"
+npm --prefix "$NARCOSCOPE_CANDIDATE" ci --no-audit --no-fund
+npm --prefix "$NARCOSCOPE_CANDIDATE" test -- --reporter=default
+npm --prefix "$NARCOSCOPE_CANDIDATE" run build
+
+mv -- /opt/narcoscope "$NARCOSCOPE_RETAINED"
+if ! mv -- "$NARCOSCOPE_CANDIDATE" /opt/narcoscope; then
+  mv -- "$NARCOSCOPE_RETAINED" /opt/narcoscope
+  exit 1
+fi
+NARCOSCOPE_ENABLE_TIMER=0 bash /opt/narcoscope/deploy/collector/install.sh
+test "$(git -C /opt/narcoscope ls-remote origin refs/heads/main | cut -f1)" \
+  = "$NARCOSCOPE_APPROVED_SHA"
+systemctl start narcoscope-collector.service
+journalctl -u narcoscope-collector.service --since today --no-pager
+cat /var/lib/narcoscope-collector/status.json
+git -C /opt/narcoscope ls-remote origin refs/heads/main
+systemctl enable --now narcoscope-collector.timer
+```
+
+Do not remove the retained checkout or hashed archive until the recovered run,
+its exact remote commit, and the resulting deployment have been reviewed. If
+the controlled run fails, leave the timer disabled and inspect the current
+status receipt and journal. This sequence never overlays code onto the dirty
+checkout and never assumes its branch can fast-forward safely.
 
 Cadence is daily at 05:17 UTC (`.timer`); most sources are monthly/annual, OFAC
 is continuous. Change `OnCalendar` in the timer to go more often.

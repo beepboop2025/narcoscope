@@ -54,6 +54,8 @@ describe('automated refresh publication contract', () => {
     const origin = path.join(fixture, 'origin.git')
     const serviceRepo = path.join(fixture, 'service-repo')
     const runRoot = path.join(fixture, 'runs')
+    const stateDir = path.join(fixture, 'state')
+    const lockDir = path.join(fixture, 'collector.lock')
     const binDir = path.join(fixture, 'bin')
 
     fs.mkdirSync(serviceRepo)
@@ -100,6 +102,8 @@ exit 64
         NARCOSCOPE_DEPLOY_KEY: path.join(fixture, 'unused-deploy-key'),
         NARCOSCOPE_BRANCH: 'main',
         NARCOSCOPE_RUN_ROOT: runRoot,
+        NARCOSCOPE_STATE_DIR: stateDir,
+        NARCOSCOPE_LOCK_DIR: lockDir,
       },
     })
 
@@ -115,6 +119,34 @@ exit 64
     expect(fs.readdirSync(runRoot)).toEqual([])
     expect(runOk('git', [`--git-dir=${origin}`, 'show', 'main:src/data/sample.json']).stdout)
       .toBe('{"version":"accepted"}\n')
+
+    const alert = run('bash', [path.join(root, 'deploy/collector/alert.sh')], {
+      env: { ...process.env, NARCOSCOPE_STATE_DIR: stateDir, NARCOSCOPE_ALERT_WEBHOOK_URL: '' },
+    })
+    expect(alert.status, `${alert.stdout}\n${alert.stderr}`).toBe(0)
+    const failureReceipt = fs.readFileSync(path.join(stateDir, 'last-failure.json'), 'utf8')
+    expect(JSON.parse(fs.readFileSync(path.join(stateDir, 'status.json'), 'utf8'))).toMatchObject({
+      schemaVersion: 'narcoscope.collector.status.v1',
+      status: 'failed',
+    })
+
+    fs.mkdirSync(lockDir)
+    const overlapping = run('bash', [path.join(root, 'deploy/collector/collect.sh')], {
+      env: {
+        ...process.env,
+        PATH: `${binDir}:${process.env.PATH}`,
+        NARCOSCOPE_REPO: serviceRepo,
+        NARCOSCOPE_DEPLOY_KEY: path.join(fixture, 'unused-deploy-key'),
+        NARCOSCOPE_BRANCH: 'main',
+        NARCOSCOPE_RUN_ROOT: runRoot,
+        NARCOSCOPE_STATE_DIR: stateDir,
+        NARCOSCOPE_LOCK_DIR: lockDir,
+      },
+    })
+    expect(overlapping.status).toBe(75)
+    expect(`${overlapping.stdout}\n${overlapping.stderr}`).toMatch(/another collector run holds/)
+    expect(fs.statSync(lockDir).isDirectory()).toBe(true)
+    fs.rmdirSync(lockDir)
 
     fs.writeFileSync(npmStub, `#!/usr/bin/env bash
 set -euo pipefail
@@ -134,6 +166,8 @@ exit 64
         NARCOSCOPE_DEPLOY_KEY: path.join(fixture, 'unused-deploy-key'),
         NARCOSCOPE_BRANCH: 'main',
         NARCOSCOPE_RUN_ROOT: runRoot,
+        NARCOSCOPE_STATE_DIR: stateDir,
+        NARCOSCOPE_LOCK_DIR: lockDir,
       },
     })
 
@@ -144,6 +178,41 @@ exit 64
     expect(fs.readdirSync(runRoot)).toEqual([])
     expect(runOk('git', [`--git-dir=${origin}`, 'show', 'main:src/data/sample.json']).stdout)
       .toBe('{"version":"validated"}\n')
+    expect(fs.existsSync(lockDir)).toBe(false)
+    expect(fs.readFileSync(path.join(stateDir, 'last-failure.json'), 'utf8')).toBe(failureReceipt)
+    const successReceipt = JSON.parse(fs.readFileSync(path.join(stateDir, 'last-success.json'), 'utf8'))
+    expect(successReceipt).toMatchObject({
+      schemaVersion: 'narcoscope.collector.success.v1',
+      outcome: 'pushed',
+    })
+    expect(successReceipt.revision).toMatch(/^[0-9a-f]{40}$/)
+    expect(JSON.parse(fs.readFileSync(path.join(stateDir, 'status.json'), 'utf8'))).toMatchObject({
+      schemaVersion: 'narcoscope.collector.status.v1',
+      status: 'ok',
+      outcome: 'pushed',
+      revision: successReceipt.revision,
+    })
+    expect(fs.statSync(path.join(stateDir, 'status.json')).mode & 0o777).toBe(0o600)
+
+    const unchanged = run('bash', [path.join(root, 'deploy/collector/collect.sh')], {
+      env: {
+        ...process.env,
+        PATH: `${binDir}:${process.env.PATH}`,
+        NARCOSCOPE_REPO: serviceRepo,
+        NARCOSCOPE_DEPLOY_KEY: path.join(fixture, 'unused-deploy-key'),
+        NARCOSCOPE_BRANCH: 'main',
+        NARCOSCOPE_RUN_ROOT: runRoot,
+        NARCOSCOPE_STATE_DIR: stateDir,
+        NARCOSCOPE_LOCK_DIR: lockDir,
+      },
+    })
+    expect(unchanged.status, `${unchanged.stdout}\n${unchanged.stderr}`).toBe(0)
+    expect(`${unchanged.stdout}\n${unchanged.stderr}`).toMatch(/no data changes/)
+    expect(JSON.parse(fs.readFileSync(path.join(stateDir, 'status.json'), 'utf8'))).toMatchObject({
+      status: 'ok',
+      outcome: 'no_changes',
+      revision: successReceipt.revision,
+    })
   })
 
   it('records failures locally and wires a bounded optional HTTPS alert', () => {
@@ -163,12 +232,19 @@ exit 64
     })
     expect(marker.failedAt).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/)
     expect(fs.statSync(markerPath).mode & 0o777).toBe(0o600)
+    expect(JSON.parse(fs.readFileSync(path.join(stateDir, 'status.json'), 'utf8'))).toMatchObject({
+      schemaVersion: 'narcoscope.collector.status.v1',
+      status: 'failed',
+      failedAt: marker.failedAt,
+    })
 
     const collectorUnit = read('deploy/collector/narcoscope-collector.service')
     const alertUnit = read('deploy/collector/narcoscope-collector-alert.service')
     const alertScript = read('deploy/collector/alert.sh')
     const installer = read('deploy/collector/install.sh')
     expect(collectorUnit).toContain('OnFailure=narcoscope-collector-alert.service')
+    expect(collectorUnit).toContain('StateDirectory=narcoscope-collector')
+    expect(collectorUnit).toContain('NARCOSCOPE_LOCK_DIR=/run/lock/narcoscope-collector')
     expect(alertUnit).toContain('EnvironmentFile=-/etc/narcoscope/collector-alert.env')
     expect(alertUnit).toContain('StateDirectory=narcoscope-collector')
     expect(alertScript).toContain('[[ "$WEBHOOK_URL" != https://* ]]')
