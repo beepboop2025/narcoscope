@@ -5,21 +5,21 @@
   "slug": "china-linked-precursor-incidents-official-record",
   "contentClass": "machine_brief",
   "publishability": "not_publishable_as_analysis_without_second_gate",
-  "dataAsOf": "2026-08-12",
-  "generatedAt": "2026-08-12T00:00:00.000Z",
-  "revisionHash": "ac3c3bac4574313ffacb3bb10ceb2e7a932be7e43d9a6123f5b0fee9ed7792ed",
+  "dataAsOf": "2026-08-14",
+  "generatedAt": "2026-08-14T00:00:00.000Z",
+  "revisionHash": "6373878cf9f62a018f304845a943199a6113f4a7b9a07224bd449beae22e06af",
   "inputArtifacts": [
     {
       "id": "china-public-aggregate-bridge",
       "path": "public/data/narcoscope-palimpsest-v1.json",
       "bytes": 23711,
-      "sha256": "2e8be3a3657fd339d78836cb1cef7a2e6a057e28a3238122072d0051a982dbbd"
+      "sha256": "211bd6f1cafbbdff64c5ad8562484b5b8d65f2cf8fc22b9838dad7f16142ba62"
     },
     {
       "id": "cdc-vsrr-offline-snapshot",
       "path": "src/data/overdose.json",
-      "bytes": 486962,
-      "sha256": "310601476916f14e332261e7cd03bb4c9e06cc78cad85f9543e5f20a0c2df810"
+      "bytes": 488192,
+      "sha256": "a2807017d52d90d2f209bc3439f4d11a54afc5a54067d24635bccdc1f0cd1781"
     },
     {
       "id": "official-source-capabilities",
@@ -182,8 +182,8 @@
         {
           "year": 2025,
           "periodEndMonth": 12,
-          "provisionalDeaths": 38056,
-          "predictedDeaths": 38280,
+          "provisionalDeaths": 38458,
+          "predictedDeaths": 38504,
           "percentComplete": 100
         }
       ],
@@ -235,5 +235,5 @@
     "gateId": "machine-brief-gate.v1",
     "status": "passed"
   },
-  "contentHash": "dccd6f085a0b41015fbffed891dedeaba2defd191d3bbd29e346ad93ff0c9ada"
+  "contentHash": "21986aa5ac46b08c36787061b1d6d339268457f7716689fd620404ee030c5781"
 }

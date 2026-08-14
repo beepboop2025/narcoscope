@@ -42,22 +42,28 @@
         "date": "2026-08-12",
         "summary": "Deterministic source refresh; evidence, qualification and publication receipts were recomputed.",
         "revisionHash": "ac3c3bac4574313ffacb3bb10ceb2e7a932be7e43d9a6123f5b0fee9ed7792ed"
+      },
+      {
+        "eventType": "data_refresh",
+        "date": "2026-08-14",
+        "summary": "Deterministic source refresh; evidence, qualification and publication receipts were recomputed.",
+        "revisionHash": "6373878cf9f62a018f304845a943199a6113f4a7b9a07224bd449beae22e06af"
       }
     ]
   },
   "promotion": {
     "fromContentClass": "machine_brief",
     "machineBriefUrl": "/news/china-linked-precursor-incidents-official-record.machine-brief.json",
-    "machineBriefContentHash": "dccd6f085a0b41015fbffed891dedeaba2defd191d3bbd29e346ad93ff0c9ada",
+    "machineBriefContentHash": "21986aa5ac46b08c36787061b1d6d339268457f7716689fd620404ee030c5781",
     "requiredGate": "automated-evidence-analysis-gate.v1"
   },
   "title": "What the 2025 INCB precursor report says about China-linked incidents—and what it does not prove",
   "dek": "Nine reported incidents, nearly five tonnes, and one crucial missing join: the official record identifies an origin, but it does not establish a causal chain to US deaths or measure lawful industrial trade.",
   "byline": "NarcoScope automated evidence desk",
   "publishedAt": "2026-08-12T00:00:00.000Z",
-  "updatedAt": "2026-08-12T00:00:00.000Z",
-  "dataAsOf": "2026-08-12",
-  "revisionHash": "ac3c3bac4574313ffacb3bb10ceb2e7a932be7e43d9a6123f5b0fee9ed7792ed",
+  "updatedAt": "2026-08-14T00:00:00.000Z",
+  "dataAsOf": "2026-08-14",
+  "revisionHash": "6373878cf9f62a018f304845a943199a6113f4a7b9a07224bd449beae22e06af",
   "keyFigures": [
     {
       "id": "china-eu-upper-bound-mass",
@@ -109,7 +115,7 @@
     },
     {
       "id": "us-t40-4-deaths-latest",
-      "value": 38056,
+      "value": 38458,
       "unit": "provisional deaths",
       "label": "US T40.4 excluding methadone, 12 months ending December 2025",
       "attributionBoundary": "harm_context_not_origin_evidence",
@@ -352,7 +358,7 @@
           "year": 2025,
           "category": "harm_context_only",
           "label": "12 months ending December 2025",
-          "value": 38056,
+          "value": 38458,
           "citationIds": [
             "SRC-CDC-VSRR"
           ],
@@ -711,7 +717,7 @@
             "minimumIndependentActiveGroups": 1,
             "corroborationClaimed": false
           },
-          "text": "Across every retained December checkpoint, CDC’s provisional US count involving synthetic opioids excluding methadone rose from 9,610 in 2015 to a peak of 74,829 in 2022, then fell 49.1% to 38,056 in 2025.",
+          "text": "Across every retained December checkpoint, CDC’s provisional US count involving synthetic opioids excluding methadone rose from 9,610 in 2015 to a peak of 74,829 in 2022, then fell 48.6% to 38,458 in 2025.",
           "citationIds": [
             "SRC-CDC-VSRR"
           ],
@@ -1996,7 +2002,7 @@
     },
     "editorialCompleteness": {
       "correctionsStatus": "none_recorded",
-      "updateHistoryEventCount": 2,
+      "updateHistoryEventCount": 3,
       "initialPublicationRecorded": true,
       "rightToReplyStatus": "not_required",
       "outreachPerformed": false,
@@ -2018,12 +2024,12 @@
     },
     "deterministicHashes": {
       "algorithm": "sha256",
-      "revisionHash": "ac3c3bac4574313ffacb3bb10ceb2e7a932be7e43d9a6123f5b0fee9ed7792ed",
-      "machineBriefContentHash": "dccd6f085a0b41015fbffed891dedeaba2defd191d3bbd29e346ad93ff0c9ada",
+      "revisionHash": "6373878cf9f62a018f304845a943199a6113f4a7b9a07224bd449beae22e06af",
+      "machineBriefContentHash": "21986aa5ac46b08c36787061b1d6d339268457f7716689fd620404ee030c5781",
       "dossierContentHashScope": "canonical JSON of the dossier including this receipt and excluding the top-level contentHash field"
     },
     "failures": [],
     "passed": true
   },
-  "contentHash": "3b225acdf4c1aff4a41eb1e8699115f9b12a935d7db6d7b09669d32bf8702873"
+  "contentHash": "d0095f68807b797fdbda0c7f90d0e0a7f41655c01986098e1e6b84bc6a524108"
 }
