@@ -5,21 +5,21 @@
   "slug": "china-linked-precursor-incidents-official-record",
   "contentClass": "machine_brief",
   "publishability": "not_publishable_as_analysis_without_second_gate",
-  "dataAsOf": "2026-08-17",
-  "generatedAt": "2026-08-17T00:00:00.000Z",
-  "revisionHash": "69c05cf3897fc78d9582a0d5ec43699aac65706532514e5c6bb31f3b2cb8ae6f",
+  "dataAsOf": "2026-08-18",
+  "generatedAt": "2026-08-18T00:00:00.000Z",
+  "revisionHash": "f772c07703bb7256a566e9d51c8868515aae48c571df94988a98ef6c1558c0af",
   "inputArtifacts": [
     {
       "id": "china-public-aggregate-bridge",
       "path": "public/data/narcoscope-palimpsest-v1.json",
       "bytes": 23711,
-      "sha256": "1b793b95d892a9690d530b9df385e5af3e194f0c882673399776e219410fe122"
+      "sha256": "21bfe95308ceb1141acf212b84ebde7405296fac57146b3708ce1c607da1208c"
     },
     {
       "id": "cdc-vsrr-offline-snapshot",
       "path": "src/data/overdose.json",
       "bytes": 488192,
-      "sha256": "d1cbea5ffb05a54d7d47e74bd1803f6b002e0c50cf87ce1684dbd1f1823d6cea"
+      "sha256": "430a3f06989ba8e803afea3b3fe94df639bcc1398988da6f732b2cdc359feb13"
     },
     {
       "id": "official-source-capabilities",
@@ -235,5 +235,5 @@
     "gateId": "machine-brief-gate.v1",
     "status": "passed"
   },
-  "contentHash": "287d7129cc07bf70e524ee6adcbde5bccccb74efd69b10061c676d44a86f1cff"
+  "contentHash": "508b386ca7b9418bfa66981fcb3b125171c773fad2a5bd230dbd2fb2610965dc"
 }
