@@ -3,7 +3,7 @@
   <id>https://narcoscope.com/news/</id>
   <title>NarcoScope evidence newsroom</title>
   <author><name>NarcoScope automated evidence desk</name></author>
-  <updated>2026-08-20T00:00:00.000Z</updated>
+  <updated>2026-08-21T00:00:00.000Z</updated>
   <link rel="self" href="https://narcoscope.com/news/feed.xml" />
   <link rel="alternate" href="https://narcoscope.com/#newsroom" />
   <entry>
@@ -11,7 +11,7 @@
     <title>What the 2025 INCB precursor report says about China-linked incidents—and what it does not prove</title>
     <link href="https://narcoscope.com/news/china-linked-precursor-incidents-official-record.html" />
     <published>2026-08-12T00:00:00.000Z</published>
-    <updated>2026-08-20T00:00:00.000Z</updated>
+    <updated>2026-08-21T00:00:00.000Z</updated>
     <summary>Nine reported incidents, nearly five tonnes, and one crucial missing join: the official record identifies an origin, but it does not establish a causal chain to US deaths or measure lawful industrial trade.</summary>
     <content type="html">
   &lt;article class=&quot;evidence-article&quot;&gt;
@@ -19,7 +19,7 @@
       &lt;p class=&quot;kicker&quot;&gt;Automated evidence analysis · official sources only&lt;/p&gt;
       &lt;h1&gt;What the 2025 INCB precursor report says about China-linked incidents—and what it does not prove&lt;/h1&gt;
       &lt;p class=&quot;dek&quot;&gt;Nine reported incidents, nearly five tonnes, and one crucial missing join: the official record identifies an origin, but it does not establish a causal chain to US deaths or measure lawful industrial trade.&lt;/p&gt;
-      &lt;p class=&quot;meta&quot;&gt;NarcoScope automated evidence desk · data as of 2026-08-20 · no human review recorded&lt;/p&gt;
+      &lt;p class=&quot;meta&quot;&gt;NarcoScope automated evidence desk · data as of 2026-08-21 · no human review recorded&lt;/p&gt;
       &lt;aside class=&quot;disclosure&quot;&gt;&lt;strong&gt;Automation disclosure.&lt;/strong&gt; Written by deterministic typed templates from checked-in official-source aggregates; no generative model is used at build time. Machine brief and analysis pass separate gates; a pass does not imply causal attribution or adjudicated guilt.&lt;/aside&gt;
       &lt;aside class=&quot;publication-status&quot; aria-label=&quot;Right to reply and testimony status&quot;&gt;
         &lt;p&gt;&lt;strong&gt;Right to reply: not required.&lt;/strong&gt; This aggregate analysis makes no named allegation about a person or organization. No outreach was performed or implied.&lt;/p&gt;
@@ -349,11 +349,17 @@
         &lt;span&gt;Deterministic source refresh; evidence, qualification and publication receipts were recomputed.&lt;/span&gt;
         &lt;code&gt;45ec44eb61fef688bb01c704a5980d4c20b6741ff664263452f8d468052de9e0&lt;/code&gt;
       &lt;/li&gt;
+      &lt;li&gt;
+        &lt;time datetime=&quot;2026-08-21&quot;&gt;2026-08-21&lt;/time&gt;
+        &lt;strong&gt;data refresh&lt;/strong&gt;
+        &lt;span&gt;Deterministic source refresh; evidence, qualification and publication receipts were recomputed.&lt;/span&gt;
+        &lt;code&gt;f41579caea1b242f4b4bc1250827d87db85449a2f36bd50f010ffdd37573cf4f&lt;/code&gt;
+      &lt;/li&gt;
       &lt;/ol&gt;
     &lt;/section&gt;
     &lt;footer class=&quot;hashes&quot;&gt;
-      &lt;span&gt;Revision &lt;code&gt;45ec44eb61fef688bb01c704a5980d4c20b6741ff664263452f8d468052de9e0&lt;/code&gt;&lt;/span&gt;
-      &lt;span&gt;Content &lt;code&gt;31b15e0961a0e9f12f0f1bcdbde0909cf2f316106d5469c5b4c9042678d3b57a&lt;/code&gt;&lt;/span&gt;
+      &lt;span&gt;Revision &lt;code&gt;f41579caea1b242f4b4bc1250827d87db85449a2f36bd50f010ffdd37573cf4f&lt;/code&gt;&lt;/span&gt;
+      &lt;span&gt;Content &lt;code&gt;b216798975db1c4a6fd2ad0f6045d83473e595816dc6702bf102af55fae303fa&lt;/code&gt;&lt;/span&gt;
       &lt;a href=&quot;/news/china-linked-precursor-incidents-official-record.machine-brief.json&quot;&gt;Machine brief&lt;/a&gt;
       &lt;a href=&quot;/news/china-linked-precursor-incidents-official-record.dossier.json&quot;&gt;Dossier JSON&lt;/a&gt;
       &lt;a href=&quot;/news/feed.json&quot;&gt;JSON feed&lt;/a&gt;
