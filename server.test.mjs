@@ -1,0 +1,63 @@
+import { mkdtemp, mkdir, writeFile } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+
+import { afterAll, beforeAll, describe, expect, it } from 'vitest'
+
+import { createNarcoscopeServer } from './server.mjs'
+
+let baseUrl
+let server
+
+beforeAll(async () => {
+  const distDir = await mkdtemp(join(tmpdir(), 'narcoscope-server-'))
+  await mkdir(join(distDir, 'assets'))
+  await writeFile(join(distDir, 'index.html'), '<!doctype html><title>NarcoScope</title>')
+  await writeFile(join(distDir, 'robots.txt'), 'User-agent: *\n')
+  server = createNarcoscopeServer({ distDir })
+  await new Promise((resolveListen) => server.listen(0, '127.0.0.1', resolveListen))
+  const address = server.address()
+  baseUrl = 'http://127.0.0.1:' + address.port
+})
+
+afterAll(async () => {
+  if (server) await new Promise((resolveClose) => server.close(resolveClose))
+})
+
+describe('Railway HTTP server', () => {
+  it('exposes a no-store liveness endpoint', async () => {
+    const response = await fetch(baseUrl + '/healthz')
+    expect(response.status).toBe(200)
+    expect(response.headers.get('cache-control')).toBe('no-store')
+    expect(await response.json()).toMatchObject({ status: 'alive', service: 'narcoscope' })
+  })
+
+  it('adapts the REST handler without a Vercel runtime', async () => {
+    const response = await fetch(baseUrl + '/api/v1/palimpsest-corridors')
+    expect(response.status).toBe(200)
+    const payload = await response.json()
+    expect(payload).toMatchObject({ ok: true, resource: 'palimpsest-corridors' })
+    expect(payload.data).toHaveProperty('countries')
+  })
+
+  it('adapts the MCP handler without a Vercel runtime', async () => {
+    const response = await fetch(baseUrl + '/mcp', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'tools/list', params: {} }),
+    })
+    expect(response.status).toBe(200)
+    const payload = await response.json()
+    expect(payload.result.tools.map((tool) => tool.name)).toContain('get_palimpsest_corridors')
+  })
+
+  it('serves static assets and applies the SPA fallback', async () => {
+    const asset = await fetch(baseUrl + '/robots.txt')
+    expect(asset.status).toBe(200)
+    expect(await asset.text()).toContain('User-agent')
+
+    const spa = await fetch(baseUrl + '/corridors')
+    expect(spa.status).toBe(200)
+    expect(await spa.text()).toContain('<title>NarcoScope</title>')
+  })
+})

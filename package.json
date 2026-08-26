@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "vite",
     "build": "npm run news:check && tsc --noEmit && vite build",
+    "start": "node server.mjs",
     "preview": "vite preview",
     "scrape:myanmar": "node scripts/scrape/myanmar-conflict-precursors.mjs",
     "bridge:palimpsest": "node scripts/bridge/build-palimpsest-china.mjs && node scripts/bridge/build-palimpsest-corridors.mjs",
