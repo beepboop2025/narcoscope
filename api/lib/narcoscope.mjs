@@ -13,6 +13,7 @@ const PUBLIC_FILES = Object.freeze({
   newsroom: 'public/news/index.json',
   newsroomManifest: 'public/news/manifest.json',
   palimpsestBridge: 'public/data/narcoscope-palimpsest-v1.json',
+  palimpsestCorridors: 'public/data/narcoscope-palimpsest-corridors-v2.json',
 })
 
 async function readJson(relativePath) {
@@ -54,16 +55,22 @@ export function capabilities() {
         outcome: 'Use a public, aggregate China record whose claim and disclosure boundaries are machine-readable.',
         url: `${SITE_URL}/data/narcoscope-palimpsest-v1.json`,
       },
+      {
+        id: 'palimpsest-corridors',
+        title: 'China-Pakistan-Myanmar evidence overlay',
+        outcome: 'Use official country aggregates with a geography-and-time-only join contract and explicit missing-data states.',
+        url: `${SITE_URL}/data/narcoscope-palimpsest-corridors-v2.json`,
+      },
     ],
     api: {
       base_url: `${SITE_URL}/api/v1`,
       openapi: `${SITE_URL}/openapi.json`,
-      resources: ['capabilities', 'overview', 'newsroom', 'story', 'palimpsest-bridge'],
+      resources: ['capabilities', 'overview', 'newsroom', 'story', 'palimpsest-bridge', 'palimpsest-corridors'],
     },
     mcp: {
       endpoint: `${SITE_URL}/mcp`,
       transport: 'streamable-http',
-      tools: ['list_capabilities', 'get_overview', 'get_newsroom', 'get_story', 'get_palimpsest_bridge'],
+      tools: ['list_capabilities', 'get_overview', 'get_newsroom', 'get_story', 'get_palimpsest_bridge', 'get_palimpsest_corridors'],
     },
     feeds: {
       json: `${SITE_URL}/news/feed.json`,
@@ -166,6 +173,15 @@ export async function getPalimpsestBridge() {
   }
 }
 
+export async function getPalimpsestCorridors() {
+  const bridge = await readJson(PUBLIC_FILES.palimpsestCorridors)
+  return {
+    ...bridge,
+    canonicalUrl: `${SITE_URL}/data/narcoscope-palimpsest-corridors-v2.json`,
+    interpretation: 'Official country-level context only. Join by geography and time; never infer an actor relationship, political classification, bilateral route, guilt, or causality.',
+  }
+}
+
 export async function resource(name, params = {}) {
   switch (name) {
     case 'capabilities': return capabilities()
@@ -173,6 +189,7 @@ export async function resource(name, params = {}) {
     case 'newsroom': return getNewsroom(params)
     case 'story': return getStory(params)
     case 'palimpsest-bridge': return getPalimpsestBridge()
+    case 'palimpsest-corridors': return getPalimpsestCorridors()
     default: throw new RangeError(`unknown resource: ${name}`)
   }
 }

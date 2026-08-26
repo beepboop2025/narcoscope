@@ -9,7 +9,7 @@
     "build": "npm run news:check && tsc --noEmit && vite build",
     "preview": "vite preview",
     "scrape:myanmar": "node scripts/scrape/myanmar-conflict-precursors.mjs",
-    "bridge:palimpsest": "node scripts/bridge/build-palimpsest-china.mjs",
+    "bridge:palimpsest": "node scripts/bridge/build-palimpsest-china.mjs && node scripts/bridge/build-palimpsest-corridors.mjs",
     "news:build": "node scripts/newsroom/build-newsroom.mjs",
     "news:check": "node scripts/newsroom/build-newsroom.mjs --check",
     "data:refresh": "node scripts/pipeline/run.mjs",

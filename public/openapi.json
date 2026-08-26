@@ -2,8 +2,8 @@
   "openapi": "3.1.0",
   "info": {
     "title": "NarcoScope Public Evidence API",
-    "version": "1.0.0",
-    "description": "Read-only access to NarcoScope's aggregate official-data overview, citation-gated evidence newsroom, and public Palimpsest bridge. No endpoint provides point-of-sale, real-time, navigable, synthesis-route, or yield information."
+    "version": "1.1.0",
+    "description": "Read-only access to NarcoScope's aggregate official-data overview, citation-gated evidence newsroom, and public Palimpsest bridges. No endpoint provides point-of-sale, real-time, navigable, synthesis-route, or yield information."
   },
   "servers": [
     { "url": "https://narcoscope.com/api/v1" }
@@ -89,6 +89,13 @@
       "get": {
         "operationId": "getNarcoScopePalimpsestBridge",
         "summary": "Read the official-only China aggregate and its claim boundaries",
+        "responses": { "200": { "$ref": "#/components/responses/Success" } }
+      }
+    },
+    "/palimpsest-corridors": {
+      "get": {
+        "operationId": "getNarcoScopePalimpsestCorridors",
+        "summary": "Read official country aggregates for China, Pakistan, and Myanmar under a geography-and-time-only join contract",
         "responses": { "200": { "$ref": "#/components/responses/Success" } }
       }
     }

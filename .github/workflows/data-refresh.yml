@@ -36,6 +36,7 @@ jobs:
           add-paths: |
             src/data
             public/data/narcoscope-palimpsest-v1.json
+            public/data/narcoscope-palimpsest-corridors-v2.json
             public/news
           branch: data-refresh/automated
           commit-message: 'data: quarterly open-source refresh (UNODC annexes + World Bank GDP)'

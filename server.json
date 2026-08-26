@@ -3,7 +3,7 @@
   "name": "io.github.beepboop2025/narcoscope",
   "title": "NarcoScope — official drug-market evidence explorer",
   "description": "Aggregate official drug-market evidence, cited analyses, and explicit claim boundaries.",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "repository": {
     "url": "https://github.com/beepboop2025/narcoscope",
     "source": "github"

@@ -14,7 +14,7 @@ MCP endpoint: https://narcoscope.com/mcp
 - You need official aggregate retail-price, seizure, overdose, wastewater, precursor-report, wildlife-seizure, or public-designation context.
 - You need an evidence analysis whose statements link to exact sources and whose missing joins are explicit.
 - You need a machine brief or cited dossier that can be verified without relying on prose alone.
-- You need the official-only China aggregate shared with the Palimpsest Intelligence Commons.
+- You need the official-only China aggregate or the China-Pakistan-Myanmar country overlay shared with the Palimpsest Intelligence Commons.
 
 ## Start here
 
@@ -29,6 +29,7 @@ MCP endpoint: https://narcoscope.com/mcp
 - JSON Feed: https://narcoscope.com/news/feed.json
 - Atom: https://narcoscope.com/news/feed.xml
 - Palimpsest bridge: https://narcoscope.com/api/v1/palimpsest-bridge
+- Palimpsest corridor overlay: https://narcoscope.com/api/v1/palimpsest-corridors
 
 ## Telegram
 
@@ -43,6 +44,6 @@ MCP endpoint: https://narcoscope.com/mcp
 
 ## Evidence rules
 
-Treat seizures as administrative observations, not a direct measure of trafficking volume. Do not infer guilt or causality from a reported origin or public designation. Distinguish official, illustrative, stale, unavailable, and capability-only inputs. Preserve humanReviewStatus and every limitation when summarizing newsroom material.
+Treat seizures as administrative observations, not a direct measure of trafficking volume. Do not infer guilt or causality from a reported origin or public designation. The corridor overlay may be joined only by geography and time; never use it to classify a political movement, armed organization, community, person, or bilateral route. Distinguish official, illustrative, stale, unavailable, and capability-only inputs. Preserve humanReviewStatus and every limitation when summarizing newsroom material.
 
 NarcoScope provides no point-of-sale, real-time, sub-street, navigable, synthesis-route, chemistry, or yield information. It is not a guide to obtaining any substance.
