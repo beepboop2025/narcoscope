@@ -13,6 +13,26 @@ const ROOT = fileURLToPath(new URL('.', import.meta.url))
 const DEFAULT_DIST = resolve(ROOT, 'dist')
 const MAX_BODY_BYTES = 256 * 1024
 const COMMIT_RE = /^[0-9a-f]{40}$/
+const INTERNAL_STATIC_ROOTS = new Set([
+  'api',
+  'lib',
+  'mcp',
+  'node_modules',
+  'public',
+  'scripts',
+  'src',
+  'test',
+  'tests',
+])
+const INTERNAL_STATIC_FILES = Object.freeze([
+  /^dockerfile(?:\..+)?$/,
+  /^npm-shrinkwrap\.json$/,
+  /^package(?:-lock)?\.json$/,
+  /^railway\.json$/,
+  /^server\.(?:[cm]?js|ts)$/,
+  /^tsconfig(?:\.[^.]+)?\.json$/,
+  /^(?:vite|vitest)\.config\.[^.]+$/,
+])
 
 const CONTENT_TYPES = Object.freeze({
   '.css': 'text/css; charset=utf-8',
@@ -67,6 +87,44 @@ function apiQuery(requestUrl, resourceFromPath) {
   }
 }
 
+function rawOriginPathname(requestTarget) {
+  let end = requestTarget.length
+  for (const delimiter of ['?', '#']) {
+    const index = requestTarget.indexOf(delimiter)
+    if (index !== -1 && index < end) end = index
+  }
+  return requestTarget.slice(0, end) || '/'
+}
+
+function classifyStaticPath(decodedPath) {
+  const segments = []
+  let traversal = false
+  for (const segment of decodedPath.replaceAll('\\', '/').split('/')) {
+    if (!segment || segment === '.') continue
+    if (segment === '..') {
+      traversal = true
+      if (segments.length) segments.pop()
+      continue
+    }
+    segments.push(segment)
+  }
+
+  const lowerSegments = segments.map((segment) => segment.toLowerCase())
+  const root = lowerSegments[0] || ''
+  const hiddenSegment = lowerSegments.some((segment, index) => (
+    segment.startsWith('.') && !(index === 0 && segment === '.well-known')
+  ))
+  const internalRoot = INTERNAL_STATIC_ROOTS.has(root)
+  const internalFile = INTERNAL_STATIC_FILES.some((pattern) => pattern.test(root))
+
+  return {
+    blocked: traversal || hiddenSegment || internalRoot || internalFile,
+    relativePath: segments.join('/'),
+    spaFallbackAllowed: root !== '.well-known',
+    traversal,
+  }
+}
+
 async function serveStatic(req, res, requestUrl, distDir) {
   let decodedPath
   try {
@@ -81,8 +139,14 @@ async function serveStatic(req, res, requestUrl, distDir) {
     return
   }
 
-  let relativePath = decodedPath.replace(/^\/+/, '')
-  if (!relativePath || relativePath.endsWith('/')) relativePath += 'index.html'
+  const staticPath = classifyStaticPath(decodedPath)
+  if (staticPath.blocked) {
+    sendJson(req, res, 404, { ok: false, error: 'not_found' })
+    return
+  }
+
+  let relativePath = staticPath.relativePath
+  if (!relativePath) relativePath = 'index.html'
   let candidate = resolve(distDir, relativePath)
   const allowedPrefix = distDir.endsWith(sep) ? distDir : distDir + sep
   if (candidate !== distDir && !candidate.startsWith(allowedPrefix)) {
@@ -98,7 +162,7 @@ async function serveStatic(req, res, requestUrl, distDir) {
       fileStat = await stat(candidate)
     }
   } catch {
-    if (extname(relativePath)) {
+    if (!staticPath.spaFallbackAllowed || extname(relativePath)) {
       sendJson(req, res, 404, { ok: false, error: 'not_found' })
       return
     }
@@ -129,7 +193,24 @@ async function serveStatic(req, res, requestUrl, distDir) {
 }
 
 async function route(req, res, distDir, briLoader) {
-  const requestUrl = new URL(req.url || '/', 'http://127.0.0.1')
+  const requestTarget = req.url || '/'
+  let rawDecodedPath
+  try {
+    rawDecodedPath = decodeURIComponent(rawOriginPathname(requestTarget))
+  } catch {
+    sendJson(req, res, 400, { ok: false, error: 'invalid_path' })
+    return
+  }
+  if (rawDecodedPath.includes('\0')) {
+    sendJson(req, res, 400, { ok: false, error: 'invalid_path' })
+    return
+  }
+  if (classifyStaticPath(rawDecodedPath).traversal) {
+    sendJson(req, res, 404, { ok: false, error: 'not_found' })
+    return
+  }
+
+  const requestUrl = new URL(requestTarget, 'http://127.0.0.1')
   const pathname = requestUrl.pathname
 
   if (pathname === '/livez') {
