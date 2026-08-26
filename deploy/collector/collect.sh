@@ -25,6 +25,7 @@ export GIT_SSH_COMMAND
 GENERATED_PATHS=(
   "src/data"
   "public/data/narcoscope-palimpsest-v1.json"
+  "public/data/narcoscope-palimpsest-corridors-v2.json"
   "public/news"
 )
 

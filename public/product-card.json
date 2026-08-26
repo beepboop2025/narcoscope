@@ -8,7 +8,7 @@
   "use_cases": [
     "Compare official retail-price, seizure, mortality, wastewater, and designation records.",
     "Read newsroom analyses with sentence-level citations, correction history, and explicit abstentions.",
-    "Import a public aggregate China record into an evidence workflow through the Palimpsest bridge.",
+    "Import public aggregate China evidence or the official China-Pakistan-Myanmar country overlay through versioned Palimpsest bridges.",
     "Give an AI agent read-only access to bounded, source-linked artifacts through MCP or OpenAPI."
   ],
   "proof": [
@@ -20,13 +20,16 @@
     "No point-of-sale, real-time, sub-street, or navigable location information.",
     "No precursor synthesis routes, chemistry, or yields.",
     "Seizure changes are not treated as trafficking-volume changes without independent modalities.",
-    "A designation or reported origin is not an adjudication of guilt or causal proof."
+    "A designation or reported origin is not an adjudication of guilt or causal proof.",
+    "A shared geography or period never establishes a political, armed-actor, trafficking, or causal relationship."
   ],
   "access": {
     "website": "https://narcoscope.com",
     "research_guides": "https://narcoscope.com/research/",
     "developers": "https://narcoscope.com/developers/",
     "api": "https://narcoscope.com/api/v1/capabilities",
+    "palimpsest_bridge": "https://narcoscope.com/api/v1/palimpsest-bridge",
+    "palimpsest_corridors": "https://narcoscope.com/api/v1/palimpsest-corridors",
     "openapi": "https://narcoscope.com/openapi.json",
     "mcp": "https://narcoscope.com/mcp",
     "json_feed": "https://narcoscope.com/news/feed.json",
@@ -38,7 +41,7 @@
   "related": [
     {
       "name": "Palimpsest",
-      "relationship": "Sister evidence desk for China information controls, network interference, publication gaps, and sealed AI evaluations; adjacent context is not automatic corroboration",
+      "relationship": "Sister evidence desk for China information controls, Belt and Road economics, Pakistan and Myanmar corridor evidence, publication gaps, and sealed AI evaluations; adjacent context is not automatic corroboration",
       "url": "https://palimpsest.info/"
     },
     {

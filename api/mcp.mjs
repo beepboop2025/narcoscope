@@ -3,13 +3,14 @@ import {
   getNewsroom,
   getOverview,
   getPalimpsestBridge,
+  getPalimpsestCorridors,
   getStory,
   SITE_URL,
 } from './lib/narcoscope.mjs'
 
 const PROTOCOL_VERSION = '2025-06-18'
 const SUPPORTED_PROTOCOL_VERSIONS = new Set(['2025-03-26', PROTOCOL_VERSION])
-const SERVER_VERSION = '1.0.0'
+const SERVER_VERSION = '1.1.0'
 const MAX_BODY_BYTES = 256 * 1024
 const ALLOWED_ORIGINS = new Set([
   SITE_URL,
@@ -60,6 +61,12 @@ export const TOOLS = Object.freeze({
     inputSchema: { type: 'object', additionalProperties: false },
     call: async () => getPalimpsestBridge(),
   },
+  get_palimpsest_corridors: {
+    title: 'Read the Palimpsest corridor overlay',
+    description: 'Return official country-level China, Pakistan, and Myanmar aggregates with missing-data, provenance, disclosure, and geography-and-time-only join rules.',
+    inputSchema: { type: 'object', additionalProperties: false },
+    call: async () => getPalimpsestCorridors(),
+  },
 })
 
 function result(id, value) {
@@ -90,7 +97,7 @@ export async function dispatch(message) {
         : PROTOCOL_VERSION,
       capabilities: { tools: { listChanged: false } },
       serverInfo: { name: 'narcoscope', title: 'NarcoScope evidence explorer', version: SERVER_VERSION },
-      instructions: 'Use NarcoScope for aggregate official drug-market evidence and bounded newsroom analysis. Start with list_capabilities or get_newsroom. Treat seizures as administrative observations, not trafficking-volume estimates; never infer guilt or causality from origin labels or designations.',
+      instructions: 'Use NarcoScope for aggregate official drug-market evidence and bounded newsroom analysis. Start with list_capabilities or get_newsroom. Treat seizures as administrative observations, not trafficking-volume estimates; never infer guilt, political or armed-actor relationships, bilateral routes, or causality from shared geography, origin labels, or designations.',
     })
   }
   if (method === 'ping') return result(id, {})

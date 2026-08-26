@@ -1,7 +1,13 @@
 import { describe, expect, it } from 'vitest'
 import { readFileSync } from 'node:fs'
 
-import { capabilities, getNewsroom, getOverview, getStory } from './lib/narcoscope.mjs'
+import {
+  capabilities,
+  getNewsroom,
+  getOverview,
+  getPalimpsestCorridors,
+  getStory,
+} from './lib/narcoscope.mjs'
 import handler, { dispatch, TOOLS } from './mcp.mjs'
 
 function responseRecorder() {
@@ -28,6 +34,13 @@ describe('NarcoScope public surfaces', () => {
     expect(overview.interpretation.join(' ')).toContain('not a live illicit-market estimate')
   })
 
+  it('serves the corridor overlay with the non-causal join boundary intact', async () => {
+    const overlay = await getPalimpsestCorridors()
+    expect(overlay.geographies.map((item) => item.iso3)).toEqual(['CHN', 'MMR', 'PAK'])
+    expect(overlay.disclosure.joinPolicy).toBe('geography_and_time_only')
+    expect(overlay.interpretation).toContain('never infer an actor relationship')
+  })
+
   it('serves newsroom metadata and the machine brief without weakening gates', async () => {
     const newsroom = await getNewsroom({ limit: 1 })
     expect(newsroom.articles).toHaveLength(1)
@@ -47,7 +60,7 @@ describe('NarcoScope public surfaces', () => {
       jsonrpc: '2.0', id: 1, method: 'initialize',
       params: { protocolVersion: '2025-03-26' },
     })
-    expect(initialized.result.serverInfo.version).toBe('1.0.0')
+    expect(initialized.result.serverInfo.version).toBe('1.1.0')
     expect(initialized.result.protocolVersion).toBe('2025-03-26')
     const listed = await dispatch({ jsonrpc: '2.0', id: 2, method: 'tools/list' })
     expect(listed.result.tools.map((tool) => tool.name)).toEqual(Object.keys(TOOLS))

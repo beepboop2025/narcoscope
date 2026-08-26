@@ -106,6 +106,9 @@ run('node', ['scripts/convert/gen-overview.mjs'])
 console.log('· regenerating public Palimpsest China aggregate …')
 run('node', ['scripts/bridge/build-palimpsest-china.mjs'])
 
+console.log('· regenerating public Palimpsest China-Pakistan-Myanmar aggregate …')
+run('node', ['scripts/bridge/build-palimpsest-corridors.mjs'])
+
 // The evidence newsroom consumes only checked-in official-source snapshots.
 // It is regenerated after the bridge so its revision/content hashes and feeds
 // always describe the same reviewed data revision as the public aggregate.
@@ -122,6 +125,7 @@ console.log('\n✔ pipeline complete. Changed files:')
 const diff = spawnSync('git', [
   'status', '--porcelain', '--', 'src/data',
   'public/data/narcoscope-palimpsest-v1.json',
+  'public/data/narcoscope-palimpsest-corridors-v2.json',
   'public/news',
 ], { encoding: 'utf8' }).stdout.trim()
 console.log(diff || '  (no data changes — sources unchanged since last run)')
