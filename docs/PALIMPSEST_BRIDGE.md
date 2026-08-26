@@ -5,6 +5,10 @@ the stable China v1 contract and an additive China-Pakistan-Myanmar v2 country
 overlay. They are public handoff artifacts, not a shared database and not a
 runtime dependency.
 
+It also publishes one reverse, read-only Palimpsest context lane for NarcoScope.
+That lane is pinned to exact Palimpsest artifacts and a verified release receipt;
+it is displayed beside the drug-market record but cannot be joined into it.
+
 ```text
 Official NarcoScope inputs
           |
@@ -26,16 +30,61 @@ Palimpsest verifies hashes, reviews and imports
 - Corridor artifact: `public/data/narcoscope-palimpsest-corridors-v2.json`
 - Corridor schema: `public/data/narcoscope-palimpsest-corridors-v2.schema.json`
 - Corridor builder: `scripts/bridge/build-palimpsest-corridors.mjs`
+- BRI context artifact: `public/data/narcoscope-palimpsest-bri-v1.json`
+- BRI context SHA-256: `public/data/narcoscope-palimpsest-bri-v1.json.sha256`
+- BRI context schema: `public/data/narcoscope-palimpsest-bri-v1.schema.json`
+- BRI source pin: `scripts/bridge/palimpsest-bri-source-pin.json`
+- BRI builder: `scripts/bridge/build-palimpsest-bri.mjs`
 
 Vite copies `public/data` to the deployment root, so the deployed artifact is
 available at `/data/narcoscope-palimpsest-v1.json` and its schema is available
 at `/data/narcoscope-palimpsest-v1.schema.json`. The v2 pair is published under
 the corresponding `narcoscope-palimpsest-corridors-v2` names.
+The reverse BRI lane is available at `/data/narcoscope-palimpsest-bri-v1.json`,
+with the hash sidecar and schema under the corresponding names.
 
 Run `npm run bridge:palimpsest` after changing a covered dataset. The normal
 data refresh also regenerates the artifact before its validation gate. A test
 compares the checked-in artifact byte for byte with a fresh build, so data and
 the public handoff cannot drift silently.
+
+The ordinary bridge command rebuilds BRI context from its reviewed pin and does
+not need a Palimpsest checkout. Refresh the pin only when a new Palimpsest exact
+release receipt is available:
+
+```bash
+node scripts/bridge/build-palimpsest-bri.mjs \
+  --refresh-pin \
+  --source-dir /path/to/palimpsest-release-checkout \
+  --release-receipt /path/to/railway-fleet-release-receipt.json
+npm run bridge:palimpsest-bri:check
+```
+
+The refresh rejects a non-ready Railway release, mismatched WDI hash, mismatched
+Pages receipt, missing implementation state, duplicate country-indicator year,
+or weakened national non-causal context policy.
+
+## Reverse BRI context lane
+
+`narcoscope.palimpsest.bri-context.v1` carries only bounded metadata:
+
+- all Palimpsest source implementation and rights-status counts;
+- exact target readiness for CPEC, Gwadar, CMEC, Kyaukpyu and Balochistan;
+- separate source class, authority role and claim-class counts, including
+  official/administrative, independent-observation and modeled/analytical sets;
+- World Bank WDI country-indicator-year spans and observed, forecast and
+  unavailable counts for China, Myanmar and Pakistan; and
+- canonical and Railway mirror URLs, artifact hashes, source revision, tree
+  hash, rights, source clocks, retrieval clock and point-in-time receipts.
+
+It copies no WDI values, event rows, person or organization record, narrative,
+coordinate, tactical detail, relationship edge or bilateral route. The machine
+policy prohibits a drug-conflict-infrastructure causal join, actor
+classification, bilateral-route inference, guilt inference, political-movement
+classification, project attribution from national series, and tactical use.
+Official, independent and modeled classifications are non-exclusive and remain
+explicit; `link_only`, `planned`, `adapter_ready`, `live` and `blocked` never
+collapse into one coverage claim.
 
 ## Contract
 

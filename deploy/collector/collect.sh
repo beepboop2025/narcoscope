@@ -26,6 +26,8 @@ GENERATED_PATHS=(
   "src/data"
   "public/data/narcoscope-palimpsest-v1.json"
   "public/data/narcoscope-palimpsest-corridors-v2.json"
+  "public/data/narcoscope-palimpsest-bri-v1.json"
+  "public/data/narcoscope-palimpsest-bri-v1.json.sha256"
   "public/news"
 )
 

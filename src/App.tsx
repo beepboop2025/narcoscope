@@ -240,6 +240,7 @@ export default function App() {
             <a href="/#newsroom">Evidence newsroom</a>
             <a href="/research/">Research guides</a>
             <a href="/developers/">API + MCP</a>
+            <a href="/api/v1/palimpsest-bri">BRI context</a>
             <a href="/openapi.json">OpenAPI</a>
             <a href="/server.json">MCP manifest</a>
             <a href="/product-card.json">Product card</a>

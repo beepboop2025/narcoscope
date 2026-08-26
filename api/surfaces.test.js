@@ -5,6 +5,7 @@ import {
   capabilities,
   getNewsroom,
   getOverview,
+  getPalimpsestBriContext,
   getPalimpsestCorridors,
   getStory,
 } from './lib/narcoscope.mjs'
@@ -41,6 +42,22 @@ describe('NarcoScope public surfaces', () => {
     expect(overlay.interpretation).toContain('never infer an actor relationship')
   })
 
+  it('serves BRI context as a separately pinned non-joinable lane', async () => {
+    const context = await getPalimpsestBriContext()
+    expect(context.schemaVersion).toBe('narcoscope.palimpsest.bri-context.v1')
+    expect(context.usePolicy).toMatchObject({
+      lane: 'parallel_context_only',
+      crossLaneJoinPolicy: 'prohibited',
+    })
+    expect(context.sourceReadiness.sourceCount).toBeGreaterThan(0)
+    expect(context.economicContext.coverage.totals).toMatchObject({
+      countries: 3,
+      indicators: 18,
+    })
+    expect(context.economicContext.coverage.totals.unavailableRows).toBeGreaterThan(0)
+    expect(context.hashUrl).toMatch(/narcoscope-palimpsest-bri-v1\.json\.sha256$/)
+  })
+
   it('serves newsroom metadata and the machine brief without weakening gates', async () => {
     const newsroom = await getNewsroom({ limit: 1 })
     expect(newsroom.articles).toHaveLength(1)
@@ -60,7 +77,7 @@ describe('NarcoScope public surfaces', () => {
       jsonrpc: '2.0', id: 1, method: 'initialize',
       params: { protocolVersion: '2025-03-26' },
     })
-    expect(initialized.result.serverInfo.version).toBe('1.1.0')
+    expect(initialized.result.serverInfo.version).toBe('1.2.0')
     expect(initialized.result.protocolVersion).toBe('2025-03-26')
     const listed = await dispatch({ jsonrpc: '2.0', id: 2, method: 'tools/list' })
     expect(listed.result.tools.map((tool) => tool.name)).toEqual(Object.keys(TOOLS))
@@ -70,6 +87,12 @@ describe('NarcoScope public surfaces', () => {
     })
     expect(called.result.isError).toBe(false)
     expect(called.result.structuredContent.articles).toHaveLength(1)
+    const bri = await dispatch({
+      jsonrpc: '2.0', id: 4, method: 'tools/call',
+      params: { name: 'get_palimpsest_bri_context', arguments: {} },
+    })
+    expect(bri.result.isError).toBe(false)
+    expect(bri.result.structuredContent.usePolicy.crossLaneJoinPolicy).toBe('prohibited')
   })
 
   it('enforces JSON-RPC and Streamable HTTP request boundaries', async () => {
@@ -120,5 +143,15 @@ describe('NarcoScope public surfaces', () => {
     const registry = JSON.parse(readFileSync('server.json', 'utf8'))
     const hosted = JSON.parse(readFileSync('public/server.json', 'utf8'))
     expect(registry).toEqual(hosted)
+    expect(registry.version).toBe('1.2.0')
+  })
+
+  it('advertises the same BRI context lane through OpenAPI and product discovery', () => {
+    const openapi = JSON.parse(readFileSync('public/openapi.json', 'utf8'))
+    const product = JSON.parse(readFileSync('public/product-card.json', 'utf8'))
+    expect(openapi.info.version).toBe('1.2.0')
+    expect(openapi.paths).toHaveProperty('/palimpsest-bri')
+    expect(product.access.palimpsest_bri_context).toBe('https://narcoscope.com/api/v1/palimpsest-bri')
+    expect(product.boundaries.join(' ')).toContain('never enters drug-market inference')
   })
 })

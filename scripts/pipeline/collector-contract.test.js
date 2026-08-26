@@ -27,6 +27,8 @@ afterEach(() => {
 const derivedPublicArtifacts = [
   'public/data/narcoscope-palimpsest-v1.json',
   'public/data/narcoscope-palimpsest-corridors-v2.json',
+  'public/data/narcoscope-palimpsest-bri-v1.json',
+  'public/data/narcoscope-palimpsest-bri-v1.json.sha256',
   'public/news',
 ]
 
@@ -73,6 +75,8 @@ describe('automated refresh publication contract', () => {
     fs.writeFileSync(path.join(serviceRepo, 'src/data/sample.json'), '{"version":"accepted"}\n')
     fs.writeFileSync(path.join(serviceRepo, 'public/data/narcoscope-palimpsest-v1.json'), '{}\n')
     fs.writeFileSync(path.join(serviceRepo, 'public/data/narcoscope-palimpsest-corridors-v2.json'), '{}\n')
+    fs.writeFileSync(path.join(serviceRepo, 'public/data/narcoscope-palimpsest-bri-v1.json'), '{}\n')
+    fs.writeFileSync(path.join(serviceRepo, 'public/data/narcoscope-palimpsest-bri-v1.json.sha256'), 'fixture\n')
     fs.writeFileSync(path.join(serviceRepo, 'public/news/index.json'), '{}\n')
     fs.writeFileSync(path.join(serviceRepo, 'package.json'), '{"private":true}\n')
     runOk('git', ['add', '.'], { cwd: serviceRepo })

@@ -119,6 +119,15 @@ describe('Railway HTTP server', () => {
     expect(payload.data.geographies).toHaveLength(3)
   })
 
+  it('serves the bounded Palimpsest BRI context without a Vercel runtime', async () => {
+    const response = await fetch(baseUrl + '/api/v1/palimpsest-bri')
+    expect(response.status).toBe(200)
+    const payload = await response.json()
+    expect(payload).toMatchObject({ ok: true, resource: 'palimpsest-bri' })
+    expect(payload.data.usePolicy.crossLaneJoinPolicy).toBe('prohibited')
+    expect(payload.data.economicContext.coverage.totals.countries).toBe(3)
+  })
+
   it('adapts the MCP handler without a Vercel runtime', async () => {
     const response = await fetch(baseUrl + '/mcp', {
       method: 'POST',
@@ -128,6 +137,7 @@ describe('Railway HTTP server', () => {
     expect(response.status).toBe(200)
     const payload = await response.json()
     expect(payload.result.tools.map((tool) => tool.name)).toContain('get_palimpsest_corridors')
+    expect(payload.result.tools.map((tool) => tool.name)).toContain('get_palimpsest_bri_context')
   })
 
   it('serves static assets and applies the SPA fallback', async () => {

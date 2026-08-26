@@ -1,0 +1,429 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://narcoscope.com/data/narcoscope-palimpsest-bri-v1.schema.json",
+  "title": "NarcoScope Palimpsest BRI parallel-context bridge",
+  "type": "object",
+  "required": [
+    "$schema",
+    "schemaVersion",
+    "artifactId",
+    "dataAsOf",
+    "scope",
+    "provenance",
+    "sourceReadiness",
+    "claimSemantics",
+    "targetCoverage",
+    "economicContext",
+    "usePolicy",
+    "limitations"
+  ],
+  "properties": {
+    "$schema": { "const": "./narcoscope-palimpsest-bri-v1.schema.json" },
+    "schemaVersion": { "const": "narcoscope.palimpsest.bri-context.v1" },
+    "artifactId": { "const": "narcoscope.palimpsest.bri-parallel-context" },
+    "dataAsOf": { "$ref": "#/$defs/dateTime" },
+    "scope": { "type": "string", "minLength": 1 },
+    "provenance": { "$ref": "#/$defs/provenance" },
+    "sourceReadiness": { "$ref": "#/$defs/sourceReadiness" },
+    "claimSemantics": { "$ref": "#/$defs/claimSemantics" },
+    "targetCoverage": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 5,
+      "items": { "$ref": "#/$defs/targetArea" }
+    },
+    "economicContext": { "$ref": "#/$defs/economicContext" },
+    "usePolicy": { "$ref": "#/$defs/usePolicy" },
+    "limitations": {
+      "type": "array",
+      "minItems": 8,
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "commit": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "dateTime": { "type": "string", "format": "date-time" },
+    "uri": { "type": "string", "format": "uri" },
+    "nullableYear": { "type": ["integer", "null"], "minimum": 1900, "maximum": 2200 },
+    "stringArray": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    },
+    "countMap": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": { "type": "integer", "minimum": 0 }
+    },
+    "optionalCountMap": {
+      "type": "object",
+      "additionalProperties": { "type": "integer", "minimum": 0 }
+    },
+    "sourceDescriptor": {
+      "type": "object",
+      "required": ["path", "canonicalUrl", "bytes", "sha256"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "canonicalUrl": { "$ref": "#/$defs/uri" },
+        "railwayMirrorUrl": { "$ref": "#/$defs/uri" },
+        "bytes": { "type": "integer", "minimum": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" }
+      },
+      "additionalProperties": false
+    },
+    "sourceArtifacts": {
+      "type": "object",
+      "required": ["observatory", "economics", "pagesPublicationReceipt"],
+      "properties": {
+        "observatory": { "$ref": "#/$defs/sourceDescriptor" },
+        "economics": { "$ref": "#/$defs/sourceDescriptor" },
+        "pagesPublicationReceipt": { "$ref": "#/$defs/sourceDescriptor" }
+      },
+      "additionalProperties": false
+    },
+    "pagesPublication": {
+      "type": "object",
+      "required": ["status", "sourceRevision", "receiptSha256", "verifiedAt", "freshUntil", "availabilitySemantics"],
+      "properties": {
+        "status": { "type": "string", "minLength": 1 },
+        "sourceRevision": { "$ref": "#/$defs/commit" },
+        "receiptSha256": { "$ref": "#/$defs/sha256" },
+        "verifiedAt": { "$ref": "#/$defs/dateTime" },
+        "freshUntil": { "$ref": "#/$defs/dateTime" },
+        "availabilitySemantics": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "release": {
+      "type": "object",
+      "required": [
+        "producer",
+        "status",
+        "canonicalBaseUrl",
+        "railwayMirrorBaseUrl",
+        "deploymentId",
+        "sourceRevision",
+        "artifactTreeSha256",
+        "receiptSha256",
+        "verifiedAt",
+        "verificationSemantics",
+        "pagesPublication"
+      ],
+      "properties": {
+        "producer": { "const": "Palimpsest" },
+        "status": { "const": "production_verified_at_release" },
+        "canonicalBaseUrl": { "const": "https://palimpsest.info" },
+        "railwayMirrorBaseUrl": { "$ref": "#/$defs/uri" },
+        "deploymentId": { "type": "string", "minLength": 1 },
+        "sourceRevision": { "$ref": "#/$defs/commit" },
+        "artifactTreeSha256": { "$ref": "#/$defs/sha256" },
+        "receiptSha256": { "$ref": "#/$defs/sha256" },
+        "verifiedAt": { "$ref": "#/$defs/dateTime" },
+        "verificationSemantics": { "type": "string", "minLength": 1 },
+        "pagesPublication": { "$ref": "#/$defs/pagesPublication" }
+      },
+      "additionalProperties": false
+    },
+    "provenance": {
+      "type": "object",
+      "required": ["producer", "consumer", "sourcePin", "release", "sourceArtifacts"],
+      "properties": {
+        "producer": { "const": "Palimpsest" },
+        "consumer": { "const": "NarcoScope" },
+        "sourcePin": {
+          "type": "object",
+          "required": ["path", "schemaVersion", "sha256"],
+          "properties": {
+            "path": { "const": "scripts/bridge/palimpsest-bri-source-pin.json" },
+            "schemaVersion": { "const": "narcoscope.palimpsest.bri-source-pin.v1" },
+            "sha256": { "$ref": "#/$defs/sha256" }
+          },
+          "additionalProperties": false
+        },
+        "release": { "$ref": "#/$defs/release" },
+        "sourceArtifacts": { "$ref": "#/$defs/sourceArtifacts" }
+      },
+      "additionalProperties": false
+    },
+    "sourceReadiness": {
+      "type": "object",
+      "required": ["sourceCount", "buildReadySourceCount", "implementationStates", "rightsStatusCounts", "buildReadyGaps"],
+      "properties": {
+        "sourceCount": { "type": "integer", "minimum": 1 },
+        "buildReadySourceCount": { "type": "integer", "minimum": 0 },
+        "implementationStates": {
+          "type": "object",
+          "required": ["adapter_ready", "blocked", "link_only", "live", "planned"],
+          "properties": {
+            "adapter_ready": { "type": "integer", "minimum": 0 },
+            "blocked": { "type": "integer", "minimum": 0 },
+            "link_only": { "type": "integer", "minimum": 0 },
+            "live": { "type": "integer", "minimum": 0 },
+            "planned": { "type": "integer", "minimum": 0 }
+          },
+          "additionalProperties": false
+        },
+        "rightsStatusCounts": { "$ref": "#/$defs/countMap" },
+        "buildReadyGaps": { "$ref": "#/$defs/stringArray" }
+      },
+      "additionalProperties": false
+    },
+    "claimSemantics": {
+      "type": "object",
+      "required": [
+        "classificationRule",
+        "sourceClassCounts",
+        "authorityRoleCounts",
+        "claimClassCounts",
+        "officialOrAdministrativeSourceIds",
+        "independentObservationSourceIds",
+        "modeledOrAnalyticalSourceIds"
+      ],
+      "properties": {
+        "classificationRule": { "type": "string", "minLength": 1 },
+        "sourceClassCounts": { "$ref": "#/$defs/countMap" },
+        "authorityRoleCounts": { "$ref": "#/$defs/countMap" },
+        "claimClassCounts": { "$ref": "#/$defs/countMap" },
+        "officialOrAdministrativeSourceIds": { "$ref": "#/$defs/stringArray" },
+        "independentObservationSourceIds": { "$ref": "#/$defs/stringArray" },
+        "modeledOrAnalyticalSourceIds": { "$ref": "#/$defs/stringArray" }
+      },
+      "additionalProperties": false
+    },
+    "sourceSummary": {
+      "type": "object",
+      "required": ["sourceId", "implementationState", "sourceClass", "authorityRole", "rightsStatus", "claimClasses"],
+      "properties": {
+        "sourceId": { "type": "string", "pattern": "^[a-z0-9_]+$" },
+        "implementationState": { "enum": ["adapter_ready", "blocked", "link_only", "live", "planned"] },
+        "sourceClass": { "type": "string", "minLength": 1 },
+        "authorityRole": { "type": "string", "minLength": 1 },
+        "rightsStatus": { "type": "string", "minLength": 1 },
+        "claimClasses": { "$ref": "#/$defs/stringArray" }
+      },
+      "additionalProperties": false
+    },
+    "target": {
+      "type": "object",
+      "required": ["targetId", "label", "targetType", "evidenceStatus", "requiredCoverage", "sourceReadiness", "sources"],
+      "properties": {
+        "targetId": { "type": "string", "pattern": "^[a-z0-9_]+$" },
+        "label": { "type": "string", "minLength": 1 },
+        "targetType": { "type": "string", "minLength": 1 },
+        "evidenceStatus": { "type": "string", "minLength": 1 },
+        "requiredCoverage": { "$ref": "#/$defs/stringArray" },
+        "sourceReadiness": {
+          "type": "object",
+          "required": ["sourceCount", "buildReadySourceCount", "implementationStates"],
+          "properties": {
+            "sourceCount": { "type": "integer", "minimum": 1 },
+            "buildReadySourceCount": { "type": "integer", "minimum": 0 },
+            "implementationStates": { "$ref": "#/$defs/countMap" }
+          },
+          "additionalProperties": false
+        },
+        "sources": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/sourceSummary" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "targetArea": {
+      "type": "object",
+      "required": ["areaId", "label", "targets"],
+      "properties": {
+        "areaId": { "enum": ["cpec", "gwadar", "cmec", "kyaukpyu", "balochistan"] },
+        "label": { "type": "string", "minLength": 1 },
+        "targets": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/target" } }
+      },
+      "additionalProperties": false
+    },
+    "coverageWindow": {
+      "type": "object",
+      "required": ["fromYear", "toYear", "yearCount"],
+      "properties": {
+        "fromYear": { "$ref": "#/$defs/nullableYear" },
+        "toYear": { "$ref": "#/$defs/nullableYear" },
+        "yearCount": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "unavailableCoverage": {
+      "type": "object",
+      "required": ["fromYear", "toYear", "yearCount", "reasonCounts"],
+      "properties": {
+        "fromYear": { "$ref": "#/$defs/nullableYear" },
+        "toYear": { "$ref": "#/$defs/nullableYear" },
+        "yearCount": { "type": "integer", "minimum": 0 },
+        "reasonCounts": { "$ref": "#/$defs/optionalCountMap" }
+      },
+      "additionalProperties": false
+    },
+    "indicatorCoverage": {
+      "type": "object",
+      "required": ["seriesId", "indicatorId", "unit", "annualCoverage", "sourceRowCount", "observed", "forecast", "unavailable"],
+      "properties": {
+        "seriesId": { "type": "string", "minLength": 1 },
+        "indicatorId": { "type": "string", "minLength": 1 },
+        "unit": { "type": "string", "minLength": 1 },
+        "annualCoverage": { "$ref": "#/$defs/coverageWindow" },
+        "sourceRowCount": { "type": "integer", "minimum": 1 },
+        "observed": { "$ref": "#/$defs/coverageWindow" },
+        "forecast": { "$ref": "#/$defs/coverageWindow" },
+        "unavailable": { "$ref": "#/$defs/unavailableCoverage" }
+      },
+      "additionalProperties": false
+    },
+    "countryCoverage": {
+      "type": "object",
+      "required": ["countryCode", "country", "indicatorCount", "sourceRowCount", "observedRowCount", "forecastRowCount", "unavailableRowCount", "indicators"],
+      "properties": {
+        "countryCode": { "enum": ["CHN", "MMR", "PAK"] },
+        "country": { "enum": ["China", "Myanmar", "Pakistan"] },
+        "indicatorCount": { "type": "integer", "minimum": 1 },
+        "sourceRowCount": { "type": "integer", "minimum": 1 },
+        "observedRowCount": { "type": "integer", "minimum": 0 },
+        "forecastRowCount": { "type": "integer", "minimum": 0 },
+        "unavailableRowCount": { "type": "integer", "minimum": 0 },
+        "indicators": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/indicatorCoverage" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "economicContext": {
+      "type": "object",
+      "required": ["schemaVersion", "generatedAt", "collectionId", "source", "rights", "clocks", "hashPointers", "contextPolicy", "coverage"],
+      "properties": {
+        "schemaVersion": { "const": "palimpsest.bri-economic-observations.v1" },
+        "generatedAt": { "$ref": "#/$defs/dateTime" },
+        "collectionId": { "$ref": "#/$defs/sha256" },
+        "source": {
+          "type": "object",
+          "required": ["sourceId", "name", "publisher", "attribution", "catalogUrl"],
+          "properties": {
+            "sourceId": { "const": "world_bank_wdi" },
+            "name": { "type": "string", "minLength": 1 },
+            "publisher": { "type": "string", "minLength": 1 },
+            "attribution": { "type": "string", "minLength": 1 },
+            "catalogUrl": { "$ref": "#/$defs/uri" }
+          },
+          "additionalProperties": false
+        },
+        "rights": {
+          "type": "object",
+          "required": ["license", "licenseUrl", "redistributionStatus", "rightsEvidenceUrl", "attribution"],
+          "properties": {
+            "license": { "type": "string", "minLength": 1 },
+            "licenseUrl": { "$ref": "#/$defs/uri" },
+            "redistributionStatus": { "type": "string", "minLength": 1 },
+            "rightsEvidenceUrl": { "$ref": "#/$defs/uri" },
+            "attribution": { "type": "string", "minLength": 1 }
+          },
+          "additionalProperties": false
+        },
+        "clocks": {
+          "type": "object",
+          "required": ["generatedAt", "datasetLastUpdated", "sourceReleaseUpperBound", "retrievedAt"],
+          "properties": {
+            "generatedAt": { "$ref": "#/$defs/dateTime" },
+            "datasetLastUpdated": { "type": "string", "format": "date" },
+            "sourceReleaseUpperBound": { "$ref": "#/$defs/dateTime" },
+            "retrievedAt": { "$ref": "#/$defs/dateTime" }
+          },
+          "additionalProperties": false
+        },
+        "hashPointers": {
+          "type": "object",
+          "required": ["observationsSha256", "registrySha256", "rawResponseSha256s"],
+          "properties": {
+            "observationsSha256": { "$ref": "#/$defs/sha256" },
+            "registrySha256": { "$ref": "#/$defs/sha256" },
+            "rawResponseSha256s": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/sha256" }, "uniqueItems": true }
+          },
+          "additionalProperties": false
+        },
+        "contextPolicy": {
+          "type": "object",
+          "required": ["aggregateLevel", "scope", "causalityBoundary", "missingValuePolicy", "forecastPolicy", "downstreamSemantics"],
+          "properties": {
+            "aggregateLevel": { "const": "country" },
+            "scope": { "const": "national_economic_context" },
+            "causalityBoundary": { "const": "not_evidence_of_bri_causality" },
+            "missingValuePolicy": { "const": "source_null_remains_unavailable" },
+            "forecastPolicy": { "type": "string", "minLength": 1 },
+            "downstreamSemantics": { "type": "object", "minProperties": 4, "additionalProperties": { "type": "string", "minLength": 1 } }
+          },
+          "additionalProperties": false
+        },
+        "coverage": {
+          "type": "object",
+          "required": ["totals", "countries"],
+          "properties": {
+            "totals": {
+              "type": "object",
+              "required": ["countries", "indicators", "sourceRows", "observedRows", "forecastRows", "unavailableRows"],
+              "properties": {
+                "countries": { "const": 3 },
+                "indicators": { "type": "integer", "minimum": 1 },
+                "sourceRows": { "type": "integer", "minimum": 1 },
+                "observedRows": { "type": "integer", "minimum": 0 },
+                "forecastRows": { "type": "integer", "minimum": 0 },
+                "unavailableRows": { "type": "integer", "minimum": 0 }
+              },
+              "additionalProperties": false
+            },
+            "countries": {
+              "type": "array",
+              "minItems": 3,
+              "maxItems": 3,
+              "items": { "$ref": "#/$defs/countryCoverage" }
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "usePolicy": {
+      "type": "object",
+      "required": ["lane", "allowedUse", "crossLaneJoinPolicy", "displayRelationship", "prohibitions"],
+      "properties": {
+        "lane": { "const": "parallel_context_only" },
+        "allowedUse": { "type": "string", "minLength": 1 },
+        "crossLaneJoinPolicy": { "const": "prohibited" },
+        "displayRelationship": { "type": "string", "minLength": 1 },
+        "prohibitions": {
+          "type": "object",
+          "required": [
+            "drugConflictInfrastructureCausalJoin",
+            "actorClassification",
+            "bilateralRouteInference",
+            "guiltInference",
+            "politicalMovementClassification",
+            "projectAttributionFromNationalSeries",
+            "tacticalOrNavigableUse"
+          ],
+          "properties": {
+            "drugConflictInfrastructureCausalJoin": { "const": "prohibited" },
+            "actorClassification": { "const": "prohibited" },
+            "bilateralRouteInference": { "const": "prohibited" },
+            "guiltInference": { "const": "prohibited" },
+            "politicalMovementClassification": { "const": "prohibited" },
+            "projectAttributionFromNationalSeries": { "const": "prohibited" },
+            "tacticalOrNavigableUse": { "const": "prohibited" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

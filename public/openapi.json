@@ -2,8 +2,8 @@
   "openapi": "3.1.0",
   "info": {
     "title": "NarcoScope Public Evidence API",
-    "version": "1.1.0",
-    "description": "Read-only access to NarcoScope's aggregate official-data overview, citation-gated evidence newsroom, and public Palimpsest bridges. No endpoint provides point-of-sale, real-time, navigable, synthesis-route, or yield information."
+    "version": "1.2.0",
+    "description": "Read-only access to NarcoScope's aggregate official-data overview, citation-gated evidence newsroom, public Palimpsest bridges, and a separately pinned Belt and Road context lane. No endpoint provides point-of-sale, real-time, navigable, synthesis-route, or yield information, and BRI context cannot enter drug-market inference."
   },
   "servers": [
     { "url": "https://narcoscope.com/api/v1" }
@@ -96,6 +96,14 @@
       "get": {
         "operationId": "getNarcoScopePalimpsestCorridors",
         "summary": "Read official country aggregates for China, Pakistan, and Myanmar under a geography-and-time-only join contract",
+        "responses": { "200": { "$ref": "#/components/responses/Success" } }
+      }
+    },
+    "/palimpsest-bri": {
+      "get": {
+        "operationId": "getNarcoScopePalimpsestBriContext",
+        "summary": "Read pinned BRI source readiness and national economic coverage as a parallel, non-joinable context lane",
+        "description": "Returns CPEC, Gwadar, CMEC, Kyaukpyu, and Balochistan target readiness plus World Bank WDI country-indicator-year coverage counts. Drug-conflict-infrastructure causal joins, actor classification, bilateral route inference, guilt, political-movement classification, and project attribution from national series are prohibited.",
         "responses": { "200": { "$ref": "#/components/responses/Success" } }
       }
     }
