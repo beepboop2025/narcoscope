@@ -12,7 +12,9 @@ export default defineRailway(() => {
       healthcheckPath: "/healthz",
       healthcheckTimeout: 180,
       numReplicas: 1,
-      restartPolicyType: "ON_FAILURE",
+      // Railway normalizes its ON_FAILURE default to null in the IaC state
+      // graph. Omitting the default keeps plans idempotent while the deployed
+      // service manifest still resolves to ON_FAILURE.
       restartPolicyMaxRetries: 5,
     },
     domains: ["narcoscope.com", "www.narcoscope.com"],

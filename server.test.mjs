@@ -66,7 +66,6 @@ describe('Railway HTTP server', () => {
         healthcheckPath: '/healthz',
         healthcheckTimeout: 180,
         numReplicas: 1,
-        restartPolicyType: 'ON_FAILURE',
         restartPolicyMaxRetries: 5,
       },
       networking: {
