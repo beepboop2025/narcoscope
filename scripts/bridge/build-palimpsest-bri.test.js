@@ -36,7 +36,7 @@ const commitFixture = 'a'.repeat(40)
 const hashFixture = (character) => character.repeat(64)
 
 function railwayReceiptFixture(schemaVersion = 'palimpsest.railway-fleet-deployment-receipt.v1') {
-  return {
+  const receipt = {
     schema_version: schemaVersion,
     generated_at: '2026-08-26T17:58:17Z',
     deployment_transport: 'railway-cli-local-upload',
@@ -52,7 +52,6 @@ function railwayReceiptFixture(schemaVersion = 'palimpsest.railway-fleet-deploym
         image_digest: `sha256:${hashFixture('b')}`,
         source_commit: commitFixture,
         artifact_tree_sha256: hashFixture('c'),
-        wire_archive_sha256: hashFixture('d'),
         artifact_file_count: 10,
         artifact_total_bytes: 100,
         railway_url: 'https://palimpsest-production.up.railway.app',
@@ -74,6 +73,23 @@ function railwayReceiptFixture(schemaVersion = 'palimpsest.railway-fleet-deploym
     stateful_migration: {},
     operations: {},
   }
+  if (schemaVersion === 'palimpsest.railway-fleet-deployment-receipt.v1') {
+    receipt.services.palimpsest.wire_archive_sha256 = hashFixture('d')
+  } else {
+    receipt.services.palimpsest.manifest_sha256 = hashFixture('6')
+    receipt.services.palimpsest.verification.critical_files_byte_identical = 10
+    receipt.services.palimpsest.wire_archive = {
+      availability: 'unavailable',
+      publication_status: 'rights_suppressed',
+      reason: 'The reviewed publication-rights state does not permit redistribution of the wire archive.',
+      rights_status_json: {
+        path: 'readings/china-publication-rights-latest.json',
+        bytes: 321,
+        sha256: hashFixture('d'),
+      },
+    }
+  }
+  return receipt
 }
 
 function pagesReceiptFixture() {
@@ -175,7 +191,7 @@ function pagesReceiptFixture() {
   }
 }
 
-function railwayManifestFixture(release) {
+function railwayManifestFixture(release, { additiveCriticalFileCount = 0 } = {}) {
   const criticalPaths = [
     '.well-known/ai-catalog.json',
     'belt-and-road/index.html',
@@ -187,12 +203,23 @@ function railwayManifestFixture(release) {
     'readings/bri-economic-observations-latest.json',
     'server.json',
   ]
+  const criticalFiles = Object.fromEntries(criticalPaths.map((criticalPath) => [
+    criticalPath,
+    { bytes: 1, sha256: hashFixture('9') },
+  ]))
+  if (release.wire_archive) {
+    const rightsStatus = release.wire_archive.rights_status_json
+    criticalFiles[rightsStatus.path] = { bytes: rightsStatus.bytes, sha256: rightsStatus.sha256 }
+  }
+  for (let index = 0; index < additiveCriticalFileCount; index += 1) {
+    criticalFiles[`additional/critical-${String(index).padStart(2, '0')}.json`] = {
+      bytes: index + 1,
+      sha256: hashFixture((index % 10).toString()),
+    }
+  }
   return {
     built_at: '2026-08-26T17:53:14Z',
-    critical_files: Object.fromEntries(criticalPaths.map((criticalPath) => [
-      criticalPath,
-      { bytes: 1, sha256: hashFixture('9') },
-    ])),
+    critical_files: criticalFiles,
     deployment_source: 'local-git-archive',
     file_count: release.artifact_file_count,
     github_required: false,
@@ -202,6 +229,10 @@ function railwayManifestFixture(release) {
     total_bytes: release.artifact_total_bytes,
     tree_sha256: release.artifact_tree_sha256,
   }
+}
+
+function railwayManifestDescriptorFixture(release) {
+  return { bytes: 1000, sha256: release.manifest_sha256 }
 }
 
 function wdiRegistryFixture() {
@@ -353,14 +384,40 @@ describe('Palimpsest Belt and Road parallel-context bridge', () => {
       .toBe(pin.sourceArtifacts.economics.sha256)
   })
 
-  it('accepts additive v1/v2 fleet receipts but preserves every required Palimpsest gate', () => {
+  it('keeps v1 hash-only receipts backward compatible and validates v2 rights suppression', () => {
     const receipt = railwayReceiptFixture()
-    const release = assertRailwayFleetReleaseReceipt(receipt).release
+    const v1Validation = assertRailwayFleetReleaseReceipt(receipt)
+    const release = v1Validation.release
+    expect(v1Validation.wireArchive).toEqual({
+      verificationState: 'legacy_archive_hash_validated',
+      sha256: hashFixture('d'),
+    })
     expect(() => assertRailwayReleaseManifest(railwayManifestFixture(release), release)).not.toThrow()
+    const missingLegacyHash = railwayReceiptFixture()
+    delete missingLegacyHash.services.palimpsest.wire_archive_sha256
+    expect(() => assertRailwayFleetReleaseReceipt(missingLegacyHash)).toThrow(/wire_archive_sha256/)
+
     const v2 = railwayReceiptFixture('palimpsest.railway-fleet-deployment-receipt.v2')
+    v2.services.palimpsest.verification.critical_files_byte_identical = 45
     v2.receipt_extension = { future: true }
     v2.services.palimpsest.release_extension = 'retained but not trusted'
-    expect(() => assertRailwayFleetReleaseReceipt(v2)).not.toThrow()
+    expect(assertRailwayFleetReleaseReceipt(v2).wireArchive).toEqual({
+      verificationState: 'rights_suppressed_status_validated',
+      availability: 'unavailable',
+      publicationStatus: 'rights_suppressed',
+      reason: 'The reviewed publication-rights state does not permit redistribution of the wire archive.',
+      rightsStatusJson: {
+        path: 'readings/china-publication-rights-latest.json',
+        bytes: 321,
+        sha256: hashFixture('d'),
+      },
+    })
+    const v2Release = assertRailwayFleetReleaseReceipt(v2).release
+    expect(() => assertRailwayReleaseManifest(
+      railwayManifestFixture(v2Release, { additiveCriticalFileCount: 35 }),
+      v2Release,
+      railwayManifestDescriptorFixture(v2Release),
+    )).not.toThrow()
 
     const weakened = railwayReceiptFixture()
     weakened.services.palimpsest.verification.release_manifest_byte_identical = false
@@ -372,6 +429,86 @@ describe('Palimpsest Belt and Road parallel-context bridge', () => {
     const wrongTree = railwayManifestFixture(release)
     wrongTree.tree_sha256 = hashFixture('f')
     expect(() => assertRailwayReleaseManifest(wrongTree, release)).toThrow(/same commit and artifact tree/)
+  })
+
+  it('rejects ambiguous or weak v2 wire archive states', () => {
+    const missing = railwayReceiptFixture('palimpsest.railway-fleet-deployment-receipt.v2')
+    delete missing.services.palimpsest.wire_archive
+    expect(() => assertRailwayFleetReleaseReceipt(missing)).toThrow(/wire_archive/)
+
+    const missingManifestHash = railwayReceiptFixture('palimpsest.railway-fleet-deployment-receipt.v2')
+    delete missingManifestHash.services.palimpsest.manifest_sha256
+    expect(() => assertRailwayFleetReleaseReceipt(missingManifestHash)).toThrow(/manifest_sha256/)
+
+    for (const [field, value] of [
+      ['availability', 'available'],
+      ['publication_status', 'published'],
+      ['reason', '   '],
+    ]) {
+      const weakened = railwayReceiptFixture('palimpsest.railway-fleet-deployment-receipt.v2')
+      weakened.services.palimpsest.wire_archive[field] = value
+      expect(() => assertRailwayFleetReleaseReceipt(weakened), field)
+        .toThrow(/unavailable rights_suppressed|non-empty string/)
+    }
+
+    for (const field of ['path', 'bytes', 'sha256']) {
+      const weakened = railwayReceiptFixture('palimpsest.railway-fleet-deployment-receipt.v2')
+      delete weakened.services.palimpsest.wire_archive.rights_status_json[field]
+      expect(() => assertRailwayFleetReleaseReceipt(weakened), field)
+        .toThrow(/rights_status_json.*missing required fields/)
+    }
+
+    const wrongPath = railwayReceiptFixture('palimpsest.railway-fleet-deployment-receipt.v2')
+    wrongPath.services.palimpsest.wire_archive.rights_status_json.path = 'news/wire/analysis-revisions.tar.xz'
+    expect(() => assertRailwayFleetReleaseReceipt(wrongPath)).toThrow(/published China rights-status JSON/)
+
+    const mixed = railwayReceiptFixture('palimpsest.railway-fleet-deployment-receipt.v2')
+    mixed.services.palimpsest.wire_archive_sha256 = hashFixture('f')
+    expect(() => assertRailwayFleetReleaseReceipt(mixed)).toThrow(/must not mix a wire_archive_sha256/)
+  })
+
+  it('validates additive and rights-staged manifest descriptors while retaining core paths', () => {
+    const receipt = railwayReceiptFixture('palimpsest.railway-fleet-deployment-receipt.v2')
+    receipt.services.palimpsest.verification.critical_files_byte_identical = 45
+    const release = assertRailwayFleetReleaseReceipt(receipt).release
+    const manifest = railwayManifestFixture(release, { additiveCriticalFileCount: 35 })
+    const manifestDescriptor = railwayManifestDescriptorFixture(release)
+    expect(Object.keys(manifest.critical_files)).toHaveLength(45)
+    manifest.critical_files['openapi.json'] = { bytes: 1567, sha256: hashFixture('8') }
+    expect(() => assertRailwayReleaseManifest(manifest, release, manifestDescriptor)).not.toThrow()
+
+    const wrongManifestDescriptor = { ...manifestDescriptor, sha256: hashFixture('f') }
+    expect(() => assertRailwayReleaseManifest(manifest, release, wrongManifestDescriptor))
+      .toThrow(/does not bind the exact release manifest bytes/)
+
+    const missingStagedOpenapi = structuredClone(manifest)
+    delete missingStagedOpenapi.critical_files['openapi.json']
+    expect(() => assertRailwayReleaseManifest(missingStagedOpenapi, release, manifestDescriptor))
+      .toThrow(/missing required fields: openapi\.json/)
+
+    const malformedAdditive = structuredClone(manifest)
+    malformedAdditive.critical_files['additional/critical-00.json'].sha256 = 'not-a-sha256'
+    expect(() => assertRailwayReleaseManifest(malformedAdditive, release, manifestDescriptor))
+      .toThrow(/additional\/critical-00\.json\.sha256/)
+
+    const mismatchedRights = structuredClone(manifest)
+    mismatchedRights.critical_files['readings/china-publication-rights-latest.json'].bytes += 1
+    expect(() => assertRailwayReleaseManifest(mismatchedRights, release, manifestDescriptor))
+      .toThrow(/rights-status descriptor does not match/)
+
+    const missingRights = structuredClone(manifest)
+    delete missingRights.critical_files['readings/china-publication-rights-latest.json']
+    expect(() => assertRailwayReleaseManifest(missingRights, release, manifestDescriptor))
+      .toThrow(/rights-status descriptor does not match/)
+
+    const wrongCountReceipt = railwayReceiptFixture('palimpsest.railway-fleet-deployment-receipt.v2')
+    wrongCountReceipt.services.palimpsest.verification.critical_files_byte_identical = 44
+    const wrongCountRelease = assertRailwayFleetReleaseReceipt(wrongCountReceipt).release
+    expect(() => assertRailwayReleaseManifest(
+      railwayManifestFixture(wrongCountRelease, { additiveCriticalFileCount: 35 }),
+      wrongCountRelease,
+      railwayManifestDescriptorFixture(wrongCountRelease),
+    )).toThrow(/critical-files verification count does not match/)
   })
 
   it('fully validates Pages receipt identity and the exact served-resource set', () => {

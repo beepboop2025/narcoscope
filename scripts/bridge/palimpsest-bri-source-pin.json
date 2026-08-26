@@ -1,26 +1,26 @@
 {
   "schemaVersion": "narcoscope.palimpsest.bri-source-pin.v1",
-  "refreshedAt": "2026-08-26T17:58:17Z",
+  "refreshedAt": "2026-08-26T21:20:41Z",
   "release": {
     "producer": "Palimpsest",
     "verificationState": "release_receipt_validated",
     "canonicalBaseUrl": "https://palimpsest.info",
     "railwayMirrorBaseUrl": "https://palimpsest-publication-production.up.railway.app",
-    "deploymentId": "a932af4d-5b31-4a50-880b-ebb8a0d4b14a",
-    "sourceRevision": "ebfcc0ca79c83bad1f5e51f5269bc7bdf67add8d",
-    "sourceTreeOid": "12236481a980ee4af39279d829eb0efd46beb078",
-    "artifactTreeSha256": "bfefe7d6278ab68501589230824dbf6fac3003e12c2ffd9b0478b353bb1568ef",
+    "deploymentId": "b8737cd3-a0ad-4beb-bb7a-0c9762f40b99",
+    "sourceRevision": "cf597f1dd8092e174b6cec69c754d32028461b76",
+    "sourceTreeOid": "96607d245382b1cc9786b4a03d6287758bb424ff",
+    "artifactTreeSha256": "f34245693347674207517b10f766ab333e76aaf3c98658b4bb44476ffff3dd2f",
     "artifactManifest": {
       "schemaVersion": "palimpsest.railway-static-release.v1",
-      "bytes": 1798,
-      "sha256": "ec576d0662c8af18eb1399d5302955d96a5ec8d6fdb28de6224ec95f6371ed54",
-      "fileCount": 15598,
-      "totalBytes": 337409739
+      "bytes": 7459,
+      "sha256": "9424c8ec72b319c881c099d9251f074ad8e1cbe1994094f3955f43386d0e9b02",
+      "fileCount": 38189,
+      "totalBytes": 230354080
     },
-    "receiptBytes": 4218,
-    "receiptSha256": "bcde69d3736aef4841ce42379caf86e431c08908a3d1da4fa6df963b942df60f",
-    "verifiedAt": "2026-08-26T17:58:17Z",
-    "verificationSemantics": "The exact release receipt, source commit and Git tree were validated when this pin was refreshed. This is not continuous production availability or freshness monitoring.",
+    "receiptBytes": 4246,
+    "receiptSha256": "baea314825363d602a16e3c7bc97d5f6b78524021e6fc4c7334d5af795bc2a16",
+    "verifiedAt": "2026-08-26T21:20:41Z",
+    "verificationSemantics": "The exact release receipt, source commit and Git tree were validated when this pin was refreshed. This is not continuous production availability or freshness monitoring. Wire archive availability is unavailable and publication status is rights_suppressed: The reviewed publication-rights state denies redistribution of the current China wire value families, so the historical wire archive and its receipt are intentionally absent from this release. Exact published rights-status bytes are readings/china-publication-rights-latest.json (2538928 bytes, SHA-256 e3f923b0eb816e50cb132b535298c71d464f8f6c649df4b602ce2305ee1bc4ce).",
     "pagesPublication": {
       "verificationState": "served_resource_receipt_validated",
       "sourceRevision": "14b06772dfed6cdc736279c9ab61b444e5846598",
@@ -60,9 +60,9 @@
       "path": "readings/belt-and-road-observatory-latest.json",
       "canonicalUrl": "https://palimpsest.info/readings/belt-and-road-observatory-latest.json",
       "railwayMirrorUrl": "https://palimpsest-publication-production.up.railway.app/readings/belt-and-road-observatory-latest.json",
-      "bytes": 92972,
-      "sha256": "1f6d1d9781a031ecc07ec2219133116e463b6df25f35a6d52bf220b2f874d11f",
-      "gitBlobOid": "9354c8deb3274100e57f13503d25676ef47b5c0d"
+      "bytes": 95999,
+      "sha256": "ea77d6970f0ce01640682f9bbb0827a0ba5408e727c7894c74d5dffe14095399",
+      "gitBlobOid": "e5a291afa281c60e8cd27c0425761f79b5461a90"
     },
     "economics": {
       "path": "readings/bri-economic-observations-latest.json",
@@ -82,20 +82,20 @@
   },
   "sourceSnapshot": {
     "schemaVersion": "palimpsest.belt-and-road-observatory.v2",
-    "asOf": "2026-08-26T15:55:34Z",
+    "asOf": "2026-08-26T19:34:49Z",
     "scope": "A global, provenance-first Belt and Road economic and infrastructure observatory, with high-resolution Pakistan/CPEC/Gwadar, Myanmar/CMEC/Kyaukpyu, Balochistan political-economy and rights coverage, plus a strictly bounded NarcoScope country-aggregate overlay.",
     "readiness": {
-      "sourceCount": 42,
-      "buildReadySourceCount": 10,
+      "sourceCount": 43,
+      "buildReadySourceCount": 11,
       "implementationStates": {
-        "adapter_ready": 8,
+        "adapter_ready": 7,
         "blocked": 1,
         "link_only": 23,
-        "live": 2,
+        "live": 4,
         "planned": 8
       },
       "rightsStatusCounts": {
-        "attribution": 7,
+        "attribution": 8,
         "licensed_no_redistribution": 1,
         "link_only_pending_review": 12,
         "official_publication_review_required": 19,
@@ -103,12 +103,9 @@
         "public_domain": 2
       },
       "buildReadyGaps": [
-        "compensation",
         "contract",
         "contractor",
         "elections",
-        "human_rights",
-        "land",
         "ownership",
         "procurement"
       ]
@@ -122,11 +119,11 @@
         "official_china": 4,
         "official_host": 13,
         "partner": 1,
-        "research": 7
+        "research": 8
       },
       "authorityRoleCounts": {
         "administrative_position": 5,
-        "analytical_estimate": 7,
+        "analytical_estimate": 8,
         "independent_observation": 13,
         "legal_instrument": 2,
         "partner_aggregate": 1,
@@ -135,7 +132,7 @@
       "claimClassCounts": {
         "administrative_action": 4,
         "allegation": 3,
-        "analytical_estimate": 9,
+        "analytical_estimate": 10,
         "humanitarian_observation": 2,
         "legal_status": 2,
         "licensed_event": 1,
@@ -193,6 +190,7 @@
         "greenfdc_bri",
         "imf_portwatch",
         "imf_weo",
+        "palimpsest_deep_bri_report_2026",
         "ucdp_events",
         "unodc_myanmar_opium",
         "world_bank_bri_network",
@@ -705,8 +703,9 @@
               "sourceCount": 7,
               "buildReadySourceCount": 3,
               "implementationStates": {
-                "adapter_ready": 3,
-                "link_only": 4
+                "adapter_ready": 2,
+                "link_only": 4,
+                "live": 1
               }
             },
             "sources": [
@@ -756,7 +755,7 @@
               },
               {
                 "sourceId": "ucdp_events",
-                "implementationState": "adapter_ready",
+                "implementationState": "live",
                 "sourceClass": "research",
                 "authorityRole": "independent_observation",
                 "rightsStatus": "attribution",

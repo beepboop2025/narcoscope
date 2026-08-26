@@ -62,10 +62,17 @@ const RAILWAY_CRITICAL_PATHS = Object.freeze([
   'readings/bri-economic-observations-latest.json',
   'server.json',
 ])
+// Palimpsest's rights stage replaces openapi.json with a fail-closed status
+// document before sealing the Railway tree. It remains manifest/tree-bound,
+// while the other bridge-critical inputs must also match their exact Git blobs.
+const RAILWAY_GIT_BOUND_CRITICAL_PATHS = Object.freeze(
+  RAILWAY_CRITICAL_PATHS.filter((criticalPath) => criticalPath !== 'openapi.json'),
+)
 const ECONOMICS_SCHEMA_ID = 'https://palimpsest.info/protocol/bri-economic-observations-v1.schema.json'
 const WDI_REGISTRY_PATH = 'config/bri_wdi_series.json'
 const ECONOMICS_SCHEMA_PATH = 'protocol/bri-economic-observations-v1.schema.json'
 const ECONOMICS_PATH = 'readings/bri-economic-observations-latest.json'
+const CHINA_PUBLICATION_RIGHTS_PATH = 'readings/china-publication-rights-latest.json'
 const COUNTRY_API_IDS = Object.freeze({ CHN: 'CN', MMR: 'MM', PAK: 'PK' })
 
 const compareText = (a, b) => (a < b ? -1 : a > b ? 1 : 0)
@@ -512,6 +519,44 @@ function requireDateTime(value, label) {
   return value
 }
 
+function assertRightsSuppressedWireArchive(value, label) {
+  const wireArchive = exactKeys(value, label, [
+    'availability', 'publication_status', 'reason', 'rights_status_json',
+  ])
+  if (wireArchive.availability !== 'unavailable'
+    || wireArchive.publication_status !== 'rights_suppressed') {
+    throw new Error(`${label} must record unavailable rights_suppressed publication state`)
+  }
+  const reason = requireString(wireArchive.reason, `${label}.reason`)
+  const rightsStatus = exactKeys(wireArchive.rights_status_json, `${label}.rights_status_json`, [
+    'path', 'bytes', 'sha256',
+  ])
+  if (rightsStatus.path !== CHINA_PUBLICATION_RIGHTS_PATH) {
+    throw new Error(`${label}.rights_status_json.path must identify the published China rights-status JSON`)
+  }
+  requireInteger(rightsStatus.bytes, `${label}.rights_status_json.bytes`, { positive: true })
+  requireSha256(rightsStatus.sha256, `${label}.rights_status_json.sha256`)
+  return {
+    verificationState: 'rights_suppressed_status_validated',
+    availability: wireArchive.availability,
+    publicationStatus: wireArchive.publication_status,
+    reason,
+    rightsStatusJson: {
+      path: rightsStatus.path,
+      bytes: rightsStatus.bytes,
+      sha256: rightsStatus.sha256,
+    },
+  }
+}
+
+function wireArchiveProvenanceSemantics(wireArchive) {
+  if (wireArchive.verificationState === 'legacy_archive_hash_validated') {
+    return `The legacy v1 receipt binds the wire archive by SHA-256 ${wireArchive.sha256}; it does not carry v2 rights-suppression semantics.`
+  }
+  const rights = wireArchive.rightsStatusJson
+  return `Wire archive availability is unavailable and publication status is rights_suppressed: ${wireArchive.reason} Exact published rights-status bytes are ${rights.path} (${rights.bytes} bytes, SHA-256 ${rights.sha256}).`
+}
+
 export function assertRailwayFleetReleaseReceipt(receipt) {
   const root = requiredKeys(receipt, 'Railway fleet release receipt', [
     'schema_version', 'generated_at', 'deployment_transport', 'github_required', 'workspace',
@@ -532,9 +577,13 @@ export function assertRailwayFleetReleaseReceipt(receipt) {
   requireObject(root.stateful_migration, 'Railway fleet release receipt.stateful_migration')
   requireObject(root.operations, 'Railway fleet release receipt.operations')
   const services = requiredKeys(root.services, 'Railway fleet release receipt.services', ['palimpsest'])
+  const isV2 = root.schema_version === 'palimpsest.railway-fleet-deployment-receipt.v2'
+  const wireArchiveFields = !isV2
+    ? ['wire_archive_sha256']
+    : ['wire_archive', 'manifest_sha256']
   const release = requiredKeys(services.palimpsest, 'Railway fleet release receipt.services.palimpsest', [
     'project_id', 'service_id', 'environment_id', 'deployment_id', 'deployment_status', 'image_digest',
-    'source_commit', 'artifact_tree_sha256', 'wire_archive_sha256', 'artifact_file_count',
+    'source_commit', 'artifact_tree_sha256', ...wireArchiveFields, 'artifact_file_count',
     'artifact_total_bytes', 'railway_url', 'health_status', 'verification', 'custom_domains',
   ])
   for (const key of ['project_id', 'service_id', 'environment_id', 'deployment_id']) {
@@ -548,7 +597,25 @@ export function assertRailwayFleetReleaseReceipt(receipt) {
   }
   requireCommit(release.source_commit, 'Palimpsest Railway source commit')
   requireSha256(release.artifact_tree_sha256, 'Palimpsest Railway artifact tree hash')
-  requireSha256(release.wire_archive_sha256, 'Palimpsest Railway wire archive hash')
+  let wireArchive
+  if (!isV2) {
+    wireArchive = {
+      verificationState: 'legacy_archive_hash_validated',
+      sha256: requireSha256(release.wire_archive_sha256, 'Palimpsest Railway wire archive hash'),
+    }
+    if (Object.hasOwn(release, 'manifest_sha256')) {
+      requireSha256(release.manifest_sha256, 'Palimpsest Railway release manifest hash')
+    }
+  } else {
+    requireSha256(release.manifest_sha256, 'Palimpsest Railway release manifest hash')
+    if (Object.hasOwn(release, 'wire_archive_sha256')) {
+      throw new Error('Palimpsest Railway v2 release must not mix a wire_archive_sha256 with an unavailable wire_archive state')
+    }
+    wireArchive = assertRightsSuppressedWireArchive(
+      release.wire_archive,
+      'Railway fleet release receipt.services.palimpsest.wire_archive',
+    )
+  }
   requireInteger(release.artifact_file_count, 'Palimpsest Railway artifact file count', { positive: true })
   requireInteger(release.artifact_total_bytes, 'Palimpsest Railway artifact byte count', { positive: true })
   requireHttpsUrl(release.railway_url, 'Palimpsest Railway URL')
@@ -574,10 +641,21 @@ export function assertRailwayFleetReleaseReceipt(receipt) {
     throw new Error('Palimpsest Railway release receipt does not retain every release-verification gate')
   }
   requiredKeys(release.custom_domains, 'Palimpsest Railway release.custom_domains', ['palimpsest.info', 'www.palimpsest.info'])
-  return { root, release }
+  return { root, release, wireArchive }
 }
 
-export function assertRailwayReleaseManifest(manifest, release) {
+export function assertRailwayReleaseManifest(manifest, release, manifestDescriptor) {
+  const isV2 = Object.hasOwn(release, 'wire_archive')
+  if (isV2) {
+    const descriptor = exactKeys(manifestDescriptor, 'Palimpsest Railway release manifest descriptor', [
+      'bytes', 'sha256',
+    ])
+    requireInteger(descriptor.bytes, 'Palimpsest Railway release manifest descriptor.bytes', { positive: true })
+    requireSha256(descriptor.sha256, 'Palimpsest Railway release manifest descriptor.sha256')
+    if (release.manifest_sha256 !== descriptor.sha256) {
+      throw new Error('Railway v2 receipt does not bind the exact release manifest bytes')
+    }
+  }
   const value = exactKeys(manifest, 'Palimpsest Railway release manifest', [
     'built_at', 'critical_files', 'deployment_source', 'file_count', 'github_required',
     'schema_version', 'source_commit', 'state', 'total_bytes', 'tree_sha256',
@@ -599,8 +677,12 @@ export function assertRailwayReleaseManifest(manifest, release) {
     || value.total_bytes !== release.artifact_total_bytes) {
     throw new Error('Railway receipt and release manifest do not bind the same commit and artifact tree')
   }
-  const criticalFiles = exactKeys(value.critical_files, 'Palimpsest Railway release manifest.critical_files', RAILWAY_CRITICAL_PATHS)
-  for (const criticalPath of RAILWAY_CRITICAL_PATHS) {
+  const criticalFiles = requiredKeys(
+    value.critical_files,
+    'Palimpsest Railway release manifest.critical_files',
+    RAILWAY_CRITICAL_PATHS,
+  )
+  for (const criticalPath of Object.keys(criticalFiles)) {
     const descriptor = exactKeys(
       criticalFiles[criticalPath],
       `Palimpsest Railway release manifest.critical_files.${criticalPath}`,
@@ -608,6 +690,22 @@ export function assertRailwayReleaseManifest(manifest, release) {
     )
     requireInteger(descriptor.bytes, `Palimpsest Railway release manifest ${criticalPath}.bytes`, { positive: true })
     requireSha256(descriptor.sha256, `Palimpsest Railway release manifest ${criticalPath}.sha256`)
+  }
+  if (Object.hasOwn(release, 'wire_archive')) {
+    const wireArchive = assertRightsSuppressedWireArchive(
+      release.wire_archive,
+      'Railway fleet release receipt.services.palimpsest.wire_archive',
+    )
+    const rightsStatus = criticalFiles[wireArchive.rightsStatusJson.path]
+    if (!rightsStatus
+      || rightsStatus.bytes !== wireArchive.rightsStatusJson.bytes
+      || rightsStatus.sha256 !== wireArchive.rightsStatusJson.sha256) {
+      throw new Error('Railway v2 wire archive rights-status descriptor does not match the release manifest')
+    }
+  }
+  if (isV2
+    && release.verification.critical_files_byte_identical !== Object.keys(criticalFiles).length) {
+    throw new Error('Railway v2 receipt critical-files verification count does not match the release manifest')
   }
   return value
 }
@@ -818,16 +916,21 @@ export async function buildPalimpsestBriSourcePin({ sourceDir, releaseReceiptPat
   const manifestInput = { data: parseJson(manifestRaw, 'Palimpsest Railway release manifest'), raw: manifestRaw, descriptor: rawDescriptor(manifestRaw) }
   const railwayValidation = assertRailwayFleetReleaseReceipt(railwayInput.data)
   const release = railwayValidation.release
-  const releaseManifest = assertRailwayReleaseManifest(manifestInput.data, release)
+  const wireArchive = railwayValidation.wireArchive
+  const releaseManifest = assertRailwayReleaseManifest(
+    manifestInput.data,
+    release,
+    manifestInput.descriptor,
+  )
   const [criticalEntries, pagesInput] = await Promise.all([
-    Promise.all(RAILWAY_CRITICAL_PATHS.map(async (criticalPath) => [
+    Promise.all(RAILWAY_GIT_BOUND_CRITICAL_PATHS.map(async (criticalPath) => [
       criticalPath,
       await readTrackedBytesAtCommit(sourceDir, release.source_commit, criticalPath),
     ])),
     readTrackedJsonAtCommit(sourceDir, release.source_commit, '.well-known/receipts/bri-wdi-pages-publication-v1.json'),
   ])
   const criticalInputs = new Map(criticalEntries)
-  for (const criticalPath of RAILWAY_CRITICAL_PATHS) {
+  for (const criticalPath of RAILWAY_GIT_BOUND_CRITICAL_PATHS) {
     const tracked = criticalInputs.get(criticalPath)
     const described = releaseManifest.critical_files[criticalPath]
     if (tracked.descriptor.bytes !== described.bytes || tracked.descriptor.sha256 !== described.sha256) {
@@ -960,7 +1063,7 @@ export async function buildPalimpsestBriSourcePin({ sourceDir, releaseReceiptPat
       receiptBytes: railwayInput.descriptor.bytes,
       receiptSha256: railwayInput.descriptor.sha256,
       verifiedAt: railwayReceipt.generated_at,
-      verificationSemantics: 'The exact release receipt, source commit and Git tree were validated when this pin was refreshed. This is not continuous production availability or freshness monitoring.',
+      verificationSemantics: `The exact release receipt, source commit and Git tree were validated when this pin was refreshed. This is not continuous production availability or freshness monitoring. ${wireArchiveProvenanceSemantics(wireArchive)}`,
       pagesPublication: {
         verificationState: 'served_resource_receipt_validated',
         sourceRevision: requireCommit(publication.release_a_sha, 'Pages publication source revision'),
