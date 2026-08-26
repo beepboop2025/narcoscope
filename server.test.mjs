@@ -1,4 +1,4 @@
-import { mkdtemp, mkdir, writeFile } from 'node:fs/promises'
+import { mkdtemp, mkdir, readFile, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
@@ -30,6 +30,17 @@ afterAll(async () => {
 })
 
 describe('Railway HTTP server', () => {
+  it('builds the container frontend with production React semantics', async () => {
+    const dockerfile = await readFile(new URL('./Dockerfile.railway', import.meta.url), 'utf8')
+    const install = dockerfile.indexOf('RUN NPM_CONFIG_PRODUCTION=false npm ci')
+    const production = dockerfile.indexOf('ENV NODE_ENV=production', install)
+    const build = dockerfile.indexOf('RUN npm run build', production)
+    expect(install).toBeGreaterThan(-1)
+    expect(production).toBeGreaterThan(install)
+    expect(build).toBeGreaterThan(production)
+    expect(dockerfile).not.toContain('NODE_ENV=development')
+  })
+
   it('exposes a no-store liveness endpoint', async () => {
     const response = await fetch(baseUrl + '/healthz')
     expect(response.status).toBe(200)
