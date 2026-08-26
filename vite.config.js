@@ -11,6 +11,7 @@ export default defineConfig({
     // second config.
     environment: 'node',
     include: [
+      'server.test.mjs',
       'src/**/*.test.{js,ts,jsx,tsx}',
       'scripts/**/*.test.{js,ts,mjs}',
       'api/**/*.test.{js,mjs}',

@@ -3,7 +3,9 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
+import { createRailwayContext, project } from 'railway/iac'
 
+import railwayConfig from './.railway/railway.ts'
 import { createNarcoscopeServer } from './server.mjs'
 
 let baseUrl
@@ -41,6 +43,47 @@ describe('Railway HTTP server', () => {
     expect(dockerfile).not.toContain('NODE_ENV=development')
   })
 
+  it('preserves the local-upload Railway infrastructure contract', async () => {
+    const context = createRailwayContext({
+      command: 'plan',
+      environment: 'production',
+      projectName: 'narcoscope',
+    })
+    const definition = await railwayConfig(context, project)
+
+    expect(definition.name).toBe('narcoscope')
+    expect(definition.resources).toHaveLength(1)
+    expect(definition.resources[0]).toEqual({
+      address: 'service.narcoscope-web',
+      type: 'service',
+      kind: 'empty',
+      name: 'narcoscope-web',
+      build: {
+        builder: 'DOCKERFILE',
+        dockerfilePath: 'Dockerfile.railway',
+      },
+      deploy: {
+        healthcheckPath: '/healthz',
+        healthcheckTimeout: 180,
+        numReplicas: 1,
+        restartPolicyType: 'ON_FAILURE',
+        restartPolicyMaxRetries: 5,
+      },
+      networking: {
+        customDomains: {
+          'narcoscope.com': { port: 8080 },
+          'www.narcoscope.com': { port: 8080 },
+        },
+      },
+      variables: {
+        NARCOSCOPE_REVISION: { type: 'preserve' },
+      },
+    })
+    await expect(readFile(new URL('./railway.json', import.meta.url), 'utf8')).rejects.toMatchObject({
+      code: 'ENOENT',
+    })
+  })
+
   it('exposes a no-store liveness endpoint', async () => {
     const response = await fetch(baseUrl + '/healthz')
     expect(response.status).toBe(200)
@@ -73,7 +116,8 @@ describe('Railway HTTP server', () => {
     expect(response.status).toBe(200)
     const payload = await response.json()
     expect(payload).toMatchObject({ ok: true, resource: 'palimpsest-corridors' })
-    expect(payload.data).toHaveProperty('countries')
+    expect(payload.data).toHaveProperty('geographies')
+    expect(payload.data.geographies).toHaveLength(3)
   })
 
   it('adapts the MCP handler without a Vercel runtime', async () => {

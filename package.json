@@ -48,6 +48,7 @@
     "@vitest/coverage-v8": "^4.1.9",
     "happy-dom": "^20.11.2",
     "pdfjs-dist": "^4.10.38",
+    "railway": "3.11.0",
     "typescript": "^6.0.3",
     "vite": "^8.1.3",
     "vitest": "^4.1.9"
