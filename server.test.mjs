@@ -7,9 +7,12 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { createNarcoscopeServer } from './server.mjs'
 
 let baseUrl
+let previousRevision
 let server
 
 beforeAll(async () => {
+  previousRevision = process.env.NARCOSCOPE_REVISION
+  process.env.NARCOSCOPE_REVISION = 'a'.repeat(40)
   const distDir = await mkdtemp(join(tmpdir(), 'narcoscope-server-'))
   await mkdir(join(distDir, 'assets'))
   await writeFile(join(distDir, 'index.html'), '<!doctype html><title>NarcoScope</title>')
@@ -22,6 +25,8 @@ beforeAll(async () => {
 
 afterAll(async () => {
   if (server) await new Promise((resolveClose) => server.close(resolveClose))
+  if (previousRevision === undefined) delete process.env.NARCOSCOPE_REVISION
+  else process.env.NARCOSCOPE_REVISION = previousRevision
 })
 
 describe('Railway HTTP server', () => {
@@ -29,7 +34,27 @@ describe('Railway HTTP server', () => {
     const response = await fetch(baseUrl + '/healthz')
     expect(response.status).toBe(200)
     expect(response.headers.get('cache-control')).toBe('no-store')
-    expect(await response.json()).toMatchObject({ status: 'alive', service: 'narcoscope' })
+    expect(await response.json()).toMatchObject({
+      status: 'ready',
+      service: 'narcoscope',
+      revision: 'a'.repeat(40),
+    })
+  })
+
+  it('fails health closed without an exact source revision', async () => {
+    const revision = process.env.NARCOSCOPE_REVISION
+    delete process.env.NARCOSCOPE_REVISION
+    try {
+      const response = await fetch(baseUrl + '/healthz')
+      expect(response.status).toBe(503)
+      expect(await response.json()).toMatchObject({
+        status: 'unavailable',
+        service: 'narcoscope',
+        revision: null,
+      })
+    } finally {
+      process.env.NARCOSCOPE_REVISION = revision
+    }
   })
 
   it('adapts the REST handler without a Vercel runtime', async () => {

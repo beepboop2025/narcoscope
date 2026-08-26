@@ -11,6 +11,7 @@ import v1Handler from './api/v1.mjs'
 const ROOT = fileURLToPath(new URL('.', import.meta.url))
 const DEFAULT_DIST = resolve(ROOT, 'dist')
 const MAX_BODY_BYTES = 256 * 1024
+const COMMIT_RE = /^[0-9a-f]{40}$/
 
 const CONTENT_TYPES = Object.freeze({
   '.css': 'text/css; charset=utf-8',
@@ -131,10 +132,12 @@ async function route(req, res, distDir) {
   const pathname = requestUrl.pathname
 
   if (pathname === '/healthz' || pathname === '/livez') {
-    sendJson(req, res, 200, {
-      status: 'alive',
+    const revision = process.env.NARCOSCOPE_REVISION || ''
+    const revisionValid = COMMIT_RE.test(revision)
+    sendJson(req, res, revisionValid ? 200 : 503, {
+      status: revisionValid ? 'ready' : 'unavailable',
       service: 'narcoscope',
-      revision: process.env.NARCOSCOPE_REVISION || null,
+      revision: revisionValid ? revision : null,
     })
     return
   }
