@@ -1,6 +1,8 @@
 import { readFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 
+import { verifiedPalimpsestBriEnvelope } from './palimpsest-bri.mjs'
+
 export const SITE_URL = (process.env.NARCOSCOPE_SITE_URL ||
   'https://narcoscope.com').replace(/\/$/, '')
 
@@ -14,7 +16,6 @@ const PUBLIC_FILES = Object.freeze({
   newsroomManifest: 'public/news/manifest.json',
   palimpsestBridge: 'public/data/narcoscope-palimpsest-v1.json',
   palimpsestCorridors: 'public/data/narcoscope-palimpsest-corridors-v2.json',
-  palimpsestBri: 'public/data/narcoscope-palimpsest-bri-v1.json',
 })
 
 async function readJson(relativePath) {
@@ -89,7 +90,7 @@ export function capabilities() {
       'Administrative seizures do not measure trafficking volume without independent modalities.',
       'Origin labels and public designations are attributed records, not adjudications of guilt or causal proof.',
       'Illustrative datasets remain labelled and are excluded from official-only bridge artifacts.',
-      'Belt and Road context is a separate source-readiness and national-economic lane; no drug-conflict-infrastructure causal join, actor classification, bilateral route inference, guilt inference, or political-movement classification is permitted.',
+      'Belt and Road context is a separate source-readiness and national-economic lane; no drug-conflict-infrastructure causal join, actor classification, bilateral route inference, guilt inference, political-movement classification, project attribution from national series, or tactical or navigable use is permitted.',
     ],
   }
 }
@@ -190,17 +191,11 @@ export async function getPalimpsestCorridors() {
   }
 }
 
-export async function getPalimpsestBriContext() {
-  const context = await readJson(PUBLIC_FILES.palimpsestBri)
-  return {
-    ...context,
-    canonicalUrl: `${SITE_URL}/data/narcoscope-palimpsest-bri-v1.json`,
-    hashUrl: `${SITE_URL}/data/narcoscope-palimpsest-bri-v1.json.sha256`,
-    interpretation: 'Parallel Palimpsest source-readiness and national-economic context only. It must never be mixed into NarcoScope drug-market inference, actor classification, bilateral route inference, guilt, political classification, or causal claims.',
-  }
+export async function getPalimpsestBriContext(options = {}) {
+  return verifiedPalimpsestBriEnvelope({ ...options, siteUrl: SITE_URL })
 }
 
-export async function resource(name, params = {}) {
+export async function resource(name, params = {}, { getBriContext = getPalimpsestBriContext } = {}) {
   switch (name) {
     case 'capabilities': return capabilities()
     case 'overview': return getOverview()
@@ -208,7 +203,7 @@ export async function resource(name, params = {}) {
     case 'story': return getStory(params)
     case 'palimpsest-bridge': return getPalimpsestBridge()
     case 'palimpsest-corridors': return getPalimpsestCorridors()
-    case 'palimpsest-bri': return getPalimpsestBriContext()
+    case 'palimpsest-bri': return getBriContext()
     default: throw new RangeError(`unknown resource: ${name}`)
   }
 }

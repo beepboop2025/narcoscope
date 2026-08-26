@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url'
 
 import mcpHandler from './api/mcp.mjs'
 import v1Handler from './api/v1.mjs'
+import { loadVerifiedPalimpsestBriArtifact } from './api/lib/palimpsest-bri.mjs'
 
 const ROOT = fileURLToPath(new URL('.', import.meta.url))
 const DEFAULT_DIST = resolve(ROOT, 'dist')
@@ -127,17 +128,41 @@ async function serveStatic(req, res, requestUrl, distDir) {
   await pipeline(createReadStream(candidate), res)
 }
 
-async function route(req, res, distDir) {
+async function route(req, res, distDir, briLoader) {
   const requestUrl = new URL(req.url || '/', 'http://127.0.0.1')
   const pathname = requestUrl.pathname
 
-  if (pathname === '/healthz' || pathname === '/livez') {
+  if (pathname === '/livez') {
+    sendJson(req, res, 200, { status: 'alive', service: 'narcoscope' })
+    return
+  }
+
+  if (pathname === '/healthz') {
     const revision = process.env.NARCOSCOPE_REVISION || ''
     const revisionValid = COMMIT_RE.test(revision)
-    sendJson(req, res, revisionValid ? 200 : 503, {
-      status: revisionValid ? 'ready' : 'unavailable',
+    let briArtifactVerified = false
+    if (revisionValid) {
+      try {
+        const [packaged, served] = await Promise.all([
+          briLoader(),
+          briLoader({ dataDir: resolve(distDir, 'data') }),
+        ])
+        if (!packaged.artifactRaw.equals(served.artifactRaw)
+          || packaged.artifactSha256 !== served.artifactSha256
+          || !packaged.schemaRaw.equals(served.schemaRaw)) {
+          throw new Error('served Palimpsest BRI bytes differ from the verified packaged artifact')
+        }
+        briArtifactVerified = true
+      } catch {
+        briArtifactVerified = false
+      }
+    }
+    const ready = revisionValid && briArtifactVerified
+    sendJson(req, res, ready ? 200 : 503, {
+      status: ready ? 'ready' : 'unavailable',
       service: 'narcoscope',
       revision: revisionValid ? revision : null,
+      briArtifact: briArtifactVerified ? 'verified' : 'unavailable',
     })
     return
   }
@@ -176,10 +201,13 @@ async function route(req, res, distDir) {
   await serveStatic(req, res, requestUrl, distDir)
 }
 
-export function createNarcoscopeServer({ distDir = DEFAULT_DIST } = {}) {
+export function createNarcoscopeServer({
+  distDir = DEFAULT_DIST,
+  briLoader = loadVerifiedPalimpsestBriArtifact,
+} = {}) {
   const resolvedDist = resolve(distDir)
   return createServer((req, res) => {
-    route(req, res, resolvedDist).catch((error) => {
+    route(req, res, resolvedDist, briLoader).catch((error) => {
       console.error('narcoscope request failed', error)
       if (!res.headersSent) {
         sendJson(req, res, 500, { ok: false, error: 'internal_error' })

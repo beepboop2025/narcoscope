@@ -1,66 +1,66 @@
 #!/usr/bin/env node
 
 import { createHash } from 'node:crypto'
+import { execFile as execFileCallback } from 'node:child_process'
 import fs from 'node:fs/promises'
 import path from 'node:path'
+import { promisify } from 'node:util'
 import { fileURLToPath } from 'node:url'
+import Ajv2020 from 'ajv/dist/2020.js'
+import addFormats from 'ajv-formats'
 
-export const BRI_SCHEMA_VERSION = 'narcoscope.palimpsest.bri-context.v1'
-export const BRI_PIN_SCHEMA_VERSION = 'narcoscope.palimpsest.bri-source-pin.v1'
-export const BRI_SCHEMA_FILE = 'narcoscope-palimpsest-bri-v1.schema.json'
-export const BRI_ARTIFACT_FILE = 'narcoscope-palimpsest-bri-v1.json'
-export const BRI_HASH_FILE = `${BRI_ARTIFACT_FILE}.sha256`
+import {
+  BRI_ARTIFACT_FILE,
+  BRI_HASH_FILE,
+  BRI_PIN_SCHEMA_VERSION,
+  BRI_SCHEMA_FILE,
+  BRI_SCHEMA_ID,
+  BRI_SCHEMA_VERSION,
+  BUILD_READY_STATES,
+  COUNTRY_LABELS,
+  COUNTRY_ORDER,
+  IMPLEMENTATION_STATES,
+  TARGET_AREAS,
+  assertPalimpsestBriBoundary,
+  assertPalimpsestBriPin,
+  compilePalimpsestBriSchema,
+  requireCommit,
+  requireGitOid,
+  requireInteger,
+  requireObject,
+  requireSha256,
+  requireString,
+} from '../../lib/palimpsest-bri-contract.mjs'
+
+export {
+  BRI_ARTIFACT_FILE,
+  BRI_HASH_FILE,
+  BRI_PIN_SCHEMA_VERSION,
+  BRI_SCHEMA_FILE,
+  BRI_SCHEMA_VERSION,
+  assertPalimpsestBriBoundary,
+  assertPalimpsestBriPin,
+}
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url))
 const defaultRoot = path.resolve(scriptDir, '../..')
 export const DEFAULT_BRI_PIN = path.join(scriptDir, 'palimpsest-bri-source-pin.json')
 export const DEFAULT_BRI_OUTPUT = path.join(defaultRoot, 'public/data', BRI_ARTIFACT_FILE)
 export const DEFAULT_BRI_HASH_OUTPUT = path.join(defaultRoot, 'public/data', BRI_HASH_FILE)
+export const DEFAULT_BRI_SCHEMA = path.join(defaultRoot, 'public/data', BRI_SCHEMA_FILE)
 
-const SHA256_RE = /^[0-9a-f]{64}$/
-const COMMIT_RE = /^[0-9a-f]{40}$/
-const IMPLEMENTATION_STATES = Object.freeze([
-  'adapter_ready',
-  'blocked',
-  'link_only',
-  'live',
-  'planned',
-])
-const BUILD_READY_STATES = new Set(['adapter_ready', 'live'])
-const COUNTRY_ORDER = Object.freeze(['CHN', 'MMR', 'PAK'])
-const COUNTRY_LABELS = Object.freeze({ CHN: 'China', MMR: 'Myanmar', PAK: 'Pakistan' })
-const TARGET_AREAS = Object.freeze([
-  Object.freeze({ areaId: 'cpec', label: 'China-Pakistan Economic Corridor', targetIds: ['cpec_portfolio'] }),
-  Object.freeze({
-    areaId: 'gwadar',
-    label: 'Gwadar infrastructure and local political economy',
-    targetIds: ['gwadar_port_free_zone', 'gwadar_connectivity', 'gwadar_public_services'],
-  }),
-  Object.freeze({ areaId: 'cmec', label: 'China-Myanmar Economic Corridor', targetIds: ['cmec_portfolio'] }),
-  Object.freeze({ areaId: 'kyaukpyu', label: 'Kyaukpyu port and special economic zone', targetIds: ['kyaukpyu_port_sez'] }),
-  Object.freeze({
-    areaId: 'balochistan',
-    label: 'Balochistan political economy and plural movement history',
-    targetIds: ['balochistan_resources_revenue', 'balochistan_movement_history'],
-  }),
-])
-const REQUIRED_TARGET_IDS = new Set(TARGET_AREAS.flatMap((area) => area.targetIds))
-const FORBIDDEN_PAYLOAD_KEYS = new Set([
-  'addresses',
-  'aliases',
-  'coordinates',
-  'dateOfBirth',
-  'entityRecords',
-  'eventNarrative',
-  'eventRecords',
-  'identityNumber',
-  'latitude',
-  'longitude',
-  'observations',
-  'personRecords',
-  'routeGeometry',
-  'tacticalVulnerability',
-  'value',
+const execFile = promisify(execFileCallback)
+const GIT_MAX_BUFFER = 16 * 1024 * 1024
+const RAILWAY_CRITICAL_PATHS = Object.freeze([
+  '.well-known/ai-catalog.json',
+  'belt-and-road/index.html',
+  'index.html',
+  'openapi.json',
+  'protocol/bri-economic-observations-v1.schema.json',
+  'protocol/bri-wdi-pages-publication-v1.schema.json',
+  'readings/belt-and-road-observatory-latest.json',
+  'readings/bri-economic-observations-latest.json',
+  'server.json',
 ])
 
 const compareText = (a, b) => (a < b ? -1 : a > b ? 1 : 0)
@@ -81,41 +81,98 @@ function implementationStateCounts(sources) {
   ]))
 }
 
-function requireObject(value, label) {
-  if (!value || typeof value !== 'object' || Array.isArray(value)) {
-    throw new Error(`${label} must be an object`)
+function parseJson(raw, label) {
+  try {
+    return JSON.parse(raw.toString('utf8'))
+  } catch (error) {
+    throw new Error(`${label} is not valid JSON: ${error instanceof Error ? error.message : error}`)
   }
-  return value
 }
 
-function requireString(value, label) {
-  if (typeof value !== 'string' || value.trim() === '') {
-    throw new Error(`${label} must be a non-empty string`)
+function rawDescriptor(raw, extra = {}) {
+  return { bytes: raw.length, sha256: sha256(raw), ...extra }
+}
+
+function validateUpstreamJsonSchema(schema, data, label, expectedId) {
+  const ajv = new Ajv2020({ allErrors: true, strict: false, validateFormats: true })
+  addFormats(ajv)
+  if (schema?.$schema !== 'https://json-schema.org/draft/2020-12/schema'
+    || schema?.$id !== expectedId
+    || !ajv.validateSchema(schema)) {
+    throw new Error(`${label} schema is not the expected metaschema-valid draft 2020-12 contract`)
   }
-  return value
+  const validate = ajv.compile(schema)
+  if (!validate(data)) {
+    const errors = (validate.errors ?? []).map((error) => `${error.instancePath || '/'} ${error.message}`).join('; ')
+    throw new Error(`${label} does not satisfy its upstream JSON Schema: ${errors}`)
+  }
+  return data
 }
 
-function requireInteger(value, label) {
-  if (!Number.isInteger(value) || value < 0) throw new Error(`${label} must be a non-negative integer`)
-  return value
+function exactKeys(value, label, required, optional = []) {
+  const object = requireObject(value, label)
+  const allowed = new Set([...required, ...optional])
+  const unknown = Object.keys(object).filter((key) => !allowed.has(key)).sort()
+  if (unknown.length > 0) throw new Error(`${label} contains unknown fields: ${unknown.join(', ')}`)
+  const missing = required.filter((key) => !Object.hasOwn(object, key))
+  if (missing.length > 0) throw new Error(`${label} is missing required fields: ${missing.join(', ')}`)
+  return object
 }
 
-function requireSha256(value, label) {
-  if (!SHA256_RE.test(String(value ?? ''))) throw new Error(`${label} must be a lowercase SHA-256`)
-  return value
+function requiredKeys(value, label, required) {
+  const object = requireObject(value, label)
+  const missing = required.filter((key) => !Object.hasOwn(object, key))
+  if (missing.length > 0) throw new Error(`${label} is missing required fields: ${missing.join(', ')}`)
+  return object
 }
 
-function requireCommit(value, label) {
-  if (!COMMIT_RE.test(String(value ?? ''))) throw new Error(`${label} must be a lowercase 40-character Git commit`)
-  return value
+async function git(repo, args, { buffer = false } = {}) {
+  try {
+    const { stdout } = await execFile('git', ['-C', repo, ...args], {
+      encoding: buffer ? null : 'utf8',
+      maxBuffer: GIT_MAX_BUFFER,
+    })
+    return stdout
+  } catch (error) {
+    const message = error?.stderr?.toString?.().trim() || error?.message || String(error)
+    throw new Error(`Git object verification failed: ${message}`)
+  }
 }
 
-async function readJsonWithDescriptor(filePath) {
-  const raw = await fs.readFile(filePath)
+export async function resolveGitRevision(sourceDir, revision) {
+  requireCommit(revision, 'source revision')
+  const repository = String(await git(sourceDir, ['rev-parse', '--show-toplevel'])).trim()
+  const commit = String(await git(repository, ['rev-parse', '--verify', `${revision}^{commit}`])).trim()
+  if (commit !== revision) throw new Error('release source revision did not resolve to the exact commit')
+  const type = String(await git(repository, ['cat-file', '-t', commit])).trim()
+  if (type !== 'commit') throw new Error('release source revision is not a Git commit')
+  const treeOid = String(await git(repository, ['rev-parse', '--verify', `${commit}^{tree}`])).trim()
+  requireGitOid(treeOid, 'release source tree object id')
+  return { repository, commit, treeOid }
+}
+
+export async function readTrackedBytesAtCommit(sourceDir, revision, relativePath) {
+  if (typeof relativePath !== 'string' || relativePath.startsWith('/') || relativePath.includes('..')) {
+    throw new Error('tracked JSON path must be a safe repository-relative path')
+  }
+  const resolved = await resolveGitRevision(sourceDir, revision)
+  const listing = await git(resolved.repository, ['ls-tree', '--full-tree', '-z', resolved.commit, '--', relativePath], { buffer: true })
+  const match = /^(100644|100755) blob ([0-9a-f]{40}|[0-9a-f]{64})\t([^\0]+)\0$/u.exec(listing.toString('utf8'))
+  if (!match || match[3] !== relativePath) throw new Error(`${relativePath} is not one exact tracked regular-file blob at ${resolved.commit}`)
+  const gitBlobOid = match[2]
+  const raw = await git(resolved.repository, ['cat-file', 'blob', gitBlobOid], { buffer: true })
   return {
-    data: JSON.parse(raw.toString('utf8')),
-    descriptor: { bytes: raw.length, sha256: sha256(raw) },
+    raw,
+    descriptor: rawDescriptor(raw, { gitBlobOid }),
+    repository: resolved.repository,
+    sourceRevision: resolved.commit,
+    sourceTreeOid: resolved.treeOid,
   }
+}
+
+export async function readTrackedJsonAtCommit(sourceDir, revision, relativePath) {
+  const input = await readTrackedBytesAtCommit(sourceDir, revision, relativePath)
+  return { ...input, data: parseJson(input.raw, `${relativePath} at ${input.sourceRevision}`) }
 }
 
 function sourceSummary(source) {
@@ -319,64 +376,361 @@ function assertCoverageMatches(sourceCoverage, calculated) {
   }
 }
 
-function forbiddenPaths(value, parts = []) {
-  if (Array.isArray(value)) {
-    return value.flatMap((item, index) => forbiddenPaths(item, [...parts, String(index)]))
+function requireBoolean(value, label) {
+  if (typeof value !== 'boolean') throw new Error(`${label} must be a boolean`)
+  return value
+}
+
+function requireHttpsUrl(value, label) {
+  requireString(value, label)
+  let parsed
+  try {
+    parsed = new URL(value)
+  } catch {
+    throw new Error(`${label} must be an absolute HTTPS URL`)
   }
-  if (!value || typeof value !== 'object') return []
-  return Object.entries(value).flatMap(([key, item]) => [
-    ...(FORBIDDEN_PAYLOAD_KEYS.has(key) ? [[...parts, key].join('.')] : []),
-    ...forbiddenPaths(item, [...parts, key]),
+  if (parsed.protocol !== 'https:') throw new Error(`${label} must be an absolute HTTPS URL`)
+  return value
+}
+
+function requireDateTime(value, label) {
+  requireString(value, label)
+  if (!value.endsWith('Z') || !Number.isFinite(Date.parse(value))) throw new Error(`${label} must be an RFC 3339 UTC timestamp`)
+  return value
+}
+
+export function assertRailwayFleetReleaseReceipt(receipt) {
+  const root = requiredKeys(receipt, 'Railway fleet release receipt', [
+    'schema_version', 'generated_at', 'deployment_transport', 'github_required', 'workspace',
+    'services', 'dns_cutover', 'stateful_migration', 'operations',
   ])
+  if (![
+    'palimpsest.railway-fleet-deployment-receipt.v1',
+    'palimpsest.railway-fleet-deployment-receipt.v2',
+  ].includes(root.schema_version)) {
+    throw new Error(`unsupported Railway receipt schema ${root.schema_version}`)
+  }
+  requireDateTime(root.generated_at, 'Railway fleet release receipt.generated_at')
+  if (root.deployment_transport !== 'railway-cli-local-upload' || root.github_required !== false) {
+    throw new Error('Railway fleet release receipt has an unsupported deployment transport')
+  }
+  requireObject(root.workspace, 'Railway fleet release receipt.workspace')
+  requireObject(root.dns_cutover, 'Railway fleet release receipt.dns_cutover')
+  requireObject(root.stateful_migration, 'Railway fleet release receipt.stateful_migration')
+  requireObject(root.operations, 'Railway fleet release receipt.operations')
+  const services = requiredKeys(root.services, 'Railway fleet release receipt.services', ['palimpsest'])
+  const release = requiredKeys(services.palimpsest, 'Railway fleet release receipt.services.palimpsest', [
+    'project_id', 'service_id', 'environment_id', 'deployment_id', 'deployment_status', 'image_digest',
+    'source_commit', 'artifact_tree_sha256', 'wire_archive_sha256', 'artifact_file_count',
+    'artifact_total_bytes', 'railway_url', 'health_status', 'verification', 'custom_domains',
+  ])
+  for (const key of ['project_id', 'service_id', 'environment_id', 'deployment_id']) {
+    requireString(release[key], `Railway fleet release receipt.services.palimpsest.${key}`)
+  }
+  if (release.deployment_status !== 'SUCCESS' || release.health_status !== 'ready') {
+    throw new Error('Palimpsest Railway release is not recorded as successful and ready')
+  }
+  if (!/^sha256:[0-9a-f]{64}$/.test(String(release.image_digest ?? ''))) {
+    throw new Error('Palimpsest Railway image digest is invalid')
+  }
+  requireCommit(release.source_commit, 'Palimpsest Railway source commit')
+  requireSha256(release.artifact_tree_sha256, 'Palimpsest Railway artifact tree hash')
+  requireSha256(release.wire_archive_sha256, 'Palimpsest Railway wire archive hash')
+  requireInteger(release.artifact_file_count, 'Palimpsest Railway artifact file count', { positive: true })
+  requireInteger(release.artifact_total_bytes, 'Palimpsest Railway artifact byte count', { positive: true })
+  requireHttpsUrl(release.railway_url, 'Palimpsest Railway URL')
+  if (!new URL(release.railway_url).hostname.endsWith('.railway.app')) throw new Error('Palimpsest Railway URL is not a Railway hostname')
+  const verification = requiredKeys(release.verification, 'Palimpsest Railway release.verification', [
+    'test_count', 'critical_files_byte_identical', 'release_manifest_byte_identical', 'key_routes_http_200',
+    'hidden_source_http_404', 'successful_access_log_level', 'successful_access_log_error_match_count',
+    'wdi_bundle_sha256',
+  ])
+  requireInteger(verification.test_count, 'Palimpsest Railway verification.test_count', { positive: true })
+  requireInteger(verification.critical_files_byte_identical, 'Palimpsest Railway verification.critical_files_byte_identical', { positive: true })
+  requireInteger(verification.key_routes_http_200, 'Palimpsest Railway verification.key_routes_http_200', { positive: true })
+  requireInteger(verification.successful_access_log_error_match_count, 'Palimpsest Railway verification.successful_access_log_error_match_count')
+  requireBoolean(verification.release_manifest_byte_identical, 'Palimpsest Railway verification.release_manifest_byte_identical')
+  requireBoolean(verification.hidden_source_http_404, 'Palimpsest Railway verification.hidden_source_http_404')
+  requireString(verification.successful_access_log_level, 'Palimpsest Railway verification.successful_access_log_level')
+  requireSha256(verification.wdi_bundle_sha256, 'Palimpsest Railway verification.wdi_bundle_sha256')
+  if (verification.release_manifest_byte_identical !== true
+    || verification.hidden_source_http_404 !== true
+    || verification.successful_access_log_error_match_count !== 0
+    || verification.successful_access_log_level !== 'info'
+    || verification.critical_files_byte_identical < 9) {
+    throw new Error('Palimpsest Railway release receipt does not retain every release-verification gate')
+  }
+  requiredKeys(release.custom_domains, 'Palimpsest Railway release.custom_domains', ['palimpsest.info', 'www.palimpsest.info'])
+  return { root, release }
 }
 
-export function assertPalimpsestBriPin(pin) {
-  requireObject(pin, 'BRI source pin')
-  if (pin.schemaVersion !== BRI_PIN_SCHEMA_VERSION) throw new Error(`unexpected BRI pin schema ${pin.schemaVersion}`)
-  requireCommit(pin.release?.sourceRevision, 'Palimpsest release source revision')
-  requireSha256(pin.release?.artifactTreeSha256, 'Palimpsest Railway artifact tree hash')
-  requireSha256(pin.release?.receiptSha256, 'Palimpsest Railway receipt hash')
-  requireSha256(pin.sourceArtifacts?.observatory?.sha256, 'observatory artifact hash')
-  requireSha256(pin.sourceArtifacts?.economics?.sha256, 'economics artifact hash')
-  requireSha256(pin.sourceArtifacts?.pagesPublicationReceipt?.sha256, 'Pages receipt hash')
-  const states = pin.sourceSnapshot?.readiness?.implementationStates ?? {}
-  if (IMPLEMENTATION_STATES.some((state) => !Number.isInteger(states[state]))) {
-    throw new Error('source pin must retain every Palimpsest implementation state')
+export function assertRailwayReleaseManifest(manifest, release) {
+  const value = exactKeys(manifest, 'Palimpsest Railway release manifest', [
+    'built_at', 'critical_files', 'deployment_source', 'file_count', 'github_required',
+    'schema_version', 'source_commit', 'state', 'total_bytes', 'tree_sha256',
+  ])
+  if (value.schema_version !== 'palimpsest.railway-static-release.v1'
+    || value.deployment_source !== 'local-git-archive'
+    || value.github_required !== false
+    || value.state !== 'artifact_ready') {
+    throw new Error('Palimpsest Railway release manifest identity or artifact state is invalid')
   }
-  const stateTotal = Object.values(states).reduce((total, value) => total + value, 0)
-  if (stateTotal !== pin.sourceSnapshot.readiness.sourceCount) {
-    throw new Error('source readiness state counts do not sum to source count')
+  requireDateTime(value.built_at, 'Palimpsest Railway release manifest.built_at')
+  requireCommit(value.source_commit, 'Palimpsest Railway release manifest.source_commit')
+  requireInteger(value.file_count, 'Palimpsest Railway release manifest.file_count', { positive: true })
+  requireInteger(value.total_bytes, 'Palimpsest Railway release manifest.total_bytes', { positive: true })
+  requireSha256(value.tree_sha256, 'Palimpsest Railway release manifest.tree_sha256')
+  if (value.source_commit !== release.source_commit
+    || value.tree_sha256 !== release.artifact_tree_sha256
+    || value.file_count !== release.artifact_file_count
+    || value.total_bytes !== release.artifact_total_bytes) {
+    throw new Error('Railway receipt and release manifest do not bind the same commit and artifact tree')
   }
-  const pinnedTargets = new Set(pin.sourceSnapshot.targetCoverage.flatMap((area) => (
-    area.targets.map((target) => target.targetId)
-  )))
-  if (pinnedTargets.size !== REQUIRED_TARGET_IDS.size
-    || [...REQUIRED_TARGET_IDS].some((targetId) => !pinnedTargets.has(targetId))) {
-    throw new Error('BRI pin target coverage changed')
+  const criticalFiles = exactKeys(value.critical_files, 'Palimpsest Railway release manifest.critical_files', RAILWAY_CRITICAL_PATHS)
+  for (const criticalPath of RAILWAY_CRITICAL_PATHS) {
+    const descriptor = exactKeys(
+      criticalFiles[criticalPath],
+      `Palimpsest Railway release manifest.critical_files.${criticalPath}`,
+      ['bytes', 'sha256'],
+    )
+    requireInteger(descriptor.bytes, `Palimpsest Railway release manifest ${criticalPath}.bytes`, { positive: true })
+    requireSha256(descriptor.sha256, `Palimpsest Railway release manifest ${criticalPath}.sha256`)
   }
-  const totals = pin.economicSnapshot?.coverage?.totals
-  requireInteger(totals?.sourceRows, 'economic source-row count')
-  requireInteger(totals?.unavailableRows, 'economic unavailable-row count')
-  if (totals.sourceRows !== totals.observedRows + totals.forecastRows + totals.unavailableRows) {
-    throw new Error('economic evidence states do not partition the pinned source rows')
-  }
-  const forbidden = forbiddenPaths(pin)
-  if (forbidden.length > 0) throw new Error(`BRI pin contains forbidden detail fields: ${forbidden.join(', ')}`)
-  return pin
+  return value
 }
 
-export async function buildPalimpsestBriSourcePin({ sourceDir, releaseReceiptPath } = {}) {
+function assertPagesWorkflowJob(job, label, expectedSha, expectedRunId) {
+  const value = exactKeys(job, label, [
+    'api_url', 'conclusion', 'head_sha', 'html_url', 'id', 'name', 'run_attempt', 'run_id',
+  ])
+  requireHttpsUrl(value.api_url, `${label}.api_url`)
+  requireHttpsUrl(value.html_url, `${label}.html_url`)
+  if (value.conclusion !== 'success' || value.head_sha !== expectedSha || value.run_id !== expectedRunId) {
+    throw new Error(`${label} is not a successful job for the exact Pages revision and run`)
+  }
+  for (const key of ['id', 'run_attempt', 'run_id']) requireInteger(value[key], `${label}.${key}`, { positive: true })
+  requireString(value.name, `${label}.name`)
+  return value
+}
+
+export function assertPagesPublicationReceipt(receipt) {
+  const root = exactKeys(receipt, 'Pages publication receipt', [
+    'archived_size_receipt', 'collection_id', 'dataset_id', 'deployment', 'pages_artifact',
+    'schema_version', 'served_verification', 'source_id', 'status', 'workflow',
+  ])
+  if (root.schema_version !== 'palimpsest.bri-wdi-pages-publication.v1'
+    || root.dataset_id !== 'bri-economic-context-world-bank-wdi'
+    || root.source_id !== 'world_bank_wdi'
+    || root.status !== 'production_verified') {
+    throw new Error('Pages publication receipt identity or upstream state is invalid')
+  }
+  requireSha256(root.collection_id, 'Pages publication receipt.collection_id')
+  const workflow = exactKeys(root.workflow, 'Pages publication receipt.workflow', [
+    'branch', 'conclusion', 'event', 'pages_deploy_job', 'pages_deploy_job_id', 'pages_package_job',
+    'pages_package_job_id', 'publication_sha', 'repository', 'run_api_url', 'run_attempt', 'run_id',
+    'run_url', 'workflow_path',
+  ])
+  const publicationSha = requireCommit(workflow.publication_sha, 'Pages publication receipt.workflow.publication_sha')
+  if (workflow.branch !== 'main' || workflow.conclusion !== 'success'
+    || workflow.event !== 'repository_dispatch' || workflow.repository !== 'beepboop2025/palimpsest'
+    || workflow.workflow_path !== '.github/workflows/tests.yml') {
+    throw new Error('Pages publication receipt workflow identity is invalid')
+  }
+  for (const key of ['pages_deploy_job_id', 'pages_package_job_id', 'run_attempt', 'run_id']) {
+    requireInteger(workflow[key], `Pages publication receipt.workflow.${key}`, { positive: true })
+  }
+  requireHttpsUrl(workflow.run_api_url, 'Pages publication receipt.workflow.run_api_url')
+  requireHttpsUrl(workflow.run_url, 'Pages publication receipt.workflow.run_url')
+  const deployJob = assertPagesWorkflowJob(
+    workflow.pages_deploy_job,
+    'Pages publication receipt.workflow.pages_deploy_job',
+    publicationSha,
+    workflow.run_id,
+  )
+  const packageJob = assertPagesWorkflowJob(
+    workflow.pages_package_job,
+    'Pages publication receipt.workflow.pages_package_job',
+    publicationSha,
+    workflow.run_id,
+  )
+  if (deployJob.id !== workflow.pages_deploy_job_id || packageJob.id !== workflow.pages_package_job_id) {
+    throw new Error('Pages publication receipt job ids are inconsistent')
+  }
+  const deployment = exactKeys(root.deployment, 'Pages publication receipt.deployment', [
+    'deployed_at', 'deployment_api_url', 'deployment_id', 'environment', 'environment_url', 'log_url',
+    'ref', 'sha', 'state_at_verification', 'success_status_api_url', 'success_status_deployment_url',
+    'success_status_id',
+  ])
+  if (deployment.environment !== 'github-pages' || deployment.environment_url !== 'https://palimpsest.info/'
+    || deployment.ref !== 'main' || deployment.sha !== publicationSha || deployment.state_at_verification !== 'success') {
+    throw new Error('Pages deployment is not the successful exact publication revision')
+  }
+  requireDateTime(deployment.deployed_at, 'Pages publication receipt.deployment.deployed_at')
+  for (const key of ['deployment_id', 'success_status_id']) requireInteger(deployment[key], `Pages publication receipt.deployment.${key}`, { positive: true })
+  for (const key of ['deployment_api_url', 'log_url', 'success_status_api_url', 'success_status_deployment_url']) {
+    requireHttpsUrl(deployment[key], `Pages publication receipt.deployment.${key}`)
+  }
+  const pagesArtifact = exactKeys(root.pages_artifact, 'Pages publication receipt.pages_artifact', [
+    'api_url', 'archive_bytes', 'captured_at', 'created_at', 'digest_sha256', 'expires_at', 'id',
+    'name', 'workflow_run_head_sha', 'workflow_run_id',
+  ])
+  if (pagesArtifact.name !== 'github-pages' || pagesArtifact.workflow_run_head_sha !== publicationSha
+    || pagesArtifact.workflow_run_id !== workflow.run_id) throw new Error('Pages artifact is not bound to the exact publication run')
+  requireHttpsUrl(pagesArtifact.api_url, 'Pages publication receipt.pages_artifact.api_url')
+  requireSha256(pagesArtifact.digest_sha256, 'Pages publication receipt.pages_artifact.digest_sha256')
+  for (const key of ['archive_bytes', 'id', 'workflow_run_id']) requireInteger(pagesArtifact[key], `Pages publication receipt.pages_artifact.${key}`, { positive: true })
+  for (const key of ['captured_at', 'created_at', 'expires_at']) requireDateTime(pagesArtifact[key], `Pages publication receipt.pages_artifact.${key}`)
+  const archived = exactKeys(root.archived_size_receipt, 'Pages publication receipt.archived_size_receipt', [
+    'archive_bytes', 'artifact_api_url', 'artifact_id', 'artifact_name', 'bytes', 'checked_in_path',
+    'digest_sha256', 'parsed', 'public_url', 'sha256', 'workflow_run_head_sha', 'workflow_run_id',
+  ])
+  if (archived.workflow_run_head_sha !== publicationSha || archived.workflow_run_id !== workflow.run_id
+    || archived.artifact_name !== `pages-artifact-size-${publicationSha}`
+    || archived.checked_in_path !== `.well-known/receipts/pages-artifact-size-${publicationSha}.json`) {
+    throw new Error('archived Pages size receipt is not bound to the exact publication run')
+  }
+  for (const key of ['archive_bytes', 'artifact_id', 'bytes', 'workflow_run_id']) requireInteger(archived[key], `Pages publication receipt.archived_size_receipt.${key}`, { positive: true })
+  for (const key of ['digest_sha256', 'sha256']) requireSha256(archived[key], `Pages publication receipt.archived_size_receipt.${key}`)
+  for (const key of ['artifact_api_url', 'public_url']) requireHttpsUrl(archived[key], `Pages publication receipt.archived_size_receipt.${key}`)
+  const size = exactKeys(archived.parsed, 'Pages publication receipt.archived_size_receipt.parsed', [
+    'artifact_bytes', 'artifact_name', 'artifact_sha256', 'headroom_bytes', 'limit_bytes',
+    'publication_sha', 'schema_version', 'status',
+  ])
+  if (size.schema_version !== 'palimpsest.pages-artifact-size.v1' || size.status !== 'within-limit'
+    || size.publication_sha !== publicationSha || size.artifact_name !== 'github-pages/artifact.tar') {
+    throw new Error('Pages artifact-size receipt is invalid')
+  }
+  for (const key of ['artifact_bytes', 'headroom_bytes', 'limit_bytes']) requireInteger(size[key], `Pages publication receipt.archived_size_receipt.parsed.${key}`, { positive: true })
+  requireSha256(size.artifact_sha256, 'Pages publication receipt.archived_size_receipt.parsed.artifact_sha256')
+  if (size.artifact_bytes + size.headroom_bytes !== size.limit_bytes) throw new Error('Pages size receipt byte accounting is inconsistent')
+  const served = exactKeys(root.served_verification, 'Pages publication receipt.served_verification', ['method', 'resources', 'verified_at'])
+  if (served.method !== 'cache_busted_https_get') throw new Error('Pages served verification method is unsupported')
+  requireDateTime(served.verified_at, 'Pages publication receipt.served_verification.verified_at')
+  if (served.verified_at !== pagesArtifact.captured_at) throw new Error('Pages served verification and artifact capture clocks differ')
+  if (!Array.isArray(served.resources) || served.resources.length !== 3) {
+    throw new Error('Pages receipt must contain exactly three served-resource entries')
+  }
+  const expectedPaths = [
+    'config/bri_wdi_series.json',
+    'protocol/bri-economic-observations-v1.schema.json',
+    'readings/bri-economic-observations-latest.json',
+  ]
+  const resources = served.resources.map((resource, index) => {
+    const value = exactKeys(resource, `Pages publication receipt.served_verification.resources[${index}]`, [
+      'bytes', 'http_status', 'path', 'sha256', 'url',
+    ])
+    requireInteger(value.bytes, `Pages served resource ${value.path}.bytes`, { positive: true })
+    if (value.http_status !== 200) throw new Error(`Pages served resource ${value.path} was not HTTP 200`)
+    requireSha256(value.sha256, `Pages served resource ${value.path}.sha256`)
+    requireHttpsUrl(value.url, `Pages served resource ${value.path}.url`)
+    const expectedUrl = `https://palimpsest.info/${value.path}?sha256=${value.sha256}`
+    if (value.url !== expectedUrl) throw new Error(`Pages served resource ${value.path} URL is not exact and cache-busted`)
+    return value
+  }).sort((a, b) => compareText(a.path, b.path))
+  if (JSON.stringify(resources.map((item) => item.path)) !== JSON.stringify(expectedPaths)) {
+    throw new Error('Pages receipt served-resource set is incomplete or ambiguous')
+  }
+  return {
+    root,
+    publicationSha,
+    resources,
+    verifiedAt: served.verified_at,
+    archivedSizeReceipt: archived,
+  }
+}
+
+function assertObservatoryDatasetBinding(observatory, economicsInput, pagesInput, pagesValidation) {
+  if (!Array.isArray(observatory.observation_datasets) || observatory.observation_datasets.length !== 1) {
+    throw new Error('Palimpsest observatory must expose one unambiguous observation dataset')
+  }
+  const dataset = exactKeys(observatory.observation_datasets[0], 'Palimpsest observatory observation dataset', [
+    'dataset_id', 'source_id', 'implementation_state', 'publication_state', 'artifact', 'observation_schema',
+    'series_registry', 'collection_id', 'generated_at', 'coverage', 'clocks', 'rights', 'context_boundary',
+    'publication_receipt',
+  ])
+  if (dataset.dataset_id !== 'bri-economic-context-world-bank-wdi' || dataset.source_id !== 'world_bank_wdi'
+    || dataset.implementation_state !== 'live' || dataset.publication_state !== 'production_verified') {
+    throw new Error('Palimpsest observatory WDI dataset identity or upstream state is invalid')
+  }
+  const artifact = exactKeys(dataset.artifact, 'Palimpsest observatory WDI artifact', ['path', 'url', 'media_type', 'bytes', 'sha256'])
+  if (artifact.path !== 'readings/bri-economic-observations-latest.json'
+    || artifact.url !== 'https://palimpsest.info/readings/bri-economic-observations-latest.json'
+    || artifact.media_type !== 'application/json'
+    || artifact.bytes !== economicsInput.descriptor.bytes
+    || artifact.sha256 !== economicsInput.descriptor.sha256) {
+    throw new Error('observatory does not bind the exact selected WDI economic artifact bytes')
+  }
+  const locator = exactKeys(dataset.publication_receipt, 'Palimpsest observatory Pages receipt locator', [
+    'schema_version', 'status', 'repository_path', 'public_url', 'receipt_sha256', 'release_a_sha',
+    'verified_at', 'fresh_until', 'availability_semantics',
+  ])
+  if (locator.schema_version !== 'palimpsest.bri-wdi-pages-publication-locator.v1'
+    || locator.status !== 'production_verified'
+    || locator.repository_path !== '.well-known/receipts/bri-wdi-pages-publication-v1.json'
+    || locator.public_url !== 'https://palimpsest.info/.well-known/receipts/bri-wdi-pages-publication-v1.json'
+    || locator.receipt_sha256 !== pagesInput.descriptor.sha256
+    || locator.release_a_sha !== pagesValidation.publicationSha
+    || locator.verified_at !== pagesValidation.verifiedAt
+    || locator.availability_semantics !== 'verified_at_release_not_continuous_monitoring') {
+    throw new Error('observatory does not bind the exact selected Pages publication receipt')
+  }
+  requireDateTime(locator.fresh_until, 'Palimpsest observatory Pages receipt locator.fresh_until')
+  if (Date.parse(locator.fresh_until) <= Date.parse(locator.verified_at)) throw new Error('Pages receipt freshness interval is invalid')
+  const schema = exactKeys(dataset.observation_schema, 'Palimpsest observatory observation schema', ['path', 'url', 'sha256'])
+  const registry = exactKeys(dataset.series_registry, 'Palimpsest observatory series registry', ['path', 'url', 'sha256'])
+  const resourceIndex = new Map(pagesValidation.resources.map((item) => [item.path, item]))
+  for (const descriptor of [schema, registry]) {
+    const resource = resourceIndex.get(descriptor.path)
+    if (!resource || descriptor.sha256 !== resource.sha256
+      || descriptor.url !== `https://palimpsest.info/${descriptor.path}`) {
+      throw new Error(`observatory descriptor ${descriptor.path} is not bound to the Pages served-resource receipt`)
+    }
+  }
+  if (dataset.collection_id !== economicsInput.data.collection_id
+    || dataset.collection_id !== pagesValidation.root.collection_id) {
+    throw new Error('Palimpsest WDI collection id differs across observatory, economics, and Pages receipt')
+  }
+  return { dataset, locator }
+}
+
+export async function buildPalimpsestBriSourcePin({ sourceDir, releaseReceiptPath, releaseManifestPath } = {}) {
   if (!sourceDir) throw new Error('--source-dir is required when refreshing the BRI pin')
   if (!releaseReceiptPath) throw new Error('--release-receipt is required when refreshing the BRI pin')
-  const observatoryPath = path.join(sourceDir, 'readings/belt-and-road-observatory-latest.json')
-  const economicsPath = path.join(sourceDir, 'readings/bri-economic-observations-latest.json')
-  const pagesReceiptPath = path.join(sourceDir, '.well-known/receipts/bri-wdi-pages-publication-v1.json')
-  const [observatoryInput, economicsInput, pagesInput, railwayInput] = await Promise.all([
-    readJsonWithDescriptor(observatoryPath),
-    readJsonWithDescriptor(economicsPath),
-    readJsonWithDescriptor(pagesReceiptPath),
-    readJsonWithDescriptor(releaseReceiptPath),
+  if (!releaseManifestPath) throw new Error('--release-manifest is required when refreshing the BRI pin')
+  const [railwayRaw, manifestRaw] = await Promise.all([
+    fs.readFile(releaseReceiptPath),
+    fs.readFile(releaseManifestPath),
   ])
+  const railwayInput = { data: parseJson(railwayRaw, 'Railway fleet release receipt'), raw: railwayRaw, descriptor: rawDescriptor(railwayRaw) }
+  const manifestInput = { data: parseJson(manifestRaw, 'Palimpsest Railway release manifest'), raw: manifestRaw, descriptor: rawDescriptor(manifestRaw) }
+  const railwayValidation = assertRailwayFleetReleaseReceipt(railwayInput.data)
+  const release = railwayValidation.release
+  const releaseManifest = assertRailwayReleaseManifest(manifestInput.data, release)
+  const [criticalEntries, pagesInput] = await Promise.all([
+    Promise.all(RAILWAY_CRITICAL_PATHS.map(async (criticalPath) => [
+      criticalPath,
+      await readTrackedBytesAtCommit(sourceDir, release.source_commit, criticalPath),
+    ])),
+    readTrackedJsonAtCommit(sourceDir, release.source_commit, '.well-known/receipts/bri-wdi-pages-publication-v1.json'),
+  ])
+  const criticalInputs = new Map(criticalEntries)
+  for (const criticalPath of RAILWAY_CRITICAL_PATHS) {
+    const tracked = criticalInputs.get(criticalPath)
+    const described = releaseManifest.critical_files[criticalPath]
+    if (tracked.descriptor.bytes !== described.bytes || tracked.descriptor.sha256 !== described.sha256) {
+      throw new Error(`Railway release manifest does not match exact source-commit bytes for ${criticalPath}`)
+    }
+  }
+  const observatoryBytes = criticalInputs.get('readings/belt-and-road-observatory-latest.json')
+  const economicsBytes = criticalInputs.get('readings/bri-economic-observations-latest.json')
+  const observatoryInput = {
+    ...observatoryBytes,
+    data: parseJson(observatoryBytes.raw, 'tracked Palimpsest BRI observatory'),
+  }
+  const economicsInput = {
+    ...economicsBytes,
+    data: parseJson(economicsBytes.raw, 'tracked Palimpsest BRI economics'),
+  }
   const observatory = observatoryInput.data
   const economics = economicsInput.data
   const pagesReceipt = pagesInput.data
@@ -387,22 +741,51 @@ export async function buildPalimpsestBriSourcePin({ sourceDir, releaseReceiptPat
   if (economics.schema_version !== 'palimpsest.bri-economic-observations.v1') {
     throw new Error(`unsupported Palimpsest economic schema ${economics.schema_version}`)
   }
-  if (railwayReceipt.schema_version !== 'palimpsest.railway-fleet-deployment-receipt.v1') {
-    throw new Error(`unsupported Railway receipt schema ${railwayReceipt.schema_version}`)
+  const pagesValidation = assertPagesPublicationReceipt(pagesReceipt)
+  const pagesReceiptSchema = parseJson(
+    criticalInputs.get('protocol/bri-wdi-pages-publication-v1.schema.json').raw,
+    'Palimpsest Pages publication receipt schema',
+  )
+  validateUpstreamJsonSchema(
+    pagesReceiptSchema,
+    pagesReceipt,
+    'Palimpsest Pages publication receipt',
+    'https://palimpsest.info/protocol/bri-wdi-pages-publication-v1.schema.json',
+  )
+  const [pagesRevision, servedInputs, archivedSizeInput] = await Promise.all([
+    resolveGitRevision(sourceDir, pagesValidation.publicationSha),
+    Promise.all(pagesValidation.resources.map(async (resource) => {
+      const input = await readTrackedJsonAtCommit(sourceDir, pagesValidation.publicationSha, resource.path)
+      if (input.descriptor.bytes !== resource.bytes || input.descriptor.sha256 !== resource.sha256) {
+        throw new Error(`Pages served-resource receipt does not match exact Git bytes for ${resource.path}`)
+      }
+      return [resource.path, input]
+    })),
+    readTrackedJsonAtCommit(
+      sourceDir,
+      release.source_commit,
+      pagesValidation.archivedSizeReceipt.checked_in_path,
+    ),
+  ])
+  if (archivedSizeInput.descriptor.bytes !== pagesValidation.archivedSizeReceipt.bytes
+    || archivedSizeInput.descriptor.sha256 !== pagesValidation.archivedSizeReceipt.sha256
+    || JSON.stringify(archivedSizeInput.data) !== JSON.stringify(pagesValidation.archivedSizeReceipt.parsed)) {
+    throw new Error('Pages archived size receipt does not match its exact tracked bytes and parsed payload')
   }
-  const release = requireObject(railwayReceipt.services?.palimpsest, 'Palimpsest Railway release')
-  if (release.deployment_status !== 'SUCCESS' || release.health_status !== 'ready') {
-    throw new Error('Palimpsest Railway release is not a verified successful ready release')
+  const servedIndex = new Map(servedInputs)
+  if (servedIndex.get('readings/bri-economic-observations-latest.json').descriptor.sha256
+    !== economicsInput.descriptor.sha256) {
+    throw new Error('Railway release and Pages publication do not share the selected WDI artifact bytes')
   }
   if (release.verification?.wdi_bundle_sha256 !== economicsInput.descriptor.sha256) {
     throw new Error('Railway receipt does not bind the selected WDI economic artifact')
   }
-  if (observatory.observation_datasets?.[0]?.artifact?.sha256 !== economicsInput.descriptor.sha256) {
-    throw new Error('observatory does not bind the selected WDI economic artifact')
-  }
-  if (observatory.observation_datasets?.[0]?.publication_receipt?.receipt_sha256 !== pagesInput.descriptor.sha256) {
-    throw new Error('observatory does not bind the selected Pages publication receipt')
-  }
+  const { locator: publication } = assertObservatoryDatasetBinding(
+    observatory,
+    economicsInput,
+    pagesInput,
+    pagesValidation,
+  )
   const sources = (observatory.sources ?? []).map(sourceSummary).sort((a, b) => compareText(a.sourceId, b.sourceId))
   const calculatedImplementationStates = implementationStateCounts(sources)
   const reportedStates = Object.fromEntries(IMPLEMENTATION_STATES.map((state) => [
@@ -425,28 +808,47 @@ export async function buildPalimpsestBriSourcePin({ sourceDir, releaseReceiptPat
   if (datasetLastUpdated.length !== 1 || sourceReleaseUpperBounds.length !== 1 || retrievedAt.length !== 1) {
     throw new Error('economic collection must expose one unambiguous set of source and retrieval clocks')
   }
-  const publication = observatory.observation_datasets[0].publication_receipt
+  const servedResources = pagesValidation.resources.map((resource) => {
+    const input = servedIndex.get(resource.path)
+    return {
+      path: resource.path,
+      canonicalUrl: `https://palimpsest.info/${resource.path}`,
+      ...input.descriptor,
+    }
+  })
   const pin = {
     schemaVersion: BRI_PIN_SCHEMA_VERSION,
     refreshedAt: railwayReceipt.generated_at,
     release: {
       producer: 'Palimpsest',
-      status: 'production_verified_at_release',
+      verificationState: 'release_receipt_validated',
       canonicalBaseUrl: 'https://palimpsest.info',
       railwayMirrorBaseUrl: requireString(release.railway_url, 'Palimpsest Railway URL'),
       deploymentId: requireString(release.deployment_id, 'Palimpsest Railway deployment id'),
       sourceRevision: requireCommit(release.source_commit, 'Palimpsest Railway source commit'),
+      sourceTreeOid: observatoryInput.sourceTreeOid,
       artifactTreeSha256: requireSha256(release.artifact_tree_sha256, 'Palimpsest Railway artifact tree hash'),
+      artifactManifest: {
+        schemaVersion: releaseManifest.schema_version,
+        bytes: manifestInput.descriptor.bytes,
+        sha256: manifestInput.descriptor.sha256,
+        fileCount: releaseManifest.file_count,
+        totalBytes: releaseManifest.total_bytes,
+      },
+      receiptBytes: railwayInput.descriptor.bytes,
       receiptSha256: railwayInput.descriptor.sha256,
       verifiedAt: railwayReceipt.generated_at,
-      verificationSemantics: 'Point-in-time exact-release verification; not continuous availability or freshness monitoring.',
+      verificationSemantics: 'The exact release receipt, source commit and Git tree were validated when this pin was refreshed. This is not continuous production availability or freshness monitoring.',
       pagesPublication: {
-        status: publication.status,
+        verificationState: 'served_resource_receipt_validated',
         sourceRevision: requireCommit(publication.release_a_sha, 'Pages publication source revision'),
+        sourceTreeOid: pagesRevision.treeOid,
+        receiptBytes: pagesInput.descriptor.bytes,
         receiptSha256: pagesInput.descriptor.sha256,
         verifiedAt: publication.verified_at,
         freshUntil: publication.fresh_until,
         availabilitySemantics: publication.availability_semantics,
+        servedResources,
       },
     },
     sourceArtifacts: {
@@ -517,7 +919,12 @@ export async function buildPalimpsestBriSourcePin({ sourceDir, releaseReceiptPat
         causalityBoundary: economics.context_policy.causality_boundary,
         missingValuePolicy: economics.context_policy.missing_value_policy,
         forecastPolicy: economics.context_policy.forecast_policy,
-        downstreamSemantics: economics.context_policy.downstream_semantics,
+        downstreamSemantics: {
+          observed: economics.context_policy.downstream_semantics.observed,
+          forecast: economics.context_policy.downstream_semantics.forecast,
+          unavailable: economics.context_policy.downstream_semantics.unavailable,
+          join_boundary: economics.context_policy.downstream_semantics.join_boundary,
+        },
       },
       coverage: economicCoverage,
     },
@@ -525,46 +932,17 @@ export async function buildPalimpsestBriSourcePin({ sourceDir, releaseReceiptPat
   return assertPalimpsestBriPin(pin)
 }
 
-export function assertPalimpsestBriBoundary(artifact) {
-  requireObject(artifact, 'Palimpsest BRI artifact')
-  if (artifact.schemaVersion !== BRI_SCHEMA_VERSION) throw new Error(`unexpected BRI artifact schema ${artifact.schemaVersion}`)
-  const policy = artifact.usePolicy ?? {}
-  if (policy.lane !== 'parallel_context_only' || policy.crossLaneJoinPolicy !== 'prohibited') {
-    throw new Error('BRI context must remain a parallel lane with cross-lane joins prohibited')
-  }
-  const requiredProhibitions = [
-    'drugConflictInfrastructureCausalJoin',
-    'actorClassification',
-    'bilateralRouteInference',
-    'guiltInference',
-    'politicalMovementClassification',
-  ]
-  if (requiredProhibitions.some((key) => policy.prohibitions?.[key] !== 'prohibited')) {
-    throw new Error('BRI context lost a required inference prohibition')
-  }
-  if (artifact.economicContext?.coverage?.totals?.sourceRows
-    !== artifact.economicContext.coverage.totals.observedRows
-      + artifact.economicContext.coverage.totals.forecastRows
-      + artifact.economicContext.coverage.totals.unavailableRows) {
-    throw new Error('published economic states do not partition source rows')
-  }
-  const countryCodes = artifact.economicContext?.coverage?.countries?.map((country) => country.countryCode)
-  if (JSON.stringify(countryCodes) !== JSON.stringify(COUNTRY_ORDER)) {
-    throw new Error('published economic country scope changed')
-  }
-  const targetIds = new Set(artifact.targetCoverage.flatMap((area) => area.targets.map((target) => target.targetId)))
-  if ([...REQUIRED_TARGET_IDS].some((targetId) => !targetIds.has(targetId))) {
-    throw new Error('published BRI target scope changed')
-  }
-  const forbidden = forbiddenPaths(artifact)
-  if (forbidden.length > 0) throw new Error(`BRI artifact contains forbidden detail fields: ${forbidden.join(', ')}`)
-  return artifact
-}
-
-export function buildPalimpsestBriArtifact(pin) {
+export function buildPalimpsestBriArtifact(pin, { pinRaw, schemaRaw } = {}) {
   assertPalimpsestBriPin(pin)
-  const pinSha256 = sha256(serialize(pin))
-  return assertPalimpsestBriBoundary({
+  if (!Buffer.isBuffer(pinRaw) && typeof pinRaw !== 'string') throw new Error('raw BRI pin bytes are required')
+  if (!Buffer.isBuffer(schemaRaw) && typeof schemaRaw !== 'string') throw new Error('raw BRI schema bytes are required')
+  const pinBytes = Buffer.isBuffer(pinRaw) ? pinRaw : Buffer.from(pinRaw, 'utf8')
+  const schemaBytes = Buffer.isBuffer(schemaRaw) ? schemaRaw : Buffer.from(schemaRaw, 'utf8')
+  const rawPin = parseJson(pinBytes, 'raw BRI source pin')
+  if (JSON.stringify(rawPin) !== JSON.stringify(pin)) throw new Error('parsed BRI pin does not match its supplied raw bytes')
+  const schema = parseJson(schemaBytes, 'raw BRI JSON Schema')
+  const validateSchema = compilePalimpsestBriSchema(schema)
+  const artifact = assertPalimpsestBriBoundary({
     $schema: `./${BRI_SCHEMA_FILE}`,
     schemaVersion: BRI_SCHEMA_VERSION,
     artifactId: 'narcoscope.palimpsest.bri-parallel-context',
@@ -576,7 +954,14 @@ export function buildPalimpsestBriArtifact(pin) {
       sourcePin: {
         path: 'scripts/bridge/palimpsest-bri-source-pin.json',
         schemaVersion: pin.schemaVersion,
-        sha256: pinSha256,
+        bytes: pinBytes.length,
+        sha256: sha256(pinBytes),
+      },
+      schema: {
+        path: `public/data/${BRI_SCHEMA_FILE}`,
+        id: BRI_SCHEMA_ID,
+        bytes: schemaBytes.length,
+        sha256: sha256(schemaBytes),
       },
       release: pin.release,
       sourceArtifacts: pin.sourceArtifacts,
@@ -611,6 +996,8 @@ export function buildPalimpsestBriArtifact(pin) {
       'Release and freshness receipts are point-in-time evidence. Consumers must re-check source hashes and availability before relying on a later deployment.',
     ],
   })
+  validateSchema(artifact)
+  return artifact
 }
 
 export function serializePalimpsestBriArtifact(artifact) {
@@ -619,12 +1006,14 @@ export function serializePalimpsestBriArtifact(artifact) {
 
 export async function generatePalimpsestBriArtifact({
   pinPath = DEFAULT_BRI_PIN,
+  schemaPath = DEFAULT_BRI_SCHEMA,
   output = DEFAULT_BRI_OUTPUT,
   hashOutput = DEFAULT_BRI_HASH_OUTPUT,
   check = false,
 } = {}) {
-  const pin = JSON.parse(await fs.readFile(pinPath, 'utf8'))
-  const artifact = buildPalimpsestBriArtifact(pin)
+  const [pinRaw, schemaRaw] = await Promise.all([fs.readFile(pinPath), fs.readFile(schemaPath)])
+  const pin = parseJson(pinRaw, 'BRI source pin')
+  const artifact = buildPalimpsestBriArtifact(pin, { pinRaw, schemaRaw })
   const serialized = serializePalimpsestBriArtifact(artifact)
   const artifactSha256 = sha256(serialized)
   const hashLine = `${artifactSha256}  ${BRI_ARTIFACT_FILE}\n`
@@ -656,6 +1045,7 @@ function option(args, name) {
 async function main() {
   const args = process.argv.slice(2)
   const pinPath = option(args, '--pin-output') ?? DEFAULT_BRI_PIN
+  const schemaPath = option(args, '--schema') ?? DEFAULT_BRI_SCHEMA
   const output = option(args, '--output') ?? DEFAULT_BRI_OUTPUT
   const hashOutput = option(args, '--hash-output') ?? (
     output === DEFAULT_BRI_OUTPUT ? DEFAULT_BRI_HASH_OUTPUT : `${output}.sha256`
@@ -664,12 +1054,14 @@ async function main() {
     const pin = await buildPalimpsestBriSourcePin({
       sourceDir: option(args, '--source-dir'),
       releaseReceiptPath: option(args, '--release-receipt'),
+      releaseManifestPath: option(args, '--release-manifest'),
     })
     await fs.mkdir(path.dirname(pinPath), { recursive: true })
     await fs.writeFile(pinPath, serialize(pin), 'utf8')
   }
   const result = await generatePalimpsestBriArtifact({
     pinPath,
+    schemaPath,
     output,
     hashOutput,
     check: args.includes('--check'),

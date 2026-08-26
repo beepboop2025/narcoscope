@@ -114,6 +114,7 @@ run('node', ['scripts/bridge/build-palimpsest-corridors.mjs'])
 // cannot become an implicit drug/infrastructure join during a data refresh.
 console.log('· regenerating pinned Palimpsest Belt and Road context …')
 run('node', ['scripts/bridge/build-palimpsest-bri.mjs'])
+run('node', ['scripts/bridge/sync-palimpsest-bri-contracts.mjs'])
 
 // The evidence newsroom consumes only checked-in official-source snapshots.
 // It is regenerated after the bridge so its revision/content hashes and feeds

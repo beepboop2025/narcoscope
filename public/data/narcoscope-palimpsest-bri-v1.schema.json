@@ -45,6 +45,7 @@
   "$defs": {
     "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
     "commit": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "gitOid": { "type": "string", "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$" },
     "dateTime": { "type": "string", "format": "date-time" },
     "uri": { "type": "string", "format": "uri" },
     "nullableYear": { "type": ["integer", "null"], "minimum": 1900, "maximum": 2200 },
@@ -64,13 +65,14 @@
     },
     "sourceDescriptor": {
       "type": "object",
-      "required": ["path", "canonicalUrl", "bytes", "sha256"],
+      "required": ["path", "canonicalUrl", "bytes", "sha256", "gitBlobOid"],
       "properties": {
         "path": { "type": "string", "minLength": 1 },
         "canonicalUrl": { "$ref": "#/$defs/uri" },
         "railwayMirrorUrl": { "$ref": "#/$defs/uri" },
         "bytes": { "type": "integer", "minimum": 1 },
-        "sha256": { "$ref": "#/$defs/sha256" }
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "gitBlobOid": { "$ref": "#/$defs/gitOid" }
       },
       "additionalProperties": false
     },
@@ -86,14 +88,32 @@
     },
     "pagesPublication": {
       "type": "object",
-      "required": ["status", "sourceRevision", "receiptSha256", "verifiedAt", "freshUntil", "availabilitySemantics"],
+      "required": [
+        "verificationState",
+        "sourceRevision",
+        "sourceTreeOid",
+        "receiptBytes",
+        "receiptSha256",
+        "verifiedAt",
+        "freshUntil",
+        "availabilitySemantics",
+        "servedResources"
+      ],
       "properties": {
-        "status": { "type": "string", "minLength": 1 },
+        "verificationState": { "const": "served_resource_receipt_validated" },
         "sourceRevision": { "$ref": "#/$defs/commit" },
+        "sourceTreeOid": { "$ref": "#/$defs/gitOid" },
+        "receiptBytes": { "type": "integer", "minimum": 1 },
         "receiptSha256": { "$ref": "#/$defs/sha256" },
         "verifiedAt": { "$ref": "#/$defs/dateTime" },
         "freshUntil": { "$ref": "#/$defs/dateTime" },
-        "availabilitySemantics": { "type": "string", "minLength": 1 }
+        "availabilitySemantics": { "type": "string", "minLength": 1 },
+        "servedResources": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "items": { "$ref": "#/$defs/sourceDescriptor" }
+        }
       },
       "additionalProperties": false
     },
@@ -101,12 +121,15 @@
       "type": "object",
       "required": [
         "producer",
-        "status",
+        "verificationState",
         "canonicalBaseUrl",
         "railwayMirrorBaseUrl",
         "deploymentId",
         "sourceRevision",
+        "sourceTreeOid",
         "artifactTreeSha256",
+        "artifactManifest",
+        "receiptBytes",
         "receiptSha256",
         "verifiedAt",
         "verificationSemantics",
@@ -114,12 +137,26 @@
       ],
       "properties": {
         "producer": { "const": "Palimpsest" },
-        "status": { "const": "production_verified_at_release" },
+        "verificationState": { "const": "release_receipt_validated" },
         "canonicalBaseUrl": { "const": "https://palimpsest.info" },
         "railwayMirrorBaseUrl": { "$ref": "#/$defs/uri" },
         "deploymentId": { "type": "string", "minLength": 1 },
         "sourceRevision": { "$ref": "#/$defs/commit" },
+        "sourceTreeOid": { "$ref": "#/$defs/gitOid" },
         "artifactTreeSha256": { "$ref": "#/$defs/sha256" },
+        "artifactManifest": {
+          "type": "object",
+          "required": ["schemaVersion", "bytes", "sha256", "fileCount", "totalBytes"],
+          "properties": {
+            "schemaVersion": { "const": "palimpsest.railway-static-release.v1" },
+            "bytes": { "type": "integer", "minimum": 1 },
+            "sha256": { "$ref": "#/$defs/sha256" },
+            "fileCount": { "type": "integer", "minimum": 1 },
+            "totalBytes": { "type": "integer", "minimum": 1 }
+          },
+          "additionalProperties": false
+        },
+        "receiptBytes": { "type": "integer", "minimum": 1 },
         "receiptSha256": { "$ref": "#/$defs/sha256" },
         "verifiedAt": { "$ref": "#/$defs/dateTime" },
         "verificationSemantics": { "type": "string", "minLength": 1 },
@@ -129,16 +166,28 @@
     },
     "provenance": {
       "type": "object",
-      "required": ["producer", "consumer", "sourcePin", "release", "sourceArtifacts"],
+      "required": ["producer", "consumer", "sourcePin", "schema", "release", "sourceArtifacts"],
       "properties": {
         "producer": { "const": "Palimpsest" },
         "consumer": { "const": "NarcoScope" },
         "sourcePin": {
           "type": "object",
-          "required": ["path", "schemaVersion", "sha256"],
+          "required": ["path", "schemaVersion", "bytes", "sha256"],
           "properties": {
             "path": { "const": "scripts/bridge/palimpsest-bri-source-pin.json" },
             "schemaVersion": { "const": "narcoscope.palimpsest.bri-source-pin.v1" },
+            "bytes": { "type": "integer", "minimum": 1 },
+            "sha256": { "$ref": "#/$defs/sha256" }
+          },
+          "additionalProperties": false
+        },
+        "schema": {
+          "type": "object",
+          "required": ["path", "id", "bytes", "sha256"],
+          "properties": {
+            "path": { "const": "public/data/narcoscope-palimpsest-bri-v1.schema.json" },
+            "id": { "const": "https://narcoscope.com/data/narcoscope-palimpsest-bri-v1.schema.json" },
+            "bytes": { "type": "integer", "minimum": 1 },
             "sha256": { "$ref": "#/$defs/sha256" }
           },
           "additionalProperties": false
@@ -359,7 +408,17 @@
             "causalityBoundary": { "const": "not_evidence_of_bri_causality" },
             "missingValuePolicy": { "const": "source_null_remains_unavailable" },
             "forecastPolicy": { "type": "string", "minLength": 1 },
-            "downstreamSemantics": { "type": "object", "minProperties": 4, "additionalProperties": { "type": "string", "minLength": 1 } }
+            "downstreamSemantics": {
+              "type": "object",
+              "required": ["observed", "forecast", "unavailable", "join_boundary"],
+              "properties": {
+                "observed": { "type": "string", "minLength": 1 },
+                "forecast": { "type": "string", "minLength": 1 },
+                "unavailable": { "type": "string", "minLength": 1 },
+                "join_boundary": { "type": "string", "minLength": 1 }
+              },
+              "additionalProperties": false
+            }
           },
           "additionalProperties": false
         },

@@ -6,7 +6,8 @@ overlay. They are public handoff artifacts, not a shared database and not a
 runtime dependency.
 
 It also publishes one reverse, read-only Palimpsest context lane for NarcoScope.
-That lane is pinned to exact Palimpsest artifacts and a verified release receipt;
+That lane is pinned to exact Palimpsest Git objects, a release manifest and a
+validated release receipt;
 it is displayed beside the drug-market record but cannot be joined into it.
 
 ```text
@@ -55,14 +56,24 @@ release receipt is available:
 ```bash
 node scripts/bridge/build-palimpsest-bri.mjs \
   --refresh-pin \
-  --source-dir /path/to/palimpsest-release-checkout \
-  --release-receipt /path/to/railway-fleet-release-receipt.json
+  --source-dir /path/to/palimpsest-git-repository \
+  --release-receipt /path/to/railway-fleet-release-receipt.json \
+  --release-manifest /path/to/palimpsest-railway-release.json
 npm run bridge:palimpsest-bri:check
 ```
 
-The refresh rejects a non-ready Railway release, mismatched WDI hash, mismatched
-Pages receipt, missing implementation state, duplicate country-indicator year,
-or weakened national non-causal context policy.
+The refresh reads tracked bytes from the receipt's exact source commit rather
+than from the working tree. It rejects a non-ready Railway release, a manifest
+whose commit/tree/critical files differ from the receipt or Git objects, a
+mismatched WDI hash, an invalid Pages receipt or served-resource entry, a
+missing implementation state, a duplicate country-indicator year, or a
+weakened national non-causal context policy. The resulting status describes
+receipt validation, not continuous production availability.
+
+REST, MCP and `/healthz` use one verifier for the raw artifact, strict SHA-256
+sidecar, metaschema-valid JSON Schema, schema instance and semantic boundary.
+The REST/MCP envelope keeps links and interpretation outside `data`; `data` is
+the exact parsed value of the hashed static artifact.
 
 ## Reverse BRI context lane
 

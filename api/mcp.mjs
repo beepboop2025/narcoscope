@@ -8,6 +8,7 @@ import {
   getStory,
   SITE_URL,
 } from './lib/narcoscope.mjs'
+import { PALIMPSEST_BRI_OUTPUT_SCHEMA } from './lib/palimpsest-bri.mjs'
 
 const PROTOCOL_VERSION = '2025-06-18'
 const SUPPORTED_PROTOCOL_VERSIONS = new Set(['2025-03-26', PROTOCOL_VERSION])
@@ -70,9 +71,10 @@ export const TOOLS = Object.freeze({
   },
   get_palimpsest_bri_context: {
     title: 'Read bounded Palimpsest Belt and Road context',
-    description: 'Return pinned source readiness and national WDI coverage for CPEC, Gwadar, CMEC, Kyaukpyu, and Balochistan as a parallel context lane. Cross-lane drug, actor, route, guilt, political, project, and causal inference is prohibited.',
+    description: 'Return pinned source readiness and national WDI coverage for CPEC, Gwadar, CMEC, Kyaukpyu, and Balochistan as a parallel context lane. Cross-lane drug, actor, route, guilt, political, project, causal, tactical, and navigable inference or use is prohibited.',
     inputSchema: { type: 'object', additionalProperties: false },
-    call: async () => getPalimpsestBriContext(),
+    outputSchema: PALIMPSEST_BRI_OUTPUT_SCHEMA,
+    call: async (_args, { getBriContext = getPalimpsestBriContext } = {}) => getBriContext(),
   },
 })
 
@@ -84,7 +86,7 @@ function failure(id, code, message) {
   return { jsonrpc: '2.0', id: id ?? null, error: { code, message } }
 }
 
-export async function dispatch(message) {
+export async function dispatch(message, dependencies = {}) {
   if (
     !message
     || typeof message !== 'object'
@@ -104,7 +106,7 @@ export async function dispatch(message) {
         : PROTOCOL_VERSION,
       capabilities: { tools: { listChanged: false } },
       serverInfo: { name: 'narcoscope', title: 'NarcoScope evidence explorer', version: SERVER_VERSION },
-      instructions: 'Use NarcoScope for aggregate official drug-market evidence and bounded newsroom analysis. Start with list_capabilities or get_newsroom. Treat seizures as administrative observations, not trafficking-volume estimates; never infer guilt, political or armed-actor relationships, bilateral routes, or causality from shared geography, origin labels, designations, or the separate Palimpsest Belt and Road context lane.',
+      instructions: 'Use NarcoScope for aggregate official drug-market evidence and bounded newsroom analysis. Start with list_capabilities or get_newsroom. Treat seizures as administrative observations, not trafficking-volume estimates; never infer guilt, political or armed-actor relationships, bilateral routes, project effects, tactical or navigable use, or causality from shared geography, origin labels, designations, or the separate Palimpsest Belt and Road context lane.',
     })
   }
   if (method === 'ping') return result(id, {})
@@ -114,6 +116,7 @@ export async function dispatch(message) {
       title: tool.title,
       description: tool.description,
       inputSchema: tool.inputSchema,
+      ...(tool.outputSchema ? { outputSchema: tool.outputSchema } : {}),
       annotations: { readOnlyHint: true, destructiveHint: false, openWorldHint: false },
     })) })
   }
@@ -121,7 +124,7 @@ export async function dispatch(message) {
     const tool = TOOLS[params?.name]
     if (!tool) return failure(id, -32602, `Unknown tool: ${params?.name ?? ''}`)
     try {
-      const data = await tool.call(params.arguments ?? {})
+      const data = await tool.call(params.arguments ?? {}, dependencies)
       return result(id, {
         content: [{ type: 'text', text: JSON.stringify(data) }],
         structuredContent: data,
