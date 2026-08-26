@@ -62,6 +62,11 @@ const RAILWAY_CRITICAL_PATHS = Object.freeze([
   'readings/bri-economic-observations-latest.json',
   'server.json',
 ])
+const ECONOMICS_SCHEMA_ID = 'https://palimpsest.info/protocol/bri-economic-observations-v1.schema.json'
+const WDI_REGISTRY_PATH = 'config/bri_wdi_series.json'
+const ECONOMICS_SCHEMA_PATH = 'protocol/bri-economic-observations-v1.schema.json'
+const ECONOMICS_PATH = 'readings/bri-economic-observations-latest.json'
+const COUNTRY_API_IDS = Object.freeze({ CHN: 'CN', MMR: 'MM', PAK: 'PK' })
 
 const compareText = (a, b) => (a < b ? -1 : a > b ? 1 : 0)
 const sha256 = (value) => createHash('sha256').update(value).digest('hex')
@@ -320,11 +325,110 @@ function summarizeIndicator(rows) {
   }
 }
 
-function buildEconomicCoverage(economics) {
+function assertWdiSeriesRegistry(registry) {
+  const root = exactKeys(registry, 'served WDI series registry', [
+    'schema_version', 'dataset', 'countries', 'series',
+  ])
+  if (root.schema_version !== 'palimpsest.bri-wdi-series.v1') {
+    throw new Error('served WDI series registry has an unsupported schema')
+  }
+  const dataset = exactKeys(root.dataset, 'served WDI series registry.dataset', [
+    'source_id', 'source_number', 'name', 'publisher', 'api_base', 'catalog_url', 'license',
+    'license_url', 'rights_evidence_url', 'redistribution_status', 'attribution',
+    'release_time_semantics', 'context_scope', 'causality_boundary', 'indicator_provenance_boundary',
+  ])
+  const expectedDataset = {
+    source_id: 'world_bank_wdi',
+    source_number: '2',
+    name: 'World Development Indicators',
+    publisher: 'World Bank',
+    api_base: 'https://api.worldbank.org/v2',
+    catalog_url: 'https://datacatalog.worldbank.org/search/dataset/0037712/world-development-indicators',
+    license: 'CC-BY-4.0',
+    license_url: 'https://creativecommons.org/licenses/by/4.0/',
+    rights_evidence_url: 'https://datacatalog.worldbank.org/search/dataset/0037712/world-development-indicators',
+    redistribution_status: 'allowed_with_attribution',
+    attribution: 'World Bank, World Development Indicators',
+    release_time_semantics: 'dataset_lastupdated_upper_bound',
+    context_scope: 'national_economic_context',
+    causality_boundary: 'not_evidence_of_bri_causality',
+  }
+  for (const [key, expected] of Object.entries(expectedDataset)) {
+    if (dataset[key] !== expected) throw new Error(`served WDI series registry.dataset.${key} changed`)
+  }
+  requireString(dataset.indicator_provenance_boundary, 'served WDI series registry.dataset.indicator_provenance_boundary')
+
+  if (!Array.isArray(root.countries) || root.countries.length !== COUNTRY_ORDER.length) {
+    throw new Error('served WDI series registry must contain the exact three countries')
+  }
+  root.countries.forEach((country, index) => {
+    const label = `served WDI series registry.countries[${index}]`
+    const value = exactKeys(country, label, ['country_code', 'api_country_id', 'name'])
+    const countryCode = COUNTRY_ORDER[index]
+    if (value.country_code !== countryCode
+      || value.api_country_id !== COUNTRY_API_IDS[countryCode]
+      || value.name !== COUNTRY_LABELS[countryCode]) {
+      throw new Error(`${label} identity or order changed`)
+    }
+  })
+
+  if (!Array.isArray(root.series) || root.series.length === 0 || root.series.length > 24) {
+    throw new Error('served WDI series registry must contain between 1 and 24 series')
+  }
+  const seriesById = new Map()
+  const indicatorIds = new Set()
+  root.series.forEach((series, index) => {
+    const label = `served WDI series registry.series[${index}]`
+    const value = exactKeys(series, label, [
+      'indicator_id', 'series_id', 'source_title', 'name', 'unit', 'topic',
+    ])
+    if (!/^bri\.context\.wdi\.[a-z0-9][a-z0-9_]{1,119}$/.test(requireString(value.series_id, `${label}.series_id`))) {
+      throw new Error(`${label}.series_id is invalid`)
+    }
+    if (!/^[A-Z0-9][A-Z0-9._-]{1,79}$/.test(requireString(value.indicator_id, `${label}.indicator_id`))) {
+      throw new Error(`${label}.indicator_id is invalid`)
+    }
+    for (const key of ['source_title', 'name', 'unit', 'topic']) requireString(value[key], `${label}.${key}`)
+    if (seriesById.has(value.series_id)) throw new Error('served WDI series registry contains duplicate series_id values')
+    if (indicatorIds.has(value.indicator_id)) throw new Error('served WDI series registry contains duplicate indicator_id values')
+    seriesById.set(value.series_id, value)
+    indicatorIds.add(value.indicator_id)
+  })
+  return {
+    seriesById,
+    seriesIds: [...seriesById.keys()].sort(compareText),
+  }
+}
+
+export function validateEconomicInputs(economics, economicsSchema, registryInput) {
+  validateUpstreamJsonSchema(
+    economicsSchema,
+    economics,
+    'Palimpsest BRI economic observations',
+    ECONOMICS_SCHEMA_ID,
+  )
+  const registry = assertWdiSeriesRegistry(registryInput?.data)
+  requireSha256(registryInput?.descriptor?.sha256, 'served WDI series registry blob hash')
+  requireSha256(economics.registry_sha256, 'Palimpsest BRI economics registry_sha256')
+  if (economics.registry_sha256 !== registryInput.descriptor.sha256) {
+    throw new Error('Palimpsest BRI economics registry_sha256 does not match exact served registry bytes')
+  }
+  return registry
+}
+
+export function buildEconomicCoverage(economics, expectedRegistry) {
+  if (!expectedRegistry?.seriesById || !Array.isArray(expectedRegistry.seriesIds)) {
+    throw new Error('exact served WDI series registry is required before economic projection')
+  }
   const groups = new Map()
   for (const row of economics.observations ?? []) {
     if (!COUNTRY_ORDER.includes(row.country_code)) {
       throw new Error(`unexpected economic country ${row.country_code}`)
+    }
+    const expectedSeries = expectedRegistry.seriesById.get(row.series_id)
+    if (!expectedSeries) throw new Error(`economic row uses unregistered series ${row.series_id}`)
+    if (row.indicator_id !== expectedSeries.indicator_id || row.unit !== expectedSeries.unit) {
+      throw new Error(`economic row identity differs from the served registry for ${row.series_id}`)
     }
     const key = `${row.country_code}\0${row.series_id}`
     if (!groups.has(key)) groups.set(key, [])
@@ -349,9 +453,18 @@ function buildEconomicCoverage(economics) {
       indicators,
     }
   })
+  for (const country of countries) {
+    const seriesIds = country.indicators.map((item) => item.seriesId)
+    if (new Set(seriesIds).size !== seriesIds.length) {
+      throw new Error(`${country.countryCode} economic projection contains duplicate series IDs`)
+    }
+    if (JSON.stringify(seriesIds) !== JSON.stringify(expectedRegistry.seriesIds)) {
+      throw new Error(`${country.countryCode} economic projection does not contain the exact served registry series set`)
+    }
+  }
   const totals = {
     countries: countries.length,
-    indicators: new Set(countries.flatMap((country) => country.indicators.map((item) => item.seriesId))).size,
+    indicators: expectedRegistry.seriesIds.length,
     sourceRows: countries.reduce((total, country) => total + country.sourceRowCount, 0),
     observedRows: countries.reduce((total, country) => total + country.observedRowCount, 0),
     forecastRows: countries.reduce((total, country) => total + country.forecastRowCount, 0),
@@ -722,7 +835,7 @@ export async function buildPalimpsestBriSourcePin({ sourceDir, releaseReceiptPat
     }
   }
   const observatoryBytes = criticalInputs.get('readings/belt-and-road-observatory-latest.json')
-  const economicsBytes = criticalInputs.get('readings/bri-economic-observations-latest.json')
+  const economicsBytes = criticalInputs.get(ECONOMICS_PATH)
   const observatoryInput = {
     ...observatoryBytes,
     data: parseJson(observatoryBytes.raw, 'tracked Palimpsest BRI observatory'),
@@ -773,9 +886,13 @@ export async function buildPalimpsestBriSourcePin({ sourceDir, releaseReceiptPat
     throw new Error('Pages archived size receipt does not match its exact tracked bytes and parsed payload')
   }
   const servedIndex = new Map(servedInputs)
-  if (servedIndex.get('readings/bri-economic-observations-latest.json').descriptor.sha256
+  if (servedIndex.get(ECONOMICS_PATH).descriptor.sha256
     !== economicsInput.descriptor.sha256) {
     throw new Error('Railway release and Pages publication do not share the selected WDI artifact bytes')
+  }
+  if (servedIndex.get(ECONOMICS_SCHEMA_PATH).descriptor.sha256
+    !== criticalInputs.get(ECONOMICS_SCHEMA_PATH).descriptor.sha256) {
+    throw new Error('Railway release and Pages publication do not share the selected economics schema bytes')
   }
   if (release.verification?.wdi_bundle_sha256 !== economicsInput.descriptor.sha256) {
     throw new Error('Railway receipt does not bind the selected WDI economic artifact')
@@ -799,7 +916,12 @@ export async function buildPalimpsestBriSourcePin({ sourceDir, releaseReceiptPat
   if (buildReadySourceCount !== observatory.coverage_report?.build_ready_source_count) {
     throw new Error('observatory build-ready count does not match live and adapter-ready sources')
   }
-  const economicCoverage = buildEconomicCoverage(economics)
+  const expectedRegistry = validateEconomicInputs(
+    economics,
+    servedIndex.get(ECONOMICS_SCHEMA_PATH).data,
+    servedIndex.get(WDI_REGISTRY_PATH),
+  )
+  const economicCoverage = buildEconomicCoverage(economics, expectedRegistry)
   assertCoverageMatches(economics.coverage, economicCoverage.totals)
   const requestReceipts = economics.request_receipts ?? []
   const datasetLastUpdated = uniqueSorted(requestReceipts.map((item) => item.dataset_last_updated))

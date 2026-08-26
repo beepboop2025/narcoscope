@@ -19,10 +19,12 @@ import {
   assertPagesPublicationReceipt,
   assertRailwayFleetReleaseReceipt,
   assertRailwayReleaseManifest,
+  buildEconomicCoverage,
   buildPalimpsestBriArtifact,
   generatePalimpsestBriArtifact,
   readTrackedJsonAtCommit,
   serializePalimpsestBriArtifact,
+  validateEconomicInputs,
 } from './build-palimpsest-bri.mjs'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
@@ -202,6 +204,98 @@ function railwayManifestFixture(release) {
   }
 }
 
+function wdiRegistryFixture() {
+  const series = [
+    ['bri.context.wdi.gdp_real_growth', 'NY.GDP.MKTP.KD.ZG', 'annual percent'],
+    ['bri.context.wdi.population', 'SP.POP.TOTL', 'people'],
+  ].map(([series_id, indicator_id, unit]) => ({
+    indicator_id,
+    series_id,
+    source_title: indicator_id,
+    name: series_id,
+    unit,
+    topic: 'fixture',
+  }))
+  return {
+    schema_version: 'palimpsest.bri-wdi-series.v1',
+    dataset: {
+      source_id: 'world_bank_wdi',
+      source_number: '2',
+      name: 'World Development Indicators',
+      publisher: 'World Bank',
+      api_base: 'https://api.worldbank.org/v2',
+      catalog_url: 'https://datacatalog.worldbank.org/search/dataset/0037712/world-development-indicators',
+      license: 'CC-BY-4.0',
+      license_url: 'https://creativecommons.org/licenses/by/4.0/',
+      rights_evidence_url: 'https://datacatalog.worldbank.org/search/dataset/0037712/world-development-indicators',
+      redistribution_status: 'allowed_with_attribution',
+      attribution: 'World Bank, World Development Indicators',
+      release_time_semantics: 'dataset_lastupdated_upper_bound',
+      context_scope: 'national_economic_context',
+      causality_boundary: 'not_evidence_of_bri_causality',
+      indicator_provenance_boundary: 'Fixture registry remains national and non-causal.',
+    },
+    countries: [
+      { country_code: 'CHN', api_country_id: 'CN', name: 'China' },
+      { country_code: 'MMR', api_country_id: 'MM', name: 'Myanmar' },
+      { country_code: 'PAK', api_country_id: 'PK', name: 'Pakistan' },
+    ],
+    series,
+  }
+}
+
+function economicSchemaFixture() {
+  return {
+    $schema: 'https://json-schema.org/draft/2020-12/schema',
+    $id: 'https://palimpsest.info/protocol/bri-economic-observations-v1.schema.json',
+    type: 'object',
+    required: ['registry_sha256', 'observations'],
+    properties: {
+      registry_sha256: { type: 'string', pattern: '^[0-9a-f]{64}$' },
+      observations: {
+        type: 'array',
+        items: {
+          type: 'object',
+          required: ['evidence_state', 'value'],
+          properties: {
+            evidence_state: { enum: ['observed', 'forecast', 'unavailable'] },
+            value: { type: ['number', 'null'] },
+          },
+          allOf: [{
+            if: { properties: { evidence_state: { const: 'observed' } }, required: ['evidence_state'] },
+            then: { properties: { value: { type: 'number' } } },
+          }],
+          additionalProperties: true,
+        },
+      },
+    },
+    additionalProperties: true,
+  }
+}
+
+function registryInputFixture(registry = wdiRegistryFixture()) {
+  const raw = Buffer.from(`${JSON.stringify(registry, null, 2)}\n`)
+  return { data: registry, descriptor: { bytes: raw.length, sha256: sha256(raw) } }
+}
+
+function economicRow(country_code, series, year = 2020) {
+  return {
+    country_code,
+    series_id: series.series_id,
+    indicator_id: series.indicator_id,
+    unit: series.unit,
+    aggregate_level: 'country',
+    context_scope: 'national_economic_context',
+    causality_boundary: 'not_evidence_of_bri_causality',
+    period_start: `${year}-01-01`,
+    period_end: `${year}-12-31`,
+    evidence_state: 'observed',
+    obs_status: '',
+    unavailability_reason: null,
+    value: 1,
+  }
+}
+
 let artifact
 let pin
 let pinRaw
@@ -299,6 +393,55 @@ describe('Palimpsest Belt and Road parallel-context bridge', () => {
     const staleJob = pagesReceiptFixture()
     staleJob.workflow.pages_deploy_job.head_sha = 'b'.repeat(40)
     expect(() => assertPagesPublicationReceipt(staleJob)).toThrow(/exact Pages revision and run/)
+  })
+
+  it('applies the exact served economics schema before an observed-null row can be projected', () => {
+    const registryInput = registryInputFixture()
+    const economics = {
+      registry_sha256: registryInput.descriptor.sha256,
+      observations: [{ evidence_state: 'observed', value: null }],
+    }
+    const wrongIdentity = economicSchemaFixture()
+    wrongIdentity.$id = 'https://attacker.invalid/weakened.schema.json'
+    expect(() => validateEconomicInputs(economics, wrongIdentity, registryInput))
+      .toThrow(/expected metaschema-valid draft 2020-12 contract/)
+    expect(() => validateEconomicInputs(economics, economicSchemaFixture(), registryInput))
+      .toThrow(/does not satisfy its upstream JSON Schema/)
+  })
+
+  it('rejects an economics bundle pinned to stale registry bytes', () => {
+    const registryInput = registryInputFixture()
+    const economics = {
+      registry_sha256: hashFixture('0'),
+      observations: [],
+    }
+    expect(() => validateEconomicInputs(economics, economicSchemaFixture(), registryInput))
+      .toThrow(/does not match exact served registry bytes/)
+  })
+
+  it('requires every country projection to contain the exact unique served registry series set', () => {
+    const registryInput = registryInputFixture()
+    const economics = {
+      registry_sha256: registryInput.descriptor.sha256,
+      observations: [],
+    }
+    const expectedRegistry = validateEconomicInputs(economics, economicSchemaFixture(), registryInput)
+    const observations = ['CHN', 'MMR', 'PAK'].flatMap((countryCode) => (
+      registryInput.data.series.map((series) => economicRow(countryCode, series))
+    ))
+    expect(buildEconomicCoverage({ observations }, expectedRegistry).countries)
+      .toHaveLength(3)
+
+    const incomplete = observations.filter((row) => !(
+      row.country_code === 'MMR' && row.series_id === registryInput.data.series[0].series_id
+    ))
+    expect(() => buildEconomicCoverage({ observations: incomplete }, expectedRegistry))
+      .toThrow(/MMR.*exact served registry series set/)
+
+    const unregistered = structuredClone(observations)
+    unregistered[0].series_id = 'bri.context.wdi.unregistered_fixture'
+    expect(() => buildEconomicCoverage({ observations: unregistered }, expectedRegistry))
+      .toThrow(/unregistered series/)
   })
 
   it('retains all implementation states without promoting readiness into evidence', () => {

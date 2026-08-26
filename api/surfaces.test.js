@@ -15,6 +15,7 @@ import handler, { dispatch, TOOLS } from './mcp.mjs'
 import { createV1Handler } from './v1.mjs'
 import {
   PALIMPSEST_BRI_OUTPUT_SCHEMA,
+  REQUIRED_PROHIBITIONS,
   createPalimpsestBriRestSchema,
 } from '../lib/palimpsest-bri-contract.mjs'
 
@@ -216,6 +217,7 @@ describe('NarcoScope public surfaces', () => {
   it('advertises the same BRI context lane through OpenAPI and product discovery', () => {
     const openapi = JSON.parse(readFileSync('public/openapi.json', 'utf8'))
     const product = JSON.parse(readFileSync('public/product-card.json', 'utf8'))
+    const artifact = JSON.parse(readFileSync('public/data/narcoscope-palimpsest-bri-v1.json', 'utf8'))
     expect(openapi.info.version).toBe('1.2.0')
     expect(openapi.paths).toHaveProperty('/palimpsest-bri')
     expect(openapi.paths['/palimpsest-bri'].get.responses['200'].$ref)
@@ -227,5 +229,10 @@ describe('NarcoScope public surfaces', () => {
       .toBe('#/$defs/artifact')
     expect(product.access.palimpsest_bri_context).toBe('https://narcoscope.com/api/v1/palimpsest-bri')
     expect(product.boundaries.join(' ')).toContain('never enters drug-market inference')
+    expect(product.palimpsest_bri_prohibitions).toEqual(artifact.usePolicy.prohibitions)
+    expect(Object.keys(product.palimpsest_bri_prohibitions)).toEqual(REQUIRED_PROHIBITIONS)
+    expect(Object.values(product.palimpsest_bri_prohibitions)).toEqual(
+      REQUIRED_PROHIBITIONS.map(() => 'prohibited'),
+    )
   })
 })

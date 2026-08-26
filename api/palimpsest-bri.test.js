@@ -186,6 +186,60 @@ describe('verified Palimpsest BRI runtime loader', () => {
       error: /source-class counts do not sum to source readiness/,
     },
     {
+      name: 'a non-exclusive claim-class count larger than the source population',
+      mutate(artifact) {
+        artifact.claimSemantics.claimClassCounts.allegation = artifact.sourceReadiness.sourceCount + 1
+      },
+      error: /claimClassCounts\.allegation exceeds the source population/,
+    },
+    {
+      name: 'official source IDs that contradict derivable source-class counts',
+      mutate(artifact) {
+        artifact.claimSemantics.officialOrAdministrativeSourceIds.pop()
+      },
+      error: /officialOrAdministrativeSourceIds does not match/,
+    },
+    {
+      name: 'independent source IDs that contradict the authority-role count',
+      mutate(artifact) {
+        artifact.claimSemantics.independentObservationSourceIds.pop()
+      },
+      error: /independentObservationSourceIds does not match/,
+    },
+    {
+      name: 'modeled or analytical IDs outside non-exclusive count bounds',
+      mutate(artifact) {
+        artifact.claimSemantics.claimClassCounts.modeled_estimate = 0
+      },
+      error: /modeledOrAnalyticalSourceIds is inconsistent/,
+    },
+    {
+      name: 'modeled or analytical union larger than the source population',
+      mutate(artifact) {
+        const { sourceCount } = artifact.sourceReadiness
+        artifact.claimSemantics.claimClassCounts.modeled_estimate = sourceCount
+        artifact.claimSemantics.claimClassCounts.analytical_estimate = sourceCount
+        artifact.claimSemantics.modeledOrAnalyticalSourceIds = Array.from(
+          { length: sourceCount + 1 },
+          (_, index) => `review_fixture_${index}`,
+        )
+      },
+      error: /modeledOrAnalyticalSourceIds is inconsistent/,
+    },
+    {
+      name: 'repeated source identities with inconsistent target metadata',
+      mutate(artifact) {
+        const sources = artifact.targetCoverage.flatMap((area) => area.targets)
+          .flatMap((target) => target.sources)
+        const firstIndex = sources.findIndex((source, index) => (
+          sources.findIndex((candidate) => candidate.sourceId === source.sourceId) < index
+        ))
+        const repeated = sources[firstIndex]
+        repeated.rightsStatus = repeated.rightsStatus === 'attribution' ? 'public_domain' : 'attribution'
+      },
+      error: /repeats sourceId .* with inconsistent metadata/,
+    },
+    {
       name: 'unavailable reason counts that contradict unavailable years',
       mutate(artifact) {
         const indicator = artifact.economicContext.coverage.countries
@@ -215,6 +269,24 @@ describe('verified Palimpsest BRI runtime loader', () => {
         artifact.economicContext.coverage.totals.unavailableRows -= 1
       },
       error: /observedRowCount does not match indicator windows/,
+    },
+    {
+      name: 'duplicate series IDs within one country',
+      mutate(artifact) {
+        const indicators = artifact.economicContext.coverage.countries[0].indicators
+        indicators[1].seriesId = indicators[0].seriesId
+        indicators[1].indicatorId = indicators[0].indicatorId
+        indicators[1].unit = indicators[0].unit
+      },
+      error: /contains duplicate seriesId values/,
+    },
+    {
+      name: 'different same-sized series sets across countries',
+      mutate(artifact) {
+        artifact.economicContext.coverage.countries[0].indicators[0].seriesId = 'bri.context.wdi.review_fixture'
+        artifact.economicContext.coverage.totals.indicators += 1
+      },
+      error: /does not contain the exact shared series set/,
     },
   ])('fails the semantic boundary on $name despite valid JSON Schema and sidecar bytes', async ({ mutate, error }) => {
     const dataDir = await mutateArtifact(mutate)

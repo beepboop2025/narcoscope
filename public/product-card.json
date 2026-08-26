@@ -4,7 +4,12 @@
   "category": "public-interest evidence explorer",
   "headline": "Drug-market records you can inspect, cite, and challenge.",
   "description": "NarcoScope translates hard-to-read official drug-market records into maps, comparisons, plain-language explanations, and deterministic evidence analyses without turning administrative data into claims it cannot support.",
-  "audiences": ["journalists", "researchers", "policy teams", "public-interest investigators"],
+  "audiences": [
+    "journalists",
+    "researchers",
+    "policy teams",
+    "public-interest investigators"
+  ],
   "use_cases": [
     "Compare official retail-price, seizure, mortality, wastewater, and designation records.",
     "Read newsroom analyses with sentence-level citations, correction history, and explicit abstentions.",
@@ -23,7 +28,7 @@
     "Seizure changes are not treated as trafficking-volume changes without independent modalities.",
     "A designation or reported origin is not an adjudication of guilt or causal proof.",
     "A shared geography or period never establishes a political, armed-actor, trafficking, or causal relationship.",
-    "Belt and Road context never enters drug-market inference, actor classification, bilateral route inference, guilt, or political-movement classification."
+    "Belt and Road context never enters drug-market inference: drug-conflict-infrastructure causal joins, actor classification, bilateral route inference, guilt inference, political-movement classification, project attribution from national series, and tactical or navigable use are prohibited."
   ],
   "access": {
     "website": "https://narcoscope.com",
@@ -53,5 +58,14 @@
       "url": "https://myquantdoesntspeakenglish.com/"
     }
   ],
-  "pricing": "free public good"
+  "pricing": "free public good",
+  "palimpsest_bri_prohibitions": {
+    "drugConflictInfrastructureCausalJoin": "prohibited",
+    "actorClassification": "prohibited",
+    "bilateralRouteInference": "prohibited",
+    "guiltInference": "prohibited",
+    "politicalMovementClassification": "prohibited",
+    "projectAttributionFromNationalSeries": "prohibited",
+    "tacticalOrNavigableUse": "prohibited"
+  }
 }
