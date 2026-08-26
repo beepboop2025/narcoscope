@@ -12,6 +12,9 @@ export type TabId =
   | 'designations'
   | 'illicitfinance'
   | 'wildlife'
+  | 'bri'
+  | 'balochistan'
+  | 'pakistan-gwadar'
   | 'myanmar'
 
 export type LensItem = {
@@ -77,15 +80,32 @@ export const LENS_GROUPS: readonly LensGroup[] = [
   },
   {
     id: 'regions',
-    label: 'Region',
-    eyebrow: 'Deep focus',
+    label: 'BRI + regions',
+    eyebrow: 'Corridor evidence',
     items: [
-      { id: 'myanmar', label: 'Myanmar focus', shortLabel: 'Myanmar', description: 'Layer opium cultivation, conflict pressure and precursor context at province scale.' },
+      { id: 'bri', label: 'BRI and corridors', shortLabel: 'BRI & Corridors', description: 'Inspect the complete CPEC, Gwadar, CMEC, Kyaukpyu and Balochistan readiness ledger beside bounded national economics.' },
+      { id: 'balochistan', label: 'Balochistan evidence', shortLabel: 'Balochistan', description: 'Keep political economy, civic, electoral, armed, state, legal, rights and humanitarian evidence in separate lanes.' },
+      { id: 'pakistan-gwadar', label: 'Pakistan and Gwadar', shortLabel: 'Pakistan & Gwadar', description: 'Read CPEC, port, connectivity and public-service targets with Pakistan national context and visible coverage gaps.' },
+      { id: 'myanmar', label: 'Myanmar focus', shortLabel: 'Myanmar', description: 'Read CMEC and Kyaukpyu readiness beside a separate aggregate opium, conflict and precursor evidence lane.' },
     ],
   },
 ] as const
 
 export const TABS = LENS_GROUPS.flatMap((group) => group.items)
+
+/** First-class dossiers that remain visible regardless of the open research group. */
+export const PRIMARY_DOSSIER_IDS = [
+  'bri',
+  'balochistan',
+  'pakistan-gwadar',
+  'myanmar',
+] as const satisfies readonly TabId[]
+
+export const PRIMARY_DOSSIERS = PRIMARY_DOSSIER_IDS.map((id) => {
+  const item = TABS.find((candidate) => candidate.id === id)
+  if (!item) throw new Error(`Missing primary dossier navigation contract: ${id}`)
+  return item
+})
 
 export function groupForTab(tab: string): LensGroup | undefined {
   return LENS_GROUPS.find((group) => group.items.some((item) => item.id === tab))
