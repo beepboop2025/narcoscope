@@ -11,7 +11,7 @@
       "path": "scripts/bridge/palimpsest-bri-source-pin.json",
       "schemaVersion": "narcoscope.palimpsest.bri-source-pin.v1",
       "bytes": 80412,
-      "sha256": "231d6090ba75b997a871d5a00de451ffd1163f2e20f2d2223cd3d1659ba81511"
+      "sha256": "53a68e15f230d05b233329b91249a9a3c86570aa357185740b41deb2548ba851"
     },
     "schema": {
       "path": "public/data/narcoscope-palimpsest-bri-v1.schema.json",
@@ -24,21 +24,21 @@
       "verificationState": "release_receipt_validated",
       "canonicalBaseUrl": "https://palimpsest.info",
       "railwayMirrorBaseUrl": "https://palimpsest-publication-production.up.railway.app",
-      "deploymentId": "58ba1a6c-2396-492f-b7a4-508c2d06e766",
-      "sourceRevision": "029f95e082cca3899f46f60c044b8660d2b18f86",
-      "sourceTreeOid": "8f07f44a37adde9bdb6e59633e0fa20c3676a820",
-      "artifactTreeSha256": "48e1c98bac19e878d327a7079587e475360ac8d62e285a45a2241f85cda72492",
+      "deploymentId": "bee09f0a-7898-4942-a762-5bea5c17f58c",
+      "sourceRevision": "6bd18df8516e172e378de2ae1c49e503d681753c",
+      "sourceTreeOid": "11271e88b6f35a27d16556b78c15e2b540a73170",
+      "artifactTreeSha256": "85239a5451047f94cff1b26d241b041ebf586c1116a94cd1dff195f5e2f9a02c",
       "artifactManifest": {
         "schemaVersion": "palimpsest.railway-static-release.v1",
         "bytes": 7459,
-        "sha256": "5b604b707cffae64fa87e5ab838a8a1e55df4392c6ee163bed578e97868d1c9c",
+        "sha256": "e0e15bd51404c9e778abdba9487fcb7cf34bf871fcb6dbd3c4dcd6b9314039f6",
         "fileCount": 38189,
-        "totalBytes": 233458029
+        "totalBytes": 231800982
       },
-      "receiptBytes": 4451,
-      "receiptSha256": "f4373c93bebd1f36f318001d5b4670d388d3f710e43eb06dfaeb89b679643880",
-      "verifiedAt": "2026-08-26T23:39:59Z",
-      "verificationSemantics": "The exact release receipt, source commit and Git tree were validated when this pin was refreshed. This is not continuous production availability or freshness monitoring. Wire archive availability is unavailable and publication status is rights_suppressed: The reviewed publication-rights state denies redistribution of the current China wire value families, so the historical wire archive and its receipt are intentionally absent from this release. Exact published rights-status bytes are readings/china-publication-rights-latest.json (2538928 bytes, SHA-256 b55b0a8dddc0dd22c644ca4ff56ba6ac04323ba4c4f4ffc73a87a55561b9df83).",
+      "receiptBytes": 5232,
+      "receiptSha256": "327c6796310b34b5af507f7b6804cf36545b72342d3782f07a400f8efc4aab56",
+      "verifiedAt": "2026-08-27T05:30:57Z",
+      "verificationSemantics": "The exact release receipt, source commit and Git tree were validated when this pin was refreshed. This is not continuous production availability or freshness monitoring. Wire archive availability is unavailable and publication status is rights_suppressed: The reviewed publication-rights state denies redistribution of the current China wire value families, so the historical wire archive and its receipt are intentionally absent from this release. Exact published rights-status bytes are readings/china-publication-rights-latest.json (2538928 bytes, SHA-256 3cbb5cca4f1f4c9daa5d55d3bea7d15caaa9d3640377935da43ad48345a4a119).",
       "pagesPublication": {
         "verificationState": "served_resource_receipt_validated",
         "sourceRevision": "14b06772dfed6cdc736279c9ab61b444e5846598",
