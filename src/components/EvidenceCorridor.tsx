@@ -15,13 +15,13 @@ const CORRIDOR_STAGES = [
   {
     id: 'context',
     index: '02',
-    eyebrow: 'China context',
+    eyebrow: 'China + BRI context',
     title: 'Test what is visible.',
-    copy: 'Palimpsest tracks China’s information controls and publication gaps—the relevant context when precursor evidence depends on what entered the public record.',
+    copy: 'Palimpsest tracks China’s information controls, publication gaps and pinned Belt and Road coverage. Its BRI lane stays beside this record and never enters drug-market inference.',
     href: 'https://palimpsest.info/?ref=narcoscope_corridor',
     cta: 'Open Palimpsest',
-    auxHref: 'https://t.me/palimpsest_watch_bot?start=narcoscope_corridor',
-    auxLabel: 'Ask @palimpsest_watch_bot',
+    auxHref: '/api/v1/palimpsest-bri',
+    auxLabel: 'Inspect bounded BRI context',
   },
   {
     id: 'bot',
@@ -83,7 +83,7 @@ export default function EvidenceCorridor({ onOpenNewsroom }: { onOpenNewsroom: (
           <h2 id="corridor-title">Don&rsquo;t stop at the chart.<br /><em>Follow the claim.</em></h2>
         </div>
         <p>
-          Move from the underlying record to the relevant China context, then choose
+          Move from the underlying record to separately attributed China and BRI context, then choose
           a personal bot or the reviewed public signal. Every step preserves the evidence boundary.
         </p>
       </header>

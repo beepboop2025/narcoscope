@@ -1,0 +1,802 @@
+import { createHash } from 'node:crypto'
+import { execFile as execFileCallback } from 'node:child_process'
+import fs from 'node:fs/promises'
+import os from 'node:os'
+import path from 'node:path'
+import { promisify } from 'node:util'
+import { fileURLToPath } from 'node:url'
+
+import { beforeAll, describe, expect, it } from 'vitest'
+
+import {
+  BRI_ARTIFACT_FILE,
+  BRI_HASH_FILE,
+  BRI_PIN_SCHEMA_VERSION,
+  BRI_SCHEMA_FILE,
+  BRI_SCHEMA_VERSION,
+  assertPalimpsestBriBoundary,
+  assertPalimpsestBriPin,
+  assertPagesPublicationReceipt,
+  assertRailwayFleetReleaseReceipt,
+  assertRailwayReleaseManifest,
+  buildEconomicCoverage,
+  buildPalimpsestBriArtifact,
+  generatePalimpsestBriArtifact,
+  readTrackedJsonAtCommit,
+  serializePalimpsestBriArtifact,
+  validateEconomicInputs,
+} from './build-palimpsest-bri.mjs'
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
+const publicDir = path.join(root, 'public/data')
+const pinPath = path.join(root, 'scripts/bridge/palimpsest-bri-source-pin.json')
+const sha256 = (value) => createHash('sha256').update(value).digest('hex')
+const execFile = promisify(execFileCallback)
+const commitFixture = 'a'.repeat(40)
+const hashFixture = (character) => character.repeat(64)
+
+function railwayReceiptFixture(schemaVersion = 'palimpsest.railway-fleet-deployment-receipt.v1') {
+  const receipt = {
+    schema_version: schemaVersion,
+    generated_at: '2026-08-26T17:58:17Z',
+    deployment_transport: 'railway-cli-local-upload',
+    github_required: false,
+    workspace: {},
+    services: {
+      palimpsest: {
+        project_id: 'project',
+        service_id: 'service',
+        environment_id: 'environment',
+        deployment_id: 'deployment',
+        deployment_status: 'SUCCESS',
+        image_digest: `sha256:${hashFixture('b')}`,
+        source_commit: commitFixture,
+        artifact_tree_sha256: hashFixture('c'),
+        artifact_file_count: 10,
+        artifact_total_bytes: 100,
+        railway_url: 'https://palimpsest-production.up.railway.app',
+        health_status: 'ready',
+        verification: {
+          test_count: 1,
+          critical_files_byte_identical: 9,
+          release_manifest_byte_identical: true,
+          key_routes_http_200: 1,
+          hidden_source_http_404: true,
+          successful_access_log_level: 'info',
+          successful_access_log_error_match_count: 0,
+          wdi_bundle_sha256: hashFixture('e'),
+        },
+        custom_domains: { 'palimpsest.info': 'pending', 'www.palimpsest.info': 'pending' },
+      },
+    },
+    dns_cutover: {},
+    stateful_migration: {},
+    operations: {},
+  }
+  if (schemaVersion === 'palimpsest.railway-fleet-deployment-receipt.v1') {
+    receipt.services.palimpsest.wire_archive_sha256 = hashFixture('d')
+  } else {
+    receipt.services.palimpsest.manifest_sha256 = hashFixture('6')
+    receipt.services.palimpsest.verification.critical_files_byte_identical = 10
+    receipt.services.palimpsest.wire_archive = {
+      availability: 'unavailable',
+      publication_status: 'rights_suppressed',
+      reason: 'The reviewed publication-rights state does not permit redistribution of the wire archive.',
+      rights_status_json: {
+        path: 'readings/china-publication-rights-latest.json',
+        bytes: 321,
+        sha256: hashFixture('d'),
+      },
+    }
+  }
+  return receipt
+}
+
+function pagesReceiptFixture() {
+  const runId = 11
+  const capturedAt = '2026-08-26T15:55:34Z'
+  const job = (id, name) => ({
+    api_url: `https://api.github.com/jobs/${id}`,
+    conclusion: 'success',
+    head_sha: commitFixture,
+    html_url: `https://github.com/jobs/${id}`,
+    id,
+    name,
+    run_attempt: 1,
+    run_id: runId,
+  })
+  const resources = [
+    ['config/bri_wdi_series.json', hashFixture('1')],
+    ['protocol/bri-economic-observations-v1.schema.json', hashFixture('2')],
+    ['readings/bri-economic-observations-latest.json', hashFixture('3')],
+  ].map(([resourcePath, hash]) => ({
+    bytes: 10,
+    http_status: 200,
+    path: resourcePath,
+    sha256: hash,
+    url: `https://palimpsest.info/${resourcePath}?sha256=${hash}`,
+  }))
+  return {
+    archived_size_receipt: {
+      archive_bytes: 10,
+      artifact_api_url: 'https://api.github.com/artifacts/2',
+      artifact_id: 2,
+      artifact_name: `pages-artifact-size-${commitFixture}`,
+      bytes: 10,
+      checked_in_path: `.well-known/receipts/pages-artifact-size-${commitFixture}.json`,
+      digest_sha256: hashFixture('4'),
+      parsed: {
+        artifact_bytes: 60,
+        artifact_name: 'github-pages/artifact.tar',
+        artifact_sha256: hashFixture('5'),
+        headroom_bytes: 40,
+        limit_bytes: 100,
+        publication_sha: commitFixture,
+        schema_version: 'palimpsest.pages-artifact-size.v1',
+        status: 'within-limit',
+      },
+      public_url: 'https://palimpsest.info/size.json',
+      sha256: hashFixture('6'),
+      workflow_run_head_sha: commitFixture,
+      workflow_run_id: runId,
+    },
+    collection_id: hashFixture('7'),
+    dataset_id: 'bri-economic-context-world-bank-wdi',
+    deployment: {
+      deployed_at: '2026-08-26T15:53:46Z',
+      deployment_api_url: 'https://api.github.com/deployments/1',
+      deployment_id: 1,
+      environment: 'github-pages',
+      environment_url: 'https://palimpsest.info/',
+      log_url: 'https://github.com/jobs/21',
+      ref: 'main',
+      sha: commitFixture,
+      state_at_verification: 'success',
+      success_status_api_url: 'https://api.github.com/statuses/1',
+      success_status_deployment_url: 'https://api.github.com/deployments/1',
+      success_status_id: 1,
+    },
+    pages_artifact: {
+      api_url: 'https://api.github.com/artifacts/1',
+      archive_bytes: 10,
+      captured_at: capturedAt,
+      created_at: '2026-08-26T15:52:46Z',
+      digest_sha256: hashFixture('8'),
+      expires_at: '2026-08-27T15:52:40Z',
+      id: 1,
+      name: 'github-pages',
+      workflow_run_head_sha: commitFixture,
+      workflow_run_id: runId,
+    },
+    schema_version: 'palimpsest.bri-wdi-pages-publication.v1',
+    served_verification: { method: 'cache_busted_https_get', resources, verified_at: capturedAt },
+    source_id: 'world_bank_wdi',
+    status: 'production_verified',
+    workflow: {
+      branch: 'main',
+      conclusion: 'success',
+      event: 'repository_dispatch',
+      pages_deploy_job: job(21, 'Deploy exact complete Pages edition'),
+      pages_deploy_job_id: 21,
+      pages_package_job: job(22, 'Package exact complete Pages edition'),
+      pages_package_job_id: 22,
+      publication_sha: commitFixture,
+      repository: 'beepboop2025/palimpsest',
+      run_api_url: 'https://api.github.com/runs/11',
+      run_attempt: 1,
+      run_id: runId,
+      run_url: 'https://github.com/runs/11',
+      workflow_path: '.github/workflows/tests.yml',
+    },
+  }
+}
+
+function railwayManifestFixture(release, { additiveCriticalFileCount = 0 } = {}) {
+  const criticalPaths = [
+    '.well-known/ai-catalog.json',
+    'belt-and-road/index.html',
+    'index.html',
+    'openapi.json',
+    'protocol/bri-economic-observations-v1.schema.json',
+    'protocol/bri-wdi-pages-publication-v1.schema.json',
+    'readings/belt-and-road-observatory-latest.json',
+    'readings/bri-economic-observations-latest.json',
+    'server.json',
+  ]
+  const criticalFiles = Object.fromEntries(criticalPaths.map((criticalPath) => [
+    criticalPath,
+    { bytes: 1, sha256: hashFixture('9') },
+  ]))
+  if (release.wire_archive) {
+    const rightsStatus = release.wire_archive.rights_status_json
+    criticalFiles[rightsStatus.path] = { bytes: rightsStatus.bytes, sha256: rightsStatus.sha256 }
+  }
+  for (let index = 0; index < additiveCriticalFileCount; index += 1) {
+    criticalFiles[`additional/critical-${String(index).padStart(2, '0')}.json`] = {
+      bytes: index + 1,
+      sha256: hashFixture((index % 10).toString()),
+    }
+  }
+  return {
+    built_at: '2026-08-26T17:53:14Z',
+    critical_files: criticalFiles,
+    deployment_source: 'local-git-archive',
+    file_count: release.artifact_file_count,
+    github_required: false,
+    schema_version: 'palimpsest.railway-static-release.v1',
+    source_commit: release.source_commit,
+    state: 'artifact_ready',
+    total_bytes: release.artifact_total_bytes,
+    tree_sha256: release.artifact_tree_sha256,
+  }
+}
+
+function railwayManifestDescriptorFixture(release) {
+  return { bytes: 1000, sha256: release.manifest_sha256 }
+}
+
+function wdiRegistryFixture() {
+  const series = [
+    ['bri.context.wdi.gdp_real_growth', 'NY.GDP.MKTP.KD.ZG', 'annual percent'],
+    ['bri.context.wdi.population', 'SP.POP.TOTL', 'people'],
+  ].map(([series_id, indicator_id, unit]) => ({
+    indicator_id,
+    series_id,
+    source_title: indicator_id,
+    name: series_id,
+    unit,
+    topic: 'fixture',
+  }))
+  return {
+    schema_version: 'palimpsest.bri-wdi-series.v1',
+    dataset: {
+      source_id: 'world_bank_wdi',
+      source_number: '2',
+      name: 'World Development Indicators',
+      publisher: 'World Bank',
+      api_base: 'https://api.worldbank.org/v2',
+      catalog_url: 'https://datacatalog.worldbank.org/search/dataset/0037712/world-development-indicators',
+      license: 'CC-BY-4.0',
+      license_url: 'https://creativecommons.org/licenses/by/4.0/',
+      rights_evidence_url: 'https://datacatalog.worldbank.org/search/dataset/0037712/world-development-indicators',
+      redistribution_status: 'allowed_with_attribution',
+      attribution: 'World Bank, World Development Indicators',
+      release_time_semantics: 'dataset_lastupdated_upper_bound',
+      context_scope: 'national_economic_context',
+      causality_boundary: 'not_evidence_of_bri_causality',
+      indicator_provenance_boundary: 'Fixture registry remains national and non-causal.',
+    },
+    countries: [
+      { country_code: 'CHN', api_country_id: 'CN', name: 'China' },
+      { country_code: 'MMR', api_country_id: 'MM', name: 'Myanmar' },
+      { country_code: 'PAK', api_country_id: 'PK', name: 'Pakistan' },
+    ],
+    series,
+  }
+}
+
+function economicSchemaFixture() {
+  return {
+    $schema: 'https://json-schema.org/draft/2020-12/schema',
+    $id: 'https://palimpsest.info/protocol/bri-economic-observations-v1.schema.json',
+    type: 'object',
+    required: ['registry_sha256', 'observations'],
+    properties: {
+      registry_sha256: { type: 'string', pattern: '^[0-9a-f]{64}$' },
+      observations: {
+        type: 'array',
+        items: {
+          type: 'object',
+          required: ['evidence_state', 'value'],
+          properties: {
+            evidence_state: { enum: ['observed', 'forecast', 'unavailable'] },
+            value: { type: ['number', 'null'] },
+          },
+          allOf: [{
+            if: { properties: { evidence_state: { const: 'observed' } }, required: ['evidence_state'] },
+            then: { properties: { value: { type: 'number' } } },
+          }],
+          additionalProperties: true,
+        },
+      },
+    },
+    additionalProperties: true,
+  }
+}
+
+function registryInputFixture(registry = wdiRegistryFixture()) {
+  const raw = Buffer.from(`${JSON.stringify(registry, null, 2)}\n`)
+  return { data: registry, descriptor: { bytes: raw.length, sha256: sha256(raw) } }
+}
+
+function economicRow(country_code, series, year = 2020) {
+  return {
+    country_code,
+    series_id: series.series_id,
+    indicator_id: series.indicator_id,
+    unit: series.unit,
+    aggregate_level: 'country',
+    context_scope: 'national_economic_context',
+    causality_boundary: 'not_evidence_of_bri_causality',
+    period_start: `${year}-01-01`,
+    period_end: `${year}-12-31`,
+    evidence_state: 'observed',
+    obs_status: '',
+    unavailability_reason: null,
+    value: 1,
+  }
+}
+
+let artifact
+let pin
+let pinRaw
+let schemaRaw
+
+beforeAll(async () => {
+  ;[pinRaw, schemaRaw] = await Promise.all([
+    fs.readFile(pinPath),
+    fs.readFile(path.join(publicDir, BRI_SCHEMA_FILE)),
+  ])
+  pin = JSON.parse(pinRaw.toString('utf8'))
+  artifact = buildPalimpsestBriArtifact(pin, { pinRaw, schemaRaw })
+})
+
+const build = (value = pin, options = {}) => buildPalimpsestBriArtifact(value, {
+  pinRaw: options.pinRaw ?? Buffer.from(`${JSON.stringify(value, null, 2)}\n`),
+  schemaRaw: options.schemaRaw ?? schemaRaw,
+})
+
+describe('Palimpsest Belt and Road parallel-context bridge', () => {
+  it('is deterministic and byte-identical to the checked-in artifact and hash sidecar', async () => {
+    const first = serializePalimpsestBriArtifact(build())
+    const second = serializePalimpsestBriArtifact(build())
+    const checkedIn = await fs.readFile(path.join(publicDir, BRI_ARTIFACT_FILE), 'utf8')
+    const hashSidecar = await fs.readFile(path.join(publicDir, BRI_HASH_FILE), 'utf8')
+    expect(first).toBe(second)
+    expect(checkedIn).toBe(first)
+    expect(hashSidecar).toBe(`${sha256(first)}  ${BRI_ARTIFACT_FILE}\n`)
+    expect(Buffer.byteLength(first)).toBeLessThan(100_000)
+  })
+
+  it('binds the artifact, refresh pin, schema, and exact release descriptors', async () => {
+    const schema = JSON.parse(await fs.readFile(path.join(publicDir, BRI_SCHEMA_FILE), 'utf8'))
+    expect(pin.schemaVersion).toBe(BRI_PIN_SCHEMA_VERSION)
+    expect(artifact.schemaVersion).toBe(BRI_SCHEMA_VERSION)
+    expect(schema.properties.schemaVersion.const).toBe(BRI_SCHEMA_VERSION)
+    expect(artifact.provenance.sourcePin.sha256).toMatch(/^[0-9a-f]{64}$/)
+    expect(artifact.provenance.release).toMatchObject({
+      verificationState: 'release_receipt_validated',
+      canonicalBaseUrl: 'https://palimpsest.info',
+    })
+    expect(artifact.provenance.release.railwayMirrorBaseUrl).toMatch(/^https:\/\/.*\.railway\.app$/)
+    expect(artifact.provenance.release.sourceRevision).toMatch(/^[0-9a-f]{40}$/)
+    expect(artifact.provenance.release.artifactTreeSha256).toMatch(/^[0-9a-f]{64}$/)
+    expect(artifact.provenance.release.sourceTreeOid).toMatch(/^[0-9a-f]{40}$/)
+    expect(artifact.provenance.sourcePin).toMatchObject({
+      bytes: pinRaw.length,
+      sha256: sha256(pinRaw),
+    })
+    expect(artifact.provenance.schema).toMatchObject({
+      bytes: schemaRaw.length,
+      sha256: sha256(schemaRaw),
+    })
+    expect(artifact.provenance.sourceArtifacts.economics.sha256)
+      .toBe(pin.sourceArtifacts.economics.sha256)
+  })
+
+  it('keeps v1 hash-only receipts backward compatible and validates v2 rights suppression', () => {
+    const receipt = railwayReceiptFixture()
+    const v1Validation = assertRailwayFleetReleaseReceipt(receipt)
+    const release = v1Validation.release
+    expect(v1Validation.wireArchive).toEqual({
+      verificationState: 'legacy_archive_hash_validated',
+      sha256: hashFixture('d'),
+    })
+    expect(() => assertRailwayReleaseManifest(railwayManifestFixture(release), release)).not.toThrow()
+    const missingLegacyHash = railwayReceiptFixture()
+    delete missingLegacyHash.services.palimpsest.wire_archive_sha256
+    expect(() => assertRailwayFleetReleaseReceipt(missingLegacyHash)).toThrow(/wire_archive_sha256/)
+
+    const v2 = railwayReceiptFixture('palimpsest.railway-fleet-deployment-receipt.v2')
+    v2.services.palimpsest.verification.critical_files_byte_identical = 45
+    v2.receipt_extension = { future: true }
+    v2.services.palimpsest.release_extension = 'retained but not trusted'
+    expect(assertRailwayFleetReleaseReceipt(v2).wireArchive).toEqual({
+      verificationState: 'rights_suppressed_status_validated',
+      availability: 'unavailable',
+      publicationStatus: 'rights_suppressed',
+      reason: 'The reviewed publication-rights state does not permit redistribution of the wire archive.',
+      rightsStatusJson: {
+        path: 'readings/china-publication-rights-latest.json',
+        bytes: 321,
+        sha256: hashFixture('d'),
+      },
+    })
+    const v2Release = assertRailwayFleetReleaseReceipt(v2).release
+    expect(() => assertRailwayReleaseManifest(
+      railwayManifestFixture(v2Release, { additiveCriticalFileCount: 35 }),
+      v2Release,
+      railwayManifestDescriptorFixture(v2Release),
+    )).not.toThrow()
+
+    const weakened = railwayReceiptFixture()
+    weakened.services.palimpsest.verification.release_manifest_byte_identical = false
+    expect(() => assertRailwayFleetReleaseReceipt(weakened)).toThrow(/every release-verification gate/)
+
+    const unknownMajor = railwayReceiptFixture('palimpsest.railway-fleet-deployment-receipt.v3')
+    expect(() => assertRailwayFleetReleaseReceipt(unknownMajor)).toThrow(/unsupported Railway receipt schema/)
+
+    const wrongTree = railwayManifestFixture(release)
+    wrongTree.tree_sha256 = hashFixture('f')
+    expect(() => assertRailwayReleaseManifest(wrongTree, release)).toThrow(/same commit and artifact tree/)
+  })
+
+  it('rejects ambiguous or weak v2 wire archive states', () => {
+    const missing = railwayReceiptFixture('palimpsest.railway-fleet-deployment-receipt.v2')
+    delete missing.services.palimpsest.wire_archive
+    expect(() => assertRailwayFleetReleaseReceipt(missing)).toThrow(/wire_archive/)
+
+    const missingManifestHash = railwayReceiptFixture('palimpsest.railway-fleet-deployment-receipt.v2')
+    delete missingManifestHash.services.palimpsest.manifest_sha256
+    expect(() => assertRailwayFleetReleaseReceipt(missingManifestHash)).toThrow(/manifest_sha256/)
+
+    for (const [field, value] of [
+      ['availability', 'available'],
+      ['publication_status', 'published'],
+      ['reason', '   '],
+    ]) {
+      const weakened = railwayReceiptFixture('palimpsest.railway-fleet-deployment-receipt.v2')
+      weakened.services.palimpsest.wire_archive[field] = value
+      expect(() => assertRailwayFleetReleaseReceipt(weakened), field)
+        .toThrow(/unavailable rights_suppressed|non-empty string/)
+    }
+
+    for (const field of ['path', 'bytes', 'sha256']) {
+      const weakened = railwayReceiptFixture('palimpsest.railway-fleet-deployment-receipt.v2')
+      delete weakened.services.palimpsest.wire_archive.rights_status_json[field]
+      expect(() => assertRailwayFleetReleaseReceipt(weakened), field)
+        .toThrow(/rights_status_json.*missing required fields/)
+    }
+
+    const wrongPath = railwayReceiptFixture('palimpsest.railway-fleet-deployment-receipt.v2')
+    wrongPath.services.palimpsest.wire_archive.rights_status_json.path = 'news/wire/analysis-revisions.tar.xz'
+    expect(() => assertRailwayFleetReleaseReceipt(wrongPath)).toThrow(/published China rights-status JSON/)
+
+    const mixed = railwayReceiptFixture('palimpsest.railway-fleet-deployment-receipt.v2')
+    mixed.services.palimpsest.wire_archive_sha256 = hashFixture('f')
+    expect(() => assertRailwayFleetReleaseReceipt(mixed)).toThrow(/must not mix a wire_archive_sha256/)
+  })
+
+  it('validates additive and rights-staged manifest descriptors while retaining core paths', () => {
+    const receipt = railwayReceiptFixture('palimpsest.railway-fleet-deployment-receipt.v2')
+    receipt.services.palimpsest.verification.critical_files_byte_identical = 45
+    const release = assertRailwayFleetReleaseReceipt(receipt).release
+    const manifest = railwayManifestFixture(release, { additiveCriticalFileCount: 35 })
+    const manifestDescriptor = railwayManifestDescriptorFixture(release)
+    expect(Object.keys(manifest.critical_files)).toHaveLength(45)
+    manifest.critical_files['openapi.json'] = { bytes: 1567, sha256: hashFixture('8') }
+    expect(() => assertRailwayReleaseManifest(manifest, release, manifestDescriptor)).not.toThrow()
+
+    const wrongManifestDescriptor = { ...manifestDescriptor, sha256: hashFixture('f') }
+    expect(() => assertRailwayReleaseManifest(manifest, release, wrongManifestDescriptor))
+      .toThrow(/does not bind the exact release manifest bytes/)
+
+    const missingStagedOpenapi = structuredClone(manifest)
+    delete missingStagedOpenapi.critical_files['openapi.json']
+    expect(() => assertRailwayReleaseManifest(missingStagedOpenapi, release, manifestDescriptor))
+      .toThrow(/missing required fields: openapi\.json/)
+
+    const malformedAdditive = structuredClone(manifest)
+    malformedAdditive.critical_files['additional/critical-00.json'].sha256 = 'not-a-sha256'
+    expect(() => assertRailwayReleaseManifest(malformedAdditive, release, manifestDescriptor))
+      .toThrow(/additional\/critical-00\.json\.sha256/)
+
+    const mismatchedRights = structuredClone(manifest)
+    mismatchedRights.critical_files['readings/china-publication-rights-latest.json'].bytes += 1
+    expect(() => assertRailwayReleaseManifest(mismatchedRights, release, manifestDescriptor))
+      .toThrow(/rights-status descriptor does not match/)
+
+    const missingRights = structuredClone(manifest)
+    delete missingRights.critical_files['readings/china-publication-rights-latest.json']
+    expect(() => assertRailwayReleaseManifest(missingRights, release, manifestDescriptor))
+      .toThrow(/rights-status descriptor does not match/)
+
+    const wrongCountReceipt = railwayReceiptFixture('palimpsest.railway-fleet-deployment-receipt.v2')
+    wrongCountReceipt.services.palimpsest.verification.critical_files_byte_identical = 44
+    const wrongCountRelease = assertRailwayFleetReleaseReceipt(wrongCountReceipt).release
+    expect(() => assertRailwayReleaseManifest(
+      railwayManifestFixture(wrongCountRelease, { additiveCriticalFileCount: 35 }),
+      wrongCountRelease,
+      railwayManifestDescriptorFixture(wrongCountRelease),
+    )).toThrow(/critical-files verification count does not match/)
+  })
+
+  it('fully validates Pages receipt identity and the exact served-resource set', () => {
+    const receipt = pagesReceiptFixture()
+    expect(assertPagesPublicationReceipt(receipt).resources.map((item) => item.path)).toEqual([
+      'config/bri_wdi_series.json',
+      'protocol/bri-economic-observations-v1.schema.json',
+      'readings/bri-economic-observations-latest.json',
+    ])
+
+    const missing = pagesReceiptFixture()
+    missing.served_verification.resources.pop()
+    expect(() => assertPagesPublicationReceipt(missing)).toThrow(/exactly three served-resource entries/)
+
+    const forged = pagesReceiptFixture()
+    forged.served_verification.resources[0].url = 'https://palimpsest.info/config/bri_wdi_series.json'
+    expect(() => assertPagesPublicationReceipt(forged)).toThrow(/not exact and cache-busted/)
+
+    const staleJob = pagesReceiptFixture()
+    staleJob.workflow.pages_deploy_job.head_sha = 'b'.repeat(40)
+    expect(() => assertPagesPublicationReceipt(staleJob)).toThrow(/exact Pages revision and run/)
+  })
+
+  it('applies the exact served economics schema before an observed-null row can be projected', () => {
+    const registryInput = registryInputFixture()
+    const economics = {
+      registry_sha256: registryInput.descriptor.sha256,
+      observations: [{ evidence_state: 'observed', value: null }],
+    }
+    const wrongIdentity = economicSchemaFixture()
+    wrongIdentity.$id = 'https://attacker.invalid/weakened.schema.json'
+    expect(() => validateEconomicInputs(economics, wrongIdentity, registryInput))
+      .toThrow(/expected metaschema-valid draft 2020-12 contract/)
+    expect(() => validateEconomicInputs(economics, economicSchemaFixture(), registryInput))
+      .toThrow(/does not satisfy its upstream JSON Schema/)
+  })
+
+  it('rejects an economics bundle pinned to stale registry bytes', () => {
+    const registryInput = registryInputFixture()
+    const economics = {
+      registry_sha256: hashFixture('0'),
+      observations: [],
+    }
+    expect(() => validateEconomicInputs(economics, economicSchemaFixture(), registryInput))
+      .toThrow(/does not match exact served registry bytes/)
+  })
+
+  it('requires every country projection to contain the exact unique served registry series set', () => {
+    const registryInput = registryInputFixture()
+    const economics = {
+      registry_sha256: registryInput.descriptor.sha256,
+      observations: [],
+    }
+    const expectedRegistry = validateEconomicInputs(economics, economicSchemaFixture(), registryInput)
+    const observations = ['CHN', 'MMR', 'PAK'].flatMap((countryCode) => (
+      registryInput.data.series.map((series) => economicRow(countryCode, series))
+    ))
+    expect(buildEconomicCoverage({ observations }, expectedRegistry).countries)
+      .toHaveLength(3)
+
+    const incomplete = observations.filter((row) => !(
+      row.country_code === 'MMR' && row.series_id === registryInput.data.series[0].series_id
+    ))
+    expect(() => buildEconomicCoverage({ observations: incomplete }, expectedRegistry))
+      .toThrow(/MMR.*exact served registry series set/)
+
+    const unregistered = structuredClone(observations)
+    unregistered[0].series_id = 'bri.context.wdi.unregistered_fixture'
+    expect(() => buildEconomicCoverage({ observations: unregistered }, expectedRegistry))
+      .toThrow(/unregistered series/)
+  })
+
+  it('retains all implementation states without promoting readiness into evidence', () => {
+    expect(artifact.sourceReadiness).toEqual(pin.sourceSnapshot.readiness)
+    expect(Object.keys(artifact.sourceReadiness.implementationStates)).toEqual([
+      'adapter_ready', 'blocked', 'link_only', 'live', 'planned',
+    ])
+    expect(Object.values(artifact.sourceReadiness.implementationStates)
+      .reduce((total, count) => total + count, 0)).toBe(artifact.sourceReadiness.sourceCount)
+    expect(artifact.sourceReadiness.buildReadySourceCount).toBe(
+      artifact.sourceReadiness.implementationStates.adapter_ready
+        + artifact.sourceReadiness.implementationStates.live,
+    )
+    const targets = Object.fromEntries(artifact.targetCoverage.flatMap((area) => (
+      area.targets.map((target) => [target.targetId, target])
+    )))
+    expect(Object.keys(targets).sort()).toEqual([
+      'balochistan_movement_history',
+      'balochistan_resources_revenue',
+      'cmec_portfolio',
+      'cpec_portfolio',
+      'gwadar_connectivity',
+      'gwadar_port_free_zone',
+      'gwadar_public_services',
+      'kyaukpyu_port_sez',
+    ])
+    for (const target of Object.values(targets)) {
+      expect(target.evidenceStatus).toMatch(/^[a-z0-9_]+$/)
+      expect(Object.values(target.sourceReadiness.implementationStates)
+        .reduce((total, count) => total + count, 0)).toBe(target.sourceReadiness.sourceCount)
+      expect(target.sourceReadiness.buildReadySourceCount).toBe(
+        target.sources.filter((source) => ['adapter_ready', 'live'].includes(source.implementationState)).length,
+      )
+    }
+  })
+
+  it('preserves official, independent, and modeled claim semantics as non-exclusive classes', () => {
+    expect(artifact.claimSemantics.classificationRule).toContain('separate, non-exclusive')
+    expect(Object.values(artifact.claimSemantics.sourceClassCounts)
+      .reduce((total, count) => total + count, 0)).toBe(artifact.sourceReadiness.sourceCount)
+    expect(artifact.claimSemantics.authorityRoleCounts).toHaveProperty('independent_observation')
+    expect(artifact.claimSemantics.claimClassCounts).toHaveProperty('modeled_estimate')
+    expect(artifact.claimSemantics.officialOrAdministrativeSourceIds).toContain('cpec_project_portal')
+    expect(artifact.claimSemantics.independentObservationSourceIds).toContain('world_bank_wdi')
+    expect(artifact.claimSemantics.modeledOrAnalyticalSourceIds).toContain('world_bank_wdi')
+  })
+
+  it('publishes only country-indicator-year coverage and preserves unavailable rows', () => {
+    const totals = artifact.economicContext.coverage.totals
+    expect(totals.countries).toBe(3)
+    expect(totals.indicators).toBe(18)
+    expect(totals.sourceRows).toBe(totals.observedRows + totals.forecastRows + totals.unavailableRows)
+    expect(artifact.economicContext.coverage.countries.map((country) => country.countryCode))
+      .toEqual(['CHN', 'MMR', 'PAK'])
+    for (const country of artifact.economicContext.coverage.countries) {
+      expect(country.indicatorCount).toBe(totals.indicators)
+      expect(country.observedRowCount + country.forecastRowCount + country.unavailableRowCount)
+        .toBe(country.sourceRowCount)
+      for (const indicator of country.indicators) {
+        expect(indicator.annualCoverage.fromYear).toBeLessThanOrEqual(indicator.annualCoverage.toYear)
+        expect(indicator.annualCoverage.yearCount).toBeGreaterThan(0)
+        expect(indicator.observed.yearCount + indicator.forecast.yearCount + indicator.unavailable.yearCount)
+          .toBe(indicator.sourceRowCount)
+      }
+    }
+    expect(JSON.stringify(artifact)).not.toMatch(/"(?:observations|value|latitude|longitude|coordinates)":/)
+  })
+
+  it('makes every prohibited drug-conflict-infrastructure inference machine-readable', () => {
+    expect(artifact.usePolicy).toMatchObject({
+      lane: 'parallel_context_only',
+      crossLaneJoinPolicy: 'prohibited',
+      prohibitions: {
+        drugConflictInfrastructureCausalJoin: 'prohibited',
+        actorClassification: 'prohibited',
+        bilateralRouteInference: 'prohibited',
+        guiltInference: 'prohibited',
+        politicalMovementClassification: 'prohibited',
+        projectAttributionFromNationalSeries: 'prohibited',
+        tacticalOrNavigableUse: 'prohibited',
+      },
+    })
+    expect(artifact.limitations.join(' ')).toContain('No person, organization, community, party, movement or armed actor is classified')
+    expect(() => assertPalimpsestBriBoundary(artifact)).not.toThrow()
+  })
+
+  it('fails closed if a consumer weakens the join policy or injects row-level values', () => {
+    const weakened = structuredClone(artifact)
+    weakened.usePolicy.crossLaneJoinPolicy = 'country_and_time'
+    expect(() => assertPalimpsestBriBoundary(weakened)).toThrow(/cross-lane joins prohibited/)
+
+    const detailed = structuredClone(pin)
+    detailed.economicSnapshot.coverage.countries[0].indicators[0].value = 123
+    expect(() => assertPalimpsestBriPin(detailed)).toThrow(/unknown fields|forbidden detail fields/)
+  })
+
+  it('rejects every weakened prohibition, including project attribution and tactical use', () => {
+    const keys = [
+      'drugConflictInfrastructureCausalJoin',
+      'actorClassification',
+      'bilateralRouteInference',
+      'guiltInference',
+      'politicalMovementClassification',
+      'projectAttributionFromNationalSeries',
+      'tacticalOrNavigableUse',
+    ]
+    expect(Object.keys(artifact.usePolicy.prohibitions)).toEqual(keys)
+    for (const key of keys) {
+      const weakened = structuredClone(artifact)
+      weakened.usePolicy.prohibitions[key] = 'allowed'
+      expect(() => assertPalimpsestBriBoundary(weakened), key).toThrow(/required inference prohibition/)
+    }
+  })
+
+  it('rejects unknown fields exhaustively instead of relying on an exact-name denylist', () => {
+    const injectedPin = structuredClone(pin)
+    injectedPin.economicSnapshot.actors = [{ name: 'not publishable' }]
+    injectedPin.economicSnapshot.coverage.countries[0].geometry = { type: 'Point' }
+    injectedPin.sourceSnapshot.targetCoverage[0].targets[0].tacticalDetails = ['not publishable']
+    expect(() => assertPalimpsestBriPin(injectedPin)).toThrow(/unknown fields/)
+    expect(() => build(injectedPin)).toThrow(/unknown fields/)
+
+    const injectedArtifact = structuredClone(artifact)
+    injectedArtifact.targetCoverage[0].targets[0].sources[0].actors = []
+    expect(() => assertPalimpsestBriBoundary(injectedArtifact)).toThrow(/unknown fields/)
+  })
+
+  it('hashes the exact raw pin and schema bytes rather than reserialized objects', () => {
+    const whitespacePin = Buffer.concat([pinRaw, Buffer.from('\n')])
+    const fromWhitespacePin = build(pin, { pinRaw: whitespacePin })
+    expect(fromWhitespacePin.provenance.sourcePin.sha256).toBe(sha256(whitespacePin))
+    expect(fromWhitespacePin.provenance.sourcePin.sha256).not.toBe(artifact.provenance.sourcePin.sha256)
+
+    const whitespaceSchema = Buffer.concat([schemaRaw, Buffer.from('\n')])
+    const fromWhitespaceSchema = build(pin, { schemaRaw: whitespaceSchema })
+    expect(fromWhitespaceSchema.provenance.schema.sha256).toBe(sha256(whitespaceSchema))
+    expect(fromWhitespaceSchema.provenance.schema.sha256).not.toBe(artifact.provenance.schema.sha256)
+  })
+
+  it('makes deterministic check cover pin, schema, artifact, and sidecar bytes', async () => {
+    const fixture = await fs.mkdtemp(path.join(os.tmpdir(), 'narcoscope-bri-check-'))
+    const fixturePin = path.join(fixture, 'pin.json')
+    const fixtureSchema = path.join(fixture, BRI_SCHEMA_FILE)
+    const fixtureArtifact = path.join(fixture, BRI_ARTIFACT_FILE)
+    const fixtureHash = path.join(fixture, BRI_HASH_FILE)
+    await Promise.all([
+      fs.writeFile(fixturePin, pinRaw),
+      fs.writeFile(fixtureSchema, schemaRaw),
+      fs.copyFile(path.join(publicDir, BRI_ARTIFACT_FILE), fixtureArtifact),
+      fs.copyFile(path.join(publicDir, BRI_HASH_FILE), fixtureHash),
+    ])
+    await expect(generatePalimpsestBriArtifact({
+      pinPath: fixturePin,
+      schemaPath: fixtureSchema,
+      output: fixtureArtifact,
+      hashOutput: fixtureHash,
+      check: true,
+    })).resolves.toMatchObject({ sha256: sha256(await fs.readFile(fixtureArtifact)) })
+
+    await fs.writeFile(fixturePin, Buffer.concat([pinRaw, Buffer.from('\n')]))
+    await expect(generatePalimpsestBriArtifact({
+      pinPath: fixturePin,
+      schemaPath: fixtureSchema,
+      output: fixtureArtifact,
+      hashOutput: fixtureHash,
+      check: true,
+    })).rejects.toThrow(/is stale/i)
+
+    await fs.writeFile(fixturePin, pinRaw)
+    await fs.writeFile(fixtureSchema, Buffer.concat([schemaRaw, Buffer.from('\n')]))
+    await expect(generatePalimpsestBriArtifact({
+      pinPath: fixturePin,
+      schemaPath: fixtureSchema,
+      output: fixtureArtifact,
+      hashOutput: fixtureHash,
+      check: true,
+    })).rejects.toThrow(/is stale/i)
+
+    await fs.writeFile(fixtureSchema, schemaRaw)
+    const artifactRaw = await fs.readFile(path.join(publicDir, BRI_ARTIFACT_FILE))
+    await fs.writeFile(fixtureArtifact, Buffer.concat([artifactRaw, Buffer.from('\n')]))
+    await expect(generatePalimpsestBriArtifact({
+      pinPath: fixturePin,
+      schemaPath: fixtureSchema,
+      output: fixtureArtifact,
+      hashOutput: fixtureHash,
+      check: true,
+    })).rejects.toThrow(/json.*stale/i)
+
+    await fs.writeFile(fixtureArtifact, artifactRaw)
+    await fs.writeFile(fixtureHash, `${'0'.repeat(64)}  ${BRI_ARTIFACT_FILE}\n`)
+    await expect(generatePalimpsestBriArtifact({
+      pinPath: fixturePin,
+      schemaPath: fixtureSchema,
+      output: fixtureArtifact,
+      hashOutput: fixtureHash,
+      check: true,
+    })).rejects.toThrow(/sha256.*stale/i)
+  })
+
+  it('reads tracked source bytes from the exact commit even when the checkout is tampered', async () => {
+    const repository = await fs.mkdtemp(path.join(os.tmpdir(), 'narcoscope-bri-git-'))
+    const trackedPath = path.join(repository, 'readings', 'fixture.json')
+    await fs.mkdir(path.dirname(trackedPath), { recursive: true })
+    await execFile('git', ['init', '-q', repository])
+    await execFile('git', ['-C', repository, 'config', 'user.name', 'NarcoScope Test'])
+    await execFile('git', ['-C', repository, 'config', 'user.email', 'test@narcoscope.invalid'])
+    await fs.writeFile(trackedPath, '{"state":"committed"}\n')
+    await execFile('git', ['-C', repository, 'add', 'readings/fixture.json'])
+    await execFile('git', ['-C', repository, 'commit', '-q', '-m', 'fixture'])
+    const { stdout } = await execFile('git', ['-C', repository, 'rev-parse', 'HEAD'])
+    const revision = stdout.trim()
+    await fs.writeFile(trackedPath, '{"state":"tampered-working-tree"}\n')
+
+    const input = await readTrackedJsonAtCommit(repository, revision, 'readings/fixture.json')
+    expect(input.data).toEqual({ state: 'committed' })
+    expect(input.raw.toString('utf8')).toBe('{"state":"committed"}\n')
+    expect(input.descriptor.gitBlobOid).toMatch(/^[0-9a-f]{40}$/)
+    expect(input.sourceRevision).toBe(revision)
+  })
+})

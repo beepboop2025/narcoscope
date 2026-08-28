@@ -109,6 +109,13 @@ run('node', ['scripts/bridge/build-palimpsest-china.mjs'])
 console.log('· regenerating public Palimpsest China-Pakistan-Myanmar aggregate …')
 run('node', ['scripts/bridge/build-palimpsest-corridors.mjs'])
 
+// This is a reverse, parallel-context bridge from an explicitly reviewed
+// Palimpsest source pin. It never consumes NarcoScope market rows and therefore
+// cannot become an implicit drug/infrastructure join during a data refresh.
+console.log('· regenerating pinned Palimpsest Belt and Road context …')
+run('node', ['scripts/bridge/build-palimpsest-bri.mjs'])
+run('node', ['scripts/bridge/sync-palimpsest-bri-contracts.mjs'])
+
 // The evidence newsroom consumes only checked-in official-source snapshots.
 // It is regenerated after the bridge so its revision/content hashes and feeds
 // always describe the same reviewed data revision as the public aggregate.
@@ -126,6 +133,8 @@ const diff = spawnSync('git', [
   'status', '--porcelain', '--', 'src/data',
   'public/data/narcoscope-palimpsest-v1.json',
   'public/data/narcoscope-palimpsest-corridors-v2.json',
+  'public/data/narcoscope-palimpsest-bri-v1.json',
+  'public/data/narcoscope-palimpsest-bri-v1.json.sha256',
   'public/news',
 ], { encoding: 'utf8' }).stdout.trim()
 console.log(diff || '  (no data changes — sources unchanged since last run)')

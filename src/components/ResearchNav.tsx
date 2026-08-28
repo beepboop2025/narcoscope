@@ -1,5 +1,15 @@
 import { useEffect, useMemo, useState } from 'react'
-import { LENS_GROUPS, groupForTab, lensForTab, type TabId } from '../navigation'
+import {
+  LENS_GROUPS,
+  PRIMARY_DOSSIER_IDS,
+  PRIMARY_DOSSIERS,
+  groupForTab,
+  lensForTab,
+  type TabId,
+} from '../navigation'
+
+const GROUPED_LENSES = LENS_GROUPS.filter((group) => group.id !== 'regions')
+const primaryDossierIds = new Set<string>(PRIMARY_DOSSIER_IDS)
 
 export default function ResearchNav({
   activeTab,
@@ -8,22 +18,43 @@ export default function ResearchNav({
   activeTab: string
   onSelect: (tab: TabId) => void
 }) {
-  const activeGroup = groupForTab(activeTab) ?? LENS_GROUPS[0]
-  const [openGroupId, setOpenGroupId] = useState(activeGroup.id)
+  const activeGroup = groupForTab(activeTab) ?? GROUPED_LENSES[0]
+  const groupedActive = GROUPED_LENSES.find((group) => group.id === activeGroup.id)
+  const [openGroupId, setOpenGroupId] = useState(groupedActive?.id ?? GROUPED_LENSES[0].id)
 
-  useEffect(() => setOpenGroupId(activeGroup.id), [activeGroup.id])
+  useEffect(() => {
+    if (groupedActive) setOpenGroupId(groupedActive.id)
+  }, [groupedActive])
 
   const openGroup = useMemo(
-    () => LENS_GROUPS.find((group) => group.id === openGroupId) ?? activeGroup,
-    [activeGroup, openGroupId],
+    () => GROUPED_LENSES.find((group) => group.id === openGroupId) ?? GROUPED_LENSES[0],
+    [openGroupId],
   )
   const activeLens = lensForTab(activeTab)
+  const primaryActive = primaryDossierIds.has(activeTab)
 
   return (
     <nav className="research-nav" aria-label="NarcoScope research lenses">
       <div className="research-nav__inner">
+        <div className="research-nav__featured" aria-label="Primary regional dossiers">
+          <span className="research-nav__featured-label">BRI + regional evidence</span>
+          <div className="research-nav__featured-tabs">
+            {PRIMARY_DOSSIERS.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                className={`research-nav__featured-tab ${activeTab === item.id ? 'is-active' : ''}`}
+                aria-current={activeTab === item.id ? 'page' : undefined}
+                onClick={() => onSelect(item.id)}
+              >
+                {item.shortLabel}
+              </button>
+            ))}
+          </div>
+        </div>
+
         <div className="research-nav__groups" aria-label="Research areas">
-          {LENS_GROUPS.map((group) => {
+          {GROUPED_LENSES.map((group) => {
             const isOpen = group.id === openGroup.id
             const containsActive = group.id === activeGroup.id
             return (
@@ -42,7 +73,7 @@ export default function ResearchNav({
           })}
         </div>
 
-        <div className="research-nav__deck" id="research-lens-list">
+        <div className={`research-nav__deck ${primaryActive ? 'research-nav__deck--primary-active' : ''}`} id="research-lens-list">
           <div className="research-nav__tabs" aria-label={`${openGroup.label} views`}>
             {openGroup.items.map((item) => (
               <button

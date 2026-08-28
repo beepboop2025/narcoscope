@@ -50,6 +50,11 @@ top of that public data: clean charts, maps, and plain-English explanations.
   analysis keeps lawful trade, selected official incidents and US harm data in
   separate evidence lanes, and states what cannot be joined or causally
   attributed from the public record.
+- **Palimpsest BRI context** — a pinned, bounded source-readiness and national
+  economic context lane for CPEC, Gwadar, CMEC, Kyaukpyu and Balochistan. It
+  preserves official, independent and modeled claim classes plus unavailable
+  WDI coverage, but cannot enter drug-market, actor, route, guilt, political or
+  causal inference.
 - **Myanmar Focus** — province-level (Golden Triangle) detail: production regions,
   civil-war conflict pressure, China/third-country precursor inflows, cross-border
   corridor towns, and seized volumes. The intelligence layer fuses multi-source
@@ -256,6 +261,7 @@ npm run scrape:myanmar -- --pretty
 npm run ontology   # regenerate docs/ontology/draft-ontology.{json,md}
 npm run news:build # regenerate the deterministic evidence newsroom
 npm run news:check # verify that checked-in newsroom artifacts are current
+npm run bridge:palimpsest-bri:check # verify the pinned BRI artifact + hash
 npm run build      # type-check (tsc) + production build → dist/
 npm run preview    # preview the build
 npm run typecheck  # tsc --noEmit

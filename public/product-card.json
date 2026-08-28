@@ -4,11 +4,17 @@
   "category": "public-interest evidence explorer",
   "headline": "Drug-market records you can inspect, cite, and challenge.",
   "description": "NarcoScope translates hard-to-read official drug-market records into maps, comparisons, plain-language explanations, and deterministic evidence analyses without turning administrative data into claims it cannot support.",
-  "audiences": ["journalists", "researchers", "policy teams", "public-interest investigators"],
+  "audiences": [
+    "journalists",
+    "researchers",
+    "policy teams",
+    "public-interest investigators"
+  ],
   "use_cases": [
     "Compare official retail-price, seizure, mortality, wastewater, and designation records.",
     "Read newsroom analyses with sentence-level citations, correction history, and explicit abstentions.",
     "Import public aggregate China evidence or the official China-Pakistan-Myanmar country overlay through versioned Palimpsest bridges.",
+    "Inspect pinned CPEC, Gwadar, CMEC, Kyaukpyu, Balochistan, and national economic coverage as a parallel Palimpsest context lane.",
     "Give an AI agent read-only access to bounded, source-linked artifacts through MCP or OpenAPI."
   ],
   "proof": [
@@ -21,7 +27,8 @@
     "No precursor synthesis routes, chemistry, or yields.",
     "Seizure changes are not treated as trafficking-volume changes without independent modalities.",
     "A designation or reported origin is not an adjudication of guilt or causal proof.",
-    "A shared geography or period never establishes a political, armed-actor, trafficking, or causal relationship."
+    "A shared geography or period never establishes a political, armed-actor, trafficking, or causal relationship.",
+    "Belt and Road context never enters drug-market inference: drug-conflict-infrastructure causal joins, actor classification, bilateral route inference, guilt inference, political-movement classification, project attribution from national series, and tactical or navigable use are prohibited."
   ],
   "access": {
     "website": "https://narcoscope.com",
@@ -30,6 +37,7 @@
     "api": "https://narcoscope.com/api/v1/capabilities",
     "palimpsest_bridge": "https://narcoscope.com/api/v1/palimpsest-bridge",
     "palimpsest_corridors": "https://narcoscope.com/api/v1/palimpsest-corridors",
+    "palimpsest_bri_context": "https://narcoscope.com/api/v1/palimpsest-bri",
     "openapi": "https://narcoscope.com/openapi.json",
     "mcp": "https://narcoscope.com/mcp",
     "json_feed": "https://narcoscope.com/news/feed.json",
@@ -50,5 +58,14 @@
       "url": "https://myquantdoesntspeakenglish.com/"
     }
   ],
-  "pricing": "free public good"
+  "pricing": "free public good",
+  "palimpsest_bri_prohibitions": {
+    "drugConflictInfrastructureCausalJoin": "prohibited",
+    "actorClassification": "prohibited",
+    "bilateralRouteInference": "prohibited",
+    "guiltInference": "prohibited",
+    "politicalMovementClassification": "prohibited",
+    "projectAttributionFromNationalSeries": "prohibited",
+    "tacticalOrNavigableUse": "prohibited"
+  }
 }

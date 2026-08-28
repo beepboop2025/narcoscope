@@ -1,0 +1,2425 @@
+{
+  "schemaVersion": "narcoscope.palimpsest.bri-source-pin.v1",
+  "refreshedAt": "2026-08-27T05:30:57Z",
+  "release": {
+    "producer": "Palimpsest",
+    "verificationState": "release_receipt_validated",
+    "canonicalBaseUrl": "https://palimpsest.info",
+    "railwayMirrorBaseUrl": "https://palimpsest-publication-production.up.railway.app",
+    "deploymentId": "bee09f0a-7898-4942-a762-5bea5c17f58c",
+    "sourceRevision": "6bd18df8516e172e378de2ae1c49e503d681753c",
+    "sourceTreeOid": "11271e88b6f35a27d16556b78c15e2b540a73170",
+    "artifactTreeSha256": "85239a5451047f94cff1b26d241b041ebf586c1116a94cd1dff195f5e2f9a02c",
+    "artifactManifest": {
+      "schemaVersion": "palimpsest.railway-static-release.v1",
+      "bytes": 7459,
+      "sha256": "e0e15bd51404c9e778abdba9487fcb7cf34bf871fcb6dbd3c4dcd6b9314039f6",
+      "fileCount": 38189,
+      "totalBytes": 231800982
+    },
+    "receiptBytes": 5232,
+    "receiptSha256": "327c6796310b34b5af507f7b6804cf36545b72342d3782f07a400f8efc4aab56",
+    "verifiedAt": "2026-08-27T05:30:57Z",
+    "verificationSemantics": "The exact release receipt, source commit and Git tree were validated when this pin was refreshed. This is not continuous production availability or freshness monitoring. Wire archive availability is unavailable and publication status is rights_suppressed: The reviewed publication-rights state denies redistribution of the current China wire value families, so the historical wire archive and its receipt are intentionally absent from this release. Exact published rights-status bytes are readings/china-publication-rights-latest.json (2538928 bytes, SHA-256 3cbb5cca4f1f4c9daa5d55d3bea7d15caaa9d3640377935da43ad48345a4a119).",
+    "pagesPublication": {
+      "verificationState": "served_resource_receipt_validated",
+      "sourceRevision": "14b06772dfed6cdc736279c9ab61b444e5846598",
+      "sourceTreeOid": "3099fc9dd6c06a4526642f03837d49d6725741e8",
+      "receiptBytes": 4846,
+      "receiptSha256": "239a6b5e1496eaf3f97d8d0502cbf1581f24b02ba386d7d806adc79a877d2a06",
+      "verifiedAt": "2026-08-26T15:55:34Z",
+      "freshUntil": "2026-08-27T15:55:34Z",
+      "availabilitySemantics": "verified_at_release_not_continuous_monitoring",
+      "servedResources": [
+        {
+          "path": "config/bri_wdi_series.json",
+          "canonicalUrl": "https://palimpsest.info/config/bri_wdi_series.json",
+          "bytes": 5633,
+          "sha256": "5c0c8e9487aa0145ac2cb8f77697d1ac75f75f38eb3f87239fd8c9685104bda9",
+          "gitBlobOid": "894b494164a811a3ad1eaadc87bc1261f4ba0484"
+        },
+        {
+          "path": "protocol/bri-economic-observations-v1.schema.json",
+          "canonicalUrl": "https://palimpsest.info/protocol/bri-economic-observations-v1.schema.json",
+          "bytes": 11764,
+          "sha256": "e0e98cf313a8446667a0749ac49b5160d8e8d41f59eb76c8aaab66fd27e3ea8f",
+          "gitBlobOid": "de68c39b30dcd8f9dfdca9f1c456cbe15cff405a"
+        },
+        {
+          "path": "readings/bri-economic-observations-latest.json",
+          "canonicalUrl": "https://palimpsest.info/readings/bri-economic-observations-latest.json",
+          "bytes": 6915160,
+          "sha256": "68b9f96e3cfc1e5692b4305c93b42b64dd45d065655ccade6947e086285dc099",
+          "gitBlobOid": "7326c501eff1de573b96d06e96df79ccc8cfb4fc"
+        }
+      ]
+    }
+  },
+  "sourceArtifacts": {
+    "observatory": {
+      "path": "readings/belt-and-road-observatory-latest.json",
+      "canonicalUrl": "https://palimpsest.info/readings/belt-and-road-observatory-latest.json",
+      "railwayMirrorUrl": "https://palimpsest-publication-production.up.railway.app/readings/belt-and-road-observatory-latest.json",
+      "bytes": 95999,
+      "sha256": "ea77d6970f0ce01640682f9bbb0827a0ba5408e727c7894c74d5dffe14095399",
+      "gitBlobOid": "e5a291afa281c60e8cd27c0425761f79b5461a90"
+    },
+    "economics": {
+      "path": "readings/bri-economic-observations-latest.json",
+      "canonicalUrl": "https://palimpsest.info/readings/bri-economic-observations-latest.json",
+      "railwayMirrorUrl": "https://palimpsest-publication-production.up.railway.app/readings/bri-economic-observations-latest.json",
+      "bytes": 6915160,
+      "sha256": "68b9f96e3cfc1e5692b4305c93b42b64dd45d065655ccade6947e086285dc099",
+      "gitBlobOid": "7326c501eff1de573b96d06e96df79ccc8cfb4fc"
+    },
+    "pagesPublicationReceipt": {
+      "path": ".well-known/receipts/bri-wdi-pages-publication-v1.json",
+      "canonicalUrl": "https://palimpsest.info/.well-known/receipts/bri-wdi-pages-publication-v1.json",
+      "bytes": 4846,
+      "sha256": "239a6b5e1496eaf3f97d8d0502cbf1581f24b02ba386d7d806adc79a877d2a06",
+      "gitBlobOid": "8b635511f80e0b8e2893b32364eed82957ebce40"
+    }
+  },
+  "sourceSnapshot": {
+    "schemaVersion": "palimpsest.belt-and-road-observatory.v2",
+    "asOf": "2026-08-26T19:34:49Z",
+    "scope": "A global, provenance-first Belt and Road economic and infrastructure observatory, with high-resolution Pakistan/CPEC/Gwadar, Myanmar/CMEC/Kyaukpyu, Balochistan political-economy and rights coverage, plus a strictly bounded NarcoScope country-aggregate overlay.",
+    "readiness": {
+      "sourceCount": 43,
+      "buildReadySourceCount": 11,
+      "implementationStates": {
+        "adapter_ready": 7,
+        "blocked": 1,
+        "link_only": 23,
+        "live": 4,
+        "planned": 8
+      },
+      "rightsStatusCounts": {
+        "attribution": 8,
+        "licensed_no_redistribution": 1,
+        "link_only_pending_review": 12,
+        "official_publication_review_required": 19,
+        "open_reuse": 1,
+        "public_domain": 2
+      },
+      "buildReadyGaps": [
+        "contract",
+        "contractor",
+        "elections",
+        "ownership",
+        "procurement"
+      ]
+    },
+    "claimSemantics": {
+      "classificationRule": "Source class, authority role and claim class are separate, non-exclusive fields. Official publication is not independent corroboration, and a modeled or analytical estimate is not an observed project fact.",
+      "sourceClassCounts": {
+        "civil_society": 1,
+        "legal": 4,
+        "multilateral": 12,
+        "official_china": 4,
+        "official_host": 13,
+        "partner": 1,
+        "research": 8
+      },
+      "authorityRoleCounts": {
+        "administrative_position": 5,
+        "analytical_estimate": 8,
+        "independent_observation": 13,
+        "legal_instrument": 2,
+        "partner_aggregate": 1,
+        "primary_record": 14
+      },
+      "claimClassCounts": {
+        "administrative_action": 4,
+        "allegation": 3,
+        "analytical_estimate": 10,
+        "humanitarian_observation": 2,
+        "legal_status": 2,
+        "licensed_event": 1,
+        "modeled_estimate": 5,
+        "official_position": 5,
+        "official_statistic": 18,
+        "partner_aggregate": 1,
+        "project_register": 7,
+        "reported_event": 9
+      },
+      "officialOrAdministrativeSourceIds": [
+        "balochistan_budget",
+        "balochistan_pnd",
+        "balochistan_statistics",
+        "china_bri_portal",
+        "cpec_project_portal",
+        "ecp_results",
+        "gacc_bilateral_trade",
+        "gwadar_port_authority",
+        "mofcom_bri_engagement",
+        "mofcom_outward_fdi_bulletin",
+        "myanmar_dica",
+        "myanmar_moi_cmec",
+        "myanmar_port_authority",
+        "nacta_proscribed",
+        "ofac_actions",
+        "pakistan_finance_debt",
+        "pakistan_planning_psdp",
+        "pbs_trade_labor",
+        "sbp_external_sector",
+        "uk_proscription",
+        "us_federal_register_bla"
+      ],
+      "independentObservationSourceIds": [
+        "acled_events",
+        "aiddata_gcdf",
+        "bu_codf",
+        "copernicus_sentinel2",
+        "global_energy_monitor",
+        "hrcp_reports",
+        "iimm_reports",
+        "ocha_myanmar",
+        "ohchr_balochistan",
+        "ucdp_events",
+        "un_comtrade",
+        "world_bank_ids",
+        "world_bank_wdi"
+      ],
+      "modeledOrAnalyticalSourceIds": [
+        "aei_cgit",
+        "aiddata_gcdf",
+        "bu_codf",
+        "copernicus_sentinel2",
+        "global_energy_monitor",
+        "greenfdc_bri",
+        "imf_portwatch",
+        "imf_weo",
+        "palimpsest_deep_bri_report_2026",
+        "ucdp_events",
+        "unodc_myanmar_opium",
+        "world_bank_bri_network",
+        "world_bank_myanmar_monitor",
+        "world_bank_wdi"
+      ]
+    },
+    "targetCoverage": [
+      {
+        "areaId": "cpec",
+        "label": "China-Pakistan Economic Corridor",
+        "targets": [
+          {
+            "targetId": "cpec_portfolio",
+            "label": "China-Pakistan Economic Corridor portfolio",
+            "targetType": "economic_corridor",
+            "evidenceStatus": "source_discovery",
+            "requiredCoverage": [
+              "contract",
+              "debt",
+              "finance_commitment",
+              "project_identity",
+              "project_status",
+              "trade"
+            ],
+            "sourceReadiness": {
+              "sourceCount": 4,
+              "buildReadySourceCount": 0,
+              "implementationStates": {
+                "link_only": 1,
+                "planned": 3
+              }
+            },
+            "sources": [
+              {
+                "sourceId": "cpec_project_portal",
+                "implementationState": "link_only",
+                "sourceClass": "official_host",
+                "authorityRole": "administrative_position",
+                "rightsStatus": "official_publication_review_required",
+                "claimClasses": [
+                  "official_position",
+                  "project_register"
+                ]
+              },
+              {
+                "sourceId": "pakistan_finance_debt",
+                "implementationState": "planned",
+                "sourceClass": "official_host",
+                "authorityRole": "primary_record",
+                "rightsStatus": "official_publication_review_required",
+                "claimClasses": [
+                  "official_statistic"
+                ]
+              },
+              {
+                "sourceId": "pakistan_planning_psdp",
+                "implementationState": "planned",
+                "sourceClass": "official_host",
+                "authorityRole": "primary_record",
+                "rightsStatus": "official_publication_review_required",
+                "claimClasses": [
+                  "official_statistic",
+                  "project_register"
+                ]
+              },
+              {
+                "sourceId": "sbp_external_sector",
+                "implementationState": "planned",
+                "sourceClass": "official_host",
+                "authorityRole": "primary_record",
+                "rightsStatus": "official_publication_review_required",
+                "claimClasses": [
+                  "official_statistic"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "areaId": "gwadar",
+        "label": "Gwadar infrastructure and local political economy",
+        "targets": [
+          {
+            "targetId": "gwadar_port_free_zone",
+            "label": "Gwadar Port and Free Zone",
+            "targetType": "port_and_sez",
+            "evidenceStatus": "source_discovery",
+            "requiredCoverage": [
+              "contractor",
+              "employment",
+              "environment",
+              "land",
+              "livelihood",
+              "ownership",
+              "port_logistics",
+              "project_status"
+            ],
+            "sourceReadiness": {
+              "sourceCount": 4,
+              "buildReadySourceCount": 1,
+              "implementationStates": {
+                "adapter_ready": 1,
+                "link_only": 3
+              }
+            },
+            "sources": [
+              {
+                "sourceId": "balochistan_pnd",
+                "implementationState": "link_only",
+                "sourceClass": "official_host",
+                "authorityRole": "primary_record",
+                "rightsStatus": "official_publication_review_required",
+                "claimClasses": [
+                  "official_statistic",
+                  "project_register"
+                ]
+              },
+              {
+                "sourceId": "copernicus_sentinel2",
+                "implementationState": "adapter_ready",
+                "sourceClass": "multilateral",
+                "authorityRole": "independent_observation",
+                "rightsStatus": "open_reuse",
+                "claimClasses": [
+                  "analytical_estimate"
+                ]
+              },
+              {
+                "sourceId": "cpec_project_portal",
+                "implementationState": "link_only",
+                "sourceClass": "official_host",
+                "authorityRole": "administrative_position",
+                "rightsStatus": "official_publication_review_required",
+                "claimClasses": [
+                  "official_position",
+                  "project_register"
+                ]
+              },
+              {
+                "sourceId": "gwadar_port_authority",
+                "implementationState": "link_only",
+                "sourceClass": "official_host",
+                "authorityRole": "primary_record",
+                "rightsStatus": "official_publication_review_required",
+                "claimClasses": [
+                  "official_position",
+                  "project_register"
+                ]
+              }
+            ]
+          },
+          {
+            "targetId": "gwadar_connectivity",
+            "label": "Gwadar airport, roads, expressway and hinterland connectivity",
+            "targetType": "transport_cluster",
+            "evidenceStatus": "source_discovery",
+            "requiredCoverage": [
+              "contract",
+              "employment",
+              "finance_commitment",
+              "land",
+              "port_logistics",
+              "project_status"
+            ],
+            "sourceReadiness": {
+              "sourceCount": 4,
+              "buildReadySourceCount": 1,
+              "implementationStates": {
+                "adapter_ready": 1,
+                "link_only": 2,
+                "planned": 1
+              }
+            },
+            "sources": [
+              {
+                "sourceId": "balochistan_pnd",
+                "implementationState": "link_only",
+                "sourceClass": "official_host",
+                "authorityRole": "primary_record",
+                "rightsStatus": "official_publication_review_required",
+                "claimClasses": [
+                  "official_statistic",
+                  "project_register"
+                ]
+              },
+              {
+                "sourceId": "copernicus_sentinel2",
+                "implementationState": "adapter_ready",
+                "sourceClass": "multilateral",
+                "authorityRole": "independent_observation",
+                "rightsStatus": "open_reuse",
+                "claimClasses": [
+                  "analytical_estimate"
+                ]
+              },
+              {
+                "sourceId": "cpec_project_portal",
+                "implementationState": "link_only",
+                "sourceClass": "official_host",
+                "authorityRole": "administrative_position",
+                "rightsStatus": "official_publication_review_required",
+                "claimClasses": [
+                  "official_position",
+                  "project_register"
+                ]
+              },
+              {
+                "sourceId": "pakistan_planning_psdp",
+                "implementationState": "planned",
+                "sourceClass": "official_host",
+                "authorityRole": "primary_record",
+                "rightsStatus": "official_publication_review_required",
+                "claimClasses": [
+                  "official_statistic",
+                  "project_register"
+                ]
+              }
+            ]
+          },
+          {
+            "targetId": "gwadar_public_services",
+            "label": "Gwadar water, health, training and municipal service projects",
+            "targetType": "public_service_cluster",
+            "evidenceStatus": "source_discovery",
+            "requiredCoverage": [
+              "employment",
+              "environment",
+              "finance_commitment",
+              "livelihood",
+              "project_status"
+            ],
+            "sourceReadiness": {
+              "sourceCount": 4,
+              "buildReadySourceCount": 0,
+              "implementationStates": {
+                "link_only": 2,
+                "planned": 2
+              }
+            },
+            "sources": [
+              {
+                "sourceId": "balochistan_budget",
+                "implementationState": "planned",
+                "sourceClass": "official_host",
+                "authorityRole": "primary_record",
+                "rightsStatus": "official_publication_review_required",
+                "claimClasses": [
+                  "official_statistic"
+                ]
+              },
+              {
+                "sourceId": "balochistan_pnd",
+                "implementationState": "link_only",
+                "sourceClass": "official_host",
+                "authorityRole": "primary_record",
+                "rightsStatus": "official_publication_review_required",
+                "claimClasses": [
+                  "official_statistic",
+                  "project_register"
+                ]
+              },
+              {
+                "sourceId": "balochistan_statistics",
+                "implementationState": "planned",
+                "sourceClass": "official_host",
+                "authorityRole": "primary_record",
+                "rightsStatus": "official_publication_review_required",
+                "claimClasses": [
+                  "official_statistic"
+                ]
+              },
+              {
+                "sourceId": "cpec_project_portal",
+                "implementationState": "link_only",
+                "sourceClass": "official_host",
+                "authorityRole": "administrative_position",
+                "rightsStatus": "official_publication_review_required",
+                "claimClasses": [
+                  "official_position",
+                  "project_register"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "areaId": "cmec",
+        "label": "China-Myanmar Economic Corridor",
+        "targets": [
+          {
+            "targetId": "cmec_portfolio",
+            "label": "China-Myanmar Economic Corridor portfolio",
+            "targetType": "economic_corridor",
+            "evidenceStatus": "source_discovery",
+            "requiredCoverage": [
+              "contract",
+              "finance_commitment",
+              "project_identity",
+              "project_status",
+              "trade"
+            ],
+            "sourceReadiness": {
+              "sourceCount": 3,
+              "buildReadySourceCount": 1,
+              "implementationStates": {
+                "adapter_ready": 1,
+                "link_only": 2
+              }
+            },
+            "sources": [
+              {
+                "sourceId": "myanmar_dica",
+                "implementationState": "link_only",
+                "sourceClass": "official_host",
+                "authorityRole": "primary_record",
+                "rightsStatus": "official_publication_review_required",
+                "claimClasses": [
+                  "administrative_action",
+                  "official_statistic"
+                ]
+              },
+              {
+                "sourceId": "myanmar_moi_cmec",
+                "implementationState": "link_only",
+                "sourceClass": "official_host",
+                "authorityRole": "administrative_position",
+                "rightsStatus": "official_publication_review_required",
+                "claimClasses": [
+                  "official_position",
+                  "project_register"
+                ]
+              },
+              {
+                "sourceId": "world_bank_myanmar_monitor",
+                "implementationState": "adapter_ready",
+                "sourceClass": "multilateral",
+                "authorityRole": "analytical_estimate",
+                "rightsStatus": "attribution",
+                "claimClasses": [
+                  "analytical_estimate",
+                  "official_statistic"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "areaId": "kyaukpyu",
+        "label": "Kyaukpyu port and special economic zone",
+        "targets": [
+          {
+            "targetId": "kyaukpyu_port_sez",
+            "label": "Kyaukpyu deep-sea port and special economic zone",
+            "targetType": "port_and_sez",
+            "evidenceStatus": "source_discovery",
+            "requiredCoverage": [
+              "contract",
+              "environment",
+              "finance_commitment",
+              "land",
+              "livelihood",
+              "ownership",
+              "port_logistics",
+              "project_status"
+            ],
+            "sourceReadiness": {
+              "sourceCount": 4,
+              "buildReadySourceCount": 2,
+              "implementationStates": {
+                "adapter_ready": 2,
+                "link_only": 2
+              }
+            },
+            "sources": [
+              {
+                "sourceId": "copernicus_sentinel2",
+                "implementationState": "adapter_ready",
+                "sourceClass": "multilateral",
+                "authorityRole": "independent_observation",
+                "rightsStatus": "open_reuse",
+                "claimClasses": [
+                  "analytical_estimate"
+                ]
+              },
+              {
+                "sourceId": "myanmar_dica",
+                "implementationState": "link_only",
+                "sourceClass": "official_host",
+                "authorityRole": "primary_record",
+                "rightsStatus": "official_publication_review_required",
+                "claimClasses": [
+                  "administrative_action",
+                  "official_statistic"
+                ]
+              },
+              {
+                "sourceId": "myanmar_port_authority",
+                "implementationState": "link_only",
+                "sourceClass": "official_host",
+                "authorityRole": "primary_record",
+                "rightsStatus": "official_publication_review_required",
+                "claimClasses": [
+                  "official_position",
+                  "project_register"
+                ]
+              },
+              {
+                "sourceId": "world_bank_myanmar_monitor",
+                "implementationState": "adapter_ready",
+                "sourceClass": "multilateral",
+                "authorityRole": "analytical_estimate",
+                "rightsStatus": "attribution",
+                "claimClasses": [
+                  "analytical_estimate",
+                  "official_statistic"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "areaId": "balochistan",
+        "label": "Balochistan political economy and plural movement history",
+        "targets": [
+          {
+            "targetId": "balochistan_resources_revenue",
+            "label": "Balochistan minerals, energy, royalties and revenue distribution",
+            "targetType": "political_economy_cluster",
+            "evidenceStatus": "source_discovery",
+            "requiredCoverage": [
+              "compensation",
+              "contract",
+              "employment",
+              "environment",
+              "fiscal",
+              "land",
+              "ownership"
+            ],
+            "sourceReadiness": {
+              "sourceCount": 4,
+              "buildReadySourceCount": 0,
+              "implementationStates": {
+                "link_only": 1,
+                "planned": 3
+              }
+            },
+            "sources": [
+              {
+                "sourceId": "balochistan_budget",
+                "implementationState": "planned",
+                "sourceClass": "official_host",
+                "authorityRole": "primary_record",
+                "rightsStatus": "official_publication_review_required",
+                "claimClasses": [
+                  "official_statistic"
+                ]
+              },
+              {
+                "sourceId": "balochistan_pnd",
+                "implementationState": "link_only",
+                "sourceClass": "official_host",
+                "authorityRole": "primary_record",
+                "rightsStatus": "official_publication_review_required",
+                "claimClasses": [
+                  "official_statistic",
+                  "project_register"
+                ]
+              },
+              {
+                "sourceId": "balochistan_statistics",
+                "implementationState": "planned",
+                "sourceClass": "official_host",
+                "authorityRole": "primary_record",
+                "rightsStatus": "official_publication_review_required",
+                "claimClasses": [
+                  "official_statistic"
+                ]
+              },
+              {
+                "sourceId": "pakistan_finance_debt",
+                "implementationState": "planned",
+                "sourceClass": "official_host",
+                "authorityRole": "primary_record",
+                "rightsStatus": "official_publication_review_required",
+                "claimClasses": [
+                  "official_statistic"
+                ]
+              }
+            ]
+          },
+          {
+            "targetId": "balochistan_movement_history",
+            "label": "Balochistan political, civic and armed movement history as separate lanes",
+            "targetType": "historical_claim_ledger",
+            "evidenceStatus": "taxonomy_ready_sources_discovered",
+            "requiredCoverage": [
+              "conflict",
+              "corrections",
+              "elections",
+              "human_rights",
+              "humanitarian",
+              "legal_designation"
+            ],
+            "sourceReadiness": {
+              "sourceCount": 7,
+              "buildReadySourceCount": 3,
+              "implementationStates": {
+                "adapter_ready": 2,
+                "link_only": 4,
+                "live": 1
+              }
+            },
+            "sources": [
+              {
+                "sourceId": "ecp_results",
+                "implementationState": "link_only",
+                "sourceClass": "official_host",
+                "authorityRole": "primary_record",
+                "rightsStatus": "official_publication_review_required",
+                "claimClasses": [
+                  "administrative_action",
+                  "official_statistic"
+                ]
+              },
+              {
+                "sourceId": "hrcp_reports",
+                "implementationState": "link_only",
+                "sourceClass": "civil_society",
+                "authorityRole": "independent_observation",
+                "rightsStatus": "link_only_pending_review",
+                "claimClasses": [
+                  "allegation",
+                  "humanitarian_observation",
+                  "reported_event"
+                ]
+              },
+              {
+                "sourceId": "nacta_proscribed",
+                "implementationState": "link_only",
+                "sourceClass": "legal",
+                "authorityRole": "administrative_position",
+                "rightsStatus": "official_publication_review_required",
+                "claimClasses": [
+                  "administrative_action"
+                ]
+              },
+              {
+                "sourceId": "ohchr_balochistan",
+                "implementationState": "link_only",
+                "sourceClass": "multilateral",
+                "authorityRole": "independent_observation",
+                "rightsStatus": "link_only_pending_review",
+                "claimClasses": [
+                  "allegation",
+                  "reported_event"
+                ]
+              },
+              {
+                "sourceId": "ucdp_events",
+                "implementationState": "live",
+                "sourceClass": "research",
+                "authorityRole": "independent_observation",
+                "rightsStatus": "attribution",
+                "claimClasses": [
+                  "analytical_estimate",
+                  "reported_event"
+                ]
+              },
+              {
+                "sourceId": "uk_proscription",
+                "implementationState": "adapter_ready",
+                "sourceClass": "legal",
+                "authorityRole": "legal_instrument",
+                "rightsStatus": "attribution",
+                "claimClasses": [
+                  "legal_status"
+                ]
+              },
+              {
+                "sourceId": "us_federal_register_bla",
+                "implementationState": "adapter_ready",
+                "sourceClass": "legal",
+                "authorityRole": "legal_instrument",
+                "rightsStatus": "public_domain",
+                "claimClasses": [
+                  "legal_status"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "economicSnapshot": {
+    "schemaVersion": "palimpsest.bri-economic-observations.v1",
+    "generatedAt": "2026-08-26T13:17:34.790676Z",
+    "collectionId": "b279cf29edafa4e6e8f3a5b817239a1d9a5169a12cefb609c231067d72d65d1e",
+    "source": {
+      "sourceId": "world_bank_wdi",
+      "name": "World Development Indicators",
+      "publisher": "World Bank",
+      "attribution": "World Bank, World Development Indicators",
+      "catalogUrl": "https://datacatalog.worldbank.org/search/dataset/0037712/world-development-indicators"
+    },
+    "rights": {
+      "license": "CC-BY-4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "redistributionStatus": "allowed_with_attribution",
+      "rightsEvidenceUrl": "https://datacatalog.worldbank.org/search/dataset/0037712/world-development-indicators",
+      "attribution": "World Bank, World Development Indicators"
+    },
+    "clocks": {
+      "generatedAt": "2026-08-26T13:17:34.790676Z",
+      "datasetLastUpdated": "2026-07-13",
+      "sourceReleaseUpperBound": "2026-07-13T23:59:59Z",
+      "retrievedAt": "2026-08-26T13:17:34.790676Z"
+    },
+    "hashPointers": {
+      "observationsSha256": "7e327799e47553ee70a081cd333ab4b051441d1f878b5cfef4e8cf5062a283c6",
+      "registrySha256": "5c0c8e9487aa0145ac2cb8f77697d1ac75f75f38eb3f87239fd8c9685104bda9",
+      "rawResponseSha256s": [
+        "673c88bdac63e76893f59515b4d72fab8965af0a3234fc48f5bcd60ff6859de7"
+      ]
+    },
+    "contextPolicy": {
+      "aggregateLevel": "country",
+      "scope": "national_economic_context",
+      "causalityBoundary": "not_evidence_of_bri_causality",
+      "missingValuePolicy": "source_null_remains_unavailable",
+      "forecastPolicy": "source_obs_status_F_remains_forecast",
+      "downstreamSemantics": {
+        "observed": "numeric_source_value_without_forecast_marker",
+        "forecast": "numeric_source_value_marked_F_not_observed",
+        "unavailable": "source_null_not_zero_or_imputed",
+        "join_boundary": "country_period_context_only_no_project_actor_or_causal_join"
+      }
+    },
+    "coverage": {
+      "totals": {
+        "countries": 3,
+        "indicators": 18,
+        "sourceRows": 3564,
+        "observedRows": 1940,
+        "forecastRows": 0,
+        "unavailableRows": 1624
+      },
+      "countries": [
+        {
+          "countryCode": "CHN",
+          "country": "China",
+          "indicatorCount": 18,
+          "sourceRowCount": 1188,
+          "observedRowCount": 713,
+          "forecastRowCount": 0,
+          "unavailableRowCount": 475,
+          "indicators": [
+            {
+              "seriesId": "bri.context.wdi.central_government_debt_share",
+              "indicatorId": "GC.DOD.TOTL.GD.ZS",
+              "unit": "percent of GDP",
+              "annualCoverage": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "sourceRowCount": 66,
+              "observed": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0
+              },
+              "forecast": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0
+              },
+              "unavailable": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66,
+                "reasonCounts": {
+                  "source_value_null": 66
+                }
+              }
+            },
+            {
+              "seriesId": "bri.context.wdi.co2_emissions_per_capita",
+              "indicatorId": "EN.GHG.CO2.PC.CE.AR5",
+              "unit": "metric tons CO2 equivalent per capita",
+              "annualCoverage": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "sourceRowCount": 66,
+              "observed": {
+                "fromYear": 1970,
+                "toYear": 2024,
+                "yearCount": 55
+              },
+              "forecast": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0
+              },
+              "unavailable": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 11,
+                "reasonCounts": {
+                  "source_value_null": 11
+                }
+              }
+            },
+            {
+              "seriesId": "bri.context.wdi.container_port_traffic",
+              "indicatorId": "IS.SHP.GOOD.TU",
+              "unit": "twenty-foot equivalent units",
+              "annualCoverage": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "sourceRowCount": 66,
+              "observed": {
+                "fromYear": 2010,
+                "toYear": 2024,
+                "yearCount": 15
+              },
+              "forecast": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0
+              },
+              "unavailable": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 51,
+                "reasonCounts": {
+                  "source_value_null": 51
+                }
+              }
+            },
+            {
+              "seriesId": "bri.context.wdi.electric_power_use",
+              "indicatorId": "EG.USE.ELEC.KH.PC",
+              "unit": "kilowatt-hours per capita",
+              "annualCoverage": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "sourceRowCount": 66,
+              "observed": {
+                "fromYear": 1990,
+                "toYear": 2023,
+                "yearCount": 34
+              },
+              "forecast": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0
+              },
+              "unavailable": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 32,
+                "reasonCounts": {
+                  "source_value_null": 32
+                }
+              }
+            },
+            {
+              "seriesId": "bri.context.wdi.electricity_access",
+              "indicatorId": "EG.ELC.ACCS.ZS",
+              "unit": "percent of population",
+              "annualCoverage": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "sourceRowCount": 66,
+              "observed": {
+                "fromYear": 2000,
+                "toYear": 2024,
+                "yearCount": 25
+              },
+              "forecast": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0
+              },
+              "unavailable": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 41,
+                "reasonCounts": {
+                  "source_value_null": 41
+                }
+              }
+            },
+            {
+              "seriesId": "bri.context.wdi.employment_ratio",
+              "indicatorId": "SL.EMP.TOTL.SP.ZS",
+              "unit": "percent ages 15 and older",
+              "annualCoverage": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "sourceRowCount": 66,
+              "observed": {
+                "fromYear": 1991,
+                "toYear": 2025,
+                "yearCount": 35
+              },
+              "forecast": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0
+              },
+              "unavailable": {
+                "fromYear": 1960,
+                "toYear": 1990,
+                "yearCount": 31,
+                "reasonCounts": {
+                  "source_value_null": 31
+                }
+              }
+            },
+            {
+              "seriesId": "bri.context.wdi.exports_current_usd",
+              "indicatorId": "NE.EXP.GNFS.CD",
+              "unit": "current US dollars",
+              "annualCoverage": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "sourceRowCount": 66,
+              "observed": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "forecast": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0
+              },
+              "unavailable": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0,
+                "reasonCounts": {}
+              }
+            },
+            {
+              "seriesId": "bri.context.wdi.fdi_net_inflows_share",
+              "indicatorId": "BX.KLT.DINV.WD.GD.ZS",
+              "unit": "percent of GDP",
+              "annualCoverage": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "sourceRowCount": 66,
+              "observed": {
+                "fromYear": 1979,
+                "toYear": 2025,
+                "yearCount": 47
+              },
+              "forecast": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0
+              },
+              "unavailable": {
+                "fromYear": 1960,
+                "toYear": 1978,
+                "yearCount": 19,
+                "reasonCounts": {
+                  "source_value_null": 19
+                }
+              }
+            },
+            {
+              "seriesId": "bri.context.wdi.fixed_broadband_density",
+              "indicatorId": "IT.NET.BBND.P2",
+              "unit": "per 100 people",
+              "annualCoverage": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "sourceRowCount": 66,
+              "observed": {
+                "fromYear": 2000,
+                "toYear": 2024,
+                "yearCount": 25
+              },
+              "forecast": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0
+              },
+              "unavailable": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 41,
+                "reasonCounts": {
+                  "source_value_null": 41
+                }
+              }
+            },
+            {
+              "seriesId": "bri.context.wdi.gdp_current_usd",
+              "indicatorId": "NY.GDP.MKTP.CD",
+              "unit": "current US dollars",
+              "annualCoverage": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "sourceRowCount": 66,
+              "observed": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "forecast": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0
+              },
+              "unavailable": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0,
+                "reasonCounts": {}
+              }
+            },
+            {
+              "seriesId": "bri.context.wdi.gdp_real_growth",
+              "indicatorId": "NY.GDP.MKTP.KD.ZG",
+              "unit": "annual percent",
+              "annualCoverage": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "sourceRowCount": 66,
+              "observed": {
+                "fromYear": 1961,
+                "toYear": 2025,
+                "yearCount": 65
+              },
+              "forecast": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0
+              },
+              "unavailable": {
+                "fromYear": 1960,
+                "toYear": 1960,
+                "yearCount": 1,
+                "reasonCounts": {
+                  "source_value_null": 1
+                }
+              }
+            },
+            {
+              "seriesId": "bri.context.wdi.government_expense_share",
+              "indicatorId": "GC.XPN.TOTL.GD.ZS",
+              "unit": "percent of GDP",
+              "annualCoverage": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "sourceRowCount": 66,
+              "observed": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0
+              },
+              "forecast": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0
+              },
+              "unavailable": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66,
+                "reasonCounts": {
+                  "source_value_null": 66
+                }
+              }
+            },
+            {
+              "seriesId": "bri.context.wdi.government_revenue_share",
+              "indicatorId": "GC.REV.XGRT.GD.ZS",
+              "unit": "percent of GDP",
+              "annualCoverage": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "sourceRowCount": 66,
+              "observed": {
+                "fromYear": 2005,
+                "toYear": 2024,
+                "yearCount": 20
+              },
+              "forecast": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0
+              },
+              "unavailable": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 46,
+                "reasonCounts": {
+                  "source_value_null": 46
+                }
+              }
+            },
+            {
+              "seriesId": "bri.context.wdi.imports_current_usd",
+              "indicatorId": "NE.IMP.GNFS.CD",
+              "unit": "current US dollars",
+              "annualCoverage": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "sourceRowCount": 66,
+              "observed": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "forecast": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0
+              },
+              "unavailable": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0,
+                "reasonCounts": {}
+              }
+            },
+            {
+              "seriesId": "bri.context.wdi.population",
+              "indicatorId": "SP.POP.TOTL",
+              "unit": "people",
+              "annualCoverage": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "sourceRowCount": 66,
+              "observed": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "forecast": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0
+              },
+              "unavailable": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0,
+                "reasonCounts": {}
+              }
+            },
+            {
+              "seriesId": "bri.context.wdi.rail_route_length",
+              "indicatorId": "IS.RRS.TOTL.KM",
+              "unit": "route-kilometers",
+              "annualCoverage": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "sourceRowCount": 66,
+              "observed": {
+                "fromYear": 1995,
+                "toYear": 2021,
+                "yearCount": 27
+              },
+              "forecast": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0
+              },
+              "unavailable": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 39,
+                "reasonCounts": {
+                  "source_value_null": 39
+                }
+              }
+            },
+            {
+              "seriesId": "bri.context.wdi.trade_share_gdp",
+              "indicatorId": "NE.TRD.GNFS.ZS",
+              "unit": "percent of GDP",
+              "annualCoverage": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "sourceRowCount": 66,
+              "observed": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "forecast": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0
+              },
+              "unavailable": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0,
+                "reasonCounts": {}
+              }
+            },
+            {
+              "seriesId": "bri.context.wdi.unemployment_rate",
+              "indicatorId": "SL.UEM.TOTL.ZS",
+              "unit": "percent of labor force",
+              "annualCoverage": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "sourceRowCount": 66,
+              "observed": {
+                "fromYear": 1991,
+                "toYear": 2025,
+                "yearCount": 35
+              },
+              "forecast": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0
+              },
+              "unavailable": {
+                "fromYear": 1960,
+                "toYear": 1990,
+                "yearCount": 31,
+                "reasonCounts": {
+                  "source_value_null": 31
+                }
+              }
+            }
+          ]
+        },
+        {
+          "countryCode": "MMR",
+          "country": "Myanmar",
+          "indicatorCount": 18,
+          "sourceRowCount": 1188,
+          "observedRowCount": 520,
+          "forecastRowCount": 0,
+          "unavailableRowCount": 668,
+          "indicators": [
+            {
+              "seriesId": "bri.context.wdi.central_government_debt_share",
+              "indicatorId": "GC.DOD.TOTL.GD.ZS",
+              "unit": "percent of GDP",
+              "annualCoverage": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "sourceRowCount": 66,
+              "observed": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0
+              },
+              "forecast": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0
+              },
+              "unavailable": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66,
+                "reasonCounts": {
+                  "source_value_null": 66
+                }
+              }
+            },
+            {
+              "seriesId": "bri.context.wdi.co2_emissions_per_capita",
+              "indicatorId": "EN.GHG.CO2.PC.CE.AR5",
+              "unit": "metric tons CO2 equivalent per capita",
+              "annualCoverage": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "sourceRowCount": 66,
+              "observed": {
+                "fromYear": 1970,
+                "toYear": 2024,
+                "yearCount": 55
+              },
+              "forecast": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0
+              },
+              "unavailable": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 11,
+                "reasonCounts": {
+                  "source_value_null": 11
+                }
+              }
+            },
+            {
+              "seriesId": "bri.context.wdi.container_port_traffic",
+              "indicatorId": "IS.SHP.GOOD.TU",
+              "unit": "twenty-foot equivalent units",
+              "annualCoverage": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "sourceRowCount": 66,
+              "observed": {
+                "fromYear": 2010,
+                "toYear": 2024,
+                "yearCount": 15
+              },
+              "forecast": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0
+              },
+              "unavailable": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 51,
+                "reasonCounts": {
+                  "source_value_null": 51
+                }
+              }
+            },
+            {
+              "seriesId": "bri.context.wdi.electric_power_use",
+              "indicatorId": "EG.USE.ELEC.KH.PC",
+              "unit": "kilowatt-hours per capita",
+              "annualCoverage": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "sourceRowCount": 66,
+              "observed": {
+                "fromYear": 1990,
+                "toYear": 2023,
+                "yearCount": 34
+              },
+              "forecast": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0
+              },
+              "unavailable": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 32,
+                "reasonCounts": {
+                  "source_value_null": 32
+                }
+              }
+            },
+            {
+              "seriesId": "bri.context.wdi.electricity_access",
+              "indicatorId": "EG.ELC.ACCS.ZS",
+              "unit": "percent of population",
+              "annualCoverage": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "sourceRowCount": 66,
+              "observed": {
+                "fromYear": 2000,
+                "toYear": 2024,
+                "yearCount": 25
+              },
+              "forecast": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0
+              },
+              "unavailable": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 41,
+                "reasonCounts": {
+                  "source_value_null": 41
+                }
+              }
+            },
+            {
+              "seriesId": "bri.context.wdi.employment_ratio",
+              "indicatorId": "SL.EMP.TOTL.SP.ZS",
+              "unit": "percent ages 15 and older",
+              "annualCoverage": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "sourceRowCount": 66,
+              "observed": {
+                "fromYear": 1991,
+                "toYear": 2025,
+                "yearCount": 35
+              },
+              "forecast": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0
+              },
+              "unavailable": {
+                "fromYear": 1960,
+                "toYear": 1990,
+                "yearCount": 31,
+                "reasonCounts": {
+                  "source_value_null": 31
+                }
+              }
+            },
+            {
+              "seriesId": "bri.context.wdi.exports_current_usd",
+              "indicatorId": "NE.EXP.GNFS.CD",
+              "unit": "current US dollars",
+              "annualCoverage": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "sourceRowCount": 66,
+              "observed": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0
+              },
+              "forecast": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0
+              },
+              "unavailable": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66,
+                "reasonCounts": {
+                  "source_value_null": 66
+                }
+              }
+            },
+            {
+              "seriesId": "bri.context.wdi.fdi_net_inflows_share",
+              "indicatorId": "BX.KLT.DINV.WD.GD.ZS",
+              "unit": "percent of GDP",
+              "annualCoverage": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "sourceRowCount": 66,
+              "observed": {
+                "fromYear": 1971,
+                "toYear": 2024,
+                "yearCount": 54
+              },
+              "forecast": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0
+              },
+              "unavailable": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 12,
+                "reasonCounts": {
+                  "source_value_null": 12
+                }
+              }
+            },
+            {
+              "seriesId": "bri.context.wdi.fixed_broadband_density",
+              "indicatorId": "IT.NET.BBND.P2",
+              "unit": "per 100 people",
+              "annualCoverage": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "sourceRowCount": 66,
+              "observed": {
+                "fromYear": 2005,
+                "toYear": 2024,
+                "yearCount": 17
+              },
+              "forecast": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0
+              },
+              "unavailable": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 49,
+                "reasonCounts": {
+                  "source_value_null": 49
+                }
+              }
+            },
+            {
+              "seriesId": "bri.context.wdi.gdp_current_usd",
+              "indicatorId": "NY.GDP.MKTP.CD",
+              "unit": "current US dollars",
+              "annualCoverage": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "sourceRowCount": 66,
+              "observed": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "forecast": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0
+              },
+              "unavailable": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0,
+                "reasonCounts": {}
+              }
+            },
+            {
+              "seriesId": "bri.context.wdi.gdp_real_growth",
+              "indicatorId": "NY.GDP.MKTP.KD.ZG",
+              "unit": "annual percent",
+              "annualCoverage": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "sourceRowCount": 66,
+              "observed": {
+                "fromYear": 1961,
+                "toYear": 2025,
+                "yearCount": 65
+              },
+              "forecast": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0
+              },
+              "unavailable": {
+                "fromYear": 1960,
+                "toYear": 1960,
+                "yearCount": 1,
+                "reasonCounts": {
+                  "source_value_null": 1
+                }
+              }
+            },
+            {
+              "seriesId": "bri.context.wdi.government_expense_share",
+              "indicatorId": "GC.XPN.TOTL.GD.ZS",
+              "unit": "percent of GDP",
+              "annualCoverage": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "sourceRowCount": 66,
+              "observed": {
+                "fromYear": 2003,
+                "toYear": 2019,
+                "yearCount": 11
+              },
+              "forecast": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0
+              },
+              "unavailable": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 55,
+                "reasonCounts": {
+                  "source_value_null": 55
+                }
+              }
+            },
+            {
+              "seriesId": "bri.context.wdi.government_revenue_share",
+              "indicatorId": "GC.REV.XGRT.GD.ZS",
+              "unit": "percent of GDP",
+              "annualCoverage": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "sourceRowCount": 66,
+              "observed": {
+                "fromYear": 1973,
+                "toYear": 2019,
+                "yearCount": 41
+              },
+              "forecast": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0
+              },
+              "unavailable": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 25,
+                "reasonCounts": {
+                  "source_value_null": 25
+                }
+              }
+            },
+            {
+              "seriesId": "bri.context.wdi.imports_current_usd",
+              "indicatorId": "NE.IMP.GNFS.CD",
+              "unit": "current US dollars",
+              "annualCoverage": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "sourceRowCount": 66,
+              "observed": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0
+              },
+              "forecast": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0
+              },
+              "unavailable": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66,
+                "reasonCounts": {
+                  "source_value_null": 66
+                }
+              }
+            },
+            {
+              "seriesId": "bri.context.wdi.population",
+              "indicatorId": "SP.POP.TOTL",
+              "unit": "people",
+              "annualCoverage": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "sourceRowCount": 66,
+              "observed": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "forecast": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0
+              },
+              "unavailable": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0,
+                "reasonCounts": {}
+              }
+            },
+            {
+              "seriesId": "bri.context.wdi.rail_route_length",
+              "indicatorId": "IS.RRS.TOTL.KM",
+              "unit": "route-kilometers",
+              "annualCoverage": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "sourceRowCount": 66,
+              "observed": {
+                "fromYear": 1999,
+                "toYear": 1999,
+                "yearCount": 1
+              },
+              "forecast": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0
+              },
+              "unavailable": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 65,
+                "reasonCounts": {
+                  "source_value_null": 65
+                }
+              }
+            },
+            {
+              "seriesId": "bri.context.wdi.trade_share_gdp",
+              "indicatorId": "NE.TRD.GNFS.ZS",
+              "unit": "percent of GDP",
+              "annualCoverage": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "sourceRowCount": 66,
+              "observed": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0
+              },
+              "forecast": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0
+              },
+              "unavailable": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66,
+                "reasonCounts": {
+                  "source_value_null": 66
+                }
+              }
+            },
+            {
+              "seriesId": "bri.context.wdi.unemployment_rate",
+              "indicatorId": "SL.UEM.TOTL.ZS",
+              "unit": "percent of labor force",
+              "annualCoverage": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "sourceRowCount": 66,
+              "observed": {
+                "fromYear": 1991,
+                "toYear": 2025,
+                "yearCount": 35
+              },
+              "forecast": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0
+              },
+              "unavailable": {
+                "fromYear": 1960,
+                "toYear": 1990,
+                "yearCount": 31,
+                "reasonCounts": {
+                  "source_value_null": 31
+                }
+              }
+            }
+          ]
+        },
+        {
+          "countryCode": "PAK",
+          "country": "Pakistan",
+          "indicatorCount": 18,
+          "sourceRowCount": 1188,
+          "observedRowCount": 707,
+          "forecastRowCount": 0,
+          "unavailableRowCount": 481,
+          "indicators": [
+            {
+              "seriesId": "bri.context.wdi.central_government_debt_share",
+              "indicatorId": "GC.DOD.TOTL.GD.ZS",
+              "unit": "percent of GDP",
+              "annualCoverage": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "sourceRowCount": 66,
+              "observed": {
+                "fromYear": 1990,
+                "toYear": 2000,
+                "yearCount": 6
+              },
+              "forecast": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0
+              },
+              "unavailable": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 60,
+                "reasonCounts": {
+                  "source_value_null": 60
+                }
+              }
+            },
+            {
+              "seriesId": "bri.context.wdi.co2_emissions_per_capita",
+              "indicatorId": "EN.GHG.CO2.PC.CE.AR5",
+              "unit": "metric tons CO2 equivalent per capita",
+              "annualCoverage": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "sourceRowCount": 66,
+              "observed": {
+                "fromYear": 1970,
+                "toYear": 2024,
+                "yearCount": 55
+              },
+              "forecast": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0
+              },
+              "unavailable": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 11,
+                "reasonCounts": {
+                  "source_value_null": 11
+                }
+              }
+            },
+            {
+              "seriesId": "bri.context.wdi.container_port_traffic",
+              "indicatorId": "IS.SHP.GOOD.TU",
+              "unit": "twenty-foot equivalent units",
+              "annualCoverage": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "sourceRowCount": 66,
+              "observed": {
+                "fromYear": 2010,
+                "toYear": 2024,
+                "yearCount": 15
+              },
+              "forecast": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0
+              },
+              "unavailable": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 51,
+                "reasonCounts": {
+                  "source_value_null": 51
+                }
+              }
+            },
+            {
+              "seriesId": "bri.context.wdi.electric_power_use",
+              "indicatorId": "EG.USE.ELEC.KH.PC",
+              "unit": "kilowatt-hours per capita",
+              "annualCoverage": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "sourceRowCount": 66,
+              "observed": {
+                "fromYear": 1990,
+                "toYear": 2023,
+                "yearCount": 34
+              },
+              "forecast": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0
+              },
+              "unavailable": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 32,
+                "reasonCounts": {
+                  "source_value_null": 32
+                }
+              }
+            },
+            {
+              "seriesId": "bri.context.wdi.electricity_access",
+              "indicatorId": "EG.ELC.ACCS.ZS",
+              "unit": "percent of population",
+              "annualCoverage": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "sourceRowCount": 66,
+              "observed": {
+                "fromYear": 1998,
+                "toYear": 2024,
+                "yearCount": 27
+              },
+              "forecast": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0
+              },
+              "unavailable": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 39,
+                "reasonCounts": {
+                  "source_value_null": 39
+                }
+              }
+            },
+            {
+              "seriesId": "bri.context.wdi.employment_ratio",
+              "indicatorId": "SL.EMP.TOTL.SP.ZS",
+              "unit": "percent ages 15 and older",
+              "annualCoverage": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "sourceRowCount": 66,
+              "observed": {
+                "fromYear": 1991,
+                "toYear": 2025,
+                "yearCount": 35
+              },
+              "forecast": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0
+              },
+              "unavailable": {
+                "fromYear": 1960,
+                "toYear": 1990,
+                "yearCount": 31,
+                "reasonCounts": {
+                  "source_value_null": 31
+                }
+              }
+            },
+            {
+              "seriesId": "bri.context.wdi.exports_current_usd",
+              "indicatorId": "NE.EXP.GNFS.CD",
+              "unit": "current US dollars",
+              "annualCoverage": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "sourceRowCount": 66,
+              "observed": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "forecast": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0
+              },
+              "unavailable": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0,
+                "reasonCounts": {}
+              }
+            },
+            {
+              "seriesId": "bri.context.wdi.fdi_net_inflows_share",
+              "indicatorId": "BX.KLT.DINV.WD.GD.ZS",
+              "unit": "percent of GDP",
+              "annualCoverage": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "sourceRowCount": 66,
+              "observed": {
+                "fromYear": 1970,
+                "toYear": 2025,
+                "yearCount": 56
+              },
+              "forecast": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0
+              },
+              "unavailable": {
+                "fromYear": 1960,
+                "toYear": 1969,
+                "yearCount": 10,
+                "reasonCounts": {
+                  "source_value_null": 10
+                }
+              }
+            },
+            {
+              "seriesId": "bri.context.wdi.fixed_broadband_density",
+              "indicatorId": "IT.NET.BBND.P2",
+              "unit": "per 100 people",
+              "annualCoverage": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "sourceRowCount": 66,
+              "observed": {
+                "fromYear": 2005,
+                "toYear": 2024,
+                "yearCount": 20
+              },
+              "forecast": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0
+              },
+              "unavailable": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 46,
+                "reasonCounts": {
+                  "source_value_null": 46
+                }
+              }
+            },
+            {
+              "seriesId": "bri.context.wdi.gdp_current_usd",
+              "indicatorId": "NY.GDP.MKTP.CD",
+              "unit": "current US dollars",
+              "annualCoverage": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "sourceRowCount": 66,
+              "observed": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "forecast": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0
+              },
+              "unavailable": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0,
+                "reasonCounts": {}
+              }
+            },
+            {
+              "seriesId": "bri.context.wdi.gdp_real_growth",
+              "indicatorId": "NY.GDP.MKTP.KD.ZG",
+              "unit": "annual percent",
+              "annualCoverage": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "sourceRowCount": 66,
+              "observed": {
+                "fromYear": 1961,
+                "toYear": 2025,
+                "yearCount": 65
+              },
+              "forecast": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0
+              },
+              "unavailable": {
+                "fromYear": 1960,
+                "toYear": 1960,
+                "yearCount": 1,
+                "reasonCounts": {
+                  "source_value_null": 1
+                }
+              }
+            },
+            {
+              "seriesId": "bri.context.wdi.government_expense_share",
+              "indicatorId": "GC.XPN.TOTL.GD.ZS",
+              "unit": "percent of GDP",
+              "annualCoverage": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "sourceRowCount": 66,
+              "observed": {
+                "fromYear": 1997,
+                "toYear": 2000,
+                "yearCount": 4
+              },
+              "forecast": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0
+              },
+              "unavailable": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 62,
+                "reasonCounts": {
+                  "source_value_null": 62
+                }
+              }
+            },
+            {
+              "seriesId": "bri.context.wdi.government_revenue_share",
+              "indicatorId": "GC.REV.XGRT.GD.ZS",
+              "unit": "percent of GDP",
+              "annualCoverage": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "sourceRowCount": 66,
+              "observed": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0
+              },
+              "forecast": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0
+              },
+              "unavailable": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66,
+                "reasonCounts": {
+                  "source_value_null": 66
+                }
+              }
+            },
+            {
+              "seriesId": "bri.context.wdi.imports_current_usd",
+              "indicatorId": "NE.IMP.GNFS.CD",
+              "unit": "current US dollars",
+              "annualCoverage": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "sourceRowCount": 66,
+              "observed": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "forecast": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0
+              },
+              "unavailable": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0,
+                "reasonCounts": {}
+              }
+            },
+            {
+              "seriesId": "bri.context.wdi.population",
+              "indicatorId": "SP.POP.TOTL",
+              "unit": "people",
+              "annualCoverage": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "sourceRowCount": 66,
+              "observed": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "forecast": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0
+              },
+              "unavailable": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0,
+                "reasonCounts": {}
+              }
+            },
+            {
+              "seriesId": "bri.context.wdi.rail_route_length",
+              "indicatorId": "IS.RRS.TOTL.KM",
+              "unit": "route-kilometers",
+              "annualCoverage": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "sourceRowCount": 66,
+              "observed": {
+                "fromYear": 1995,
+                "toYear": 2019,
+                "yearCount": 25
+              },
+              "forecast": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0
+              },
+              "unavailable": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 41,
+                "reasonCounts": {
+                  "source_value_null": 41
+                }
+              }
+            },
+            {
+              "seriesId": "bri.context.wdi.trade_share_gdp",
+              "indicatorId": "NE.TRD.GNFS.ZS",
+              "unit": "percent of GDP",
+              "annualCoverage": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "sourceRowCount": 66,
+              "observed": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "forecast": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0
+              },
+              "unavailable": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0,
+                "reasonCounts": {}
+              }
+            },
+            {
+              "seriesId": "bri.context.wdi.unemployment_rate",
+              "indicatorId": "SL.UEM.TOTL.ZS",
+              "unit": "percent of labor force",
+              "annualCoverage": {
+                "fromYear": 1960,
+                "toYear": 2025,
+                "yearCount": 66
+              },
+              "sourceRowCount": 66,
+              "observed": {
+                "fromYear": 1991,
+                "toYear": 2025,
+                "yearCount": 35
+              },
+              "forecast": {
+                "fromYear": null,
+                "toYear": null,
+                "yearCount": 0
+              },
+              "unavailable": {
+                "fromYear": 1960,
+                "toYear": 1990,
+                "yearCount": 31,
+                "reasonCounts": {
+                  "source_value_null": 31
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

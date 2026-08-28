@@ -1,6 +1,12 @@
 import { useState } from 'react'
+import { PRIMARY_DOSSIER_IDS } from '../navigation'
 
 const PUBLIC_ORIGIN = 'https://narcoscope.com/'
+const palimpsestDossierIds = new Set<string>(PRIMARY_DOSSIER_IDS)
+
+export function isPalimpsestDossier(tab: string): boolean {
+  return palimpsestDossierIds.has(tab)
+}
 
 export function canonicalViewUrl(tab: string, base = PUBLIC_ORIGIN): string {
   const url = new URL(base)
@@ -26,7 +32,16 @@ export function viewCitation(
   accessed = new Date().toISOString().slice(0, 10),
   base = PUBLIC_ORIGIN,
 ): string {
+  if (isPalimpsestDossier(tab)) {
+    return `Palimpsest, via NarcoScope. “${label}.” Evidence-readiness ledger and bounded economic context, accessed ${accessed}. ${canonicalViewUrl(tab, base)}`
+  }
   return `NarcoScope. “${label}.” NarcoScope, accessed ${accessed}. ${canonicalViewUrl(tab, base)}`
+}
+
+export function citationCardKicker(tab: string): string {
+  return isPalimpsestDossier(tab)
+    ? 'PALIMPSEST VIA NARCOSCOPE · EVIDENCE READINESS'
+    : 'NARCOSCOPE · OFFICIAL RECORD'
 }
 
 function slug(value: string): string {
@@ -90,7 +105,7 @@ function downloadCitationCard(label: string, tab: string) {
   context.fillRect(72, 78, 188, 5)
   context.fillStyle = '#79e8ee'
   context.font = '700 24px system-ui, sans-serif'
-  context.fillText('NARCOSCOPE · OFFICIAL RECORD', 72, 138)
+  context.fillText(citationCardKicker(tab), 72, 138)
   context.fillStyle = '#f4f7f7'
   context.font = '400 58px Georgia, serif'
   const words = label.split(/\s+/)
@@ -107,7 +122,13 @@ function downloadCitationCard(label: string, tab: string) {
   lines.slice(0, 3).forEach((line, index) => context.fillText(line, 72, 238 + index * 72))
   context.fillStyle = '#a5b2b8'
   context.font = '400 26px system-ui, sans-serif'
-  context.fillText('Sources, units, missing joins and claim limits stay attached.', 72, 500)
+  context.fillText(
+    isPalimpsestDossier(tab)
+      ? 'Source readiness, rights states, missing coverage and no-join rules stay attached.'
+      : 'Sources, units, missing joins and claim limits stay attached.',
+    72,
+    500,
+  )
   context.fillStyle = '#79e8ee'
   context.font = '500 22px ui-monospace, monospace'
   context.fillText(canonicalViewUrl(tab).replace(/^https?:\/\//, ''), 72, 558)
@@ -124,6 +145,7 @@ export default function AuthorityBar({ tab, label }: { tab: string; label: strin
     window.setTimeout(() => setStatus(''), 2_400)
   }
   const liveBase = typeof window === 'undefined' ? PUBLIC_ORIGIN : window.location.origin
+  const palimpsestDossier = isPalimpsestDossier(tab)
 
   const copy = async (value: string, message: string) => {
     await navigator.clipboard.writeText(value)
@@ -133,7 +155,13 @@ export default function AuthorityBar({ tab, label }: { tab: string; label: strin
   const share = async () => {
     const url = trackedViewUrl(tab, 'native_share', liveBase)
     if (navigator.share) {
-      await navigator.share({ title: `${label} | NarcoScope`, text: 'Inspect the official record and its limits.', url })
+      await navigator.share({
+        title: palimpsestDossier ? `${label} | Palimpsest via NarcoScope` : `${label} | NarcoScope`,
+        text: palimpsestDossier
+          ? 'Inspect source readiness, rights states, missing coverage and claim limits.'
+          : 'Inspect the official record and its limits.',
+        url,
+      })
       return
     }
     await copy(url, 'Tracked link copied')
@@ -144,9 +172,11 @@ export default function AuthorityBar({ tab, label }: { tab: string; label: strin
       <button type="button" onClick={() => void share().catch(() => report('Share cancelled'))}>Share view</button>
       <button type="button" onClick={() => void copy(viewCitation(label, tab, undefined, liveBase), 'Citation copied').catch(() => report('Copy unavailable'))}>Copy citation</button>
       <button type="button" onClick={() => void copy(trackedViewUrl(tab, 'copy_link', liveBase), 'Tracked link copied').catch(() => report('Copy unavailable'))}>Copy link</button>
-      <button type="button" onClick={() => {
-        try { downloadVisibleChart(label); report('Chart SVG saved') } catch { report('Open a chart first') }
-      }}>Download chart SVG</button>
+      {!palimpsestDossier ? (
+        <button type="button" onClick={() => {
+          try { downloadVisibleChart(label); report('Chart SVG saved') } catch { report('Open a chart first') }
+        }}>Download chart SVG</button>
+      ) : null}
       <button type="button" onClick={() => {
         try { downloadCitationCard(label, tab); report('Citation card saved') } catch { report('Export unavailable') }
       }}>Download share card</button>

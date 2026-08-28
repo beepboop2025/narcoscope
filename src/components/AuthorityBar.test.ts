@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { canonicalViewUrl, trackedViewUrl, viewCitation } from './AuthorityBar'
+import { canonicalViewUrl, citationCardKicker, trackedViewUrl, viewCitation } from './AuthorityBar'
 
 describe('NarcoScope authority links', () => {
   it('preserves an exact evidence tab in canonical and tracked links', () => {
@@ -15,5 +15,14 @@ describe('NarcoScope authority links', () => {
     expect(citation).toContain('accessed 2026-08-13')
     expect(citation).toContain('https://narcoscope.com/#flows')
     expect(citation).not.toContain('utm_')
+  })
+
+  it('keeps Palimpsest identity and readiness semantics on regional dossiers', () => {
+    const citation = viewCitation('Balochistan evidence', 'balochistan', '2026-08-27')
+    expect(citation).toContain('Palimpsest, via NarcoScope')
+    expect(citation).toContain('Evidence-readiness ledger')
+    expect(citation).not.toContain('official record')
+    expect(citationCardKicker('bri')).toBe('PALIMPSEST VIA NARCOSCOPE · EVIDENCE READINESS')
+    expect(citationCardKicker('flows')).toBe('NARCOSCOPE · OFFICIAL RECORD')
   })
 })
