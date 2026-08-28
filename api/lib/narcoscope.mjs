@@ -1,6 +1,8 @@
 import { readFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 
+import { verifiedPalimpsestBriEnvelope } from './palimpsest-bri.mjs'
+
 export const SITE_URL = (process.env.NARCOSCOPE_SITE_URL ||
   'https://narcoscope.com').replace(/\/$/, '')
 
@@ -61,16 +63,22 @@ export function capabilities() {
         outcome: 'Use official country aggregates with a geography-and-time-only join contract and explicit missing-data states.',
         url: `${SITE_URL}/data/narcoscope-palimpsest-corridors-v2.json`,
       },
+      {
+        id: 'palimpsest-bri-context',
+        title: 'Palimpsest Belt and Road context',
+        outcome: 'Inspect source readiness and national economic coverage for CPEC, Gwadar, CMEC, Kyaukpyu, and Balochistan in a parallel lane that cannot enter drug-market inference.',
+        url: `${SITE_URL}/data/narcoscope-palimpsest-bri-v1.json`,
+      },
     ],
     api: {
       base_url: `${SITE_URL}/api/v1`,
       openapi: `${SITE_URL}/openapi.json`,
-      resources: ['capabilities', 'overview', 'newsroom', 'story', 'palimpsest-bridge', 'palimpsest-corridors'],
+      resources: ['capabilities', 'overview', 'newsroom', 'story', 'palimpsest-bridge', 'palimpsest-corridors', 'palimpsest-bri'],
     },
     mcp: {
       endpoint: `${SITE_URL}/mcp`,
       transport: 'streamable-http',
-      tools: ['list_capabilities', 'get_overview', 'get_newsroom', 'get_story', 'get_palimpsest_bridge', 'get_palimpsest_corridors'],
+      tools: ['list_capabilities', 'get_overview', 'get_newsroom', 'get_story', 'get_palimpsest_bridge', 'get_palimpsest_corridors', 'get_palimpsest_bri_context'],
     },
     feeds: {
       json: `${SITE_URL}/news/feed.json`,
@@ -82,6 +90,7 @@ export function capabilities() {
       'Administrative seizures do not measure trafficking volume without independent modalities.',
       'Origin labels and public designations are attributed records, not adjudications of guilt or causal proof.',
       'Illustrative datasets remain labelled and are excluded from official-only bridge artifacts.',
+      'Belt and Road context is a separate source-readiness and national-economic lane; no drug-conflict-infrastructure causal join, actor classification, bilateral route inference, guilt inference, political-movement classification, project attribution from national series, or tactical or navigable use is permitted.',
     ],
   }
 }
@@ -182,7 +191,11 @@ export async function getPalimpsestCorridors() {
   }
 }
 
-export async function resource(name, params = {}) {
+export async function getPalimpsestBriContext(options = {}) {
+  return verifiedPalimpsestBriEnvelope({ ...options, siteUrl: SITE_URL })
+}
+
+export async function resource(name, params = {}, { getBriContext = getPalimpsestBriContext } = {}) {
   switch (name) {
     case 'capabilities': return capabilities()
     case 'overview': return getOverview()
@@ -190,6 +203,7 @@ export async function resource(name, params = {}) {
     case 'story': return getStory(params)
     case 'palimpsest-bridge': return getPalimpsestBridge()
     case 'palimpsest-corridors': return getPalimpsestCorridors()
+    case 'palimpsest-bri': return getBriContext()
     default: throw new RangeError(`unknown resource: ${name}`)
   }
 }

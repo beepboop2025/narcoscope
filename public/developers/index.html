@@ -22,7 +22,7 @@
 <body><main>
   <p class="eyebrow">NarcoScope for developers and agents</p>
   <h1>Build on evidence, not scraped prose.</h1>
-  <p class="lede">One read-only contract exposes NarcoScope’s official aggregate overview, citation-gated newsroom, and two Palimpsest bridges: the stable China aggregate and the new China–Pakistan–Myanmar corridor overlay. The REST API and MCP tools resolve to the same published artifacts, so citations and limitations survive the handoff.</p>
+  <p class="lede">One read-only contract exposes NarcoScope’s official aggregate overview, citation-gated newsroom, two NarcoScope-to-Palimpsest bridges, and a separately pinned Palimpsest Belt and Road context lane. REST and MCP resolve to the same published artifacts, so sources, clocks, readiness states, and limitations survive the handoff.</p>
   <div class="actions">
     <a class="button primary" href="/api/v1/capabilities">Inspect the live contract</a>
     <a class="button" href="/openapi.json">Import OpenAPI</a>
@@ -34,13 +34,14 @@
     <section class="card"><h2>REST</h2><p>Start with a small overview or list the newsroom. Responses are cacheable, public JSON.</p><pre>curl https://narcoscope.com/api/v1/overview</pre></section>
     <section class="card"><h2>MCP</h2><p>Connect over stateless Streamable HTTP. Start with <code>list_capabilities</code> or <code>get_newsroom</code>.</p><pre>{"mcpServers":{"narcoscope":{"url":"https://narcoscope.com/mcp"}}}</pre></section>
     <section class="card"><h2>Palimpsest corridors</h2><p>Fetch official-only China, Pakistan, and Myanmar country aggregates. Use <code>get_palimpsest_corridors</code> over MCP or the REST path below.</p><pre>curl https://narcoscope.com/api/v1/palimpsest-corridors</pre></section>
+    <section class="card"><h2>BRI context</h2><p>Inspect CPEC, Gwadar, CMEC, Kyaukpyu, Balochistan, and WDI coverage through <code>get_palimpsest_bri_context</code>. It is a parallel lane, never a drug/infrastructure join.</p><pre>curl https://narcoscope.com/api/v1/palimpsest-bri</pre></section>
     <section class="card"><h2>Feeds</h2><p>Follow stable item IDs and exact story URLs. Every newsroom item links to a machine brief and cited dossier.</p><pre>/news/feed.json
 /news/feed.xml</pre></section>
   </div>
 
   <section class="boundary">
     <h2>The safety boundary is part of the API.</h2>
-    <p class="lede">NarcoScope exposes aggregate published evidence—not point-of-sale, real-time, sub-street, navigable, synthesis-route, chemistry, or yield information. A seizure is an administrative observation, not a direct market-size estimate. An origin label or public designation is not guilt or causal proof. The corridor artifact permits geography-and-time comparison only; it cannot classify a political movement, armed organization, community, person, or bilateral route.</p>
+    <p class="lede">NarcoScope exposes aggregate published evidence—not point-of-sale, real-time, sub-street, navigable, synthesis-route, chemistry, or yield information. A seizure is an administrative observation, not a direct market-size estimate. An origin label or public designation is not guilt or causal proof. The corridor artifact permits geography-and-time comparison only; it cannot classify a political movement, armed organization, community, person, or bilateral route. The BRI lane is stricter: it cannot be joined to drug-market evidence or used for drug-conflict-infrastructure causality, actor classification, bilateral route inference, guilt, political classification, or project attribution from national statistics.</p>
   </section>
   <p class="small">Free public good · no API key · read only · <a href="/">Open NarcoScope</a></p>
 </main></body>

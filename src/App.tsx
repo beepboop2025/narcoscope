@@ -22,6 +22,7 @@ export { resolveCorridorTabIndex } from './components/EvidenceCorridor'
 
 const WorldMap = lazy(() => import('./components/WorldMap'))
 const MyanmarFocus = lazy(() => import('./components/MyanmarFocus'))
+const BriDossier = lazy(() => import('./components/BriDossier'))
 const IntelligenceBriefing = lazy(() => import('./components/IntelligenceBriefing'))
 // Both lazy: each pulls in a several-hundred-kB bundled dataset (CDC mortality,
 // OFAC designations) that has no business in the initial payload.
@@ -189,7 +190,20 @@ export default function App() {
             {tab === 'designations' && <Designations />}
             {tab === 'illicitfinance' && <IllicitFinance />}
             {tab === 'wildlife' && <WildlifeSeizures />}
-            {tab === 'myanmar' && <MyanmarFocus />}
+            {tab === 'bri' && <BriDossier scope="bri" />}
+            {tab === 'balochistan' && <BriDossier scope="balochistan" />}
+            {tab === 'pakistan-gwadar' && <BriDossier scope="pakistan-gwadar" />}
+            {tab === 'myanmar' && (
+              <div className="myanmar-workspace">
+                <BriDossier scope="myanmar" />
+                <div className="bri-parallel-divider" role="note" aria-label="Separate Myanmar evidence lane">
+                  <span>Separate NarcoScope lane</span>
+                  <h2>Drug, cultivation and conflict aggregates</h2>
+                  <p>These records sit beside the CMEC and Kyaukpyu dossier. They are not joined to it and do not establish an infrastructure, conflict or trafficking causal chain.</p>
+                </div>
+                <MyanmarFocus />
+              </div>
+            )}
             {tab === 'intel' && <IntelligenceBriefing />}
             {tab === 'newsroom' && <EvidenceNewsroom />}
           </TabPanel>
@@ -240,6 +254,7 @@ export default function App() {
             <a href="/#newsroom">Evidence newsroom</a>
             <a href="/research/">Research guides</a>
             <a href="/developers/">API + MCP</a>
+            <a href="/api/v1/palimpsest-bri">BRI context</a>
             <a href="/openapi.json">OpenAPI</a>
             <a href="/server.json">MCP manifest</a>
             <a href="/product-card.json">Product card</a>
