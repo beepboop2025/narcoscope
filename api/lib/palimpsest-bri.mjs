@@ -96,7 +96,7 @@ export function clearVerifiedPalimpsestBriArtifactCache(dataDir) {
 
 export async function verifiedPalimpsestBriEnvelope({
   dataDir,
-  siteUrl = 'https://narcoscope.com',
+  siteUrl = 'https://drug-price-observatory.vercel.app',
 } = {}) {
   const verified = await loadVerifiedPalimpsestBriArtifact(dataDir ? { dataDir } : undefined)
   const baseUrl = siteUrl.replace(/\/$/, '')

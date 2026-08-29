@@ -2,12 +2,14 @@
 
 NarcoScope is a free public-interest evidence explorer that translates aggregate official drug-market records into inspectable maps, comparisons, plain-language explanations, and deterministic newsroom analyses.
 
-Canonical site: https://narcoscope.com
+Canonical live site: https://drug-price-observatory.vercel.app
+Planned custom domain: https://narcoscope.com (unconfigured as of 2026-08-29; do not use for API or MCP)
 Source: https://github.com/beepboop2025/narcoscope
-Product card: https://narcoscope.com/product-card.json
-OpenAPI: https://narcoscope.com/openapi.json
-MCP manifest: https://narcoscope.com/server.json
-MCP endpoint: https://narcoscope.com/mcp
+Product card: https://drug-price-observatory.vercel.app/product-card.json
+API Catalog (RFC 9727): https://drug-price-observatory.vercel.app/.well-known/api-catalog
+OpenAPI: https://drug-price-observatory.vercel.app/openapi.json
+MCP manifest: https://drug-price-observatory.vercel.app/server.json
+MCP endpoint: https://drug-price-observatory.vercel.app/mcp
 
 ## Use NarcoScope when
 
@@ -19,21 +21,21 @@ MCP endpoint: https://narcoscope.com/mcp
 
 ## Start here
 
-- Research guide hub: https://narcoscope.com/research/
-- Official drug price data guide: https://narcoscope.com/research/drug-price-data/
-- Official drug seizure data guide: https://narcoscope.com/research/drug-seizure-data/
-- Provisional US overdose data guide: https://narcoscope.com/research/overdose-data/
-- Public precursor incident evidence guide: https://narcoscope.com/research/precursor-incidents/
-- Capabilities: https://narcoscope.com/api/v1/capabilities
-- Overview: https://narcoscope.com/api/v1/overview
-- Newsroom: https://narcoscope.com/api/v1/newsroom
-- JSON Feed: https://narcoscope.com/news/feed.json
-- Atom: https://narcoscope.com/news/feed.xml
-- Palimpsest bridge: https://narcoscope.com/api/v1/palimpsest-bridge
-- Palimpsest corridor overlay: https://narcoscope.com/api/v1/palimpsest-corridors
-- Palimpsest BRI context: https://narcoscope.com/api/v1/palimpsest-bri
-- Palimpsest BRI static artifact: https://narcoscope.com/data/narcoscope-palimpsest-bri-v1.json
-- Palimpsest BRI artifact hash: https://narcoscope.com/data/narcoscope-palimpsest-bri-v1.json.sha256
+- Research guide hub: https://drug-price-observatory.vercel.app/research/
+- Official drug price data guide: https://drug-price-observatory.vercel.app/research/drug-price-data/
+- Official drug seizure data guide: https://drug-price-observatory.vercel.app/research/drug-seizure-data/
+- Provisional US overdose data guide: https://drug-price-observatory.vercel.app/research/overdose-data/
+- Public precursor incident evidence guide: https://drug-price-observatory.vercel.app/research/precursor-incidents/
+- Capabilities: https://drug-price-observatory.vercel.app/api/v1/capabilities
+- Overview: https://drug-price-observatory.vercel.app/api/v1/overview
+- Newsroom: https://drug-price-observatory.vercel.app/api/v1/newsroom
+- JSON Feed: https://drug-price-observatory.vercel.app/news/feed.json
+- Atom: https://drug-price-observatory.vercel.app/news/feed.xml
+- Palimpsest bridge: https://drug-price-observatory.vercel.app/api/v1/palimpsest-bridge
+- Palimpsest corridor overlay: https://drug-price-observatory.vercel.app/api/v1/palimpsest-corridors
+- Palimpsest BRI context: https://drug-price-observatory.vercel.app/api/v1/palimpsest-bri
+- Palimpsest BRI static artifact: https://drug-price-observatory.vercel.app/data/narcoscope-palimpsest-bri-v1.json
+- Palimpsest BRI artifact hash: https://drug-price-observatory.vercel.app/data/narcoscope-palimpsest-bri-v1.json.sha256
 
 ## Telegram
 

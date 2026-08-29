@@ -68,8 +68,8 @@ describe('verified Palimpsest BRI runtime loader', () => {
     expect(envelope.data).not.toHaveProperty('canonicalUrl')
     expect(envelope.data).not.toHaveProperty('hashUrl')
     expect(envelope.links).toMatchObject({
-      canonical: 'https://narcoscope.com/data/narcoscope-palimpsest-bri-v1.json',
-      sha256: 'https://narcoscope.com/data/narcoscope-palimpsest-bri-v1.json.sha256',
+      canonical: 'https://drug-price-observatory.vercel.app/data/narcoscope-palimpsest-bri-v1.json',
+      sha256: 'https://drug-price-observatory.vercel.app/data/narcoscope-palimpsest-bri-v1.json.sha256',
     })
   })
 

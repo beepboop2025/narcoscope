@@ -1,3 +1,6 @@
+import Ajv2020 from 'ajv/dist/2020.js'
+import addFormats from 'ajv-formats'
+
 import {
   capabilities,
   getNewsroom,
@@ -8,12 +11,18 @@ import {
   getStory,
   SITE_URL,
 } from './lib/narcoscope.mjs'
+import { TOOL_OUTPUT_SCHEMAS } from './lib/mcp-output-schemas.mjs'
 import { PALIMPSEST_BRI_OUTPUT_SCHEMA } from './lib/palimpsest-bri.mjs'
 
-const PROTOCOL_VERSION = '2025-06-18'
-const SUPPORTED_PROTOCOL_VERSIONS = new Set(['2025-03-26', PROTOCOL_VERSION])
-const SERVER_VERSION = '1.2.0'
+export const PROTOCOL_VERSION = '2026-07-28'
+export const SUPPORTED_PROTOCOL_VERSIONS = new Set([
+  '2025-03-26',
+  '2025-06-18',
+  PROTOCOL_VERSION,
+])
+export const SERVER_VERSION = '1.3.0'
 const MAX_BODY_BYTES = 256 * 1024
+const API_CATALOG_URL = `${SITE_URL}/.well-known/api-catalog`
 const ALLOWED_ORIGINS = new Set([
   SITE_URL,
   'https://narcoscope.com',
@@ -25,12 +34,14 @@ export const TOOLS = Object.freeze({
     title: 'Discover NarcoScope',
     description: 'List the evidence explorer, newsroom, API, feeds, MCP tools, audiences, and safety boundaries.',
     inputSchema: { type: 'object', additionalProperties: false },
+    outputSchema: TOOL_OUTPUT_SCHEMAS.list_capabilities,
     call: async () => capabilities(),
   },
   get_overview: {
     title: 'Read the official-data overview',
     description: 'Return bounded headline aggregates across official prices, seizures, overdose mortality, wastewater, and public designations.',
     inputSchema: { type: 'object', additionalProperties: false },
+    outputSchema: TOOL_OUTPUT_SCHEMAS.get_overview,
     call: async () => getOverview(),
   },
   get_newsroom: {
@@ -41,6 +52,7 @@ export const TOOLS = Object.freeze({
       properties: { limit: { type: 'integer', minimum: 1, maximum: 25, default: 10 } },
       additionalProperties: false,
     },
+    outputSchema: TOOL_OUTPUT_SCHEMAS.get_newsroom,
     call: getNewsroom,
   },
   get_story: {
@@ -55,18 +67,21 @@ export const TOOLS = Object.freeze({
       },
       additionalProperties: false,
     },
+    outputSchema: TOOL_OUTPUT_SCHEMAS.get_story,
     call: getStory,
   },
   get_palimpsest_bridge: {
     title: 'Read the Palimpsest bridge',
     description: 'Return the official-only China aggregate shared with the Intelligence Commons, including disclosure and causal boundaries.',
     inputSchema: { type: 'object', additionalProperties: false },
+    outputSchema: TOOL_OUTPUT_SCHEMAS.get_palimpsest_bridge,
     call: async () => getPalimpsestBridge(),
   },
   get_palimpsest_corridors: {
     title: 'Read the Palimpsest corridor overlay',
     description: 'Return official country-level China, Pakistan, and Myanmar aggregates with missing-data, provenance, disclosure, and geography-and-time-only join rules.',
     inputSchema: { type: 'object', additionalProperties: false },
+    outputSchema: TOOL_OUTPUT_SCHEMAS.get_palimpsest_corridors,
     call: async () => getPalimpsestCorridors(),
   },
   get_palimpsest_bri_context: {
@@ -77,6 +92,23 @@ export const TOOLS = Object.freeze({
     call: async (_args, { getBriContext = getPalimpsestBriContext } = {}) => getBriContext(),
   },
 })
+
+const contractValidator = new Ajv2020({ allErrors: true, strict: true, validateFormats: true })
+addFormats(contractValidator)
+const INPUT_VALIDATORS = Object.freeze(Object.fromEntries(
+  Object.entries(TOOLS).map(([name, tool]) => [name, contractValidator.compile(tool.inputSchema)]),
+))
+const OUTPUT_VALIDATORS = Object.freeze(Object.fromEntries(
+  Object.entries(TOOLS).map(([name, tool]) => [name, contractValidator.compile(tool.outputSchema)]),
+))
+
+export function toolInputIsValid(name, data) {
+  return INPUT_VALIDATORS[name]?.(data) === true
+}
+
+export function toolOutputIsValid(name, data) {
+  return OUTPUT_VALIDATORS[name]?.(data) === true
+}
 
 function result(id, value) {
   return { jsonrpc: '2.0', id, result: value }
@@ -121,10 +153,19 @@ export async function dispatch(message, dependencies = {}) {
     })) })
   }
   if (method === 'tools/call') {
-    const tool = TOOLS[params?.name]
+    const tool = typeof params?.name === 'string' && Object.hasOwn(TOOLS, params.name)
+      ? TOOLS[params.name]
+      : undefined
     if (!tool) return failure(id, -32602, `Unknown tool: ${params?.name ?? ''}`)
+    const args = params.arguments ?? {}
+    if (!toolInputIsValid(params.name, args)) {
+      return failure(id, -32602, `Invalid arguments for tool: ${params.name}`)
+    }
     try {
-      const data = await tool.call(params.arguments ?? {}, dependencies)
+      const data = await tool.call(args, dependencies)
+      if (!toolOutputIsValid(params.name, data)) {
+        throw new Error(`NarcoScope tool output violated its published contract: ${params.name}`)
+      }
       return result(id, {
         content: [{ type: 'text', text: JSON.stringify(data) }],
         structuredContent: data,
@@ -150,6 +191,7 @@ function setHeaders(req, res) {
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Accept, MCP-Protocol-Version')
   res.setHeader('Content-Type', 'application/json; charset=utf-8')
+  res.setHeader('Link', `<${API_CATALOG_URL}>; rel="api-catalog"; type="application/linkset+json"`)
   res.setHeader('Cache-Control', 'no-store')
   res.setHeader('X-Content-Type-Options', 'nosniff')
 }

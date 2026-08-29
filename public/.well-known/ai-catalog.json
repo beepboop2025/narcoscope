@@ -1,14 +1,27 @@
 {
   "schema": "ai-catalog.v1",
+  "version": "1.3.0",
   "name": "NarcoScope",
   "description": "Official drug-market evidence made legible with source, freshness, and claim boundaries intact.",
-  "canonical": "https://narcoscope.com/product-card.json",
-  "llms": "https://narcoscope.com/llms.txt",
-  "openapi": "https://narcoscope.com/openapi.json",
-  "mcp": "https://narcoscope.com/server.json",
-  "research": "https://narcoscope.com/research/",
+  "canonical": "https://drug-price-observatory.vercel.app/product-card.json",
+  "llms": "https://drug-price-observatory.vercel.app/llms.txt",
+  "openapi": "https://drug-price-observatory.vercel.app/openapi.json",
+  "apiCatalog": "https://drug-price-observatory.vercel.app/.well-known/api-catalog",
+  "mcp": "https://drug-price-observatory.vercel.app/server.json",
+  "mcpEndpoint": "https://drug-price-observatory.vercel.app/mcp",
+  "mcpRegistry": "https://registry.modelcontextprotocol.io/v0.1/servers/io.github.beepboop2025%2Fnarcoscope/versions/latest",
+  "research": "https://drug-price-observatory.vercel.app/research/",
   "feeds": [
-    "https://narcoscope.com/news/feed.json",
-    "https://narcoscope.com/news/feed.xml"
-  ]
+    "https://drug-price-observatory.vercel.app/news/feed.json",
+    "https://drug-price-observatory.vercel.app/news/feed.xml"
+  ],
+  "availability": {
+    "status": "live",
+    "origin": "https://drug-price-observatory.vercel.app",
+    "customDomain": {
+      "url": "https://narcoscope.com",
+      "status": "unconfigured",
+      "verifiedAt": "2026-08-29"
+    }
+  }
 }

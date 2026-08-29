@@ -2,17 +2,17 @@
   "openapi": "3.1.0",
   "info": {
     "title": "NarcoScope Public Evidence API",
-    "version": "1.2.0",
+    "version": "1.3.0",
     "description": "Read-only access to NarcoScope's aggregate official-data overview, citation-gated evidence newsroom, public Palimpsest bridges, and a separately pinned Belt and Road context lane. No endpoint provides point-of-sale, real-time, navigable, synthesis-route, or yield information, and BRI context cannot enter drug-market inference."
   },
   "servers": [
     {
-      "url": "https://narcoscope.com/api/v1"
+      "url": "https://drug-price-observatory.vercel.app/api/v1"
     }
   ],
   "externalDocs": {
     "description": "API and MCP quickstart",
-    "url": "https://narcoscope.com/developers/"
+    "url": "https://drug-price-observatory.vercel.app/developers/"
   },
   "components": {
     "schemas": {

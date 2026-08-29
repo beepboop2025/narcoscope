@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>NarcoScope API + MCP — build on evidence, not scraped prose</title>
   <meta name="description" content="Connect a read-only API or MCP client to NarcoScope's official aggregate evidence, citation-gated newsroom, and Palimpsest bridge.">
-  <link rel="canonical" href="https://narcoscope.com/developers/">
+  <link rel="canonical" href="https://drug-price-observatory.vercel.app/developers/">
   <meta name="robots" content="index,follow,max-snippet:-1">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="NarcoScope">
   <meta property="og:title" content="Build on NarcoScope evidence, not scraped prose">
   <meta property="og:description" content="One read-only API and MCP contract for official aggregates, cited newsroom artifacts, and explicit limits.">
-  <meta property="og:url" content="https://narcoscope.com/developers/">
+  <meta property="og:url" content="https://drug-price-observatory.vercel.app/developers/">
   <meta name="twitter:card" content="summary">
   <style>
     :root{color-scheme:dark;--bg:#050709;--panel:#0d1216;--line:#26343c;--ink:#f4f7f7;--muted:#a5b2b8;--cyan:#79e8ee;--coral:#ffb020}
@@ -31,10 +31,11 @@
   </div>
 
   <div class="grid">
-    <section class="card"><h2>REST</h2><p>Start with a small overview or list the newsroom. Responses are cacheable, public JSON.</p><pre>curl https://narcoscope.com/api/v1/overview</pre></section>
-    <section class="card"><h2>MCP</h2><p>Connect over stateless Streamable HTTP. Start with <code>list_capabilities</code> or <code>get_newsroom</code>.</p><pre>{"mcpServers":{"narcoscope":{"url":"https://narcoscope.com/mcp"}}}</pre></section>
-    <section class="card"><h2>Palimpsest corridors</h2><p>Fetch official-only China, Pakistan, and Myanmar country aggregates. Use <code>get_palimpsest_corridors</code> over MCP or the REST path below.</p><pre>curl https://narcoscope.com/api/v1/palimpsest-corridors</pre></section>
-    <section class="card"><h2>BRI context</h2><p>Inspect CPEC, Gwadar, CMEC, Kyaukpyu, Balochistan, and WDI coverage through <code>get_palimpsest_bri_context</code>. It is a parallel lane, never a drug/infrastructure join.</p><pre>curl https://narcoscope.com/api/v1/palimpsest-bri</pre></section>
+    <section class="card"><h2>REST</h2><p>Start with a small overview or list the newsroom. Responses are cacheable, public JSON.</p><pre>curl https://drug-price-observatory.vercel.app/api/v1/overview</pre></section>
+    <section class="card"><h2>API discovery</h2><p>Agents can discover both the REST API and MCP service from the RFC 9727 API Catalog.</p><pre>curl https://drug-price-observatory.vercel.app/.well-known/api-catalog</pre></section>
+    <section class="card"><h2>MCP</h2><p>Connect over stateless Streamable HTTP. Start with <code>list_capabilities</code> or <code>get_newsroom</code>.</p><pre>{"mcpServers":{"narcoscope":{"url":"https://drug-price-observatory.vercel.app/mcp"}}}</pre></section>
+    <section class="card"><h2>Palimpsest corridors</h2><p>Fetch official-only China, Pakistan, and Myanmar country aggregates. Use <code>get_palimpsest_corridors</code> over MCP or the REST path below.</p><pre>curl https://drug-price-observatory.vercel.app/api/v1/palimpsest-corridors</pre></section>
+    <section class="card"><h2>BRI context</h2><p>Inspect CPEC, Gwadar, CMEC, Kyaukpyu, Balochistan, and WDI coverage through <code>get_palimpsest_bri_context</code>. It is a parallel lane, never a drug/infrastructure join.</p><pre>curl https://drug-price-observatory.vercel.app/api/v1/palimpsest-bri</pre></section>
     <section class="card"><h2>Feeds</h2><p>Follow stable item IDs and exact story URLs. Every newsroom item links to a machine brief and cited dossier.</p><pre>/news/feed.json
 /news/feed.xml</pre></section>
   </div>

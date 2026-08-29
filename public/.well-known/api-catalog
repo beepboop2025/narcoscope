@@ -1,0 +1,56 @@
+{
+  "linkset": [
+    {
+      "anchor": "https://drug-price-observatory.vercel.app/api/v1",
+      "service-desc": [
+        {
+          "href": "https://drug-price-observatory.vercel.app/openapi.json",
+          "type": "application/vnd.oai.openapi+json"
+        }
+      ],
+      "service-doc": [
+        {
+          "href": "https://drug-price-observatory.vercel.app/developers/",
+          "type": "text/html"
+        },
+        {
+          "href": "https://drug-price-observatory.vercel.app/llms.txt",
+          "type": "text/plain"
+        }
+      ],
+      "service-meta": [
+        {
+          "href": "https://drug-price-observatory.vercel.app/product-card.json",
+          "type": "application/json"
+        },
+        {
+          "href": "https://drug-price-observatory.vercel.app/.well-known/ai-catalog.json",
+          "type": "application/json"
+        }
+      ]
+    },
+    {
+      "anchor": "https://drug-price-observatory.vercel.app/mcp",
+      "service-doc": [
+        {
+          "href": "https://drug-price-observatory.vercel.app/developers/",
+          "type": "text/html"
+        },
+        {
+          "href": "https://drug-price-observatory.vercel.app/llms.txt",
+          "type": "text/plain"
+        }
+      ],
+      "service-meta": [
+        {
+          "href": "https://drug-price-observatory.vercel.app/server.json",
+          "type": "application/json"
+        },
+        {
+          "href": "https://registry.modelcontextprotocol.io/v0.1/servers/io.github.beepboop2025%2Fnarcoscope/versions/latest",
+          "type": "application/json"
+        }
+      ]
+    }
+  ]
+}

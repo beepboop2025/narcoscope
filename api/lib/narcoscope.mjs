@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url'
 import { verifiedPalimpsestBriEnvelope } from './palimpsest-bri.mjs'
 
 export const SITE_URL = (process.env.NARCOSCOPE_SITE_URL ||
-  'https://narcoscope.com').replace(/\/$/, '')
+  'https://drug-price-observatory.vercel.app').replace(/\/$/, '')
 
 const ROOT = fileURLToPath(new URL('../../', import.meta.url))
 const MAX_LIMIT = 25

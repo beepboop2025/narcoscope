@@ -46,7 +46,7 @@ const FILES = Object.freeze({
   manifest: 'manifest.json',
 })
 
-const SITE_ORIGIN = 'https://narcoscope.com'
+const SITE_ORIGIN = 'https://drug-price-observatory.vercel.app'
 const ARTICLE_ID = `narcoscope.newsroom.${ARTICLE_SLUG}`
 
 const compareText = (a, b) => (a < b ? -1 : a > b ? 1 : 0)

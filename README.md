@@ -8,7 +8,9 @@
 
 # 🌍 NarcoScope
 
-**Live: [narcoscope.com](https://narcoscope.com)** · evidence newsroom: **[narcoscope.com/#newsroom](https://narcoscope.com/#newsroom)**
+**Live: [drug-price-observatory.vercel.app](https://drug-price-observatory.vercel.app)** · evidence newsroom: **[live newsroom](https://drug-price-observatory.vercel.app/#newsroom)**
+
+> Deployment status (2026-08-29): `drug-price-observatory.vercel.app` is the canonical live origin. The planned `narcoscope.com` custom domain is not configured; clients and agents must use the live origin for REST, MCP, and discovery.
 
 An educational, public-good **data explorer** that makes the world's drug-trade
 data *legible*. UNODC, INCB, and EUDA already publish street (retail) prices,
@@ -18,6 +20,25 @@ top of that public data: clean charts, maps, and plain-English explanations.
 
 > **Mission:** democratize hard-to-read official drug data. Not a new data source —
 > a way to *understand* the existing one.
+
+## Agent and API access
+
+- RFC 9727 API Catalog: `https://drug-price-observatory.vercel.app/.well-known/api-catalog`
+- OpenAPI: `https://drug-price-observatory.vercel.app/openapi.json`
+- MCP manifest: `https://drug-price-observatory.vercel.app/server.json`
+- Streamable HTTP MCP: `https://drug-price-observatory.vercel.app/mcp`
+- Machine-readable product context: `https://drug-price-observatory.vercel.app/.well-known/ai-catalog.json`
+- Agent-readable guide: `https://drug-price-observatory.vercel.app/llms.txt`
+
+```json
+{
+  "mcpServers": {
+    "narcoscope": { "url": "https://drug-price-observatory.vercel.app/mcp" }
+  }
+}
+```
+
+The MCP service is read-only and returns JSON Schema-backed `structuredContent` for every tool. It preserves official, illustrative, stale, unavailable, and restricted states rather than turning missing evidence into a score.
 
 ## What it shows
 

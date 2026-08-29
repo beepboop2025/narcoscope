@@ -11,7 +11,13 @@ import {
   getPalimpsestCorridors,
   getStory,
 } from './lib/narcoscope.mjs'
-import handler, { dispatch, TOOLS } from './mcp.mjs'
+import handler, {
+  dispatch,
+  PROTOCOL_VERSION,
+  SERVER_VERSION,
+  toolOutputIsValid,
+  TOOLS,
+} from './mcp.mjs'
 import { createV1Handler } from './v1.mjs'
 import {
   PALIMPSEST_BRI_OUTPUT_SCHEMA,
@@ -90,10 +96,10 @@ describe('NarcoScope public surfaces', () => {
   it('implements MCP initialize, list, and structured tool results', async () => {
     const initialized = await dispatch({
       jsonrpc: '2.0', id: 1, method: 'initialize',
-      params: { protocolVersion: '2025-03-26' },
+      params: { protocolVersion: PROTOCOL_VERSION },
     })
-    expect(initialized.result.serverInfo.version).toBe('1.2.0')
-    expect(initialized.result.protocolVersion).toBe('2025-03-26')
+    expect(initialized.result.serverInfo.version).toBe(SERVER_VERSION)
+    expect(initialized.result.protocolVersion).toBe('2026-07-28')
     const listed = await dispatch({ jsonrpc: '2.0', id: 2, method: 'tools/list' })
     expect(listed.result.tools.map((tool) => tool.name)).toEqual(Object.keys(TOOLS))
     const called = await dispatch({
@@ -120,6 +126,33 @@ describe('NarcoScope public surfaces', () => {
     const validateMcpOutput = compileStandaloneSchema(briTool.outputSchema)
     expect(validateMcpOutput(bri.result.structuredContent), JSON.stringify(validateMcpOutput.errors))
       .toBe(true)
+  })
+
+  it('publishes and satisfies a JSON Schema 2020-12 output contract for every tool', async () => {
+    const newsroom = await getNewsroom({ limit: 1 })
+    const argumentsByTool = {
+      get_newsroom: { limit: 1 },
+      get_story: { slug: newsroom.articles[0].slug, artifact: 'metadata' },
+    }
+
+    for (const [name, tool] of Object.entries(TOOLS)) {
+      expect(tool.outputSchema, `${name} must publish outputSchema`).toBeTruthy()
+      const validate = compileStandaloneSchema(tool.outputSchema)
+      const response = await dispatch({
+        jsonrpc: '2.0',
+        id: name,
+        method: 'tools/call',
+        params: { name, arguments: argumentsByTool[name] ?? {} },
+      })
+      expect(response.result.isError).toBe(false)
+      expect(
+        validate(response.result.structuredContent),
+        `${name}: ${JSON.stringify(validate.errors)}`,
+      ).toBe(true)
+      expect(JSON.parse(response.result.content[0].text))
+        .toEqual(response.result.structuredContent)
+    }
+    expect(toolOutputIsValid('get_overview', {})).toBe(false)
   })
 
   it('validates the real REST BRI envelope against the shared standalone contract', async () => {
@@ -167,6 +200,21 @@ describe('NarcoScope public surfaces', () => {
     const invalid = await dispatch({ id: 1, method: 'ping' })
     expect(invalid.error.code).toBe(-32600)
 
+    const invalidArguments = await dispatch({
+      jsonrpc: '2.0', id: 2, method: 'tools/call',
+      params: { name: 'get_newsroom', arguments: { limit: 'all' } },
+    })
+    expect(invalidArguments.error).toMatchObject({
+      code: -32602,
+      message: 'Invalid arguments for tool: get_newsroom',
+    })
+
+    const inheritedToolName = await dispatch({
+      jsonrpc: '2.0', id: 3, method: 'tools/call',
+      params: { name: 'toString', arguments: {} },
+    })
+    expect(inheritedToolName.error.code).toBe(-32602)
+
     const unsupported = responseRecorder()
     await handler({
       method: 'POST',
@@ -178,11 +226,12 @@ describe('NarcoScope public surfaces', () => {
     const notification = responseRecorder()
     await handler({
       method: 'POST',
-      headers: { 'mcp-protocol-version': '2025-06-18' },
+      headers: { 'mcp-protocol-version': '2026-07-28' },
       body: { jsonrpc: '2.0', method: 'ping' },
     }, notification)
     expect(notification.statusCode).toBe(202)
     expect(notification.body).toBe('')
+    expect(notification.headers.Link).toContain('/.well-known/api-catalog')
 
     const forbidden = responseRecorder()
     await handler({
@@ -211,14 +260,20 @@ describe('NarcoScope public surfaces', () => {
     const registry = JSON.parse(readFileSync('server.json', 'utf8'))
     const hosted = JSON.parse(readFileSync('public/server.json', 'utf8'))
     expect(registry).toEqual(hosted)
-    expect(registry.version).toBe('1.2.0')
+    expect(registry.version).toBe('1.3.0')
+    expect(registry.description.length).toBeLessThanOrEqual(100)
+    expect(registry.websiteUrl).toBe('https://drug-price-observatory.vercel.app')
+    expect(registry.remotes).toEqual([{
+      type: 'streamable-http',
+      url: 'https://drug-price-observatory.vercel.app/mcp',
+    }])
   })
 
   it('advertises the same BRI context lane through OpenAPI and product discovery', () => {
     const openapi = JSON.parse(readFileSync('public/openapi.json', 'utf8'))
     const product = JSON.parse(readFileSync('public/product-card.json', 'utf8'))
     const artifact = JSON.parse(readFileSync('public/data/narcoscope-palimpsest-bri-v1.json', 'utf8'))
-    expect(openapi.info.version).toBe('1.2.0')
+    expect(openapi.info.version).toBe('1.3.0')
     expect(openapi.paths).toHaveProperty('/palimpsest-bri')
     expect(openapi.paths['/palimpsest-bri'].get.responses['200'].$ref)
       .toBe('#/components/responses/PalimpsestBriSuccess')
@@ -227,12 +282,43 @@ describe('NarcoScope public surfaces', () => {
       .toEqual(PALIMPSEST_BRI_OUTPUT_SCHEMA)
     expect(openapi.components.schemas.PalimpsestBriContext.properties.data.$ref)
       .toBe('#/$defs/artifact')
-    expect(product.access.palimpsest_bri_context).toBe('https://narcoscope.com/api/v1/palimpsest-bri')
+    expect(product.access.palimpsest_bri_context)
+      .toBe('https://drug-price-observatory.vercel.app/api/v1/palimpsest-bri')
+    expect(product.deployment).toMatchObject({
+      canonical_live_origin: 'https://drug-price-observatory.vercel.app',
+      availability: 'live',
+      custom_domain: { url: 'https://narcoscope.com', status: 'unconfigured' },
+    })
     expect(product.boundaries.join(' ')).toContain('never enters drug-market inference')
     expect(product.palimpsest_bri_prohibitions).toEqual(artifact.usePolicy.prohibitions)
     expect(Object.keys(product.palimpsest_bri_prohibitions)).toEqual(REQUIRED_PROHIBITIONS)
     expect(Object.values(product.palimpsest_bri_prohibitions)).toEqual(
       REQUIRED_PROHIBITIONS.map(() => 'prohibited'),
     )
+  })
+
+  it('publishes an RFC 9727 catalog for the live REST and MCP endpoints', () => {
+    const catalog = JSON.parse(readFileSync('public/.well-known/api-catalog', 'utf8'))
+    const aiCatalog = JSON.parse(readFileSync('public/.well-known/ai-catalog.json', 'utf8'))
+    expect(catalog.linkset.map((entry) => entry.anchor)).toEqual([
+      'https://drug-price-observatory.vercel.app/api/v1',
+      'https://drug-price-observatory.vercel.app/mcp',
+    ])
+    expect(catalog.linkset[0]['service-desc']).toEqual([{
+      href: 'https://drug-price-observatory.vercel.app/openapi.json',
+      type: 'application/vnd.oai.openapi+json',
+    }])
+    expect(JSON.stringify(catalog)).not.toContain('/.well-known/mcp.json')
+    expect(JSON.stringify(catalog)).not.toContain('agent-card')
+    expect(JSON.stringify(catalog)).not.toContain('https://narcoscope.com/mcp')
+    expect(aiCatalog).toMatchObject({
+      version: '1.3.0',
+      apiCatalog: 'https://drug-price-observatory.vercel.app/.well-known/api-catalog',
+      mcpEndpoint: 'https://drug-price-observatory.vercel.app/mcp',
+      availability: {
+        status: 'live',
+        customDomain: { url: 'https://narcoscope.com', status: 'unconfigured' },
+      },
+    })
   })
 })

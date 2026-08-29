@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-  <id>https://narcoscope.com/news/</id>
+  <id>https://drug-price-observatory.vercel.app/news/</id>
   <title>NarcoScope evidence newsroom</title>
   <author><name>NarcoScope automated evidence desk</name></author>
   <updated>2026-08-29T00:00:00.000Z</updated>
-  <link rel="self" href="https://narcoscope.com/news/feed.xml" />
-  <link rel="alternate" href="https://narcoscope.com/#newsroom" />
+  <link rel="self" href="https://drug-price-observatory.vercel.app/news/feed.xml" />
+  <link rel="alternate" href="https://drug-price-observatory.vercel.app/#newsroom" />
   <entry>
-    <id>https://narcoscope.com/news/china-linked-precursor-incidents-official-record.html</id>
+    <id>https://drug-price-observatory.vercel.app/news/china-linked-precursor-incidents-official-record.html</id>
     <title>What the 2025 INCB precursor report says about China-linked incidents—and what it does not prove</title>
-    <link href="https://narcoscope.com/news/china-linked-precursor-incidents-official-record.html" />
+    <link href="https://drug-price-observatory.vercel.app/news/china-linked-precursor-incidents-official-record.html" />
     <published>2026-08-12T00:00:00.000Z</published>
     <updated>2026-08-29T00:00:00.000Z</updated>
     <summary>Nine reported incidents, nearly five tonnes, and one crucial missing join: the official record identifies an origin, but it does not establish a causal chain to US deaths or measure lawful industrial trade.</summary>
