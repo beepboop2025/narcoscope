@@ -488,7 +488,7 @@ describe('NarcoScope public surfaces', () => {
     ])
     expect(catalog.linkset[0]['service-desc']).toEqual([{
       href: 'https://narcoscope.com/openapi.json',
-      type: 'application/vnd.oai.openapi+json',
+      type: 'application/json',
     }])
     expect(JSON.stringify(catalog)).not.toContain('/.well-known/mcp.json')
     expect(JSON.stringify(catalog)).not.toContain('agent-card')

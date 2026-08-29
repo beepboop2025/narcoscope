@@ -5,7 +5,7 @@
       "service-desc": [
         {
           "href": "https://narcoscope.com/openapi.json",
-          "type": "application/vnd.oai.openapi+json"
+          "type": "application/json"
         }
       ],
       "service-doc": [
