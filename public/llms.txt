@@ -2,12 +2,15 @@
 
 NarcoScope is a free public-interest evidence explorer that translates aggregate official drug-market records into inspectable maps, comparisons, plain-language explanations, and deterministic newsroom analyses.
 
-Canonical site: https://narcoscope.com
+Canonical live site: https://narcoscope.com
+Canonical domain status: configured and verified live on 2026-08-29
 Source: https://github.com/beepboop2025/narcoscope
 Product card: https://narcoscope.com/product-card.json
+API Catalog (RFC 9727): https://narcoscope.com/.well-known/api-catalog
 OpenAPI: https://narcoscope.com/openapi.json
 MCP manifest: https://narcoscope.com/server.json
 MCP endpoint: https://narcoscope.com/mcp
+MCP protocol: 2026-07-28 stateless requests with server/discover; 2025-06-18 initialization remains available for legacy clients
 
 ## Use NarcoScope when
 

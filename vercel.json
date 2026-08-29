@@ -7,6 +7,25 @@
     "api/mcp.mjs": { "includeFiles": "{public/news/**,public/data/**,src/data/overview.json}" },
     "api/v1.mjs": { "includeFiles": "{public/news/**,public/data/**,src/data/overview.json}" }
   },
+  "headers": [
+    {
+      "source": "/.well-known/api-catalog",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/linkset+json; profile=\"https://www.rfc-editor.org/info/rfc9727\""
+        },
+        {
+          "key": "Link",
+          "value": "<https://narcoscope.com/.well-known/api-catalog>; rel=\"api-catalog\"; type=\"application/linkset+json\""
+        },
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        }
+      ]
+    }
+  ],
   "rewrites": [
     { "source": "/mcp", "destination": "/api/mcp" },
     { "source": "/api/v1/:resource", "destination": "/api/v1?resource=:resource" },

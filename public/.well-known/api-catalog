@@ -1,0 +1,56 @@
+{
+  "linkset": [
+    {
+      "anchor": "https://narcoscope.com/api/v1",
+      "service-desc": [
+        {
+          "href": "https://narcoscope.com/openapi.json",
+          "type": "application/json"
+        }
+      ],
+      "service-doc": [
+        {
+          "href": "https://narcoscope.com/developers/",
+          "type": "text/html"
+        },
+        {
+          "href": "https://narcoscope.com/llms.txt",
+          "type": "text/plain"
+        }
+      ],
+      "service-meta": [
+        {
+          "href": "https://narcoscope.com/product-card.json",
+          "type": "application/json"
+        },
+        {
+          "href": "https://narcoscope.com/.well-known/ai-catalog.json",
+          "type": "application/json"
+        }
+      ]
+    },
+    {
+      "anchor": "https://narcoscope.com/mcp",
+      "service-doc": [
+        {
+          "href": "https://narcoscope.com/developers/",
+          "type": "text/html"
+        },
+        {
+          "href": "https://narcoscope.com/llms.txt",
+          "type": "text/plain"
+        }
+      ],
+      "service-meta": [
+        {
+          "href": "https://narcoscope.com/server.json",
+          "type": "application/json"
+        },
+        {
+          "href": "https://registry.modelcontextprotocol.io/v0.1/servers/io.github.beepboop2025%2Fnarcoscope/versions/latest",
+          "type": "application/json"
+        }
+      ]
+    }
+  ]
+}

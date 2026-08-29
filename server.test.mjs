@@ -8,6 +8,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { createRailwayContext, project } from 'railway/iac'
 
 import railwayConfig from './.railway/railway.ts'
+import { PROTOCOL_VERSION, SERVER_VERSION } from './api/mcp.mjs'
 import {
   BRI_ARTIFACT_FILE,
   BRI_HASH_FILE,
@@ -60,6 +61,10 @@ beforeAll(async () => {
   await writeFile(join(distDir, 'index.html'), '<!doctype html><title>NarcoScope</title>')
   await writeFile(join(distDir, 'robots.txt'), 'User-agent: *\n')
   await writeFile(join(distDir, '.well-known', 'security.txt'), 'Contact: mailto:security@narcoscope.com\n')
+  await copyFile(
+    new URL('./public/.well-known/api-catalog', import.meta.url),
+    join(distDir, '.well-known', 'api-catalog'),
+  )
   await copyBriData(distDir)
   server = createNarcoscopeServer({ distDir })
   await new Promise((resolveListen) => server.listen(0, '127.0.0.1', resolveListen))
@@ -239,6 +244,48 @@ describe('Railway HTTP server', () => {
     const payload = await response.json()
     expect(payload.result.tools.map((tool) => tool.name)).toContain('get_palimpsest_corridors')
     expect(payload.result.tools.map((tool) => tool.name)).toContain('get_palimpsest_bri_context')
+    expect(payload.result.tools.every((tool) => tool.outputSchema)).toBe(true)
+    expect(response.headers.get('link')).toContain('/.well-known/api-catalog')
+  })
+
+  it('serves the MCP 2026 stateless discovery lane without session state', async () => {
+    const response = await fetch(baseUrl + '/mcp', {
+      method: 'POST',
+      headers: {
+        accept: 'application/json, text/event-stream',
+        'content-type': 'application/json',
+        'mcp-method': 'server/discover',
+        'mcp-protocol-version': PROTOCOL_VERSION,
+      },
+      body: JSON.stringify({
+        jsonrpc: '2.0',
+        id: 'railway-discover',
+        method: 'server/discover',
+        params: {
+          _meta: {
+            'io.modelcontextprotocol/protocolVersion': PROTOCOL_VERSION,
+            'io.modelcontextprotocol/clientInfo': {
+              name: 'narcoscope-server-test',
+              version: '1.0.0',
+            },
+            'io.modelcontextprotocol/clientCapabilities': {},
+          },
+        },
+      }),
+    })
+    expect(response.status).toBe(200)
+    expect(response.headers.has('mcp-session-id')).toBe(false)
+    expect(await response.json()).toMatchObject({
+      result: {
+        resultType: 'complete',
+        supportedVersions: [PROTOCOL_VERSION],
+        ttlMs: 300_000,
+        cacheScope: 'public',
+        _meta: {
+          'io.modelcontextprotocol/serverInfo': { version: SERVER_VERSION },
+        },
+      },
+    })
   })
 
   it('serves static assets and applies the SPA fallback', async () => {
@@ -276,8 +323,10 @@ describe('Railway HTTP server', () => {
   })
 
   it('serves intentional public paths while keeping SPA routing intact', async () => {
-    const [wellKnown, briAsset, spa, spaHead, missingWellKnown] = await Promise.all([
+    const [wellKnown, apiCatalog, apiCatalogHead, briAsset, spa, spaHead, missingWellKnown] = await Promise.all([
       fetch(baseUrl + '/.well-known/security.txt'),
+      fetch(baseUrl + '/.well-known/api-catalog'),
+      fetch(baseUrl + '/.well-known/api-catalog', { method: 'HEAD' }),
       fetch(baseUrl + `/data/${BRI_ARTIFACT_FILE}`),
       fetch(baseUrl + '/corridors'),
       fetch(baseUrl + '/corridors', { method: 'HEAD' }),
@@ -286,6 +335,16 @@ describe('Railway HTTP server', () => {
 
     expect(wellKnown.status).toBe(200)
     expect(await wellKnown.text()).toContain('security@narcoscope.com')
+    expect(apiCatalog.status).toBe(200)
+    expect(apiCatalog.headers.get('content-type'))
+      .toBe('application/linkset+json; profile="https://www.rfc-editor.org/info/rfc9727"')
+    expect(apiCatalog.headers.get('link')).toContain('rel="api-catalog"')
+    expect(apiCatalog.headers.get('access-control-allow-origin')).toBe('*')
+    expect((await apiCatalog.json()).linkset.map((entry) => entry.anchor)).toContain(
+      'https://narcoscope.com/mcp',
+    )
+    expect(apiCatalogHead.status).toBe(200)
+    expect(await apiCatalogHead.text()).toBe('')
     expect(briAsset.status).toBe(200)
     expect((await briAsset.json()).schemaVersion).toBe('narcoscope.palimpsest.bri-context.v1')
     expect(spa.status).toBe(200)

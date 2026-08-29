@@ -1,6 +1,7 @@
-import { resource } from './lib/narcoscope.mjs'
+import { resource, SITE_URL } from './lib/narcoscope.mjs'
 
 const CACHE = 'public, max-age=60, s-maxage=300, stale-while-revalidate=3600'
+const API_CATALOG_URL = `${SITE_URL}/.well-known/api-catalog`
 
 function headers(res) {
   res.setHeader('Access-Control-Allow-Origin', '*')
@@ -8,6 +9,7 @@ function headers(res) {
   res.setHeader('Access-Control-Allow-Headers', 'Accept, Content-Type')
   res.setHeader('Cache-Control', CACHE)
   res.setHeader('Content-Type', 'application/json; charset=utf-8')
+  res.setHeader('Link', `<${API_CATALOG_URL}>; rel="api-catalog"; type="application/linkset+json"`)
   res.setHeader('X-Content-Type-Options', 'nosniff')
 }
 

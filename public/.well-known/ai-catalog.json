@@ -1,14 +1,34 @@
 {
   "schema": "ai-catalog.v1",
+  "version": "1.3.0",
   "name": "NarcoScope",
   "description": "Official drug-market evidence made legible with source, freshness, and claim boundaries intact.",
   "canonical": "https://narcoscope.com/product-card.json",
   "llms": "https://narcoscope.com/llms.txt",
   "openapi": "https://narcoscope.com/openapi.json",
+  "apiCatalog": "https://narcoscope.com/.well-known/api-catalog",
   "mcp": "https://narcoscope.com/server.json",
+  "mcpEndpoint": "https://narcoscope.com/mcp",
+  "mcpRegistry": "https://registry.modelcontextprotocol.io/v0.1/servers/io.github.beepboop2025%2Fnarcoscope/versions/latest",
   "research": "https://narcoscope.com/research/",
   "feeds": [
     "https://narcoscope.com/news/feed.json",
     "https://narcoscope.com/news/feed.xml"
-  ]
+  ],
+  "availability": {
+    "status": "live",
+    "origin": "https://narcoscope.com",
+    "customDomain": {
+      "url": "https://narcoscope.com",
+      "status": "configured",
+      "verifiedAt": "2026-08-29"
+    }
+  },
+  "mcpProtocol": {
+    "current": "2026-07-28",
+    "legacy": ["2025-03-26", "2025-06-18"],
+    "lifecycle": "stateless-per-request",
+    "discoveryMethod": "server/discover",
+    "registryPublication": "gated-on-live-version-proof"
+  }
 }

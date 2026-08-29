@@ -1,5 +1,6 @@
 {
   "schema": "product-card.v1",
+  "version": "1.3.0",
   "name": "NarcoScope",
   "category": "public-interest evidence explorer",
   "headline": "Drug-market records you can inspect, cite, and challenge.",
@@ -35,16 +36,27 @@
     "research_guides": "https://narcoscope.com/research/",
     "developers": "https://narcoscope.com/developers/",
     "api": "https://narcoscope.com/api/v1/capabilities",
+    "api_catalog": "https://narcoscope.com/.well-known/api-catalog",
     "palimpsest_bridge": "https://narcoscope.com/api/v1/palimpsest-bridge",
     "palimpsest_corridors": "https://narcoscope.com/api/v1/palimpsest-corridors",
     "palimpsest_bri_context": "https://narcoscope.com/api/v1/palimpsest-bri",
     "openapi": "https://narcoscope.com/openapi.json",
     "mcp": "https://narcoscope.com/mcp",
+    "mcp_manifest": "https://narcoscope.com/server.json",
     "json_feed": "https://narcoscope.com/news/feed.json",
     "atom_feed": "https://narcoscope.com/news/feed.xml",
     "telegram_bot": "https://t.me/NarcoScopeEvidenceBot",
     "telegram_channel": "https://t.me/EvidenceSignalDesk",
     "source": "https://github.com/beepboop2025/narcoscope"
+  },
+  "deployment": {
+    "canonical_live_origin": "https://narcoscope.com",
+    "availability": "live",
+    "custom_domain": {
+      "url": "https://narcoscope.com",
+      "status": "configured",
+      "verified_at": "2026-08-29"
+    }
   },
   "related": [
     {

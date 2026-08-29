@@ -13,6 +13,8 @@ const ROOT = fileURLToPath(new URL('.', import.meta.url))
 const DEFAULT_DIST = resolve(ROOT, 'dist')
 const MAX_BODY_BYTES = 256 * 1024
 const COMMIT_RE = /^[0-9a-f]{40}$/
+const API_CATALOG_PATH = '.well-known/api-catalog'
+const API_CATALOG_MEDIA_TYPE = 'application/linkset+json; profile="https://www.rfc-editor.org/info/rfc9727"'
 const INTERNAL_STATIC_ROOTS = new Set([
   'api',
   'lib',
@@ -179,7 +181,19 @@ async function serveStatic(req, res, requestUrl, distDir) {
   const immutableAsset = relativePath.startsWith('assets/') && /-[A-Za-z0-9_-]{8,}\./.test(relativePath)
   setBaseHeaders(res)
   res.statusCode = 200
-  res.setHeader('Content-Type', CONTENT_TYPES[extension] || 'application/octet-stream')
+  res.setHeader(
+    'Content-Type',
+    relativePath === API_CATALOG_PATH
+      ? API_CATALOG_MEDIA_TYPE
+      : CONTENT_TYPES[extension] || 'application/octet-stream',
+  )
+  if (relativePath === API_CATALOG_PATH) {
+    res.setHeader('Access-Control-Allow-Origin', '*')
+    res.setHeader(
+      'Link',
+      '<https://narcoscope.com/.well-known/api-catalog>; rel="api-catalog"; type="application/linkset+json"',
+    )
+  }
   res.setHeader('Content-Length', String(fileStat.size))
   res.setHeader(
     'Cache-Control',
