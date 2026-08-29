@@ -7,12 +7,12 @@
   },
   "servers": [
     {
-      "url": "https://drug-price-observatory.vercel.app/api/v1"
+      "url": "https://narcoscope.com/api/v1"
     }
   ],
   "externalDocs": {
     "description": "API and MCP quickstart",
-    "url": "https://drug-price-observatory.vercel.app/developers/"
+    "url": "https://narcoscope.com/developers/"
   },
   "components": {
     "schemas": {

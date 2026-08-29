@@ -439,7 +439,7 @@ describe('NarcoScope deterministic evidence newsroom', () => {
     })
     expect(atom).toContain('<feed xmlns="http://www.w3.org/2005/Atom">')
     expect(atom).toContain('<author><name>NarcoScope automated evidence desk</name></author>')
-    expect(atom).toContain(`<id>https://drug-price-observatory.vercel.app/news/${ARTICLE_SLUG}.html</id>`)
+    expect(atom).toContain(`<id>https://narcoscope.com/news/${ARTICLE_SLUG}.html</id>`)
     expect(atom).toContain('PICS and PEN Online are restricted')
     expect(serializeJson(jsonFeed)).toBe(built.files['feed.json'])
   })

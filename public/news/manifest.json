@@ -738,8 +738,8 @@
     },
     {
       "file": "china-linked-precursor-incidents-official-record.html",
-      "bytes": 52540,
-      "sha256": "2932f5535b77af763dedb9aec3b7034988567a04e326806796d01a4bcbefdfc9"
+      "bytes": 52445,
+      "sha256": "f41d2b9af6d98309854e62f53c80f1f031a0098950b7f13c14d1bb5db3d8afe8"
     },
     {
       "file": "china-linked-precursor-incidents-official-record.machine-brief.json",
@@ -748,13 +748,13 @@
     },
     {
       "file": "feed.json",
-      "bytes": 48400,
-      "sha256": "7c07d045299fdfb0b9b8fad5404a3e6ea4f5981607021c79b9eb46b9c7239aa4"
+      "bytes": 48343,
+      "sha256": "c7c2521caccc7efea774e423bddf41fe9d2541e92356964abd97449d77b994c4"
     },
     {
       "file": "feed.xml",
-      "bytes": 59235,
-      "sha256": "0348c1de4de1e398f3cce99ad80b8d7d2ffbd22523dd887cc811a3b21de4740e"
+      "bytes": 59140,
+      "sha256": "db1f68db57d7cccac264f1d0335e1ad6884596a5b87e312790d0c2f9cc506f98"
     },
     {
       "file": "index.json",

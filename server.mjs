@@ -191,7 +191,7 @@ async function serveStatic(req, res, requestUrl, distDir) {
     res.setHeader('Access-Control-Allow-Origin', '*')
     res.setHeader(
       'Link',
-      '<https://drug-price-observatory.vercel.app/.well-known/api-catalog>; rel="api-catalog"; type="application/linkset+json"',
+      '<https://narcoscope.com/.well-known/api-catalog>; rel="api-catalog"; type="application/linkset+json"',
     )
   }
   res.setHeader('Content-Length', String(fileStat.size))

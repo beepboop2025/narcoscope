@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://drug-price-observatory.vercel.app/data/narcoscope-palimpsest-v1.schema.json",
+  "$id": "https://narcoscope.com/data/narcoscope-palimpsest-v1.schema.json",
   "title": "NarcoScope public China aggregate for Palimpsest",
   "type": "object",
   "additionalProperties": false,

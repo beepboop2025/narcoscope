@@ -17,7 +17,7 @@
         },
         {
           "key": "Link",
-          "value": "<https://drug-price-observatory.vercel.app/.well-known/api-catalog>; rel=\"api-catalog\"; type=\"application/linkset+json\""
+          "value": "<https://narcoscope.com/.well-known/api-catalog>; rel=\"api-catalog\"; type=\"application/linkset+json\""
         },
         {
           "key": "Access-Control-Allow-Origin",

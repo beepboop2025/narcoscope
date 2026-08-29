@@ -8,11 +8,11 @@
     "url": "https://github.com/beepboop2025/narcoscope",
     "source": "github"
   },
-  "websiteUrl": "https://drug-price-observatory.vercel.app",
+  "websiteUrl": "https://narcoscope.com",
   "remotes": [
     {
       "type": "streamable-http",
-      "url": "https://drug-price-observatory.vercel.app/mcp"
+      "url": "https://narcoscope.com/mcp"
     }
   ]
 }

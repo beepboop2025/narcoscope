@@ -8,6 +8,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { createRailwayContext, project } from 'railway/iac'
 
 import railwayConfig from './.railway/railway.ts'
+import { PROTOCOL_VERSION, SERVER_VERSION } from './api/mcp.mjs'
 import {
   BRI_ARTIFACT_FILE,
   BRI_HASH_FILE,
@@ -247,6 +248,46 @@ describe('Railway HTTP server', () => {
     expect(response.headers.get('link')).toContain('/.well-known/api-catalog')
   })
 
+  it('serves the MCP 2026 stateless discovery lane without session state', async () => {
+    const response = await fetch(baseUrl + '/mcp', {
+      method: 'POST',
+      headers: {
+        accept: 'application/json, text/event-stream',
+        'content-type': 'application/json',
+        'mcp-method': 'server/discover',
+        'mcp-protocol-version': PROTOCOL_VERSION,
+      },
+      body: JSON.stringify({
+        jsonrpc: '2.0',
+        id: 'railway-discover',
+        method: 'server/discover',
+        params: {
+          _meta: {
+            'io.modelcontextprotocol/protocolVersion': PROTOCOL_VERSION,
+            'io.modelcontextprotocol/clientInfo': {
+              name: 'narcoscope-server-test',
+              version: '1.0.0',
+            },
+            'io.modelcontextprotocol/clientCapabilities': {},
+          },
+        },
+      }),
+    })
+    expect(response.status).toBe(200)
+    expect(response.headers.has('mcp-session-id')).toBe(false)
+    expect(await response.json()).toMatchObject({
+      result: {
+        resultType: 'complete',
+        supportedVersions: [PROTOCOL_VERSION],
+        ttlMs: 300_000,
+        cacheScope: 'public',
+        _meta: {
+          'io.modelcontextprotocol/serverInfo': { version: SERVER_VERSION },
+        },
+      },
+    })
+  })
+
   it('serves static assets and applies the SPA fallback', async () => {
     const asset = await fetch(baseUrl + '/robots.txt')
     expect(asset.status).toBe(200)
@@ -300,7 +341,7 @@ describe('Railway HTTP server', () => {
     expect(apiCatalog.headers.get('link')).toContain('rel="api-catalog"')
     expect(apiCatalog.headers.get('access-control-allow-origin')).toBe('*')
     expect((await apiCatalog.json()).linkset.map((entry) => entry.anchor)).toContain(
-      'https://drug-price-observatory.vercel.app/mcp',
+      'https://narcoscope.com/mcp',
     )
     expect(apiCatalogHead.status).toBe(200)
     expect(await apiCatalogHead.text()).toBe('')

@@ -1,49 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://drug-price-observatory.vercel.app/</loc>
+    <loc>https://narcoscope.com/</loc>
     <lastmod>2026-08-13</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://drug-price-observatory.vercel.app/research/</loc>
+    <loc>https://narcoscope.com/research/</loc>
     <lastmod>2026-08-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://drug-price-observatory.vercel.app/research/drug-price-data/</loc>
+    <loc>https://narcoscope.com/research/drug-price-data/</loc>
     <lastmod>2026-08-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://drug-price-observatory.vercel.app/research/drug-seizure-data/</loc>
+    <loc>https://narcoscope.com/research/drug-seizure-data/</loc>
     <lastmod>2026-08-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://drug-price-observatory.vercel.app/research/overdose-data/</loc>
+    <loc>https://narcoscope.com/research/overdose-data/</loc>
     <lastmod>2026-08-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://drug-price-observatory.vercel.app/research/precursor-incidents/</loc>
+    <loc>https://narcoscope.com/research/precursor-incidents/</loc>
     <lastmod>2026-08-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://drug-price-observatory.vercel.app/news/china-linked-precursor-incidents-official-record.html</loc>
+    <loc>https://narcoscope.com/news/china-linked-precursor-incidents-official-record.html</loc>
     <lastmod>2026-08-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://drug-price-observatory.vercel.app/developers/</loc>
+    <loc>https://narcoscope.com/developers/</loc>
     <lastmod>2026-08-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>

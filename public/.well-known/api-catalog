@@ -1,49 +1,49 @@
 {
   "linkset": [
     {
-      "anchor": "https://drug-price-observatory.vercel.app/api/v1",
+      "anchor": "https://narcoscope.com/api/v1",
       "service-desc": [
         {
-          "href": "https://drug-price-observatory.vercel.app/openapi.json",
+          "href": "https://narcoscope.com/openapi.json",
           "type": "application/vnd.oai.openapi+json"
         }
       ],
       "service-doc": [
         {
-          "href": "https://drug-price-observatory.vercel.app/developers/",
+          "href": "https://narcoscope.com/developers/",
           "type": "text/html"
         },
         {
-          "href": "https://drug-price-observatory.vercel.app/llms.txt",
+          "href": "https://narcoscope.com/llms.txt",
           "type": "text/plain"
         }
       ],
       "service-meta": [
         {
-          "href": "https://drug-price-observatory.vercel.app/product-card.json",
+          "href": "https://narcoscope.com/product-card.json",
           "type": "application/json"
         },
         {
-          "href": "https://drug-price-observatory.vercel.app/.well-known/ai-catalog.json",
+          "href": "https://narcoscope.com/.well-known/ai-catalog.json",
           "type": "application/json"
         }
       ]
     },
     {
-      "anchor": "https://drug-price-observatory.vercel.app/mcp",
+      "anchor": "https://narcoscope.com/mcp",
       "service-doc": [
         {
-          "href": "https://drug-price-observatory.vercel.app/developers/",
+          "href": "https://narcoscope.com/developers/",
           "type": "text/html"
         },
         {
-          "href": "https://drug-price-observatory.vercel.app/llms.txt",
+          "href": "https://narcoscope.com/llms.txt",
           "type": "text/plain"
         }
       ],
       "service-meta": [
         {
-          "href": "https://drug-price-observatory.vercel.app/server.json",
+          "href": "https://narcoscope.com/server.json",
           "type": "application/json"
         },
         {

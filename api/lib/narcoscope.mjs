@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url'
 import { verifiedPalimpsestBriEnvelope } from './palimpsest-bri.mjs'
 
 export const SITE_URL = (process.env.NARCOSCOPE_SITE_URL ||
-  'https://drug-price-observatory.vercel.app').replace(/\/$/, '')
+  'https://narcoscope.com').replace(/\/$/, '')
 
 const ROOT = fileURLToPath(new URL('../../', import.meta.url))
 const MAX_LIMIT = 25
@@ -78,6 +78,11 @@ export function capabilities() {
     mcp: {
       endpoint: `${SITE_URL}/mcp`,
       transport: 'streamable-http',
+      current_protocol: '2026-07-28',
+      protocol_versions: ['2026-07-28', '2025-06-18', '2025-03-26'],
+      lifecycle: 'stateless-per-request',
+      discovery_method: 'server/discover',
+      legacy_initialization: true,
       tools: ['list_capabilities', 'get_overview', 'get_newsroom', 'get_story', 'get_palimpsest_bridge', 'get_palimpsest_corridors', 'get_palimpsest_bri_context'],
     },
     feeds: {

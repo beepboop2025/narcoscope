@@ -8,9 +8,9 @@
 
 # 🌍 NarcoScope
 
-**Live: [drug-price-observatory.vercel.app](https://drug-price-observatory.vercel.app)** · evidence newsroom: **[live newsroom](https://drug-price-observatory.vercel.app/#newsroom)**
+**Live: [narcoscope.com](https://narcoscope.com)** · evidence newsroom: **[narcoscope.com/#newsroom](https://narcoscope.com/#newsroom)**
 
-> Deployment status (2026-08-29): `drug-price-observatory.vercel.app` is the canonical live origin. The planned `narcoscope.com` custom domain is not configured; clients and agents must use the live origin for REST, MCP, and discovery.
+> Deployment status verified 2026-08-29: `narcoscope.com` is configured and is the canonical public origin. The apex serves the Vercel deployment; `www.narcoscope.com` serves the Railway deployment. Registry metadata and agents use the apex MCP endpoint.
 
 An educational, public-good **data explorer** that makes the world's drug-trade
 data *legible*. UNODC, INCB, and EUDA already publish street (retail) prices,
@@ -23,22 +23,24 @@ top of that public data: clean charts, maps, and plain-English explanations.
 
 ## Agent and API access
 
-- RFC 9727 API Catalog: `https://drug-price-observatory.vercel.app/.well-known/api-catalog`
-- OpenAPI: `https://drug-price-observatory.vercel.app/openapi.json`
-- MCP manifest: `https://drug-price-observatory.vercel.app/server.json`
-- Streamable HTTP MCP: `https://drug-price-observatory.vercel.app/mcp`
-- Machine-readable product context: `https://drug-price-observatory.vercel.app/.well-known/ai-catalog.json`
-- Agent-readable guide: `https://drug-price-observatory.vercel.app/llms.txt`
+- RFC 9727 API Catalog: `https://narcoscope.com/.well-known/api-catalog`
+- OpenAPI: `https://narcoscope.com/openapi.json`
+- MCP manifest: `https://narcoscope.com/server.json`
+- Streamable HTTP MCP: `https://narcoscope.com/mcp`
+- Machine-readable product context: `https://narcoscope.com/.well-known/ai-catalog.json`
+- Agent-readable guide: `https://narcoscope.com/llms.txt`
 
 ```json
 {
   "mcpServers": {
-    "narcoscope": { "url": "https://drug-price-observatory.vercel.app/mcp" }
+    "narcoscope": { "url": "https://narcoscope.com/mcp" }
   }
 }
 ```
 
-The MCP service is read-only and returns JSON Schema-backed `structuredContent` for every tool. It preserves official, illustrative, stale, unavailable, and restricted states rather than turning missing evidence into a score.
+The MCP service is read-only and returns JSON Schema-backed `structuredContent` for every tool. Version 1.3 supports both the stateless MCP 2026-07-28 discovery lane and the legacy 2025-06-18 initialization lane. It preserves official, illustrative, stale, unavailable, and restricted states rather than turning missing evidence into a score.
+
+The staged/live/Registry boundary and mandatory publication sequence are recorded in [`docs/MCP-1.3.0-RELEASE-GATE.md`](docs/MCP-1.3.0-RELEASE-GATE.md).
 
 ## What it shows
 
