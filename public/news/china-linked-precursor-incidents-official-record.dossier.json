@@ -138,22 +138,28 @@
         "date": "2026-08-29",
         "summary": "Deterministic source refresh; evidence, qualification and publication receipts were recomputed.",
         "revisionHash": "2c8c11d5edd9614f9ca045e54e7fb2ed39089d420c07bff57f2a9ff26ece164f"
+      },
+      {
+        "eventType": "data_refresh",
+        "date": "2026-08-30",
+        "summary": "Deterministic source refresh; evidence, qualification and publication receipts were recomputed.",
+        "revisionHash": "167dbb21cf52b3470ebd9ec0d2b67ef554ab5babcd7e7ddbf75cb5fb725818db"
       }
     ]
   },
   "promotion": {
     "fromContentClass": "machine_brief",
     "machineBriefUrl": "/news/china-linked-precursor-incidents-official-record.machine-brief.json",
-    "machineBriefContentHash": "89ed6a99e2e50e8cf1520fd62a84f41290d81c121ec71fdf50972550402a650d",
+    "machineBriefContentHash": "a9d7a2b3aa8e368657defc5904b6fa379d86152d3fde76dfe885db2bd6dce5e2",
     "requiredGate": "automated-evidence-analysis-gate.v1"
   },
   "title": "What the 2025 INCB precursor report says about China-linked incidents—and what it does not prove",
   "dek": "Nine reported incidents, nearly five tonnes, and one crucial missing join: the official record identifies an origin, but it does not establish a causal chain to US deaths or measure lawful industrial trade.",
   "byline": "NarcoScope automated evidence desk",
   "publishedAt": "2026-08-12T00:00:00.000Z",
-  "updatedAt": "2026-08-29T00:00:00.000Z",
-  "dataAsOf": "2026-08-29",
-  "revisionHash": "2c8c11d5edd9614f9ca045e54e7fb2ed39089d420c07bff57f2a9ff26ece164f",
+  "updatedAt": "2026-08-30T00:00:00.000Z",
+  "dataAsOf": "2026-08-30",
+  "revisionHash": "167dbb21cf52b3470ebd9ec0d2b67ef554ab5babcd7e7ddbf75cb5fb725818db",
   "keyFigures": [
     {
       "id": "china-eu-upper-bound-mass",
@@ -2092,7 +2098,7 @@
     },
     "editorialCompleteness": {
       "correctionsStatus": "none_recorded",
-      "updateHistoryEventCount": 18,
+      "updateHistoryEventCount": 19,
       "initialPublicationRecorded": true,
       "rightToReplyStatus": "not_required",
       "outreachPerformed": false,
@@ -2114,12 +2120,12 @@
     },
     "deterministicHashes": {
       "algorithm": "sha256",
-      "revisionHash": "2c8c11d5edd9614f9ca045e54e7fb2ed39089d420c07bff57f2a9ff26ece164f",
-      "machineBriefContentHash": "89ed6a99e2e50e8cf1520fd62a84f41290d81c121ec71fdf50972550402a650d",
+      "revisionHash": "167dbb21cf52b3470ebd9ec0d2b67ef554ab5babcd7e7ddbf75cb5fb725818db",
+      "machineBriefContentHash": "a9d7a2b3aa8e368657defc5904b6fa379d86152d3fde76dfe885db2bd6dce5e2",
       "dossierContentHashScope": "canonical JSON of the dossier including this receipt and excluding the top-level contentHash field"
     },
     "failures": [],
     "passed": true
   },
-  "contentHash": "9b9e6b372434038773bb29cf1841c8cf448cf3d26f878620e0d15823c640b955"
+  "contentHash": "8bacdba5915d133d082bbac3db69c80a6eee581a8d5e339f264d425b0e3b64ea"
 }
