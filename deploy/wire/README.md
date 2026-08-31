@@ -49,11 +49,15 @@ node /opt/narcoscope/scripts/wire/collect.mjs --check \
 ## Public heartbeat bridge
 
 The reviewed Caddy handler in `deploy/wire/Caddyfile.heartbeat` is imported
-inside the existing `api.seiche.info` HTTPS site. It serves exactly one path for
-`GET`/`HEAD`, returns 405 for other methods on that path, and leaves every other
-Seiche API route untouched. It requires no new DNS record or certificate. Do
-not import it until the heartbeat exists and the complete active Caddyfile
-validates:
+inside the existing `api.seiche.info` HTTPS site **before its terminal catch-all
+`handle`**. It uses an exact-path `handle` in that same mutually exclusive
+handler group; a top-level `route` is not equivalent because Caddy's directive
+ordering can place it after the catch-all even when the import appears first in
+the source text. The handler serves exactly one path for `GET`/`HEAD`, returns
+405 for other methods on that path, and leaves every other Seiche API route
+untouched. It requires no new DNS record or certificate. Do not import it until
+the heartbeat exists and both the repository integration test and complete
+active Caddyfile validation pass:
 
 ```bash
 test -s /var/lib/narcoscope-wire-public/narcoscope/wire-heartbeat-v1.json
@@ -63,6 +67,7 @@ install -m 0644 /opt/narcoscope/deploy/wire/Caddyfile.heartbeat \
 # Add this import inside the existing api.seiche.info site block, before its
 # catch-all handler:
 # import /etc/caddy/snippets/narcoscope-wire-heartbeat.caddy
+bash /opt/narcoscope/deploy/wire/caddy.test.sh
 caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile
 systemctl reload caddy
 curl --fail --silent --show-error \
@@ -131,6 +136,7 @@ Repository verification:
 bash -n deploy/wire/collect.sh deploy/wire/install.sh
 shellcheck deploy/wire/collect.sh deploy/wire/install.sh
 bash deploy/wire/collect.test.sh
-# After importing the handler inside the existing api.seiche.info site:
+bash deploy/wire/caddy.test.sh
+# After importing the exact-path handle before the existing catch-all:
 caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile
 ```
