@@ -133,6 +133,12 @@ describe('Railway HTTP server', () => {
     const vercel = JSON.parse(await readFile(new URL('./vercel.json', import.meta.url), 'utf8'))
     expect(vercel.redirects).toEqual([
       {
+        source: '/',
+        has: [{ type: 'host', value: 'narcoscope.com' }],
+        destination: 'https://www.narcoscope.com/',
+        permanent: true,
+      },
+      {
         source: '/:path*',
         has: [{ type: 'host', value: 'narcoscope.com' }],
         destination: 'https://www.narcoscope.com/:path*',

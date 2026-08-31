@@ -9,6 +9,12 @@
   },
   "redirects": [
     {
+      "source": "/",
+      "has": [{ "type": "host", "value": "narcoscope.com" }],
+      "destination": "https://www.narcoscope.com/",
+      "permanent": true
+    },
+    {
       "source": "/:path*",
       "has": [{ "type": "host", "value": "narcoscope.com" }],
       "destination": "https://www.narcoscope.com/:path*",
