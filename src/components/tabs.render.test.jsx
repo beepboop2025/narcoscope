@@ -91,6 +91,38 @@ describe('Triangulation tab', () => {
 })
 
 describe('Designations tab', () => {
+  it('keeps the public-action register keyboard-scrollable and its live dossier connected', () => {
+    render(<Designations />)
+
+    const viewport = screen.getByRole('region', {
+      name: 'Public entity and action records. Scroll horizontally and vertically for all records and columns.',
+    })
+    expect(viewport.getAttribute('tabindex')).toBe('0')
+    expect(within(viewport).getByRole('table', { name: 'Public entity and action records' })).toBeTruthy()
+    expect(within(viewport).getByText(/scroll for all records and columns/i)).toBeTruthy()
+
+    const dossier = document.querySelector('#entity-register-dossier')
+    expect(dossier?.getAttribute('aria-live')).toBe('polite')
+
+    const selectedBefore = within(viewport).getByRole('button', { pressed: true })
+    const selectedHeadingBefore = within(dossier).getByRole('heading', { level: 2 })
+    const selectedNameBefore = selectedHeadingBefore.textContent
+    expect(selectedHeadingBefore.textContent).toBe(selectedBefore.textContent)
+
+    const entityButtons = within(viewport).getAllByRole('button', { pressed: false })
+    expect(entityButtons.length).toBeGreaterThan(1)
+    const target = entityButtons[1]
+    const targetName = target.textContent
+    fireEvent.click(target)
+
+    expect(target.getAttribute('aria-controls')).toBe('entity-register-dossier')
+    expect(selectedBefore.getAttribute('aria-pressed')).toBe('false')
+    expect(target.getAttribute('aria-pressed')).toBe('true')
+    expect(within(dossier).getByRole('heading', { level: 2 }).textContent).toBe(targetName)
+    expect(dossier.textContent).toContain(targetName)
+    expect(targetName).not.toBe(selectedNameBefore)
+  })
+
   it('renders the broker bar ranking', () => {
     render(<Designations />)
     const bars = document.querySelectorAll('.bar-row')

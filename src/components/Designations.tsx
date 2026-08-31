@@ -134,13 +134,22 @@ export default function Designations() {
       </div>
 
       <div className="entity-register__workspace">
-        <div className="entity-register__table-wrap">
+        <div
+          className="entity-register__table-wrap"
+          role="region"
+          aria-label="Public entity and action records. Scroll horizontally and vertically for all records and columns."
+          tabIndex={0}
+        >
+          <span className="data-table-viewport__hint entity-register__table-hint" aria-hidden="true">
+            Scroll for all records and columns <span aria-hidden="true">&#8595; &#8594;</span>
+          </span>
           <table className="entity-register__table">
+            <caption className="sr-only">Public entity and action records</caption>
             <thead><tr><th>Named record</th><th>Type</th><th>Action + authority</th><th>Country record</th><th>Matched through</th></tr></thead>
             <tbody>
               {visibleRecords.map((record) => (
                 <tr key={record.entityNumber} className={selected?.entityNumber === record.entityNumber ? 'is-selected' : ''}>
-                  <td><button type="button" onClick={() => setSelectedNumber(record.entityNumber)}>{record.name}</button><small>OFAC #{record.entityNumber}</small></td>
+                  <td><button type="button" aria-controls="entity-register-dossier" aria-pressed={selected?.entityNumber === record.entityNumber} onClick={() => setSelectedNumber(record.entityNumber)}>{record.name}</button><small>OFAC #{record.entityNumber}</small></td>
                   <td><span className={`entity-register__type entity-register__type--${record.entityType}`}>{typeLabel(record.entityType)}</span></td>
                   <td><strong>Designation</strong><small>{record.programs.map((value) => PROGRAM_LABEL[value] ?? value).join(' · ')}</small></td>
                   <td>{record.countries.join(' · ') || <em>Not published</em>}</td>
@@ -157,7 +166,7 @@ export default function Designations() {
           )}
         </div>
 
-        <aside className="entity-register__dossier" aria-live="polite">
+        <aside id="entity-register-dossier" className="entity-register__dossier" aria-live="polite">
           {selected ? (
             <>
               <header><span>Published action record</span><h2>{selected.name}</h2><p>{typeLabel(selected.entityType)} · OFAC #{selected.entityNumber}</p></header>
