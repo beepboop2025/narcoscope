@@ -1,5 +1,6 @@
+import { createHash } from 'node:crypto'
 import { createReadStream } from 'node:fs'
-import { stat } from 'node:fs/promises'
+import { readFile, stat } from 'node:fs/promises'
 import { createServer } from 'node:http'
 import { extname, resolve, sep } from 'node:path'
 import { pipeline } from 'node:stream/promises'
@@ -11,8 +12,10 @@ import { loadVerifiedPalimpsestBriArtifact } from './api/lib/palimpsest-bri.mjs'
 
 const ROOT = fileURLToPath(new URL('.', import.meta.url))
 const DEFAULT_DIST = resolve(ROOT, 'dist')
+const DEFAULT_RELEASE_MANIFEST = resolve(ROOT, 'release-manifest.json')
 const MAX_BODY_BYTES = 256 * 1024
 const COMMIT_RE = /^[0-9a-f]{40}$/
+const SHA256_RE = /^[0-9a-f]{64}$/
 const API_CATALOG_PATH = '.well-known/api-catalog'
 const API_CATALOG_MEDIA_TYPE = 'application/linkset+json; profile="https://www.rfc-editor.org/info/rfc9727"'
 const INTERNAL_STATIC_ROOTS = new Set([
@@ -48,6 +51,43 @@ const CONTENT_TYPES = Object.freeze({
   '.webmanifest': 'application/manifest+json',
   '.xml': 'application/xml; charset=utf-8',
 })
+
+export async function loadFleetReleaseIdentity(manifestPath = DEFAULT_RELEASE_MANIFEST) {
+  let raw
+  try {
+    raw = await readFile(manifestPath)
+  } catch (error) {
+    if (error?.code === 'ENOENT') return null
+    throw error
+  }
+
+  // A direct Docker build creates an empty placeholder because only the
+  // Hetzner fleet publisher is authorised to generate this reserved file.
+  if (raw.length === 0) return null
+
+  let manifest
+  try {
+    manifest = JSON.parse(raw.toString('utf8'))
+  } catch {
+    throw new Error('fleet release manifest is not valid JSON')
+  }
+
+  const sourceCommit = manifest?.source?.commit
+  const treeSha256 = manifest?.tree_sha256
+  if (manifest?.format !== 'fleet-release-manifest/v1'
+    || manifest?.product_id !== 'narcoscope'
+    || manifest?.source?.branch !== 'main'
+    || !COMMIT_RE.test(sourceCommit || '')
+    || !SHA256_RE.test(treeSha256 || '')) {
+    throw new Error('fleet release manifest has an invalid NarcoScope identity')
+  }
+
+  return Object.freeze({
+    sourceCommit,
+    releaseId: createHash('sha256').update(raw).digest('hex'),
+    treeSha256,
+  })
+}
 
 function setBaseHeaders(res) {
   res.setHeader('X-Content-Type-Options', 'nosniff')
@@ -206,7 +246,7 @@ async function serveStatic(req, res, requestUrl, distDir) {
   await pipeline(createReadStream(candidate), res)
 }
 
-async function route(req, res, distDir, briLoader) {
+async function route(req, res, distDir, briLoader, releaseIdentityLoader) {
   const requestTarget = req.url || '/'
   let rawDecodedPath
   try {
@@ -233,8 +273,23 @@ async function route(req, res, distDir, briLoader) {
   }
 
   if (pathname === '/healthz') {
-    const revision = process.env.NARCOSCOPE_REVISION || ''
-    const revisionValid = COMMIT_RE.test(revision)
+    const configuredRevision = process.env.NARCOSCOPE_REVISION || ''
+    let fleetIdentity = null
+    let fleetIdentityValid = true
+    try {
+      fleetIdentity = await releaseIdentityLoader()
+    } catch {
+      fleetIdentityValid = false
+    }
+    const configuredRevisionValid = !configuredRevision || COMMIT_RE.test(configuredRevision)
+    const revisionConflict = Boolean(
+      fleetIdentity && configuredRevision && configuredRevision !== fleetIdentity.sourceCommit,
+    )
+    const revision = fleetIdentity?.sourceCommit || configuredRevision
+    const revisionValid = fleetIdentityValid
+      && configuredRevisionValid
+      && !revisionConflict
+      && COMMIT_RE.test(revision)
     let briArtifactVerified = false
     if (revisionValid) {
       try {
@@ -253,11 +308,26 @@ async function route(req, res, distDir, briLoader) {
       }
     }
     const ready = revisionValid && briArtifactVerified
+    const releaseClaims = ready
+      ? {
+          source_commit: revision,
+          ...(fleetIdentity
+            ? {
+                release_id: fleetIdentity.releaseId,
+                tree_sha256: fleetIdentity.treeSha256,
+              }
+            : {}),
+        }
+      : {}
     sendJson(req, res, ready ? 200 : 503, {
       status: ready ? 'ready' : 'unavailable',
       service: 'narcoscope',
       revision: revisionValid ? revision : null,
+      releaseIdentity: ready
+        ? (fleetIdentity ? 'fleet-manifest' : 'environment-fallback')
+        : 'unavailable',
       briArtifact: briArtifactVerified ? 'verified' : 'unavailable',
+      ...releaseClaims,
     })
     return
   }
@@ -299,10 +369,12 @@ async function route(req, res, distDir, briLoader) {
 export function createNarcoscopeServer({
   distDir = DEFAULT_DIST,
   briLoader = loadVerifiedPalimpsestBriArtifact,
+  releaseManifestPath = DEFAULT_RELEASE_MANIFEST,
+  releaseIdentityLoader = () => loadFleetReleaseIdentity(releaseManifestPath),
 } = {}) {
   const resolvedDist = resolve(distDir)
   return createServer((req, res) => {
-    route(req, res, resolvedDist, briLoader).catch((error) => {
+    route(req, res, resolvedDist, briLoader, releaseIdentityLoader).catch((error) => {
       console.error('narcoscope request failed', error)
       if (!res.headersSent) {
         sendJson(req, res, 500, { ok: false, error: 'internal_error' })
