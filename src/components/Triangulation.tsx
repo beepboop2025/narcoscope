@@ -26,6 +26,7 @@ import {
 import Explainer from './Explainer'
 import CountUp from '../motion/CountUp'
 import type { Drug } from '../types'
+import DataTableViewport from './DataTableViewport'
 
 /** Verdict -> the chip style that carries the right urgency. */
 const VERDICT_CHIP: Record<TriangulationVerdict, string> = {
@@ -178,7 +179,8 @@ export default function Triangulation() {
             `seizure-only view gets wrong. Click any row to open it.`
           }
         />
-        <table className="data-table">
+        <DataTableViewport label={`Supply and consumption divergence scan from ${baselineYear} to ${year}`}>
+          <table className="data-table">
           <thead>
             <tr>
               <th>Country</th><th>Drug</th><th>Verdict</th><th>Supply</th><th>Consumption</th><th>Gap</th>
@@ -215,7 +217,8 @@ export default function Triangulation() {
               )
             })}
           </tbody>
-        </table>
+          </table>
+        </DataTableViewport>
         <p className="note">Gap = distance between the supply and consumption changes over the window. ⚑ marks a verdict that would flip if one modality were dropped.</p>
       </div>
 
@@ -318,7 +321,8 @@ export default function Triangulation() {
         The four modalities — {country?.name ?? iso3}, {drugLabel(drug)},
         {' '}{baselineYear} → {year}
       </h3>
-      <table className="data-table">
+      <DataTableViewport label={`Four-modality reading for ${country?.name ?? iso3}, ${drugLabel(drug)}`}>
+        <table className="data-table">
         <thead>
           <tr>
             <th>Modality</th>
@@ -345,7 +349,8 @@ export default function Triangulation() {
             </tr>
           ))}
         </tbody>
-      </table>
+        </table>
+      </DataTableViewport>
 
       {result.readings.some((r) => !r.available) ? (
         <div className="tk-card tk-card--watch">

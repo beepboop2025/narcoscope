@@ -4,6 +4,7 @@ import {
 import overview from '../data/overview.json'
 import CountUp from '../motion/CountUp'
 import Reveal from '../motion/Reveal'
+import DataTableViewport from './DataTableViewport'
 
 /** Line colour per trend substance — fentanyl hot (it drives the epidemic). */
 const TREND_COLOR: Record<string, string> = {
@@ -193,7 +194,8 @@ export default function Overview() {
       <Reveal>
         <div className="panel freshness-panel">
           <h4>Data freshness</h4>
-          <table className="data-table freshness-table">
+          <DataTableViewport label="Data freshness by source">
+            <table className="data-table freshness-table">
             <thead>
               <tr><th>Source</th><th>Cadence</th><th>Retrieved</th><th>Latest</th></tr>
             </thead>
@@ -207,7 +209,8 @@ export default function Overview() {
                 </tr>
               ))}
             </tbody>
-          </table>
+            </table>
+          </DataTableViewport>
           <p className="panel-note">
             Refreshed automatically from public sources. Everything above is a direct
             count or sum of official data — no figure is modelled or estimated here.

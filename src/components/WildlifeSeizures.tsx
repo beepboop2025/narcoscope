@@ -6,6 +6,7 @@ import { WILDLIFE, countryName, taxonCommon, trendYears, appendixIShare } from '
 import Explainer from './Explainer'
 import CountUp from '../motion/CountUp'
 import Reveal from '../motion/Reveal'
+import DataTableViewport from './DataTableViewport'
 
 /**
  * Wildlife Seizures presents CITES confiscation records as an adjacent public
@@ -121,7 +122,8 @@ export default function WildlifeSeizures() {
       {/* Most-seized species — with plain-language names where known. */}
       <Reveal delay={160}>
         <h3>Most-confiscated species</h3>
-        <table className="data-table">
+        <DataTableViewport label="Most-confiscated wildlife species">
+          <table className="data-table">
           <thead><tr><th>Taxon</th><th>Common name</th><th>Class</th><th>Records</th></tr></thead>
           <tbody>
             {topTaxa.slice(0, 15).map((t) => (
@@ -133,7 +135,8 @@ export default function WildlifeSeizures() {
               </tr>
             ))}
           </tbody>
-        </table>
+          </table>
+        </DataTableViewport>
       </Reveal>
 
       {/* The corridor: source vs destination, side by side. */}
