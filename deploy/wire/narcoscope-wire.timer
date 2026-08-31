@@ -2,7 +2,7 @@
 Description=Refresh the NarcoScope evidence wire every ten minutes
 
 [Timer]
-OnBootSec=3min
+OnActiveSec=3min
 OnUnitActiveSec=10min
 RandomizedDelaySec=45
 AccuracySec=30

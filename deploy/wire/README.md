@@ -46,6 +46,14 @@ node /opt/narcoscope/scripts/wire/collect.mjs --check \
   --output /var/lib/narcoscope-wire/evidence-wire-v1.json
 ```
 
+The enabled installer deliberately runs `enable` and then `restart`: enabling
+an already-active timer does not reload its deadline. Installation fails unless
+systemd reports `active (waiting)` and at least one finite realtime or monotonic
+next trigger. `OnActiveSec=3min` anchors the first run to each timer activation,
+so reinstalling on a long-running host cannot inherit an already-elapsed boot
+deadline. `NARCOSCOPE_WIRE_ENABLE_TIMER=0` retains the controlled-run mode and
+does not arm the timer.
+
 ## Public heartbeat bridge
 
 The reviewed Caddy handler in `deploy/wire/Caddyfile.heartbeat` is imported
@@ -118,7 +126,12 @@ systemctl daemon-reload
 systemctl start narcoscope-wire.service
 cat /var/lib/narcoscope-wire/publication-status.json
 git -C /opt/narcoscope ls-remote origin refs/heads/main
-systemctl enable --now narcoscope-wire.timer
+systemctl enable narcoscope-wire.timer
+systemctl restart narcoscope-wire.timer
+test "$(systemctl show narcoscope-wire.timer --property=SubState --value)" = waiting
+systemctl show narcoscope-wire.timer \
+  --property=NextElapseUSecRealtime \
+  --property=NextElapseUSecMonotonic
 ```
 
 Do not create, copy, or broaden a deploy key merely to satisfy this gate. If the
@@ -137,6 +150,7 @@ bash -n deploy/wire/collect.sh deploy/wire/install.sh
 shellcheck deploy/wire/collect.sh deploy/wire/install.sh
 bash deploy/wire/collect.test.sh
 bash deploy/wire/caddy.test.sh
+bash deploy/wire/install.test.sh
 # After importing the exact-path handle before the existing catch-all:
 caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile
 ```
