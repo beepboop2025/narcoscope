@@ -83,6 +83,20 @@ describe('evidence wire assembly', () => {
     expect(artifact.sources[0].status).toBe('fresh')
   })
 
+  it('keeps prior in-scope metadata when a successful RSS window rotates', async () => {
+    const prior = {
+      items: [{ id: 'old', title: 'Prior fentanyl release', url: 'https://example.test/old', sourceId: 'official', sourceName: 'Official source', publishedAt: '2026-08-30T00:00:00Z', retrievedAt: '2026-08-30T01:00:00Z', evidenceClass: 'official-action', verificationState: 'source-published', legalStage: 'report', topics: ['drug markets'], countries: [], publicationAllowed: true }],
+      sources: [{ id: 'official', lastSuccessAt: '2026-08-30T01:00:00Z' }],
+    }
+    const freshConfig = { ...config, sources: [config.sources[0]] }
+    const artifact = await buildWire({ config: freshConfig, previous: prior, now: new Date('2026-08-31T01:00:00Z'), fetchImpl: async () => new Response('<rss><channel><item><title>Administrative notice</title><link>https://example.test/notice</link></item></channel></rss>') })
+    expect(artifact.sources[0]).toMatchObject({ status: 'fresh', detail: expect.stringContaining('0 current in-scope · 1 retained') })
+    expect(artifact.items.map((item) => item.id)).toEqual(['old'])
+
+    const expired = await buildWire({ config: freshConfig, previous: prior, now: new Date('2026-10-16T01:00:00Z'), fetchImpl: async () => new Response('<rss><channel /></rss>') })
+    expect(expired.items).toHaveLength(0)
+  })
+
   it('fails closed when a response exceeds its byte ceiling', async () => {
     const tinyConfig = { ...config, maxResponseBytes: 8, sources: [config.sources[0]] }
     const artifact = await buildWire({ config: tinyConfig, fetchImpl: async () => new Response('this response is too large'), now: new Date('2026-08-31T00:00:00Z') })
