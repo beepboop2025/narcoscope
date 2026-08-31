@@ -204,7 +204,7 @@ describe('Railway HTTP server', () => {
     }
   })
 
-  it('fails health closed when a preserved revision conflicts with the fleet manifest', async () => {
+  it('keeps the fleet manifest authoritative over a stale preserved revision', async () => {
     const priorRevision = process.env.NARCOSCOPE_REVISION
     process.env.NARCOSCOPE_REVISION = 'a'.repeat(40)
     const conflictServer = createNarcoscopeServer({
@@ -219,11 +219,14 @@ describe('Railway HTTP server', () => {
     const address = conflictServer.address()
     try {
       const response = await fetch(`http://127.0.0.1:${address.port}/healthz`)
-      expect(response.status).toBe(503)
+      expect(response.status).toBe(200)
       expect(await response.json()).toMatchObject({
-        status: 'unavailable',
-        revision: null,
-        releaseIdentity: 'unavailable',
+        status: 'ready',
+        revision: 'b'.repeat(40),
+        source_commit: 'b'.repeat(40),
+        release_id: 'c'.repeat(64),
+        tree_sha256: 'd'.repeat(64),
+        releaseIdentity: 'fleet-manifest',
       })
     } finally {
       await new Promise((resolveClose) => conflictServer.close(resolveClose))
