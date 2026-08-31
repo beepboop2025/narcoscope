@@ -3,6 +3,9 @@ import addFormats from 'ajv-formats'
 
 import {
   capabilities,
+  getAtlas,
+  getEntities,
+  getFederation,
   getNewsroom,
   getOverview,
   getPalimpsestBridge,
@@ -21,7 +24,7 @@ export const SUPPORTED_PROTOCOL_VERSIONS = new Set([
   LEGACY_PROTOCOL_VERSION,
   PROTOCOL_VERSION,
 ])
-export const SERVER_VERSION = '1.3.0'
+export const SERVER_VERSION = '1.4.0'
 const MAX_BODY_BYTES = 256 * 1024
 const DISCOVERY_TTL_MS = 5 * 60 * 1000
 const PUBLIC_CACHE_SCOPE = 'public'
@@ -51,6 +54,69 @@ export const TOOLS = Object.freeze({
     inputSchema: { type: 'object', additionalProperties: false },
     outputSchema: TOOL_OUTPUT_SCHEMAS.get_overview,
     call: async () => getOverview(),
+  },
+  get_atlas: {
+    title: 'Query the illicit-economy atlas',
+    description: 'Return country-year organized-crime and firearms-tracing observations with source metadata, native caveats, explicit null fields, and stable cursor pagination. No records identify people or operational locations.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        domain: { type: 'string', enum: ['all', 'firearms_tracing', 'organized_crime'], default: 'all' },
+        iso3: { type: 'string', pattern: '^[A-Za-z]{3}$' },
+        year: { type: 'integer', minimum: 1900, maximum: 2200 },
+        limit: { type: 'integer', minimum: 1, maximum: 100, default: 50 },
+        cursor: { type: 'string', pattern: '^[A-Za-z0-9_-]+$', maxLength: 2048 },
+      },
+      additionalProperties: false,
+    },
+    outputSchema: TOOL_OUTPUT_SCHEMAS.get_atlas,
+    call: getAtlas,
+  },
+  get_entities: {
+    title: 'Query privacy-minimized OFAC designation identities',
+    description: 'Return approved public designation identity fields only. A designation is an administrative action, not an adjudication or proof of guilt; aliases, addresses, dates of birth, identity documents, and allegation text are withheld.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        entity_type: { type: 'string', enum: ['aircraft', 'individual', 'organization', 'vessel'] },
+        program: { type: 'string', enum: ['ILLICIT-DRUGS-EO14059', 'SDNT', 'SDNTK', 'TCO'] },
+        country: { type: 'string', minLength: 1, maxLength: 120 },
+        query: { type: 'string', minLength: 1, maxLength: 120 },
+        limit: { type: 'integer', minimum: 1, maximum: 100, default: 50 },
+        cursor: { type: 'string', pattern: '^[A-Za-z0-9_-]+$', maxLength: 2048 },
+      },
+      additionalProperties: false,
+    },
+    outputSchema: TOOL_OUTPUT_SCHEMAS.get_entities,
+    call: getEntities,
+  },
+  get_federation: {
+    title: 'Read Seiche and Palimpsest as separate evidence lanes',
+    description: 'Return bounded public money-market, capital-market, BRI, or publication-rights context without cross-lane scoring, composites, causal inference, or culpability inference. Upstream unavailability stays typed.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        lane: {
+          type: 'string',
+          enum: [
+            'all',
+            'palimpsest-bri',
+            'palimpsest-newswire-rights',
+            'seiche-capital-markets',
+            'seiche-global-money-atlas',
+            'seiche-money-markets',
+            'seiche-summary',
+          ],
+          default: 'all',
+        },
+      },
+      additionalProperties: false,
+    },
+    outputSchema: TOOL_OUTPUT_SCHEMAS.get_federation,
+    call: async (args, dependencies = {}) => getFederation(args, {
+      ...dependencies,
+      getBriContext: dependencies.getBriContext ?? getPalimpsestBriContext,
+    }),
   },
   get_newsroom: {
     title: 'Read the evidence newsroom',
@@ -115,7 +181,7 @@ const SERVER_INFO = Object.freeze({
   version: SERVER_VERSION,
 })
 const SERVER_CAPABILITIES = Object.freeze({ tools: Object.freeze({ listChanged: false }) })
-const SERVER_INSTRUCTIONS = 'Use NarcoScope for aggregate official drug-market evidence and bounded newsroom analysis. Start with list_capabilities or get_newsroom. Treat seizures as administrative observations, not trafficking-volume estimates; never infer guilt, political or armed-actor relationships, bilateral routes, project effects, tactical or navigable use, or causality from shared geography, origin labels, designations, or the separate Palimpsest Belt and Road context lane.'
+const SERVER_INSTRUCTIONS = 'Use NarcoScope for aggregate official drug-market evidence, country-year illicit-economy context, privacy-minimized administrative designations, and bounded newsroom analysis. Start with list_capabilities, get_atlas, or get_newsroom. Treat seizures and designations as administrative observations, not trafficking-volume estimates or proof of guilt. Seiche and Palimpsest remain separate evidence lanes: never create a shared score or composite, or infer guilt, culpability, political or armed-actor relationships, bilateral routes, project effects, tactical or navigable use, or causality from shared geography, timing, origin labels, designations, or Belt and Road context.'
 
 export function toolInputIsValid(name, data) {
   return INPUT_VALIDATORS[name]?.(data) === true
@@ -254,10 +320,11 @@ export async function dispatch(message, dependencies = {}, options = {}) {
       if (!toolOutputIsValid(params.name, data)) {
         throw new Error(`NarcoScope tool output violated its published contract: ${params.name}`)
       }
+      const typedUnavailable = data?.status === 'unavailable'
       return protocolResult(id, {
         content: [{ type: 'text', text: JSON.stringify(data) }],
         structuredContent: data,
-        isError: false,
+        isError: typedUnavailable,
       }, modern)
     } catch (error) {
       const safe = error instanceof TypeError || error instanceof RangeError

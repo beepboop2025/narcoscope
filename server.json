@@ -1,9 +1,9 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.beepboop2025/narcoscope",
-  "title": "NarcoScope — official drug-market evidence explorer",
-  "description": "Read aggregate official drug-market evidence with explicit provenance, availability, and boundaries.",
-  "version": "1.3.0",
+  "title": "NarcoScope — illicit-economy evidence atlas",
+  "description": "Read bounded illicit-economy evidence with provenance, privacy, availability, and federation intact.",
+  "version": "1.4.0",
   "repository": {
     "url": "https://github.com/beepboop2025/narcoscope",
     "source": "github"

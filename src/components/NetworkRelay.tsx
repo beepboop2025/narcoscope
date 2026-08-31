@@ -1,18 +1,6 @@
-import { useEffect, useState } from 'react'
 import {
   PALIMPSEST_FALLBACK,
-  selectPalimpsestRelayStory,
-  type PalimpsestRelay,
-  type PalimpsestRelayStory,
 } from '../data/networkEditorial'
-
-const PALIMPSEST_FEED = 'https://palimpsest.info/readings/newsroom-latest.json'
-
-type PalimpsestFeed = {
-  generated_at: string
-  coverage: { total: number; live: number; status: string }
-  stories: PalimpsestRelayStory[]
-}
 
 function safePalimpsestUrl(value: string): string {
   try {
@@ -25,53 +13,22 @@ function safePalimpsestUrl(value: string): string {
   }
 }
 
-function looksLikeFeed(value: unknown): value is PalimpsestFeed {
-  if (!value || typeof value !== 'object') return false
-  const feed = value as Partial<PalimpsestFeed>
-  return typeof feed.generated_at === 'string'
-    && Array.isArray(feed.stories)
-    && Boolean(feed.coverage && Number.isFinite(feed.coverage.total) && Number.isFinite(feed.coverage.live))
-}
-
 function formatMetric(value: number | null): string {
   if (value == null) return '—'
   return new Intl.NumberFormat('en-US', { maximumFractionDigits: 3 }).format(value)
 }
 
 export default function NetworkRelay() {
-  const [relay, setRelay] = useState<PalimpsestRelay>(PALIMPSEST_FALLBACK)
-
-  useEffect(() => {
-    const controller = new AbortController()
-    fetch(PALIMPSEST_FEED, { cache: 'no-store', signal: controller.signal })
-      .then((response) => {
-        if (!response.ok) throw new Error(`Palimpsest feed returned ${response.status}`)
-        return response.json() as Promise<unknown>
-      })
-      .then((value) => {
-        if (!looksLikeFeed(value)) return
-        const story = selectPalimpsestRelayStory(value.stories)
-        if (!story) return
-        setRelay({
-          ...story,
-          url: safePalimpsestUrl(story.url),
-          coverage: value.coverage,
-          generatedAt: value.generated_at,
-          remote: true,
-        })
-      })
-      .catch(() => {
-        // The checked-in fallback is a complete, dated reading. A network or
-        // CORS failure must not turn the sister-publication card into an empty
-        // surface or make stale data look live.
-      })
-    return () => controller.abort()
-  }, [])
+  // Palimpsest's newsroom is a separately governed publication surface. The
+  // browser renders only the checked-in, dated projection; live rights state is
+  // exposed through NarcoScope's same-origin federation receipt instead of a
+  // cross-origin content fetch that could bypass an upstream publication hold.
+  const relay = PALIMPSEST_FALLBACK
 
   const limitation = relay.limitations[0] ?? 'Adjacent context does not become evidence for a NarcoScope claim.'
 
   return (
-    <aside id="palimpsest-relay" className="network-relay" aria-labelledby="network-relay-title" data-feed={relay.remote ? 'live' : 'dated-fallback'}>
+    <aside id="palimpsest-relay" className="network-relay" aria-labelledby="network-relay-title" data-feed="dated-fallback">
       <div className="network-relay__signal" aria-hidden="true">
         <svg viewBox="0 0 420 240">
           <path d="M32 176 C110 52 218 50 388 108" />
@@ -103,12 +60,13 @@ export default function NetworkRelay() {
         </div>
         <dl>
           <div><dt>Coverage</dt><dd>{relay.coverage.live}/{relay.coverage.total} instruments live</dd></div>
-          <div><dt>Feed state</dt><dd>{relay.remote ? 'fetched now' : 'dated fallback'} · {relay.coverage.status}</dd></div>
+          <div><dt>Feed state</dt><dd>dated public projection · {relay.coverage.status}</dd></div>
           {relay.metric.denominator.value != null && (
             <div><dt>{relay.metric.denominator.label ?? 'Denominator'}</dt><dd>{formatMetric(relay.metric.denominator.value)}</dd></div>
           )}
         </dl>
         <p><b>Boundary.</b> {limitation}</p>
+        <a href="/api/v1/federation?lane=palimpsest-newswire-rights">Inspect current publication-rights receipt</a>
       </div>
     </aside>
   )

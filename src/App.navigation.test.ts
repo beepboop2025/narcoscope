@@ -13,7 +13,7 @@ describe('App hash navigation', () => {
     expect(resolveTabFromHash('#balochistan')).toBe('balochistan')
     expect(resolveTabFromHash('#pakistan-gwadar')).toBe('pakistan-gwadar')
     expect(resolveTabFromHash('#myanmar')).toBe('myanmar')
-    expect(resolveTabFromHash('')).toBe('overview')
+    expect(resolveTabFromHash('')).toBe('atlas')
     expect(resolveTabFromHash('#not-a-route')).toBeNull()
   })
 })

@@ -74,6 +74,9 @@ run('node', ['scripts/convert/wdr-seizures-to-json.mjs', rawPath(bySourceId['wdr
 console.log('· regenerating 30-year price history …')
 run('node', ['scripts/convert/wdr-price-series-to-json.mjs', rawPath(bySourceId['wdr-price-series'])])
 
+console.log('· regenerating Global Organized Crime Index country spine …')
+run('node', ['scripts/convert/ocindex-to-json.mjs', rawPath(bySourceId.ocindex)])
+
 console.log('· regenerating country geo (centroids + feature ids) …')
 run('node', ['scripts/convert/gen-country-geo.mjs'])
 
@@ -89,10 +92,14 @@ if (!offline) {
 
   console.log('· regenerating wastewater loads (Statistics Canada, live fetch) …')
   run('node', ['scripts/convert/statcan-wastewater-to-json.mjs'])
+
+  console.log('· regenerating UN SDG firearms-tracing effectiveness …')
+  run('node', ['scripts/convert/un-sdg-firearms-to-json.mjs'])
 } else {
-  console.log('· offline: reusing cached OFAC files, skipping CDC (no local cache)')
+  console.log('· offline: reusing cached OFAC, StatCan and UN SDG files; skipping CDC (no local cache)')
   run('node', ['scripts/convert/ofac-designations-to-json.mjs', '--offline'])
   run('node', ['scripts/convert/statcan-wastewater-to-json.mjs', '--offline'])
+  run('node', ['scripts/convert/un-sdg-firearms-to-json.mjs', '--offline'])
 }
 
 // LAST: the overview summary aggregates every dataset above, so it must run

@@ -8,10 +8,7 @@ import { useData } from './lib/dataStore'
 import { SOURCES } from './data/prices'
 import { useSmoothScroll } from './motion/useSmoothScroll'
 import { usePrefersReducedMotion } from './motion/usePrefersReducedMotion'
-import SpringText from './motion/SpringText'
 import Reveal from './motion/Reveal'
-import HeroScene from './hero/HeroScene'
-import HeroEvidenceStack from './components/HeroEvidenceStack'
 import ResearchNav from './components/ResearchNav'
 import NetworkRelay from './components/NetworkRelay'
 import AuthorityBar from './components/AuthorityBar'
@@ -40,20 +37,22 @@ const PriceHistory = lazy(() => import('./components/PriceHistory'))
 const SeizureTrends = lazy(() => import('./components/SeizureTrends'))
 // Lazy: fetches the deterministic public/news dossier only when the newsroom is opened.
 const EvidenceNewsroom = lazy(() => import('./components/EvidenceNewsroom'))
+const IllicitEconomyAtlas = lazy(() => import('./components/IllicitEconomyAtlas'))
+const LiveEvidenceWire = lazy(() => import('./components/LiveEvidenceWire'))
 
 const tabIds = new Set<string>(TABS.map((item) => item.id))
 
 export function resolveTabFromHash(hash: string): string | null {
   const requested = hash.replace(/^#\/?/, '')
-  if (requested === '') return 'overview'
+  if (requested === '') return 'atlas'
   if (tabIds.has(requested)) return requested
   if (/^news-/.test(requested)) return 'newsroom'
   return null
 }
 
 function initialTab(): string {
-  if (typeof window === 'undefined') return 'overview'
-  return resolveTabFromHash(window.location.hash) ?? 'overview'
+  if (typeof window === 'undefined') return 'atlas'
+  return resolveTabFromHash(window.location.hash) ?? 'atlas'
 }
 
 /** Springs its contents in on mount — remounted per tab (key) for a crossfade. */
@@ -112,13 +111,11 @@ export default function App() {
   return (
     <div className="app tk">
       <header className="app-header">
-        <HeroScene />
         <div className="hero-inner">
           <div className="hero-masthead">
-            <button type="button" className="brand" onClick={() => selectTab('overview')} aria-label="Open NarcoScope overview">
+            <button type="button" className="brand" onClick={() => selectTab('atlas')} aria-label="Open NarcoScope atlas">
               <BrandMark />
-              <span>NarcoScope</span>
-              <small>Public evidence atlas</small>
+              <span><b>NarcoScope</b><small>Public-interest illicit-economy evidence</small></span>
             </button>
             <span
               className={`data-badge tk-chip ${isSample ? 'tk-chip--warning' : 'tk-chip--ok'}`}
@@ -129,47 +126,18 @@ export default function App() {
               {isSample ? 'Official data · some inputs illustrative' : 'Live data'}
             </span>
           </div>
-          <div className="hero-layout">
-            <div className="hero-copy">
-              <p className="hero-kicker">Markets · movement · harm · public networks</p>
-              <SpringText
-                as="h1"
-                text="The official record has layers."
-                inkWords={['layers.']}
-                trigger="mount"
-                stagger={24}
-              />
-              <p className="tagline">See the market. Challenge the record.</p>
-              <Reveal delay={360}>
-                <p className="lede">
-                  NarcoScope turns official drug-price, precursor, seizure, mortality and
-                  designation records into an explorable evidence atlas. Every view keeps
-                  its source, denominator, missing join and claim boundary beside the chart.
-                </p>
-                <div className="hero-actions" aria-label="NarcoScope entry points">
-                  <button type="button" className="hero-action hero-action--primary" onClick={() => selectTab('newsroom', true)}>
-                    Read the lead investigation
-                  </button>
-                  <a className="hero-action" href="/developers/">Connect API + MCP</a>
-                  <a className="hero-action" href="/news/feed.json">Follow the feed</a>
-                  <a className="hero-action" href="/research/">Research guides</a>
-                  <a className="hero-action hero-action--telegram" href="https://t.me/NarcoScopeEvidenceBot?start=ref_site_hero">Open the Telegram bot</a>
-                  <a className="hero-action hero-action--signal" href="https://t.me/EvidenceSignalDesk">Join Evidence Signal</a>
-                </div>
-                <AuthorityBar
-                  tab={tab}
-                  label={TABS.find((item) => item.id === tab)?.label ?? 'Official drug-market evidence'}
-                />
-                <ul className="hero-proof" aria-label="Publication guarantees">
-                  <li>Official aggregates</li>
-                  <li>Visible uncertainty</li>
-                  <li>No point-level market guidance</li>
-                </ul>
-              </Reveal>
+          <div className="evidence-header">
+            <div>
+              <p className="hero-kicker">Drug markets · arms · shadow economy · wildlife · raw materials</p>
+              <h1>Trace the record, <em>not the rumour.</em></h1>
+              <p className="lede">A continuously monitored atlas for published evidence, named public actions and economic context—with source boundaries kept intact.</p>
             </div>
-            <Reveal delay={180}>
-              <HeroEvidenceStack onOpen={(nextTab) => selectTab(nextTab, true)} />
-            </Reveal>
+            <nav className="hero-actions" aria-label="NarcoScope entry points">
+              <button type="button" className="hero-action hero-action--primary" onClick={() => selectTab('atlas', true)}>Open atlas</button>
+              <button type="button" className="hero-action" onClick={() => selectTab('wire', true)}>Latest evidence</button>
+              <a className="hero-action" href="/developers/">API + MCP</a>
+            </nav>
+            <AuthorityBar tab={tab} label={TABS.find((item) => item.id === tab)?.label ?? 'Illicit-economy evidence'} />
           </div>
         </div>
       </header>
@@ -179,6 +147,8 @@ export default function App() {
       <main id="research-workspace">
         <Suspense fallback={<div className="map-loading">Loading…</div>}>
           <TabPanel key={tab}>
+            {tab === 'atlas' && <IllicitEconomyAtlas />}
+            {tab === 'wire' && <LiveEvidenceWire />}
             {tab === 'overview' && <Overview />}
             {tab === 'prices' && <Explorer />}
             {tab === 'pricehistory' && <PriceHistory />}

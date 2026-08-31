@@ -3,14 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>NarcoScope API + MCP — build on evidence, not scraped prose</title>
-  <meta name="description" content="Connect a read-only API or MCP client to NarcoScope's official aggregate evidence, citation-gated newsroom, and Palimpsest bridge.">
+  <title>NarcoScope API + MCP — inspect bounded illicit-economy evidence</title>
+  <meta name="description" content="Connect a read-only API or MCP client to NarcoScope's country-year atlas, privacy-minimized designations, newsroom, and separate Seiche and Palimpsest evidence lanes.">
   <link rel="canonical" href="https://narcoscope.com/developers/">
   <meta name="robots" content="index,follow,max-snippet:-1">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="NarcoScope">
-  <meta property="og:title" content="Build on NarcoScope evidence, not scraped prose">
-  <meta property="og:description" content="One read-only API and MCP contract for official aggregates, cited newsroom artifacts, and explicit limits.">
+  <meta property="og:title" content="Build on bounded NarcoScope evidence, not scraped prose">
+  <meta property="og:description" content="One read-only API and MCP contract for country-year evidence, privacy-minimized designations, cited newsroom artifacts, and explicit limits.">
   <meta property="og:url" content="https://narcoscope.com/developers/">
   <meta name="twitter:card" content="summary">
   <style>
@@ -22,7 +22,7 @@
 <body><main>
   <p class="eyebrow">NarcoScope for developers and agents</p>
   <h1>Build on evidence, not scraped prose.</h1>
-  <p class="lede">One read-only contract exposes NarcoScope’s official aggregate overview, citation-gated newsroom, two NarcoScope-to-Palimpsest bridges, and a separately pinned Palimpsest Belt and Road context lane. REST and MCP resolve to the same published artifacts, so sources, clocks, readiness states, and limitations survive the handoff.</p>
+  <p class="lede">One read-only contract exposes NarcoScope’s country-year organized-crime and firearms-tracing atlas, privacy-minimized public designations, citation-gated newsroom, and separate Seiche and Palimpsest context lanes. REST and MCP use the same validators and output schemas, so sources, clocks, caveats, privacy gates, and unavailable states survive the handoff.</p>
   <div class="actions">
     <a class="button primary" href="/api/v1/capabilities">Inspect the live contract</a>
     <a class="button" href="/openapi.json">Import OpenAPI</a>
@@ -31,9 +31,12 @@
   </div>
 
   <div class="grid">
-    <section class="card"><h2>REST</h2><p>Start with a small overview or list the newsroom. Responses are cacheable, public JSON.</p><pre>curl https://narcoscope.com/api/v1/overview</pre></section>
+    <section class="card"><h2>Country-year atlas</h2><p>Filter source-native organized-crime or firearms-tracing records. Null means unavailable; zero remains an observed zero.</p><pre>curl 'https://narcoscope.com/api/v1/atlas?domain=organized_crime&amp;iso3=COL&amp;year=2023&amp;limit=25'</pre></section>
+    <section class="card"><h2>Public designations</h2><p>Page official public identities without aliases, addresses, birth data, documents, or allegation text. Search covers official names only.</p><pre>curl 'https://narcoscope.com/api/v1/entities?entity_type=organization&amp;program=SDNTK&amp;limit=25'</pre></section>
+    <section class="card"><h2>Federated context</h2><p>Read Seiche money or capital markets and Palimpsest BRI or rights status as independent lanes. No shared score or causal join is produced.</p><pre>curl 'https://narcoscope.com/api/v1/federation?lane=seiche-money-markets'</pre></section>
+    <section class="card"><h2>REST</h2><p>Start with capabilities, a small overview, or the newsroom. Responses are public, cacheable JSON; malformed filters return 400 and unavailable evidence returns a typed 503.</p><pre>curl https://narcoscope.com/api/v1/capabilities</pre></section>
     <section class="card"><h2>API discovery</h2><p>Agents can discover both the REST API and MCP service from the RFC 9727 API Catalog.</p><pre>curl https://narcoscope.com/.well-known/api-catalog</pre></section>
-    <section class="card"><h2>MCP</h2><p>Connect over stateless Streamable HTTP. Start with <code>list_capabilities</code> or <code>get_newsroom</code>.</p><pre>{"mcpServers":{"narcoscope":{"url":"https://narcoscope.com/mcp"}}}</pre></section>
+    <section class="card"><h2>MCP</h2><p>Connect over stateless Streamable HTTP. <code>get_atlas</code>, <code>get_entities</code>, and <code>get_federation</code> mirror REST, including schema-valid unavailable results.</p><pre>{"mcpServers":{"narcoscope":{"url":"https://narcoscope.com/mcp"}}}</pre></section>
     <section class="card"><h2>Palimpsest corridors</h2><p>Fetch official-only China, Pakistan, and Myanmar country aggregates. Use <code>get_palimpsest_corridors</code> over MCP or the REST path below.</p><pre>curl https://narcoscope.com/api/v1/palimpsest-corridors</pre></section>
     <section class="card"><h2>BRI context</h2><p>Inspect CPEC, Gwadar, CMEC, Kyaukpyu, Balochistan, and WDI coverage through <code>get_palimpsest_bri_context</code>. It is a parallel lane, never a drug/infrastructure join.</p><pre>curl https://narcoscope.com/api/v1/palimpsest-bri</pre></section>
     <section class="card"><h2>Feeds</h2><p>Follow stable item IDs and exact story URLs. Every newsroom item links to a machine brief and cited dossier.</p><pre>/news/feed.json
@@ -52,7 +55,8 @@ Mcp-Method: server/discover
 
   <section class="boundary">
     <h2>The safety boundary is part of the API.</h2>
-    <p class="lede">NarcoScope exposes aggregate published evidence—not point-of-sale, real-time, sub-street, navigable, synthesis-route, chemistry, or yield information. A seizure is an administrative observation, not a direct market-size estimate. An origin label or public designation is not guilt or causal proof. The corridor artifact permits geography-and-time comparison only; it cannot classify a political movement, armed organization, community, person, or bilateral route. The BRI lane is stricter: it cannot be joined to drug-market evidence or used for drug-conflict-infrastructure causality, actor classification, bilateral route inference, guilt, political classification, or project attribution from national statistics.</p>
+    <p class="lede">NarcoScope exposes aggregate published evidence—not point-of-sale, real-time, sub-street, navigable, synthesis-route, chemistry, or yield information. A seizure is an administrative observation, not a direct market-size estimate. A public designation is an administrative action, not proof of guilt or an adjudication; the API withholds aliases and subject-level sensitive fields. Federation lanes preserve upstream scope, status, clocks, citations, and caveats, but never join scores or infer causality or culpability. Seiche calls use one GET, zero retries, a 15-second whole-response deadline, and a 2,000,000-byte ceiling. Missing, malformed, oversized, or timed-out evidence fails closed as unavailable rather than becoming a zero.</p>
+    <p class="lede">The Palimpsest newswire-rights lane exposes only the bounded, pinned historical restriction receipt admitted by the local BRI envelope. It is not continuous monitoring and does not republish the oversized quarantined-path list. The BRI lane cannot be joined to drug-market evidence or used for drug-conflict-infrastructure causality, actor classification, bilateral route inference, guilt, political classification, or project attribution from national statistics.</p>
   </section>
   <p class="small">Free public good · no API key · read only · <a href="/">Open NarcoScope</a></p>
 </main></body>

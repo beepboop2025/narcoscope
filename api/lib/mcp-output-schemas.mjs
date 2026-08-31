@@ -295,6 +295,462 @@ export const STORY_OUTPUT_SCHEMA = Object.freeze({
   },
 })
 
+const NULLABLE_HTTPS_URI = Object.freeze({
+  oneOf: [HTTPS_URI, { type: 'null' }],
+})
+
+const PAGE_SCHEMA = Object.freeze({
+  type: 'object',
+  additionalProperties: false,
+  required: ['limit', 'matched', 'returned', 'has_more', 'next_cursor'],
+  properties: {
+    limit: { type: 'integer', minimum: 1, maximum: 100 },
+    matched: { type: 'integer', minimum: 0 },
+    returned: { type: 'integer', minimum: 0, maximum: 100 },
+    has_more: { type: 'boolean' },
+    next_cursor: { type: ['string', 'null'], pattern: '^[A-Za-z0-9_-]+$', maxLength: 2048 },
+  },
+})
+
+const SOURCE_ERROR_SCHEMA = Object.freeze({
+  oneOf: [
+    { type: 'null' },
+    {
+      type: 'object',
+      additionalProperties: false,
+      required: ['code', 'message'],
+      properties: {
+        code: NON_EMPTY_STRING,
+        message: NON_EMPTY_STRING,
+      },
+    },
+  ],
+})
+
+const SCORE = Object.freeze({ type: ['number', 'null'], minimum: 1, maximum: 10 })
+const SCORE_OBJECT = (fields) => Object.freeze({
+  type: 'object',
+  additionalProperties: false,
+  required: fields,
+  properties: Object.fromEntries(fields.map((field) => [field, SCORE])),
+})
+
+const ORGANIZED_MARKETS_SCHEMA = SCORE_OBJECT([
+  'humanTrafficking',
+  'humanSmuggling',
+  'extortion',
+  'armsTrafficking',
+  'counterfeitGoods',
+  'illicitTradeExcisableGoods',
+  'floraCrimes',
+  'faunaCrimes',
+  'nonRenewableResourceCrimes',
+  'heroinTrade',
+  'cocaineTrade',
+  'cannabisTrade',
+  'syntheticDrugTrade',
+  'cyberDependentCrimes',
+  'financialCrimes',
+])
+
+const ORGANIZED_ACTORS_SCHEMA = SCORE_OBJECT([
+  'average',
+  'mafiaStyleGroups',
+  'criminalNetworks',
+  'stateEmbeddedActors',
+  'foreignActors',
+  'privateSectorActors',
+])
+
+const ORGANIZED_RESILIENCE_SCHEMA = SCORE_OBJECT([
+  'average',
+  'politicalLeadershipAndGovernance',
+  'governmentTransparencyAndAccountability',
+  'internationalCooperation',
+  'nationalPoliciesAndLaws',
+  'judicialSystemAndDetention',
+  'lawEnforcement',
+  'territorialIntegrity',
+  'antiMoneyLaundering',
+  'economicRegulatoryCapacity',
+  'victimAndWitnessSupport',
+  'prevention',
+  'nonStateActors',
+])
+
+const ATLAS_RECORD_META_SCHEMA = Object.freeze({
+  type: 'object',
+  additionalProperties: false,
+  required: [
+    'availability', 'unavailable_fields', 'source_schema', 'source', 'source_url',
+    'downloaded_at', 'rights', 'caveats',
+  ],
+  properties: {
+    availability: { enum: ['observed', 'partial'] },
+    unavailable_fields: { type: 'array', uniqueItems: true, items: NON_EMPTY_STRING },
+    source_schema: NON_EMPTY_STRING,
+    source: NON_EMPTY_STRING,
+    source_url: HTTPS_URI,
+    downloaded_at: NON_EMPTY_STRING,
+    rights: NON_EMPTY_STRING,
+    caveats: STRING_ARRAY,
+  },
+})
+
+const ORGANIZED_CRIME_RECORD_SCHEMA = Object.freeze({
+  type: 'object',
+  additionalProperties: false,
+  required: ['domain', 'meta', 'data'],
+  properties: {
+    domain: { const: 'organized_crime' },
+    meta: ATLAS_RECORD_META_SCHEMA,
+    data: {
+      type: 'object',
+      additionalProperties: false,
+      required: [
+        'iso3', 'country', 'continent', 'region', 'year', 'criminality', 'criminalMarkets',
+        'markets', 'actors', 'resilience',
+      ],
+      properties: {
+        iso3: { type: 'string', pattern: '^[A-Z]{3}$' },
+        country: NON_EMPTY_STRING,
+        continent: NON_EMPTY_STRING,
+        region: NON_EMPTY_STRING,
+        year: { type: 'integer', minimum: 1900, maximum: 2200 },
+        criminality: SCORE,
+        criminalMarkets: SCORE,
+        markets: ORGANIZED_MARKETS_SCHEMA,
+        actors: ORGANIZED_ACTORS_SCHEMA,
+        resilience: ORGANIZED_RESILIENCE_SCHEMA,
+      },
+    },
+  },
+})
+
+const FIREARMS_RECORD_SCHEMA = Object.freeze({
+  type: 'object',
+  additionalProperties: false,
+  required: ['domain', 'meta', 'data'],
+  properties: {
+    domain: { const: 'firearms_tracing' },
+    meta: ATLAS_RECORD_META_SCHEMA,
+    data: {
+      type: 'object',
+      additionalProperties: false,
+      required: [
+        'iso3', 'country', 'm49', 'year', 'valuePercent', 'nature', 'source', 'reportingType', 'footnotes',
+      ],
+      properties: {
+        iso3: { type: 'string', pattern: '^[A-Z]{3}$' },
+        country: NON_EMPTY_STRING,
+        m49: { type: 'string', pattern: '^[0-9]{1,3}$' },
+        year: { type: 'integer', minimum: 1900, maximum: 2200 },
+        valuePercent: { type: ['number', 'null'], minimum: 0, maximum: 100 },
+        nature: NON_EMPTY_STRING,
+        source: NON_EMPTY_STRING,
+        reportingType: NON_EMPTY_STRING,
+        footnotes: STRING_ARRAY,
+      },
+    },
+  },
+})
+
+const ATLAS_SOURCE_SCHEMA = Object.freeze({
+  type: 'object',
+  additionalProperties: false,
+  required: ['domain', 'status', 'record_count', 'metadata', 'error'],
+  properties: {
+    domain: { enum: ['firearms_tracing', 'organized_crime'] },
+    status: { enum: ['available', 'unavailable'] },
+    record_count: { type: ['integer', 'null'], minimum: 0 },
+    metadata: {
+      oneOf: [
+        { type: 'null' },
+        {
+          type: 'object',
+          additionalProperties: false,
+          required: [
+            'schema_version', 'source', 'source_url', 'downloaded_at', 'years', 'unit',
+            'rights', 'scale', 'series', 'release', 'caveats',
+          ],
+          properties: {
+            schema_version: NON_EMPTY_STRING,
+            source: NON_EMPTY_STRING,
+            source_url: HTTPS_URI,
+            downloaded_at: NON_EMPTY_STRING,
+            years: {
+              type: 'array',
+              uniqueItems: true,
+              items: { type: 'integer', minimum: 1900, maximum: 2200 },
+            },
+            unit: NON_EMPTY_STRING,
+            rights: NON_EMPTY_STRING,
+            scale: {
+              oneOf: [
+                { type: 'null' },
+                {
+                  type: 'object',
+                  additionalProperties: false,
+                  required: ['minimum', 'maximum', 'direction'],
+                  properties: {
+                    minimum: { const: 1 },
+                    maximum: { const: 10 },
+                    direction: NON_EMPTY_STRING,
+                  },
+                },
+              ],
+            },
+            series: NULLABLE_STRING,
+            release: NULLABLE_STRING,
+            caveats: STRING_ARRAY,
+          },
+        },
+      ],
+    },
+    error: SOURCE_ERROR_SCHEMA,
+  },
+})
+
+export const ATLAS_OUTPUT_SCHEMA = Object.freeze({
+  $schema: 'https://json-schema.org/draft/2020-12/schema',
+  type: 'object',
+  additionalProperties: false,
+  required: ['schema', 'status', 'query', 'sources', 'page', 'records', 'limitations'],
+  properties: {
+    schema: { const: 'narcoscope.api.atlas.v1' },
+    status: { enum: ['available', 'partial', 'unavailable'] },
+    query: {
+      type: 'object',
+      additionalProperties: false,
+      required: ['domain', 'iso3', 'year'],
+      properties: {
+        domain: { enum: ['all', 'firearms_tracing', 'organized_crime'] },
+        iso3: { type: ['string', 'null'], pattern: '^[A-Z]{3}$' },
+        year: { type: ['integer', 'null'], minimum: 1900, maximum: 2200 },
+      },
+    },
+    sources: { type: 'array', minItems: 1, maxItems: 2, items: ATLAS_SOURCE_SCHEMA },
+    page: PAGE_SCHEMA,
+    records: {
+      type: 'array',
+      maxItems: 100,
+      items: { oneOf: [FIREARMS_RECORD_SCHEMA, ORGANIZED_CRIME_RECORD_SCHEMA] },
+    },
+    limitations: { ...STRING_ARRAY, minItems: 4 },
+  },
+})
+
+const ENTITIES_SOURCE_SCHEMA = Object.freeze({
+  oneOf: [
+    { type: 'null' },
+    {
+      type: 'object',
+      additionalProperties: false,
+      required: ['source', 'source_url', 'downloaded_at', 'license', 'grain', 'programs', 'note'],
+      properties: {
+        source: NON_EMPTY_STRING,
+        source_url: HTTPS_URI,
+        downloaded_at: NON_EMPTY_STRING,
+        license: NON_EMPTY_STRING,
+        grain: NON_EMPTY_STRING,
+        programs: {
+          type: 'object',
+          minProperties: 1,
+          propertyNames: { enum: ['ILLICIT-DRUGS-EO14059', 'SDNT', 'SDNTK', 'TCO'] },
+          additionalProperties: NON_EMPTY_STRING,
+        },
+        note: NON_EMPTY_STRING,
+      },
+    },
+  ],
+})
+
+export const ENTITIES_OUTPUT_SCHEMA = Object.freeze({
+  $schema: 'https://json-schema.org/draft/2020-12/schema',
+  type: 'object',
+  additionalProperties: false,
+  required: [
+    'schema', 'status', 'query', 'source', 'page', 'records', 'disclaimer', 'privacy', 'error',
+  ],
+  properties: {
+    schema: { const: 'narcoscope.api.entities.v1' },
+    status: { enum: ['available', 'unavailable'] },
+    query: {
+      type: 'object',
+      additionalProperties: false,
+      required: ['entity_type', 'program', 'country', 'query'],
+      properties: {
+        entity_type: { type: ['string', 'null'], enum: ['aircraft', 'individual', 'organization', 'vessel', null] },
+        program: { type: ['string', 'null'], enum: ['ILLICIT-DRUGS-EO14059', 'SDNT', 'SDNTK', 'TCO', null] },
+        country: NULLABLE_STRING,
+        query: NULLABLE_STRING,
+      },
+    },
+    source: ENTITIES_SOURCE_SCHEMA,
+    page: PAGE_SCHEMA,
+    records: {
+      type: 'array',
+      maxItems: 100,
+      items: {
+        type: 'object',
+        additionalProperties: false,
+        required: ['ofac_entity_number', 'name', 'entity_type', 'programs', 'countries', 'meta'],
+        properties: {
+          ofac_entity_number: { type: 'integer', minimum: 1 },
+          name: NON_EMPTY_STRING,
+          entity_type: { enum: ['aircraft', 'individual', 'organization', 'vessel'] },
+          programs: {
+            type: 'array',
+            minItems: 1,
+            uniqueItems: true,
+            items: { enum: ['ILLICIT-DRUGS-EO14059', 'SDNT', 'SDNTK', 'TCO'] },
+          },
+          countries: STRING_ARRAY,
+          meta: {
+            type: 'object',
+            additionalProperties: false,
+            required: ['evidence_class', 'adjudication', 'source', 'source_url', 'downloaded_at'],
+            properties: {
+              evidence_class: { const: 'administrative_action' },
+              adjudication: { const: false },
+              source: NON_EMPTY_STRING,
+              source_url: HTTPS_URI,
+              downloaded_at: NON_EMPTY_STRING,
+            },
+          },
+        },
+      },
+    },
+    disclaimer: NON_EMPTY_STRING,
+    privacy: {
+      type: 'object',
+      additionalProperties: false,
+      required: ['returned_fields', 'withheld_fields', 'query_scope'],
+      properties: {
+        returned_fields: { ...STRING_ARRAY, minItems: 5 },
+        withheld_fields: { ...STRING_ARRAY, minItems: 5 },
+        query_scope: NON_EMPTY_STRING,
+      },
+    },
+    error: SOURCE_ERROR_SCHEMA,
+  },
+})
+
+const FEDERATION_ERROR_SCHEMA = Object.freeze({
+  oneOf: [
+    { type: 'null' },
+    {
+      type: 'object',
+      additionalProperties: false,
+      required: ['code', 'message', 'upstream_http_status', 'retry_after'],
+      properties: {
+        code: NON_EMPTY_STRING,
+        message: NON_EMPTY_STRING,
+        upstream_http_status: { type: ['integer', 'null'], minimum: 100, maximum: 599 },
+        retry_after: NULLABLE_STRING,
+      },
+    },
+  ],
+})
+
+const FEDERATION_LANE_SCHEMA = Object.freeze({
+  type: 'object',
+  additionalProperties: false,
+  required: [
+    'id', 'product', 'availability', 'evidence_status', 'upstream_schema', 'upstream_status',
+    'source_url', 'retrieved_at', 'clocks', 'scope', 'citation', 'transport', 'data', 'error',
+    'boundaries',
+  ],
+  properties: {
+    id: {
+      enum: [
+        'palimpsest-bri',
+        'palimpsest-newswire-rights',
+        'seiche-capital-markets',
+        'seiche-global-money-atlas',
+        'seiche-money-markets',
+        'seiche-summary',
+      ],
+    },
+    product: { enum: ['Palimpsest', 'Seiche'] },
+    availability: { enum: ['available', 'restricted', 'unavailable'] },
+    evidence_status: { enum: ['derived', 'observed', 'restricted', 'structural', 'unavailable'] },
+    upstream_schema: NULLABLE_STRING,
+    upstream_status: NULLABLE_STRING,
+    source_url: HTTPS_URI,
+    retrieved_at: { type: 'string', format: 'date-time' },
+    clocks: NULLABLE_JSON_OBJECT,
+    scope: NULLABLE_JSON_OBJECT,
+    citation: NULLABLE_JSON_OBJECT,
+    transport: {
+      oneOf: [
+        { type: 'null' },
+        {
+          type: 'object',
+          additionalProperties: false,
+          required: ['attempts', 'timeout_ms', 'max_response_bytes'],
+          properties: {
+            attempts: { const: 1 },
+            timeout_ms: { type: 'integer', minimum: 1, maximum: 15000 },
+            max_response_bytes: { type: 'integer', minimum: 1, maximum: 2000000 },
+          },
+        },
+      ],
+    },
+    data: NULLABLE_JSON_OBJECT,
+    error: FEDERATION_ERROR_SCHEMA,
+    boundaries: { ...STRING_ARRAY, minItems: 2 },
+  },
+})
+
+export const FEDERATION_OUTPUT_SCHEMA = Object.freeze({
+  $schema: 'https://json-schema.org/draft/2020-12/schema',
+  type: 'object',
+  additionalProperties: false,
+  required: ['schema', 'status', 'retrieved_at', 'query', 'lanes', 'policy', 'limitations'],
+  properties: {
+    schema: { const: 'narcoscope.api.federation.v1' },
+    status: { enum: ['available', 'partial', 'unavailable'] },
+    retrieved_at: { type: 'string', format: 'date-time' },
+    query: {
+      type: 'object',
+      additionalProperties: false,
+      required: ['lane'],
+      properties: {
+        lane: {
+          enum: [
+            'all',
+            'palimpsest-bri',
+            'palimpsest-newswire-rights',
+            'seiche-capital-markets',
+            'seiche-global-money-atlas',
+            'seiche-money-markets',
+            'seiche-summary',
+          ],
+        },
+      },
+    },
+    lanes: { type: 'array', minItems: 1, maxItems: 6, items: FEDERATION_LANE_SCHEMA },
+    policy: {
+      type: 'object',
+      additionalProperties: false,
+      required: [
+        'mode', 'cross_lane_join', 'composite_generation', 'causal_inference',
+        'culpability_inference', 'missing_value_policy',
+      ],
+      properties: {
+        mode: { const: 'read_only_parallel_context' },
+        cross_lane_join: { const: 'prohibited' },
+        composite_generation: { const: 'prohibited' },
+        causal_inference: { const: 'prohibited' },
+        culpability_inference: { const: 'prohibited' },
+        missing_value_policy: { const: 'unavailable_not_zero' },
+      },
+    },
+    limitations: { ...STRING_ARRAY, minItems: 4 },
+  },
+})
+
 function normalizeStrictObjectSchemas(value) {
   if (Array.isArray(value)) return value.map(normalizeStrictObjectSchemas)
   if (!value || typeof value !== 'object') return value
@@ -337,6 +793,9 @@ export const PALIMPSEST_CORRIDORS_OUTPUT_SCHEMA = extendArtifactSchema(
 
 export const TOOL_OUTPUT_SCHEMAS = Object.freeze({
   list_capabilities: CAPABILITIES_OUTPUT_SCHEMA,
+  get_atlas: ATLAS_OUTPUT_SCHEMA,
+  get_entities: ENTITIES_OUTPUT_SCHEMA,
+  get_federation: FEDERATION_OUTPUT_SCHEMA,
   get_overview: OVERVIEW_OUTPUT_SCHEMA,
   get_newsroom: NEWSROOM_OUTPUT_SCHEMA,
   get_story: STORY_OUTPUT_SCHEMA,
