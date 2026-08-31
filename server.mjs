@@ -195,7 +195,10 @@ function requestHeartbeatBytes(target, address, timeoutMs) {
         accept: 'application/json',
         'user-agent': 'NarcoScopeRuntimeHeartbeatBridge/1.0 (+https://narcoscope.com)',
       },
-      lookup: (_hostname, _options, callback) => callback(null, address, 4),
+      lookup: (_hostname, options, callback) => {
+        if (options?.all) callback(null, [{ address, family: 4 }])
+        else callback(null, address, 4)
+      },
       method: 'GET',
     }, (response) => {
       const contentType = String(response.headers['content-type'] || '').toLowerCase()

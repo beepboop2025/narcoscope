@@ -117,14 +117,24 @@ describe('Railway HTTP server', () => {
     expect(packageJson.scripts.build).toMatch(/^npm run bridge:palimpsest-bri:check &&/)
   })
 
-  it('ships an exact-host, exact-path Caddy heartbeat boundary', async () => {
+  it('ships an exact-path Caddy handler for the existing Seiche HTTPS site', async () => {
     const caddy = await readFile(new URL('./deploy/wire/Caddyfile.heartbeat', import.meta.url), 'utf8')
-    expect(caddy).toMatch(/^#.*\n#.*\nmonitor\.narcoscope\.com \{/)
+    expect(caddy).toMatch(/^#.*api\.seiche\.info.*\n#.*\nroute \/narcoscope\/wire-heartbeat-v1\.json \{/)
     expect(caddy).toContain('method GET HEAD')
-    expect(caddy).toContain('path /narcoscope/wire-heartbeat-v1.json')
     expect(caddy).toContain('root * /var/lib/narcoscope-wire-public')
-    expect(caddy).toContain('respond "not found" 404')
+    expect(caddy).toContain('header Allow "GET, HEAD"')
+    expect(caddy).toContain('respond "method not allowed" 405')
+    expect(caddy.match(/Cache-Control "no-store"/g)).toHaveLength(2)
+    expect(caddy).not.toMatch(/^api\.seiche\.info \{/m)
     expect(caddy).not.toMatch(/\b(?:reverse_proxy|browse)\b/)
+  })
+
+  it('keeps both wire clocks visible in the three-row mobile status card', async () => {
+    const styles = await readFile(new URL('./src/styles.css', import.meta.url), 'utf8')
+    expect(styles).toMatch(/\.wire__status \{[^}]*grid-template-columns: auto minmax\(0, 1fr\)/)
+    expect(styles).toMatch(/\.wire__status > span \{[^}]*grid-row: 1 \/ span 3/)
+    expect(styles).toMatch(/\.wire__status time \{[^}]*min-width: 0;[^}]*overflow-wrap: anywhere/)
+    expect(styles).toMatch(/@media \(max-width: 680px\)[\s\S]*?\.wire__status \{ min-width: 0; \}/)
   })
 
   it('preserves the local-upload Railway infrastructure contract', async () => {
@@ -208,13 +218,13 @@ describe('Railway HTTP server', () => {
     const heartbeatServer = createNarcoscopeServer({
       heartbeatLoader: () => loadWireMonitorHeartbeat({
         env: {
-          NARCOSCOPE_WIRE_HEARTBEAT_URL: 'https://monitor.narcoscope.com/narcoscope/wire-heartbeat-v1.json',
-          NARCOSCOPE_WIRE_HEARTBEAT_ALLOWED_HOSTS: 'monitor.narcoscope.com',
+          NARCOSCOPE_WIRE_HEARTBEAT_URL: 'https://api.seiche.info/narcoscope/wire-heartbeat-v1.json',
+          NARCOSCOPE_WIRE_HEARTBEAT_ALLOWED_HOSTS: 'api.seiche.info',
           NARCOSCOPE_WIRE_HEARTBEAT_TIMEOUT_MS: '500',
         },
         resolver: async () => [{ address: '167.233.225.54', family: 4 }],
         requester: async (target, address) => {
-          expect(target.hostname).toBe('monitor.narcoscope.com')
+          expect(target.hostname).toBe('api.seiche.info')
           expect(address).toBe('167.233.225.54')
           return Buffer.from(JSON.stringify(upstream))
         },
@@ -240,15 +250,15 @@ describe('Railway HTTP server', () => {
   it.each([
     [{}, 'upstream_unconfigured'],
     [{
-      NARCOSCOPE_WIRE_HEARTBEAT_URL: 'http://monitor.narcoscope.com/narcoscope/wire-heartbeat-v1.json',
-      NARCOSCOPE_WIRE_HEARTBEAT_ALLOWED_HOSTS: 'monitor.narcoscope.com',
+      NARCOSCOPE_WIRE_HEARTBEAT_URL: 'http://api.seiche.info/narcoscope/wire-heartbeat-v1.json',
+      NARCOSCOPE_WIRE_HEARTBEAT_ALLOWED_HOSTS: 'api.seiche.info',
     }, 'upstream_invalid_config'],
     [{
-      NARCOSCOPE_WIRE_HEARTBEAT_URL: 'https://monitor.narcoscope.com/narcoscope/wire-heartbeat-v1.json?private=1',
-      NARCOSCOPE_WIRE_HEARTBEAT_ALLOWED_HOSTS: 'monitor.narcoscope.com',
+      NARCOSCOPE_WIRE_HEARTBEAT_URL: 'https://api.seiche.info/narcoscope/wire-heartbeat-v1.json?private=1',
+      NARCOSCOPE_WIRE_HEARTBEAT_ALLOWED_HOSTS: 'api.seiche.info',
     }, 'upstream_invalid_config'],
     [{
-      NARCOSCOPE_WIRE_HEARTBEAT_URL: 'https://monitor.narcoscope.com/narcoscope/wire-heartbeat-v1.json',
+      NARCOSCOPE_WIRE_HEARTBEAT_URL: 'https://api.seiche.info/narcoscope/wire-heartbeat-v1.json',
       NARCOSCOPE_WIRE_HEARTBEAT_ALLOWED_HOSTS: 'other.narcoscope.com',
     }, 'upstream_invalid_config'],
   ])('fails heartbeat configuration closed without making a request', async (env, code) => {
@@ -261,8 +271,8 @@ describe('Railway HTTP server', () => {
     const requester = vi.fn()
     await expect(loadWireMonitorHeartbeat({
       env: {
-        NARCOSCOPE_WIRE_HEARTBEAT_URL: 'https://monitor.narcoscope.com/narcoscope/wire-heartbeat-v1.json',
-        NARCOSCOPE_WIRE_HEARTBEAT_ALLOWED_HOSTS: 'monitor.narcoscope.com',
+        NARCOSCOPE_WIRE_HEARTBEAT_URL: 'https://api.seiche.info/narcoscope/wire-heartbeat-v1.json',
+        NARCOSCOPE_WIRE_HEARTBEAT_ALLOWED_HOSTS: 'api.seiche.info',
       },
       resolver: async () => [{ address: '127.0.0.1', family: 4 }, { address: '10.0.0.8', family: 4 }],
       requester,
@@ -273,8 +283,8 @@ describe('Railway HTTP server', () => {
   it('bounds an unresponsive heartbeat upstream', async () => {
     await expect(loadWireMonitorHeartbeat({
       env: {
-        NARCOSCOPE_WIRE_HEARTBEAT_URL: 'https://monitor.narcoscope.com/narcoscope/wire-heartbeat-v1.json',
-        NARCOSCOPE_WIRE_HEARTBEAT_ALLOWED_HOSTS: 'monitor.narcoscope.com',
+        NARCOSCOPE_WIRE_HEARTBEAT_URL: 'https://api.seiche.info/narcoscope/wire-heartbeat-v1.json',
+        NARCOSCOPE_WIRE_HEARTBEAT_ALLOWED_HOSTS: 'api.seiche.info',
         NARCOSCOPE_WIRE_HEARTBEAT_TIMEOUT_MS: '100',
       },
       resolver: async () => [{ address: '167.233.225.54', family: 4 }],

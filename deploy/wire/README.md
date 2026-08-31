@@ -48,32 +48,41 @@ node /opt/narcoscope/scripts/wire/collect.mjs --check \
 
 ## Public heartbeat bridge
 
-The reviewed Caddy site in `deploy/wire/Caddyfile.heartbeat` exposes exactly
-one `GET`/`HEAD` path and returns 404 for everything else. Do not activate it
-until `monitor.narcoscope.com` has an owner-authorized A record for the Hetzner
-host, the heartbeat exists, and Caddy validation passes:
+The reviewed Caddy handler in `deploy/wire/Caddyfile.heartbeat` is imported
+inside the existing `api.seiche.info` HTTPS site. It serves exactly one path for
+`GET`/`HEAD`, returns 405 for other methods on that path, and leaves every other
+Seiche API route untouched. It requires no new DNS record or certificate. Do
+not import it until the heartbeat exists and the complete active Caddyfile
+validates:
 
 ```bash
 test -s /var/lib/narcoscope-wire-public/narcoscope/wire-heartbeat-v1.json
+install -d -m 0755 /etc/caddy/snippets
 install -m 0644 /opt/narcoscope/deploy/wire/Caddyfile.heartbeat \
-  /etc/caddy/conf.d/narcoscope-wire-heartbeat.caddy
+  /etc/caddy/snippets/narcoscope-wire-heartbeat.caddy
+# Add this import inside the existing api.seiche.info site block, before its
+# catch-all handler:
+# import /etc/caddy/snippets/narcoscope-wire-heartbeat.caddy
 caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile
 systemctl reload caddy
 curl --fail --silent --show-error \
-  https://monitor.narcoscope.com/narcoscope/wire-heartbeat-v1.json
+  https://api.seiche.info/narcoscope/wire-heartbeat-v1.json
+curl --fail --silent --show-error --head \
+  https://api.seiche.info/narcoscope/wire-heartbeat-v1.json
+test "$(curl --silent --output /dev/null --write-out '%{http_code}' \
+  --request POST https://api.seiche.info/narcoscope/wire-heartbeat-v1.json)" = 405
 ```
 
-The Caddy import path is host-specific; use the host's existing reviewed import
-layout instead of editing an unrelated active site block. If DNS, TLS issuance,
-or the exact-path response is not ready, remove or leave the snippet unimported.
-Do not replace it with a directory server or wildcard proxy.
+Use the host's existing reviewed import layout if it differs from the example.
+Do not create a second `api.seiche.info` site block, disturb its existing proxy
+routes, or replace this handler with a directory server or wildcard proxy.
 
 After the exact source revision reaches Railway, configure the NarcoScope
 runtime with all three values and redeploy that source revision once:
 
 ```text
-NARCOSCOPE_WIRE_HEARTBEAT_URL=https://monitor.narcoscope.com/narcoscope/wire-heartbeat-v1.json
-NARCOSCOPE_WIRE_HEARTBEAT_ALLOWED_HOSTS=monitor.narcoscope.com
+NARCOSCOPE_WIRE_HEARTBEAT_URL=https://api.seiche.info/narcoscope/wire-heartbeat-v1.json
+NARCOSCOPE_WIRE_HEARTBEAT_ALLOWED_HOSTS=api.seiche.info
 NARCOSCOPE_WIRE_HEARTBEAT_TIMEOUT_MS=1500
 ```
 
@@ -122,5 +131,6 @@ Repository verification:
 bash -n deploy/wire/collect.sh deploy/wire/install.sh
 shellcheck deploy/wire/collect.sh deploy/wire/install.sh
 bash deploy/wire/collect.test.sh
-caddy validate --config deploy/wire/Caddyfile.heartbeat --adapter caddyfile
+# After importing the handler inside the existing api.seiche.info site:
+caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile
 ```

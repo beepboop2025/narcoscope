@@ -112,13 +112,13 @@ if [[ -L "$PUBLIC_DIR"
   exit 1
 fi
 install -d -m 0755 -- "$PUBLIC_HEARTBEAT_DIR"
-PUBLIC_READY=1
 
 if ! mkdir -- "$LOCK_DIR" 2>/dev/null; then
   log "FAIL: another live-wire run holds $LOCK_DIR"
   exit 75
 fi
 LOCK_HELD=1
+PUBLIC_READY=1
 printf '%s\n' "$$" > "$LOCK_DIR/pid"
 
 write_publication_receipt() {

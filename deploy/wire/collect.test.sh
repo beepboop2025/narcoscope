@@ -67,6 +67,19 @@ if (heartbeat.artifactSha256 !== createHash('sha256').update(artifactRaw).digest
 if (heartbeatRaw.includes(privateStatePath) || heartbeatRaw.includes('latest') || heartbeatRaw.includes('phase') || heartbeatRaw.includes('exitCode')) process.exit(13)
 JS
 
+HEARTBEAT_BEFORE_LOCK="$(node -e 'const { createHash } = require("node:crypto"); const { readFileSync } = require("node:fs"); process.stdout.write(createHash("sha256").update(readFileSync(process.argv[1])).digest("hex"))' "$HEARTBEAT")"
+mkdir "$LOCK_DIR"
+if run_collector; then
+  echo "ERROR: the lock-contention fixture unexpectedly succeeded" >&2
+  exit 14
+fi
+HEARTBEAT_AFTER_LOCK="$(node -e 'const { createHash } = require("node:crypto"); const { readFileSync } = require("node:fs"); process.stdout.write(createHash("sha256").update(readFileSync(process.argv[1])).digest("hex"))' "$HEARTBEAT")"
+if [[ "$HEARTBEAT_BEFORE_LOCK" != "$HEARTBEAT_AFTER_LOCK" ]]; then
+  echo "ERROR: lock contention overwrote the prior public heartbeat" >&2
+  exit 15
+fi
+rmdir "$LOCK_DIR"
+
 if run_collector WIRE_FIXTURE_FAIL=1; then
   echo "ERROR: the fixture failure unexpectedly succeeded" >&2
   exit 20

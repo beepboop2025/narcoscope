@@ -1,12 +1,9 @@
-# Activate this exact-host site only after monitor.narcoscope.com resolves to
-# the reviewed Hetzner host and the public heartbeat file exists.
-monitor.narcoscope.com {
-	@narcoscope_wire_heartbeat {
-		method GET HEAD
-		path /narcoscope/wire-heartbeat-v1.json
-	}
+# Import this handler inside the existing api.seiche.info site block, before
+# that site's catch-all handler. It creates no new hostname or TLS dependency.
+route /narcoscope/wire-heartbeat-v1.json {
+	@narcoscope_wire_heartbeat_get_or_head method GET HEAD
 
-	handle @narcoscope_wire_heartbeat {
+	handle @narcoscope_wire_heartbeat_get_or_head {
 		root * /var/lib/narcoscope-wire-public
 		header {
 			Cache-Control "no-store"
@@ -17,6 +14,9 @@ monitor.narcoscope.com {
 	}
 
 	handle {
-		respond "not found" 404
+		header Allow "GET, HEAD"
+		header Cache-Control "no-store"
+		header X-Content-Type-Options "nosniff"
+		respond "method not allowed" 405
 	}
 }
