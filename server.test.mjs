@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import { afterAll, beforeAll, describe, expect, it } from 'vitest'
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 import { createRailwayContext, project } from 'railway/iac'
 
 import railwayConfig from './.railway/railway.ts'
@@ -15,11 +15,22 @@ import {
   BRI_HASH_FILE,
   BRI_SCHEMA_FILE,
 } from './lib/palimpsest-bri-contract.mjs'
-import { createNarcoscopeServer, loadFleetReleaseIdentity } from './server.mjs'
+import {
+  createNarcoscopeServer,
+  loadFleetReleaseIdentity,
+  loadWireMonitorHeartbeat,
+} from './server.mjs'
 
 let baseUrl
+let previousHeartbeatEnvironment
 let previousRevision
 let server
+
+const heartbeatEnvironmentKeys = [
+  'NARCOSCOPE_WIRE_HEARTBEAT_URL',
+  'NARCOSCOPE_WIRE_HEARTBEAT_ALLOWED_HOSTS',
+  'NARCOSCOPE_WIRE_HEARTBEAT_TIMEOUT_MS',
+]
 
 async function copyBriData(distDir) {
   const dataDir = join(distDir, 'data')
@@ -55,6 +66,8 @@ async function requestRaw(path, { body, headers = {}, method = 'GET' } = {}) {
 
 beforeAll(async () => {
   previousRevision = process.env.NARCOSCOPE_REVISION
+  previousHeartbeatEnvironment = new Map(heartbeatEnvironmentKeys.map((key) => [key, process.env[key]]))
+  for (const key of heartbeatEnvironmentKeys) delete process.env[key]
   process.env.NARCOSCOPE_REVISION = 'a'.repeat(40)
   const distDir = await mkdtemp(join(tmpdir(), 'narcoscope-server-'))
   await mkdir(join(distDir, 'assets'))
@@ -77,6 +90,10 @@ afterAll(async () => {
   if (server) await new Promise((resolveClose) => server.close(resolveClose))
   if (previousRevision === undefined) delete process.env.NARCOSCOPE_REVISION
   else process.env.NARCOSCOPE_REVISION = previousRevision
+  for (const [key, value] of previousHeartbeatEnvironment) {
+    if (value === undefined) delete process.env[key]
+    else process.env[key] = value
+  }
 })
 
 describe('Railway HTTP server', () => {
@@ -98,6 +115,16 @@ describe('Railway HTTP server', () => {
     expect(dockerfile).toContain('COPY --chown=node:node lib ./lib')
     expect(dockerfile).toContain('/app/release-manifest.json ./release-manifest.json')
     expect(packageJson.scripts.build).toMatch(/^npm run bridge:palimpsest-bri:check &&/)
+  })
+
+  it('ships an exact-host, exact-path Caddy heartbeat boundary', async () => {
+    const caddy = await readFile(new URL('./deploy/wire/Caddyfile.heartbeat', import.meta.url), 'utf8')
+    expect(caddy).toMatch(/^#.*\n#.*\nmonitor\.narcoscope\.com \{/)
+    expect(caddy).toContain('method GET HEAD')
+    expect(caddy).toContain('path /narcoscope/wire-heartbeat-v1.json')
+    expect(caddy).toContain('root * /var/lib/narcoscope-wire-public')
+    expect(caddy).toContain('respond "not found" 404')
+    expect(caddy).not.toMatch(/\b(?:reverse_proxy|browse)\b/)
   })
 
   it('preserves the local-upload Railway infrastructure contract', async () => {
@@ -149,6 +176,117 @@ describe('Railway HTTP server', () => {
       releaseIdentity: 'environment-fallback',
       briArtifact: 'verified',
     })
+  })
+
+  it('defaults the runtime heartbeat route to a typed unavailable state', async () => {
+    const response = await fetch(baseUrl + '/monitor/wire-heartbeat-v1.json')
+    expect(response.status).toBe(503)
+    expect(response.headers.get('cache-control')).toBe('no-store')
+    expect(await response.json()).toEqual({
+      schema: 'narcoscope.wire-heartbeat.v1',
+      status: 'unavailable',
+      recordedAt: null,
+      itemCount: null,
+      reason: 'upstream_unconfigured',
+    })
+
+    const head = await fetch(baseUrl + '/monitor/wire-heartbeat-v1.json', { method: 'HEAD' })
+    expect(head.status).toBe(503)
+    expect(await head.text()).toBe('')
+  })
+
+  it('sanitizes the bounded Hetzner heartbeat before serving it', async () => {
+    const upstream = {
+      schema: 'narcoscope.wire-heartbeat.v1',
+      status: 'ok',
+      recordedAt: '2026-08-31T10:15:00Z',
+      itemCount: 12,
+      artifactSha256: 'b'.repeat(64),
+      latest: '/var/lib/narcoscope-wire/evidence-wire-v1.json',
+      privateContent: 'must not cross the bridge',
+    }
+    const heartbeatServer = createNarcoscopeServer({
+      heartbeatLoader: () => loadWireMonitorHeartbeat({
+        env: {
+          NARCOSCOPE_WIRE_HEARTBEAT_URL: 'https://monitor.narcoscope.com/narcoscope/wire-heartbeat-v1.json',
+          NARCOSCOPE_WIRE_HEARTBEAT_ALLOWED_HOSTS: 'monitor.narcoscope.com',
+          NARCOSCOPE_WIRE_HEARTBEAT_TIMEOUT_MS: '500',
+        },
+        resolver: async () => [{ address: '167.233.225.54', family: 4 }],
+        requester: async (target, address) => {
+          expect(target.hostname).toBe('monitor.narcoscope.com')
+          expect(address).toBe('167.233.225.54')
+          return Buffer.from(JSON.stringify(upstream))
+        },
+      }),
+    })
+    await new Promise((resolveListen) => heartbeatServer.listen(0, '127.0.0.1', resolveListen))
+    const address = heartbeatServer.address()
+    try {
+      const response = await fetch(`http://127.0.0.1:${address.port}/monitor/wire-heartbeat-v1.json`)
+      expect(response.status).toBe(200)
+      expect(await response.json()).toEqual({
+        schema: 'narcoscope.wire-heartbeat.v1',
+        status: 'ok',
+        recordedAt: '2026-08-31T10:15:00Z',
+        itemCount: 12,
+        artifactSha256: 'b'.repeat(64),
+      })
+    } finally {
+      await new Promise((resolveClose) => heartbeatServer.close(resolveClose))
+    }
+  })
+
+  it.each([
+    [{}, 'upstream_unconfigured'],
+    [{
+      NARCOSCOPE_WIRE_HEARTBEAT_URL: 'http://monitor.narcoscope.com/narcoscope/wire-heartbeat-v1.json',
+      NARCOSCOPE_WIRE_HEARTBEAT_ALLOWED_HOSTS: 'monitor.narcoscope.com',
+    }, 'upstream_invalid_config'],
+    [{
+      NARCOSCOPE_WIRE_HEARTBEAT_URL: 'https://monitor.narcoscope.com/narcoscope/wire-heartbeat-v1.json?private=1',
+      NARCOSCOPE_WIRE_HEARTBEAT_ALLOWED_HOSTS: 'monitor.narcoscope.com',
+    }, 'upstream_invalid_config'],
+    [{
+      NARCOSCOPE_WIRE_HEARTBEAT_URL: 'https://monitor.narcoscope.com/narcoscope/wire-heartbeat-v1.json',
+      NARCOSCOPE_WIRE_HEARTBEAT_ALLOWED_HOSTS: 'other.narcoscope.com',
+    }, 'upstream_invalid_config'],
+  ])('fails heartbeat configuration closed without making a request', async (env, code) => {
+    const requester = vi.fn()
+    await expect(loadWireMonitorHeartbeat({ env, requester })).rejects.toMatchObject({ code })
+    expect(requester).not.toHaveBeenCalled()
+  })
+
+  it('rejects a heartbeat hostname that resolves only to a private address', async () => {
+    const requester = vi.fn()
+    await expect(loadWireMonitorHeartbeat({
+      env: {
+        NARCOSCOPE_WIRE_HEARTBEAT_URL: 'https://monitor.narcoscope.com/narcoscope/wire-heartbeat-v1.json',
+        NARCOSCOPE_WIRE_HEARTBEAT_ALLOWED_HOSTS: 'monitor.narcoscope.com',
+      },
+      resolver: async () => [{ address: '127.0.0.1', family: 4 }, { address: '10.0.0.8', family: 4 }],
+      requester,
+    })).rejects.toMatchObject({ code: 'upstream_invalid_config' })
+    expect(requester).not.toHaveBeenCalled()
+  })
+
+  it('bounds an unresponsive heartbeat upstream', async () => {
+    await expect(loadWireMonitorHeartbeat({
+      env: {
+        NARCOSCOPE_WIRE_HEARTBEAT_URL: 'https://monitor.narcoscope.com/narcoscope/wire-heartbeat-v1.json',
+        NARCOSCOPE_WIRE_HEARTBEAT_ALLOWED_HOSTS: 'monitor.narcoscope.com',
+        NARCOSCOPE_WIRE_HEARTBEAT_TIMEOUT_MS: '100',
+      },
+      resolver: async () => [{ address: '167.233.225.54', family: 4 }],
+      requester: async () => new Promise(() => {}),
+    })).rejects.toMatchObject({ code: 'upstream_unavailable' })
+  })
+
+  it('rejects unsupported methods on the runtime heartbeat route', async () => {
+    const response = await fetch(baseUrl + '/monitor/wire-heartbeat-v1.json', { method: 'POST' })
+    expect(response.status).toBe(405)
+    expect(response.headers.get('allow')).toBe('GET, HEAD')
+    expect(await response.json()).toEqual({ ok: false, error: 'method_not_allowed' })
   })
 
   it('binds health to the exact immutable Hetzner fleet release manifest', async () => {
@@ -209,6 +347,11 @@ describe('Railway HTTP server', () => {
     process.env.NARCOSCOPE_REVISION = 'a'.repeat(40)
     const conflictServer = createNarcoscopeServer({
       distDir: fileURLToPath(new URL('./dist', import.meta.url)),
+      briLoader: async () => ({
+        artifactRaw: Buffer.from('same'),
+        artifactSha256: 'e'.repeat(64),
+        schemaRaw: Buffer.from('schema'),
+      }),
       releaseIdentityLoader: async () => ({
         sourceCommit: 'b'.repeat(40),
         releaseId: 'c'.repeat(64),
@@ -469,6 +612,7 @@ describe('Railway HTTP server', () => {
     '/foo/../healthz?probe=1',
     '/foo/%2e%2e/api/v1/palimpsest-bri',
     '/foo/../mcp',
+    '/monitor/foo/../wire-heartbeat-v1.json',
   ])('rejects traversal in the raw HTTP request target %s', async (path) => {
     const response = await requestRaw(path)
     expect(response.status).toBe(404)

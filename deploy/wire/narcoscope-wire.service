@@ -7,6 +7,7 @@ Wants=network-online.target
 Type=oneshot
 Environment=NARCOSCOPE_REPO=/opt/narcoscope
 Environment=NARCOSCOPE_WIRE_STATE_DIR=/var/lib/narcoscope-wire
+Environment=NARCOSCOPE_WIRE_PUBLIC_DIR=/var/lib/narcoscope-wire-public
 Environment=NARCOSCOPE_WIRE_LOCK_DIR=/run/lock/narcoscope-wire
 Environment=NARCOSCOPE_WIRE_PUBLISH=0
 Environment=NARCOSCOPE_WIRE_DEPLOY_KEY=/root/.ssh/narcoscope_deploy
@@ -27,4 +28,4 @@ NoNewPrivileges=true
 PrivateTmp=true
 ProtectHome=read-only
 ProtectSystem=strict
-ReadWritePaths=/opt/narcoscope/.git /var/lib/narcoscope-wire /run/lock /var/tmp
+ReadWritePaths=/opt/narcoscope/.git /var/lib/narcoscope-wire /var/lib/narcoscope-wire-public /run/lock /var/tmp

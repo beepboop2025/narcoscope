@@ -1,0 +1,22 @@
+# Activate this exact-host site only after monitor.narcoscope.com resolves to
+# the reviewed Hetzner host and the public heartbeat file exists.
+monitor.narcoscope.com {
+	@narcoscope_wire_heartbeat {
+		method GET HEAD
+		path /narcoscope/wire-heartbeat-v1.json
+	}
+
+	handle @narcoscope_wire_heartbeat {
+		root * /var/lib/narcoscope-wire-public
+		header {
+			Cache-Control "no-store"
+			Content-Security-Policy "default-src 'none'; frame-ancestors 'none'"
+			X-Content-Type-Options "nosniff"
+		}
+		file_server
+	}
+
+	handle {
+		respond "not found" 404
+	}
+}

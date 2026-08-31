@@ -1,7 +1,10 @@
 import { createHash } from 'node:crypto'
+import { lookup as lookupDns } from 'node:dns/promises'
 import { createReadStream } from 'node:fs'
 import { readFile, stat } from 'node:fs/promises'
 import { createServer } from 'node:http'
+import { request as httpsRequest } from 'node:https'
+import { isIP } from 'node:net'
 import { extname, resolve, sep } from 'node:path'
 import { pipeline } from 'node:stream/promises'
 import { fileURLToPath } from 'node:url'
@@ -18,6 +21,20 @@ const COMMIT_RE = /^[0-9a-f]{40}$/
 const SHA256_RE = /^[0-9a-f]{64}$/
 const API_CATALOG_PATH = '.well-known/api-catalog'
 const API_CATALOG_MEDIA_TYPE = 'application/linkset+json; profile="https://www.rfc-editor.org/info/rfc9727"'
+const WIRE_HEARTBEAT_SCHEMA = 'narcoscope.wire-heartbeat.v1'
+const WIRE_HEARTBEAT_PUBLIC_PATH = '/monitor/wire-heartbeat-v1.json'
+const WIRE_HEARTBEAT_UPSTREAM_PATH = '/narcoscope/wire-heartbeat-v1.json'
+const WIRE_HEARTBEAT_MAX_BYTES = 8 * 1024
+const WIRE_HEARTBEAT_DEFAULT_TIMEOUT_MS = 1_500
+const WIRE_HEARTBEAT_MIN_TIMEOUT_MS = 100
+const WIRE_HEARTBEAT_MAX_TIMEOUT_MS = 5_000
+const WIRE_HEARTBEAT_STATUSES = new Set(['ok', 'failed'])
+const WIRE_HEARTBEAT_FAILURE_REASONS = new Set([
+  'upstream_unconfigured',
+  'upstream_invalid_config',
+  'upstream_unavailable',
+  'upstream_invalid_payload',
+])
 const INTERNAL_STATIC_ROOTS = new Set([
   'api',
   'lib',
@@ -51,6 +68,228 @@ const CONTENT_TYPES = Object.freeze({
   '.webmanifest': 'application/manifest+json',
   '.xml': 'application/xml; charset=utf-8',
 })
+
+function heartbeatError(code) {
+  const error = new Error(code)
+  error.code = code
+  return error
+}
+
+function heartbeatUnavailable(reason = 'upstream_unavailable') {
+  return {
+    schema: WIRE_HEARTBEAT_SCHEMA,
+    status: 'unavailable',
+    recordedAt: null,
+    itemCount: null,
+    reason: WIRE_HEARTBEAT_FAILURE_REASONS.has(reason) ? reason : 'upstream_unavailable',
+  }
+}
+
+function parseHeartbeatConfiguration(env) {
+  const rawUrl = env.NARCOSCOPE_WIRE_HEARTBEAT_URL?.trim() || ''
+  if (!rawUrl) throw heartbeatError('upstream_unconfigured')
+
+  let target
+  try {
+    target = new URL(rawUrl)
+  } catch {
+    throw heartbeatError('upstream_invalid_config')
+  }
+
+  const allowedHosts = (env.NARCOSCOPE_WIRE_HEARTBEAT_ALLOWED_HOSTS || '')
+    .split(',')
+    .map((host) => host.trim().toLowerCase())
+    .filter(Boolean)
+  const validHostname = (host) => (
+    host.length <= 253
+    && !host.endsWith('.')
+    && isIP(host) === 0
+    && host !== 'localhost'
+    && !host.endsWith('.localhost')
+    && !host.endsWith('.local')
+    && host.split('.').every((label) => (
+      label.length > 0
+      && label.length <= 63
+      && /^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/.test(label)
+    ))
+  )
+  if (allowedHosts.length === 0 || allowedHosts.some((host) => !validHostname(host))) {
+    throw heartbeatError('upstream_invalid_config')
+  }
+
+  const hostname = target.hostname.toLowerCase()
+  if (target.protocol !== 'https:'
+    || target.username
+    || target.password
+    || target.port
+    || target.pathname !== WIRE_HEARTBEAT_UPSTREAM_PATH
+    || target.search
+    || target.hash
+    || !allowedHosts.includes(hostname)) {
+    throw heartbeatError('upstream_invalid_config')
+  }
+
+  const rawTimeout = env.NARCOSCOPE_WIRE_HEARTBEAT_TIMEOUT_MS?.trim() || ''
+  if (rawTimeout && !/^\d+$/.test(rawTimeout)) throw heartbeatError('upstream_invalid_config')
+  const timeoutMs = rawTimeout ? Number(rawTimeout) : WIRE_HEARTBEAT_DEFAULT_TIMEOUT_MS
+  if (!Number.isSafeInteger(timeoutMs)
+    || timeoutMs < WIRE_HEARTBEAT_MIN_TIMEOUT_MS
+    || timeoutMs > WIRE_HEARTBEAT_MAX_TIMEOUT_MS) {
+    throw heartbeatError('upstream_invalid_config')
+  }
+
+  return { target, timeoutMs }
+}
+
+function isPublicIpv4(address) {
+  if (isIP(address) !== 4) return false
+  const [first, second] = address.split('.').map(Number)
+  if (first === 0 || first === 10 || first === 127 || first >= 224) return false
+  if (first === 100 && second >= 64 && second <= 127) return false
+  if (first === 169 && second === 254) return false
+  if (first === 172 && second >= 16 && second <= 31) return false
+  if (first === 192 && [0, 168].includes(second)) return false
+  if (first === 198 && [18, 19, 51].includes(second)) return false
+  if (first === 203 && second === 0) return false
+  return true
+}
+
+function withTimeout(promise, timeoutMs) {
+  let timer
+  return Promise.race([
+    Promise.resolve(promise),
+    new Promise((_, reject) => {
+      timer = setTimeout(() => reject(heartbeatError('upstream_unavailable')), timeoutMs)
+    }),
+  ]).finally(() => clearTimeout(timer))
+}
+
+async function resolveHeartbeatAddress(hostname, resolver, timeoutMs) {
+  let records
+  try {
+    records = await withTimeout(resolver(hostname, { all: true, verbatim: true }), timeoutMs)
+  } catch (error) {
+    if (error?.code === 'upstream_unavailable') throw error
+    throw heartbeatError('upstream_unavailable')
+  }
+  const record = Array.isArray(records)
+    ? records.find((candidate) => candidate?.family === 4 && isPublicIpv4(candidate.address))
+    : null
+  if (!record) throw heartbeatError('upstream_invalid_config')
+  return record.address
+}
+
+function requestHeartbeatBytes(target, address, timeoutMs) {
+  return new Promise((resolveRequest, rejectRequest) => {
+    let complete = false
+    let timer
+    const finish = (callback, value) => {
+      if (complete) return
+      complete = true
+      clearTimeout(timer)
+      callback(value)
+    }
+    const request = httpsRequest(target, {
+      agent: false,
+      headers: {
+        accept: 'application/json',
+        'user-agent': 'NarcoScopeRuntimeHeartbeatBridge/1.0 (+https://narcoscope.com)',
+      },
+      lookup: (_hostname, _options, callback) => callback(null, address, 4),
+      method: 'GET',
+    }, (response) => {
+      const contentType = String(response.headers['content-type'] || '').toLowerCase()
+      const declaredLength = Number(response.headers['content-length'])
+      if (response.statusCode !== 200
+        || !contentType.includes('application/json')
+        || (Number.isFinite(declaredLength) && declaredLength > WIRE_HEARTBEAT_MAX_BYTES)) {
+        response.resume()
+        finish(rejectRequest, heartbeatError('upstream_unavailable'))
+        return
+      }
+
+      const chunks = []
+      let total = 0
+      response.on('data', (chunk) => {
+        total += chunk.length
+        if (total > WIRE_HEARTBEAT_MAX_BYTES) {
+          response.destroy()
+          finish(rejectRequest, heartbeatError('upstream_unavailable'))
+          return
+        }
+        chunks.push(chunk)
+      })
+      response.on('end', () => finish(resolveRequest, Buffer.concat(chunks)))
+      response.on('error', () => finish(rejectRequest, heartbeatError('upstream_unavailable')))
+    })
+    request.on('error', () => finish(rejectRequest, heartbeatError('upstream_unavailable')))
+    timer = setTimeout(() => {
+      request.destroy()
+      finish(rejectRequest, heartbeatError('upstream_unavailable'))
+    }, timeoutMs)
+    request.end()
+  })
+}
+
+function sanitizeWireHeartbeat(payload) {
+  if (!payload || typeof payload !== 'object'
+    || payload.schema !== WIRE_HEARTBEAT_SCHEMA
+    || !WIRE_HEARTBEAT_STATUSES.has(payload.status)
+    || typeof payload.recordedAt !== 'string'
+    || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$/.test(payload.recordedAt)
+    || !Number.isFinite(Date.parse(payload.recordedAt))) {
+    throw heartbeatError('upstream_invalid_payload')
+  }
+
+  const hasArtifact = Number.isSafeInteger(payload.itemCount)
+    && payload.itemCount >= 0
+    && payload.itemCount <= 1_000_000
+    && SHA256_RE.test(payload.artifactSha256 || '')
+  const hasNoArtifact = payload.status === 'failed'
+    && payload.itemCount === null
+    && payload.artifactSha256 === undefined
+  if (!hasArtifact && !hasNoArtifact) throw heartbeatError('upstream_invalid_payload')
+
+  return Object.freeze({
+    schema: WIRE_HEARTBEAT_SCHEMA,
+    status: payload.status,
+    recordedAt: payload.recordedAt,
+    itemCount: hasArtifact ? payload.itemCount : null,
+    ...(hasArtifact ? { artifactSha256: payload.artifactSha256 } : {}),
+  })
+}
+
+export async function loadWireMonitorHeartbeat({
+  env = process.env,
+  resolver = lookupDns,
+  requester = requestHeartbeatBytes,
+} = {}) {
+  const { target, timeoutMs } = parseHeartbeatConfiguration(env)
+  const deadline = Date.now() + timeoutMs
+  const address = await resolveHeartbeatAddress(target.hostname, resolver, timeoutMs)
+  const remainingMs = deadline - Date.now()
+  if (remainingMs <= 0) throw heartbeatError('upstream_unavailable')
+
+  let raw
+  try {
+    raw = await withTimeout(requester(target, address, remainingMs), remainingMs)
+  } catch (error) {
+    if (WIRE_HEARTBEAT_FAILURE_REASONS.has(error?.code)) throw error
+    throw heartbeatError('upstream_unavailable')
+  }
+  const bytes = Buffer.isBuffer(raw) ? raw : Buffer.from(raw || '')
+  if (bytes.length === 0 || bytes.length > WIRE_HEARTBEAT_MAX_BYTES) {
+    throw heartbeatError('upstream_invalid_payload')
+  }
+
+  let payload
+  try {
+    payload = JSON.parse(bytes.toString('utf8'))
+  } catch {
+    throw heartbeatError('upstream_invalid_payload')
+  }
+  return sanitizeWireHeartbeat(payload)
+}
 
 export async function loadFleetReleaseIdentity(manifestPath = DEFAULT_RELEASE_MANIFEST) {
   let raw
@@ -246,7 +485,7 @@ async function serveStatic(req, res, requestUrl, distDir) {
   await pipeline(createReadStream(candidate), res)
 }
 
-async function route(req, res, distDir, briLoader, releaseIdentityLoader) {
+async function route(req, res, distDir, briLoader, releaseIdentityLoader, heartbeatLoader) {
   const requestTarget = req.url || '/'
   let rawDecodedPath
   try {
@@ -327,6 +566,20 @@ async function route(req, res, distDir, briLoader, releaseIdentityLoader) {
     return
   }
 
+  if (pathname === WIRE_HEARTBEAT_PUBLIC_PATH) {
+    if (!['GET', 'HEAD'].includes(req.method || '')) {
+      res.setHeader('Allow', 'GET, HEAD')
+      sendJson(req, res, 405, { ok: false, error: 'method_not_allowed' })
+      return
+    }
+    try {
+      sendJson(req, res, 200, sanitizeWireHeartbeat(await heartbeatLoader()))
+    } catch (error) {
+      sendJson(req, res, 503, heartbeatUnavailable(error?.code))
+    }
+    return
+  }
+
   if (pathname === '/api/v1' || pathname.startsWith('/api/v1/')) {
     const resourceFromPath = pathname.startsWith('/api/v1/')
       ? pathname.slice('/api/v1/'.length)
@@ -366,10 +619,11 @@ export function createNarcoscopeServer({
   briLoader = loadVerifiedPalimpsestBriArtifact,
   releaseManifestPath = DEFAULT_RELEASE_MANIFEST,
   releaseIdentityLoader = () => loadFleetReleaseIdentity(releaseManifestPath),
+  heartbeatLoader = () => loadWireMonitorHeartbeat(),
 } = {}) {
   const resolvedDist = resolve(distDir)
   return createServer((req, res) => {
-    route(req, res, resolvedDist, briLoader, releaseIdentityLoader).catch((error) => {
+    route(req, res, resolvedDist, briLoader, releaseIdentityLoader, heartbeatLoader).catch((error) => {
       console.error('narcoscope request failed', error)
       if (!res.headersSent) {
         sendJson(req, res, 500, { ok: false, error: 'internal_error' })
