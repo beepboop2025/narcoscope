@@ -112,6 +112,10 @@ describe('evidence wire assembly', () => {
     const heartbeat = await buildWire({ config: oneSource, fetchImpl, now: new Date('2026-08-31T00:10:00Z') })
     expect(wiresSemanticallyEqual(first, heartbeat)).toBe(true)
 
+    const rotatedWindowCount = structuredClone(heartbeat)
+    rotatedWindowCount.sources[0].detail = '24 source items read · 3 current in-scope · 1 retained metadata items published'
+    expect(wiresSemanticallyEqual(heartbeat, rotatedWindowCount)).toBe(true)
+
     const sourceFailure = await buildWire({ config: oneSource, previous: heartbeat, now: new Date('2026-08-31T00:20:00Z'), fetchImpl: async () => { throw new Error('offline') } })
     expect(sourceFailure.sources[0].status).toBe('aging')
     expect(wiresSemanticallyEqual(heartbeat, sourceFailure)).toBe(false)

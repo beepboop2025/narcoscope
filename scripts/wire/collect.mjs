@@ -335,10 +335,15 @@ export function validateWire(payload) {
 }
 
 function semanticDetail(value) {
-  return text(value).replace(
-    /\b\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})\b/g,
-    '<source-clock>',
-  )
+  return text(value)
+    .replace(
+      /\b\d+ source items read · \d+ current in-scope · \d+ retained metadata items published\b/g,
+      '<successful-source-window>',
+    )
+    .replace(
+      /\b\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})\b/g,
+      '<source-clock>',
+    )
 }
 
 export function wireSemanticProjection(payload) {
