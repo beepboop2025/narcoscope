@@ -42,6 +42,15 @@ type WireArtifact = {
   caveats: string[]
 }
 
+type MonitorHeartbeat = {
+  schema: 'narcoscope.wire-heartbeat.v1'
+  status: 'ok' | 'failed' | 'unavailable'
+  recordedAt: string | null
+  itemCount: number | null
+  artifactSha256?: string
+  reason?: 'upstream_unconfigured' | 'upstream_invalid_config' | 'upstream_unavailable' | 'upstream_invalid_payload'
+}
+
 type JsonFeedItem = {
   id?: string
   url?: string
@@ -64,6 +73,15 @@ function isWireArtifact(value: unknown): value is WireArtifact {
     && typeof candidate.generatedAt === 'string'
     && Array.isArray(candidate.items)
     && Array.isArray(candidate.sources)
+}
+
+function isMonitorHeartbeat(value: unknown): value is MonitorHeartbeat {
+  if (!value || typeof value !== 'object') return false
+  const candidate = value as Partial<MonitorHeartbeat>
+  return candidate.schema === 'narcoscope.wire-heartbeat.v1'
+    && ['ok', 'failed', 'unavailable'].includes(candidate.status ?? '')
+    && (candidate.recordedAt === null || typeof candidate.recordedAt === 'string')
+    && (candidate.itemCount === null || (Number.isSafeInteger(candidate.itemCount) && (candidate.itemCount ?? -1) >= 0))
 }
 
 function feedFallback(feed: JsonFeed, retrievedAt: string): WireArtifact {
@@ -150,9 +168,21 @@ async function fetchWire(signal: AbortSignal): Promise<WireArtifact> {
   return feedFallback(fallback, new Date().toISOString())
 }
 
+async function fetchMonitorHeartbeat(signal: AbortSignal): Promise<MonitorHeartbeat> {
+  const response = await fetch('/monitor/wire-heartbeat-v1.json', { cache: 'no-store', signal })
+  const payload: unknown = await response.json()
+  if (!isMonitorHeartbeat(payload)) throw new Error('The monitor heartbeat returned an unsupported schema.')
+  if (!response.ok && payload.status !== 'unavailable') {
+    throw new Error(`Monitor heartbeat returned HTTP ${response.status}.`)
+  }
+  return payload
+}
+
 export default function LiveEvidenceWire() {
   const [wire, setWire] = useState<WireArtifact | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [heartbeat, setHeartbeat] = useState<MonitorHeartbeat | null>(null)
+  const [monitorError, setMonitorError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [topic, setTopic] = useState('all')
   const [verification, setVerification] = useState<'all' | VerificationState>('all')
@@ -165,16 +195,26 @@ export default function LiveEvidenceWire() {
       if (document.visibilityState === 'hidden') return
       activeController?.abort()
       activeController = new AbortController()
-      try {
-        const nextWire = await fetchWire(activeController.signal)
-        setWire(nextWire)
+      const [wireResult, heartbeatResult] = await Promise.allSettled([
+        fetchWire(activeController.signal),
+        fetchMonitorHeartbeat(activeController.signal),
+      ])
+
+      if (wireResult.status === 'fulfilled') {
+        setWire(wireResult.value)
         setError(null)
-      } catch (nextError) {
-        if ((nextError as Error).name !== 'AbortError') setError(nextError instanceof Error ? nextError.message : 'Evidence wire unavailable.')
-      } finally {
-        setLoading(false)
-        setNow(Date.now())
+      } else if (wireResult.reason?.name !== 'AbortError') {
+        setError(wireResult.reason instanceof Error ? wireResult.reason.message : 'Evidence wire unavailable.')
       }
+      if (heartbeatResult.status === 'fulfilled') {
+        setHeartbeat(heartbeatResult.value)
+        setMonitorError(null)
+      } else if (heartbeatResult.reason?.name !== 'AbortError') {
+        setHeartbeat(null)
+        setMonitorError(heartbeatResult.reason instanceof Error ? heartbeatResult.reason.message : 'Monitor heartbeat unavailable.')
+      }
+      setLoading(false)
+      setNow(Date.now())
     }
 
     void load()
@@ -212,7 +252,12 @@ export default function LiveEvidenceWire() {
         <div className={`wire__status wire__status--${wire?.status ?? (error ? 'unavailable' : 'aging')}`}>
           <span aria-hidden="true" />
           <div><small>Wire state</small><strong>{loading ? 'Checking' : wire?.status ?? 'Unavailable'}</strong></div>
-          <time dateTime={wire?.generatedAt}>{wire ? formatClock(wire.generatedAt) : 'No successful artifact'}</time>
+          <time dateTime={wire?.generatedAt}>Artifact generated {wire ? formatClock(wire.generatedAt) : 'not reported'}</time>
+          <time dateTime={heartbeat?.recordedAt ?? undefined} aria-live="polite">
+            Monitor last checked {formatClock(heartbeat?.recordedAt ?? null)}
+            {' · '}{heartbeat?.status ?? (monitorError ? 'unavailable' : 'checking')}
+            {heartbeat?.itemCount !== null && heartbeat?.itemCount !== undefined ? ` · ${heartbeat.itemCount} items in bound artifact` : ' · no bound artifact receipt'}
+          </time>
         </div>
       </header>
 
@@ -297,6 +342,7 @@ export default function LiveEvidenceWire() {
             <div><dt>Generated</dt><dd>When this sanitized public artifact was built.</dd></div>
           </dl>
           <p>“Fresh” means current to the declared source cadence. It never means every phenomenon is observed in real time.</p>
+          <p>“Monitor last checked” is an execution heartbeat. It does not advance any evidence clock or make unchanged material newly fresh.</p>
           <a href="/api/v1/federation">Inspect federation receipts</a>
         </aside>
       </div>
