@@ -3,6 +3,7 @@ import {
   ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, Legend,
 } from 'recharts'
 import series from '../data/priceSeries.json'
+import DataTableViewport from './DataTableViewport'
 import Explainer from './Explainer'
 import CountUp from '../motion/CountUp'
 
@@ -148,7 +149,8 @@ export default function PriceHistory() {
       </div>
 
       <h3>Long-run change ({drug})</h3>
-      <table className="data-table">
+      <DataTableViewport label={`Long-run ${drug} price changes`}>
+        <table className="data-table">
         <thead><tr><th>Country</th><th>First</th><th>Latest</th><th>Change</th></tr></thead>
         <tbody>
           {changes.map((c) => (
@@ -162,7 +164,8 @@ export default function PriceHistory() {
             </tr>
           ))}
         </tbody>
-      </table>
+        </table>
+      </DataTableViewport>
 
       <p className="note">
         Source: <a href={META.url} target="_blank" rel="noreferrer">{META.source}</a>. {META.note} US

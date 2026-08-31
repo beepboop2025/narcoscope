@@ -4,6 +4,7 @@ import { BUNDLED_DESIGNATION_RECORDS, DESIGNATION_META, withBundled } from '../d
 import { buildDesignationNetwork, searchDesignations } from '../lib/designationNetwork'
 import CountUp from '../motion/CountUp'
 import type { DesignationEntityType, DesignationRecord } from '../types'
+import DataTableViewport from './DataTableViewport'
 
 const PROGRAM_LABEL = DESIGNATION_META.programs as Record<string, string>
 const PAGE_SIZE = 50
@@ -185,8 +186,18 @@ export default function Designations() {
           </div>
         )}
         <div className="entity-register__analysis-tables">
-          <div><h3>Jurisdictions by structural position</h3><table className="data-table"><thead><tr><th>Country</th><th>Actions</th><th>Cross-border</th><th>Links</th><th>Betweenness</th></tr></thead><tbody>{network.nodes.slice(0, 30).map((node) => <tr key={node.country}><td className={node.articulationPoint ? 'hot' : ''}>{node.country}</td><td>{node.designations}</td><td>{node.crossBorderDesignations}</td><td>{node.degree}</td><td>{node.betweenness.toFixed(4)}</td></tr>)}</tbody></table></div>
-          <div><h3>Strongest country pairs</h3><table className="data-table"><thead><tr><th>Country pair</th><th>Shared records</th><th>Authorities</th></tr></thead><tbody>{network.edges.slice(0, 20).map((edge) => <tr key={`${edge.from}|${edge.to}`}><td>{edge.from} — {edge.to}</td><td>{edge.weight}</td><td>{edge.programs.map((value) => PROGRAM_LABEL[value] ?? value).join(', ')}</td></tr>)}</tbody></table></div>
+          <div>
+            <h3>Jurisdictions by structural position</h3>
+            <DataTableViewport label="Jurisdictions by structural position">
+              <table className="data-table"><thead><tr><th>Country</th><th>Actions</th><th>Cross-border</th><th>Links</th><th>Betweenness</th></tr></thead><tbody>{network.nodes.slice(0, 30).map((node) => <tr key={node.country}><td className={node.articulationPoint ? 'hot' : ''}>{node.country}</td><td>{node.designations}</td><td>{node.crossBorderDesignations}</td><td>{node.degree}</td><td>{node.betweenness.toFixed(4)}</td></tr>)}</tbody></table>
+            </DataTableViewport>
+          </div>
+          <div>
+            <h3>Strongest country pairs</h3>
+            <DataTableViewport label="Strongest country pairs">
+              <table className="data-table"><thead><tr><th>Country pair</th><th>Shared records</th><th>Authorities</th></tr></thead><tbody>{network.edges.slice(0, 20).map((edge) => <tr key={`${edge.from}|${edge.to}`}><td>{edge.from} — {edge.to}</td><td>{edge.weight}</td><td>{edge.programs.map((value) => PROGRAM_LABEL[value] ?? value).join(', ')}</td></tr>)}</tbody></table>
+            </DataTableViewport>
+          </div>
         </div>
         <p className="note"><strong>Graph boundary.</strong> A country pair appears only when Treasury records one designated entity in both. There are no entity-to-entity edges because the public SDN flat file does not publish them. Shared authority, country or nationality never becomes an inferred association.</p>
       </details>

@@ -5,6 +5,7 @@ import { COUNTRY_CENTROIDS, PRECURSORS } from '../data/flows'
 import { useData } from '../lib/dataStore'
 import { explainMyanmar } from '../lib/explain'
 import { arcPath, countriesFromTopology, pathForGeometry, projectedPoint } from '../lib/mapSvg'
+import DataTableViewport from './DataTableViewport'
 import Explainer from './Explainer'
 
 const widthScale = (qty: number, max: number): number => (max ? 1 + (qty / max) * 5 : 1)
@@ -204,7 +205,8 @@ export default function MyanmarFocus() {
       </div>
 
       <h3>Region detail — {currentYear ?? '—'}</h3>
-      <table className="data-table">
+      <DataTableViewport label={`Myanmar region detail for ${currentYear ?? 'the latest year'}`}>
+        <table className="data-table">
         <thead>
           <tr>
             <th>Region</th>
@@ -223,10 +225,12 @@ export default function MyanmarFocus() {
             </tr>
           ))}
         </tbody>
-      </table>
+        </table>
+      </DataTableViewport>
 
       <h3>Civil-war overlay — {currentYear ?? '—'}</h3>
-      <table className="data-table">
+      <DataTableViewport label={`Myanmar civil-war overlay for ${currentYear ?? 'the latest year'}`}>
+        <table className="data-table">
         <thead>
           <tr><th>Region</th><th>Actor / party</th><th>Type</th><th>Event</th><th>Pressure</th><th>Source</th></tr>
         </thead>
@@ -242,10 +246,12 @@ export default function MyanmarFocus() {
             </tr>
           ))}
         </tbody>
-      </table>
+        </table>
+      </DataTableViewport>
 
       <h3>Inbound precursor flows to Myanmar — {currentYear ?? '—'}</h3>
-      <table className="data-table">
+      <DataTableViewport label={`Inbound precursor flows to Myanmar for ${currentYear ?? 'the latest year'}`}>
+        <table className="data-table">
         <thead>
           <tr><th>Origin</th><th>Transit</th><th>To region</th><th>Precursor class</th><th>Reported volume</th><th>Confidence</th><th>Source</th></tr>
         </thead>
@@ -262,7 +268,8 @@ export default function MyanmarFocus() {
             </tr>
           ))}
         </tbody>
-      </table>
+        </table>
+      </DataTableViewport>
 
       <p className="note">
         Region grain matches the UNODC Myanmar Opium Survey (cultivation by

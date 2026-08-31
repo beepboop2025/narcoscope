@@ -11,6 +11,7 @@ import {
 import Explainer from './Explainer'
 import CountUp from '../motion/CountUp'
 import Reveal from '../motion/Reveal'
+import DataTableViewport from './DataTableViewport'
 
 const PROGRAM_LABEL = DESIGNATION_META.programs as Record<string, string>
 
@@ -68,7 +69,8 @@ export default function IllicitFinance() {
           what the official name says and that Treasury published a designation. It is not an
           adjudication of guilt and does not classify similarly named businesses.
         </p>
-        <table className="data-table">
+        <DataTableViewport label="Official names including money laundering">
+          <table className="data-table">
           <thead><tr><th>Official name</th><th>Matched field</th><th>Countries of record</th><th>Authority</th></tr></thead>
           <tbody>
             {explicit.map((record) => (
@@ -80,7 +82,8 @@ export default function IllicitFinance() {
               </tr>
             ))}
           </tbody>
-        </table>
+          </table>
+        </DataTableViewport>
       </Reveal>
 
       <Reveal delay={80}>
@@ -89,7 +92,8 @@ export default function IllicitFinance() {
           Countries come from OFAC address records. Multiple countries do not establish a money flow,
           an entity-to-entity relationship or a laundering network.
         </p>
-        <table className="data-table">
+        <DataTableViewport label="Multi-country designation records">
+          <table className="data-table">
           <thead><tr><th>Official name</th><th>Country count</th><th>Countries of record</th><th>Authority</th></tr></thead>
           <tbody>
             {crossJurisdiction.slice(0, 14).map((record) => (
@@ -101,7 +105,8 @@ export default function IllicitFinance() {
               </tr>
             ))}
           </tbody>
-        </table>
+          </table>
+        </DataTableViewport>
       </Reveal>
 
       <Reveal delay={160}>

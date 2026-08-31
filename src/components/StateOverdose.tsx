@@ -15,6 +15,7 @@ import {
 import Explainer from './Explainer'
 import CountUp from '../motion/CountUp'
 import type { OverdoseSubstance } from '../types'
+import DataTableViewport from './DataTableViewport'
 
 // State polygons, derived once from the bundled topojson.
 const STATE_FEATURES = (() => {
@@ -194,7 +195,8 @@ export default function StateOverdose() {
 
         <div className="panel">
           <h4>Fastest-rising states — rate change {years[0]}→{latest}</h4>
-          <table className="data-table">
+          <DataTableViewport label={`Fastest-rising state overdose rates from ${years[0]} to ${latest}`}>
+            <table className="data-table">
             <thead><tr><th>State</th><th>{years[0]}</th><th>{latest}</th><th>Change</th></tr></thead>
             <tbody>
               {movers.slice(0, 10).map((m) => (
@@ -208,13 +210,15 @@ export default function StateOverdose() {
                 </tr>
               ))}
             </tbody>
-          </table>
+            </table>
+          </DataTableViewport>
           <p className="panel-note">Deaths per 100k, so a small high-rate state isn't buried under a large one.</p>
         </div>
       </div>
 
       <h3>All states — {STATE_SUBSTANCES.find((s) => s.id === substance)?.label}, {year}</h3>
-      <table className="data-table">
+      <DataTableViewport label={`All-state overdose records for ${STATE_SUBSTANCES.find((s) => s.id === substance)?.label ?? substance}, ${year}`}>
+        <table className="data-table">
         <thead><tr><th>State</th><th>Deaths</th><th>Rate / 100k</th></tr></thead>
         <tbody>
           {ranked.map((m) => (
@@ -227,7 +231,8 @@ export default function StateOverdose() {
             </tr>
           ))}
         </tbody>
-      </table>
+        </table>
+      </DataTableViewport>
 
       <p className="note">
         Source: {OVERDOSE_META.source}, 12-month-ending counts, full calendar years only.

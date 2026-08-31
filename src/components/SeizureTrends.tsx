@@ -4,6 +4,7 @@ import {
 } from 'recharts'
 import { SEIZURE_META, fmtKg } from '../lib/seizures'
 import { worldTrendByGroup, countryMovers, TREND_WINDOW } from '../lib/seizureTrends'
+import DataTableViewport from './DataTableViewport'
 import Explainer from './Explainer'
 import CountUp from '../motion/CountUp'
 
@@ -92,7 +93,8 @@ export default function SeizureTrends() {
       </div>
 
       <h3>Drug groups — change over the window</h3>
-      <table className="data-table">
+      <DataTableViewport label={`Drug-group seizure changes from ${TREND_WINDOW[0]} to ${TREND_WINDOW[1]}`}>
+        <table className="data-table">
         <thead><tr><th>Drug group</th><th>{TREND_WINDOW[0]}</th><th>{TREND_WINDOW[1]}</th><th>Change</th></tr></thead>
         <tbody>
           {groups.map((g) => {
@@ -109,7 +111,8 @@ export default function SeizureTrends() {
             )
           })}
         </tbody>
-      </table>
+        </table>
+      </DataTableViewport>
 
       <div className="controls" style={{ marginTop: '1.5rem' }}>
         <label>
@@ -122,7 +125,8 @@ export default function SeizureTrends() {
       </div>
 
       <h3>Biggest country movers — {groupLabel}, by tonnage change</h3>
-      <table className="data-table">
+      <DataTableViewport label={`Country seizure movers for ${groupLabel}`}>
+        <table className="data-table">
         <thead><tr><th>Country</th><th>{TREND_WINDOW[0]}</th><th>{TREND_WINDOW[1]}</th><th>Change</th></tr></thead>
         <tbody>
           {movers.map((m) => (
@@ -136,7 +140,8 @@ export default function SeizureTrends() {
             </tr>
           ))}
         </tbody>
-      </table>
+        </table>
+      </DataTableViewport>
 
       <p className="note">
         Source: {SEIZURE_META.source}. Seized volume is the standard public proxy for trafficking

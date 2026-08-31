@@ -4,6 +4,7 @@ import { useData } from '../lib/dataStore'
 import { chokepointsToCsv, downloadCsv, evidenceLedgerToCsv, riskProfilesToCsv } from '../lib/exportBriefing'
 import { buildMyanmarIntelligenceBriefing } from '../lib/intelligence'
 import { sourceFamilyLabel } from '../lib/sourceReliability'
+import DataTableViewport from './DataTableViewport'
 
 const riskClass = (score: number): string => {
   if (score >= 75) return 'critical'
@@ -310,7 +311,8 @@ export default function IntelligenceBriefing() {
       </div>
 
       <h3>Risk decomposition — {briefing.year}</h3>
-      <table className="data-table">
+      <DataTableViewport label={`Myanmar regional risk decomposition for ${briefing.year}`}>
+        <table className="data-table">
         <thead>
           <tr>
             <th>Region</th>
@@ -337,7 +339,8 @@ export default function IntelligenceBriefing() {
             </tr>
           ))}
         </tbody>
-      </table>
+        </table>
+      </DataTableViewport>
 
       {briefing.enterpriseReadiness.chokepoints.length > 0 && (
         <>
@@ -349,7 +352,8 @@ export default function IntelligenceBriefing() {
             share of total outbound volume, is a systemic interdiction target:
             disrupting it degrades several regions' export capacity at once.
           </p>
-          <table className="data-table">
+          <DataTableViewport label="Outbound corridor chokepoints">
+            <table className="data-table">
             <thead>
               <tr><th>Corridor</th><th>Total kg</th><th>Regions served</th><th>Share of network</th><th>Systemic</th></tr>
             </thead>
@@ -364,12 +368,14 @@ export default function IntelligenceBriefing() {
                 </tr>
               ))}
             </tbody>
-          </table>
+            </table>
+          </DataTableViewport>
         </>
       )}
 
       <h3>Evidence graph ledger</h3>
-      <table className="data-table">
+      <DataTableViewport label="Evidence graph ledger">
+        <table className="data-table">
         <thead>
           <tr><th>From</th><th>Relation</th><th>To</th><th>Weight</th><th>Source</th><th>Reliability</th></tr>
         </thead>
@@ -402,7 +408,8 @@ export default function IntelligenceBriefing() {
               )
             })}
         </tbody>
-      </table>
+        </table>
+      </DataTableViewport>
 
       <p className="note">
         Scores are transparent composite indicators for prioritising analyst

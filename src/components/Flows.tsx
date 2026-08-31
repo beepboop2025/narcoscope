@@ -6,6 +6,7 @@ import {
   flowAggregationGroupLabel,
   summarizeFlowAggregation,
 } from '../lib/explain'
+import DataTableViewport from './DataTableViewport'
 import Explainer from './Explainer'
 import CountUp from '../motion/CountUp'
 import type { FlowRecord } from '../types'
@@ -86,7 +87,8 @@ export default function Flows() {
       <Explainer text={explainFlows(flows, precursor === 'all' ? 'all tracked precursors' : labelFor(precursor))} />
 
       <h3>Trafficking corridors — reported incidents and aggregates (country-level)</h3>
-      <table className="data-table">
+      <DataTableViewport label="Reported precursor trafficking corridors">
+        <table className="data-table">
         <thead>
           <tr><th>Precursor</th><th>Origin</th><th>Transit</th><th>Destination</th><th>Seizure location</th><th>Year</th><th>Seized</th><th>Source</th></tr>
         </thead>
@@ -106,10 +108,12 @@ export default function Flows() {
             </tr>
           ))}
         </tbody>
-      </table>
+        </table>
+      </DataTableViewport>
 
       <h3>Precursor prices (USD per kg, country-level) — illustrative</h3>
-      <table className="data-table">
+      <DataTableViewport label="Illustrative precursor prices">
+        <table className="data-table">
         <thead>
           <tr><th>Precursor</th><th>Country</th><th>Region</th><th>Year</th><th>Price / kg</th></tr>
         </thead>
@@ -124,7 +128,8 @@ export default function Flows() {
             </tr>
           ))}
         </tbody>
-      </table>
+        </table>
+      </DataTableViewport>
 
       <p className="note">
         Corridor rows are official: each is a seizure/incident corridor stated

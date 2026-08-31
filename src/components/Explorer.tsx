@@ -3,6 +3,7 @@ import { DRUGS } from '../data/prices'
 import { useData } from '../lib/dataStore'
 import { affordabilityDays, purityAdjustedPrice } from '../lib/metrics'
 import { explainPrices } from '../lib/explain'
+import DataTableViewport from './DataTableViewport'
 import Explainer from './Explainer'
 
 const fmtUsd = (v: number | string | null | undefined): string =>
@@ -110,7 +111,8 @@ export default function Explorer() {
         </p>
       </div>
 
-      <table className="data-table">
+      <DataTableViewport label="Street price records">
+        <table className="data-table">
         <thead>
           <tr>
             <th>Country</th><th>Region</th><th>Year</th>
@@ -137,8 +139,8 @@ export default function Explorer() {
             )
           })}
         </tbody>
-      </table>
+        </table>
+      </DataTableViewport>
     </section>
   )
 }
-
