@@ -119,9 +119,9 @@ describe('Railway HTTP server', () => {
 
   it('ships an exact-path Caddy handler for the existing Seiche HTTPS site', async () => {
     const caddy = await readFile(new URL('./deploy/wire/Caddyfile.heartbeat', import.meta.url), 'utf8')
-    expect(caddy).toMatch(/^#.*api\.seiche\.info.*\n#.*\nroute \/narcoscope\/wire-heartbeat-v1\.json \{/)
+    expect(caddy).toMatch(/^#.*api\.seiche\.info.*\n#.*\nhandle \/narcoscope\/wire-heartbeat-v1\.json \{/)
     expect(caddy).toContain('method GET HEAD')
-    expect(caddy).toContain('root * /var/lib/narcoscope-wire-public')
+    expect(caddy).toContain('root * "{$NARCOSCOPE_WIRE_PUBLIC_DIR:/var/lib/narcoscope-wire-public}"')
     expect(caddy).toContain('header Allow "GET, HEAD"')
     expect(caddy).toContain('respond "method not allowed" 405')
     expect(caddy.match(/Cache-Control "no-store"/g)).toHaveLength(2)
