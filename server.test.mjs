@@ -129,6 +129,18 @@ describe('Railway HTTP server', () => {
     expect(caddy).not.toMatch(/\b(?:reverse_proxy|browse)\b/)
   })
 
+  it('routes only the legacy apex host to the canonical Railway domain', async () => {
+    const vercel = JSON.parse(await readFile(new URL('./vercel.json', import.meta.url), 'utf8'))
+    expect(vercel.redirects).toEqual([
+      {
+        source: '/:path*',
+        has: [{ type: 'host', value: 'narcoscope.com' }],
+        destination: 'https://www.narcoscope.com/:path*',
+        permanent: true,
+      },
+    ])
+  })
+
   it('keeps both wire clocks visible in the three-row mobile status card', async () => {
     const styles = await readFile(new URL('./src/styles.css', import.meta.url), 'utf8')
     expect(styles).toMatch(/\.wire__status \{[^}]*grid-template-columns: auto minmax\(0, 1fr\)/)

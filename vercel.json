@@ -7,6 +7,14 @@
     "api/mcp.mjs": { "includeFiles": "{public/news/**,public/data/**,src/data/overview.json,src/data/organizedCrime.json,src/data/firearmsTracing.json,src/data/designations.json}" },
     "api/v1.mjs": { "includeFiles": "{public/news/**,public/data/**,src/data/overview.json,src/data/organizedCrime.json,src/data/firearmsTracing.json,src/data/designations.json}" }
   },
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "narcoscope.com" }],
+      "destination": "https://www.narcoscope.com/:path*",
+      "permanent": true
+    }
+  ],
   "headers": [
     {
       "source": "/.well-known/api-catalog",
