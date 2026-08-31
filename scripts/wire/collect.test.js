@@ -1,3 +1,4 @@
+import { readFile } from 'node:fs/promises'
 import { describe, expect, it } from 'vitest'
 import { buildWire, legalStageFor, parseRss, parseTreasuryPress, validateWire, wiresSemanticallyEqual } from './collect.mjs'
 
@@ -30,6 +31,43 @@ describe('evidence wire parsing', () => {
   it('parses current Treasury headline and publication-time markup', () => {
     const parsed = parseTreasuryPress('<h3 class=featured-stories__headline><a href=/news/press-releases/sb0617/ hreflang=en>Network sanctioned for laundering drug proceeds</a></h3></div><div><span><time datetime=2026-08-26T14:30:00Z>August 26</time>', 'https://home.treasury.gov')
     expect(parsed[0]).toMatchObject({ title: 'Network sanctioned for laundering drug proceeds', url: 'https://home.treasury.gov/news/press-releases/sb0617/', publishedAt: '2026-08-26T14:30:00.000Z' })
+  })
+
+  it('admits relevant Europol metadata while excluding feed body text and unrelated posts', async () => {
+    const sourceConfig = JSON.parse(await readFile(new URL('./sources.json', import.meta.url), 'utf8'))
+    const europol = sourceConfig.sources.find((source) => source.id === 'europol-news')
+    expect(europol).toMatchObject({
+      kind: 'rss',
+      url: 'https://www.europol.europa.eu/rss.xml',
+      evidenceClass: 'official-release',
+      verificationState: 'source-published',
+      publicationAllowed: true,
+      requireRelevantTopic: true,
+    })
+    expect(europol.rights).toMatch(/feed metadata.*titles, links and source clocks only/i)
+
+    const feed = `<rss><channel>
+      <item><title>Europol supports operation against amphetamine producers</title><link>https://www.europol.europa.eu/news/amphetamine</link><description>Body details must not enter the public wire.</description></item>
+      <item><title>Syrian migrant smugglers arrested in coordinated strike</title><link>https://www.europol.europa.eu/news/smuggling</link></item>
+      <item><title>Museum heists turn violent: new cultural property theft report</title><link>https://www.europol.europa.eu/news/cultural-property</link></item>
+      <item><title>Season four of the Europol podcast</title><link>https://www.europol.europa.eu/news/podcast</link></item>
+    </channel></rss>`
+    const artifact = await buildWire({
+      config: { ...sourceConfig, sources: [europol] },
+      fetchImpl: async () => new Response(feed, { headers: { 'content-type': 'application/rss+xml' } }),
+      now: new Date('2026-08-31T12:00:00Z'),
+    })
+
+    const itemsByTitle = new Map(artifact.items.map((item) => [item.title, item]))
+    expect([...itemsByTitle.keys()].sort()).toEqual([
+      'Europol supports operation against amphetamine producers',
+      'Museum heists turn violent: new cultural property theft report',
+      'Syrian migrant smugglers arrested in coordinated strike',
+    ])
+    expect(itemsByTitle.get('Europol supports operation against amphetamine producers')?.topics).toEqual(['drug markets'])
+    expect(itemsByTitle.get('Syrian migrant smugglers arrested in coordinated strike')?.topics).toEqual(['human smuggling'])
+    expect(itemsByTitle.get('Museum heists turn violent: new cultural property theft report')?.topics).toEqual(['cultural property crime'])
+    expect(artifact.items.every((item) => item.publishedAt === null && !('description' in item))).toBe(true)
   })
 
   it('keeps legal stages distinct', () => {

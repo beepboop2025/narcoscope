@@ -32,6 +32,19 @@
       "requireRelevantTopic": true
     },
     {
+      "id": "europol-news",
+      "name": "Europol · Newsroom",
+      "kind": "rss",
+      "url": "https://www.europol.europa.eu/rss.xml",
+      "cadenceMinutes": 30,
+      "staleAfterMinutes": 180,
+      "evidenceClass": "official-release",
+      "verificationState": "source-published",
+      "rights": "Public European Union agency feed metadata; NarcoScope republishes titles, links and source clocks only.",
+      "publicationAllowed": true,
+      "requireRelevantTopic": true
+    },
+    {
       "id": "treasury-press",
       "name": "U.S. Treasury · Press releases",
       "kind": "treasury-html",
@@ -83,13 +96,14 @@
     }
   ],
   "topicRules": [
-    { "topic": "drug markets", "pattern": "\\b(drug|narcotic|fentanyl|opioid|cocaine|heroin|methamphetamine|cannabis|ketamine|mdma|synthetic substance)\\b" },
+    { "topic": "drug markets", "pattern": "\\b(drug|narcotic|fentanyl|opioid|cocaine|heroin|methamphetamine|amphetamine|cannabis|ketamine|mdma|synthetic substance)\\b" },
     { "topic": "arms trafficking", "pattern": "\\b(firearm|gun trafficking|weapons? trafficking|arms trafficking|ammunition|weapons? smuggling)\\b" },
     { "topic": "illicit finance", "pattern": "\\b(money laundering|illicit finance|launder(?:ing|ed)?|sanction(?:s|ed)?|crypto(?:currency)? exchange|clandestine currency|drug proceeds)\\b" },
     { "topic": "wildlife + environment", "pattern": "\\b(wildlife trafficking|ivory|rhino|pangolin|timber trafficking|environmental crime|illegal logging|biodiversity crime)\\b" },
     { "topic": "raw materials", "pattern": "\\b(illicit (?:gold|oil|mineral)|illegal mining|critical mineral|resource smuggling|smuggling (?:gold|oil|minerals))\\b" },
     { "topic": "human trafficking", "pattern": "\\b(human trafficking|sex trafficking|forced labo(?:u)?r|trafficking in persons)\\b" },
-    { "topic": "human smuggling", "pattern": "\\b(human smuggling|migrant smuggling|alien smuggling)\\b" },
+    { "topic": "human smuggling", "pattern": "\\b(human smuggling|migrant smuggl(?:ing|ers?)|alien smuggling|people smuggl(?:ing|ers?))\\b" },
+    { "topic": "cultural property crime", "pattern": "\\b(cultural (?:property|goods?) (?:theft|traffick(?:ing|ed)?)|museum (?:heists?|theft)|art (?:theft|traffick(?:ing|ed)?))\\b" },
     { "topic": "organized crime", "pattern": "\\b(organized crime|transnational criminal|criminal network|cartel|racketeering|smuggling network)\\b" }
   ]
 }
