@@ -1361,9 +1361,26 @@ body::before { display: none; }
 .entity-register__receipt-dot { width: 0.45rem; height: 0.45rem; flex: 0 0 auto; border-radius: 50%; background: #2f8c7b; box-shadow: 0 0 0 4px rgba(47,140,123,0.12); }
 
 .entity-register__workspace { display: grid; grid-template-columns: minmax(36rem, 1fr) minmax(18rem, 23rem); min-height: 38rem; border-bottom: 1px solid #9fb4ac; }
-.entity-register__table-wrap { min-width: 0; overflow-x: auto; }
-.entity-register__table { width: 100%; border-collapse: collapse; font-size: 0.59rem; }
-.entity-register__table th { position: sticky; top: 0; z-index: 2; padding: 0.62rem 0.7rem; border-bottom: 1px solid #9fb4ac; border-right: 1px solid #d2ded8; background: #edf2ee; color: #60767a; font: 700 0.48rem/1.2 'JetBrains Mono', monospace; letter-spacing: 0.04em; text-align: left; text-transform: uppercase; }
+.entity-register__table-wrap {
+  --entity-register-scroll-hint-height: 2rem;
+
+  min-width: 0;
+  max-height: 38rem;
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-color: #60767a #e4ece7;
+  scrollbar-width: thin;
+  -webkit-overflow-scrolling: touch;
+}
+.entity-register__table-wrap:focus-visible { outline: 3px solid #2f8c7b; outline-offset: 3px; }
+.entity-register__table-hint {
+  top: 0;
+  z-index: 4;
+  min-height: var(--entity-register-scroll-hint-height);
+  box-sizing: border-box;
+}
+.entity-register__table { width: 100%; min-width: 68rem; border-collapse: collapse; font-size: 0.59rem; }
+.entity-register__table th { position: sticky; top: var(--entity-register-scroll-hint-height); z-index: 2; padding: 0.62rem 0.7rem; border-bottom: 1px solid #9fb4ac; border-right: 1px solid #d2ded8; background: #edf2ee; color: #60767a; font: 700 0.48rem/1.2 'JetBrains Mono', monospace; letter-spacing: 0.04em; text-align: left; text-transform: uppercase; }
 .entity-register__table td { max-width: 15rem; padding: 0.58rem 0.7rem; border-right: 1px solid #d2ded8; border-bottom: 1px solid #d2ded8; color: #4c676d; line-height: 1.35; vertical-align: top; }
 .entity-register__table tr:hover td { background: #edf2ee; }
 .entity-register__table tr.is-selected td { background: rgba(184,100,70,0.07); }
@@ -1427,6 +1444,22 @@ body::before { display: none; }
 .entity-register__source > div:last-child { border-right: 0; }
 .entity-register__source span { color: #b86446; font: 700 0.49rem/1 'JetBrains Mono', monospace; text-transform: uppercase; }
 .entity-register__source p { margin: 0.35rem 0 0; color: #60767a; font-size: 0.56rem; line-height: 1.45; }
+
+.entity-register .entity-register__filters :is(input, select, button),
+.entity-register .entity-register__pagination button,
+.entity-register .entity-register__dossier > a,
+.entity-register .entity-register__analysis > summary { min-height: 44px; }
+.entity-register .entity-register__pagination button { min-width: 44px; }
+.entity-register .entity-register__table td button {
+  display: flex;
+  width: 100%;
+  min-height: 44px;
+  align-items: center;
+  padding: 0.55rem 0.25rem;
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+}
 
 @media (max-width: 1050px) {
   .entity-register__header { grid-template-columns: 1fr; }
@@ -2973,6 +3006,13 @@ main,
   letter-spacing: 0.02em;
 }
 
+.entity-register__table-hint {
+  top: 0;
+  z-index: 4;
+  min-height: var(--entity-register-scroll-hint-height);
+  box-sizing: border-box;
+}
+
 .data-table-viewport .data-table {
   min-width: 42rem;
   margin: 0;
@@ -3088,6 +3128,68 @@ main,
   .newsroom-rail nav a :is(span, small) { font-size: max(0.75rem, 12px); }
 
   .wire__item-copy > p:first-child strong { font-size: max(0.75rem, 12px); }
+}
+
+.entity-register .entity-register__header > div:first-child > p,
+  .entity-register .entity-register__boundary b,
+  .entity-register .entity-register__boundary p,
+  .entity-register .entity-register__stats > div > span,
+  .entity-register .entity-register__stats small,
+  .entity-register .entity-register__filters label > span,
+  .entity-register .entity-register__filters :is(input, select, button),
+  .entity-register .entity-register__receipt,
+  .entity-register .entity-register__table,
+  .entity-register .entity-register__table :is(th, td, button, small, strong, em),
+  .entity-register .entity-register__type,
+  .entity-register .entity-register__empty p,
+  .entity-register .entity-register__pagination :is(button, span),
+  .entity-register .entity-register__dossier > header :is(span, p),
+  .entity-register .entity-register__stage :is(span, strong, small),
+  .entity-register .entity-register__dossier :is(h3, dt, dd),
+  .entity-register .entity-register__dossier > section p,
+  .entity-register .entity-register__excluded :is(span, p),
+  .entity-register .entity-register__dossier > a,
+  .entity-register .entity-register__analysis > summary :is(span, small),
+  .entity-register .entity-register__analysis-intro,
+  .entity-register .entity-register__analysis-tables h3,
+  .entity-register .entity-register__source :is(span, p),
+  .entity-register .data-table-viewport .data-table :is(th, td) { font-size: max(0.75rem, 12px); }
+
+.entity-register .entity-register__stats strong .count-up { color: inherit; font-size: inherit; }
+
+.entity-register .entity-register__header > div:first-child > p,
+  .entity-register .entity-register__boundary p,
+  .entity-register .entity-register__stats > div > span,
+  .entity-register .entity-register__stats small,
+  .entity-register .entity-register__filters label > span,
+  .entity-register .entity-register__receipt,
+  .entity-register .entity-register__table th,
+  .entity-register .entity-register__table td small,
+  .entity-register .entity-register__table td > em,
+  .entity-register .entity-register__pagination span,
+  .entity-register .entity-register__stage small,
+  .entity-register .entity-register__dossier dt,
+  .entity-register .entity-register__excluded p,
+  .entity-register .entity-register__analysis > summary :is(span, small),
+  .entity-register .entity-register__source p { color: #3f5b62; }
+
+.entity-register .entity-register__table td > strong,
+.entity-register .entity-register__analysis .data-table td.hot,
+.entity-register .entity-register__source span { color: #9b4b33; }
+
+.entity-register .entity-register__stage > span { color: #6f4b18; }
+.entity-register .entity-register__analysis > .note,
+.entity-register .entity-register__analysis > .note strong { color: #3f5b62; }
+.entity-register .entity-register__source a { color: #236b60; }
+
+@media (max-width: 820px) {
+  .entity-register__stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .entity-register__stats > div {
+    grid-template-columns: minmax(0, 1fr) auto;
+    min-width: 0;
+  }
+  .entity-register__stats :is(span, small) { overflow-wrap: anywhere; }
+  .entity-register__table { min-width: 48rem; }
 }
 
 @media (max-width: 900px) {
