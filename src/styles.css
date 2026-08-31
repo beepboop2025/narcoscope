@@ -1363,6 +1363,7 @@ body::before { display: none; }
 .entity-register__workspace { display: grid; grid-template-columns: minmax(36rem, 1fr) minmax(18rem, 23rem); min-height: 38rem; border-bottom: 1px solid #9fb4ac; }
 .entity-register__table-wrap {
   --entity-register-scroll-hint-height: 2rem;
+
   min-width: 0;
   max-height: 38rem;
   overflow: auto;
