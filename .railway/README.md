@@ -11,9 +11,12 @@ railway config plan
 railway config apply
 ```
 
-The service intentionally has no GitHub or image source. Set
-`NARCOSCOPE_REVISION` to the exact release commit and deploy the local worktree
-with `railway up`; the health endpoint fails closed if that revision is absent
-or malformed. Railway's documented default restart policy is `On Failure`; the
-IaC definition omits that default because Railway normalizes it to `null` in the
-state graph, while retaining the explicit five-retry ceiling.
+The service intentionally has no GitHub or image source. The Hetzner fleet
+publisher checks out exact public `main`, injects its content-addressed
+`release-manifest.json`, and uploads that immutable bundle with `railway up`.
+The runtime derives its commit, release ID and tree digest from that file, and
+`/healthz` fails closed when the manifest is invalid or conflicts with the
+optional `NARCOSCOPE_REVISION` local-development fallback. Railway's documented
+default restart policy is `On Failure`; the IaC definition omits that default
+because Railway normalizes it to `null` in the state graph, while retaining the
+explicit five-retry ceiling.

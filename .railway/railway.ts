@@ -1,4 +1,4 @@
-import { defineRailway, preserve, project, service } from "railway/iac";
+import { defineRailway, project, service } from "railway/iac";
 
 export default defineRailway(() => {
   const web = service("narcoscope-web", {
@@ -18,10 +18,6 @@ export default defineRailway(() => {
       restartPolicyMaxRetries: 5,
     },
     domains: ["narcoscope.com", "www.narcoscope.com"],
-    env: {
-      // Each local release updates this exact-revision gate before upload.
-      NARCOSCOPE_REVISION: preserve(),
-    },
   });
 
   return project("narcoscope", {

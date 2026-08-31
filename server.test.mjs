@@ -3,6 +3,7 @@ import { copyFile, mkdtemp, mkdir, readFile, writeFile } from 'node:fs/promises'
 import { request as httpRequest } from 'node:http'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { createRailwayContext, project } from 'railway/iac'
@@ -14,7 +15,7 @@ import {
   BRI_HASH_FILE,
   BRI_SCHEMA_FILE,
 } from './lib/palimpsest-bri-contract.mjs'
-import { createNarcoscopeServer } from './server.mjs'
+import { createNarcoscopeServer, loadFleetReleaseIdentity } from './server.mjs'
 
 let baseUrl
 let previousRevision
@@ -95,6 +96,7 @@ describe('Railway HTTP server', () => {
     expect(dockerfile).toContain('RUN npm prune --omit=dev')
     expect(dockerfile).toContain('/app/node_modules ./node_modules')
     expect(dockerfile).toContain('COPY --chown=node:node lib ./lib')
+    expect(dockerfile).toContain('/app/release-manifest.json ./release-manifest.json')
     expect(packageJson.scripts.build).toMatch(/^npm run bridge:palimpsest-bri:check &&/)
   })
 
@@ -129,9 +131,6 @@ describe('Railway HTTP server', () => {
           'www.narcoscope.com': { port: 8080 },
         },
       },
-      variables: {
-        NARCOSCOPE_REVISION: { type: 'preserve' },
-      },
     })
     await expect(readFile(new URL('./railway.json', import.meta.url), 'utf8')).rejects.toMatchObject({
       code: 'ENOENT',
@@ -146,8 +145,110 @@ describe('Railway HTTP server', () => {
       status: 'ready',
       service: 'narcoscope',
       revision: 'a'.repeat(40),
+      source_commit: 'a'.repeat(40),
+      releaseIdentity: 'environment-fallback',
       briArtifact: 'verified',
     })
+  })
+
+  it('binds health to the exact immutable Hetzner fleet release manifest', async () => {
+    const releaseDir = await mkdtemp(join(tmpdir(), 'narcoscope-release-'))
+    const releaseManifestPath = join(releaseDir, 'release-manifest.json')
+    const manifest = {
+      files: [],
+      format: 'fleet-release-manifest/v1',
+      product_id: 'narcoscope',
+      source: {
+        branch: 'main',
+        commit: 'b'.repeat(40),
+        repository: 'git@github-narcoscope:beepboop2025/narcoscope.git',
+      },
+      tree_sha256: 'c'.repeat(64),
+    }
+    const manifestRaw = Buffer.from(JSON.stringify(manifest))
+    await writeFile(releaseManifestPath, manifestRaw)
+    const identity = await loadFleetReleaseIdentity(releaseManifestPath)
+    expect(identity).toEqual({
+      sourceCommit: 'b'.repeat(40),
+      releaseId: createHash('sha256').update(manifestRaw).digest('hex'),
+      treeSha256: 'c'.repeat(64),
+    })
+
+    const priorRevision = process.env.NARCOSCOPE_REVISION
+    delete process.env.NARCOSCOPE_REVISION
+    const releaseServer = createNarcoscopeServer({
+      distDir: fileURLToPath(new URL('./dist', import.meta.url)),
+      releaseManifestPath,
+      briLoader: async () => ({
+        artifactRaw: Buffer.from('same'),
+        artifactSha256: 'd'.repeat(64),
+        schemaRaw: Buffer.from('schema'),
+      }),
+    })
+    await new Promise((resolveListen) => releaseServer.listen(0, '127.0.0.1', resolveListen))
+    const address = releaseServer.address()
+    try {
+      const response = await fetch(`http://127.0.0.1:${address.port}/healthz`)
+      expect(response.status).toBe(200)
+      expect(await response.json()).toMatchObject({
+        status: 'ready',
+        revision: 'b'.repeat(40),
+        source_commit: 'b'.repeat(40),
+        release_id: identity.releaseId,
+        tree_sha256: 'c'.repeat(64),
+        releaseIdentity: 'fleet-manifest',
+      })
+    } finally {
+      await new Promise((resolveClose) => releaseServer.close(resolveClose))
+      process.env.NARCOSCOPE_REVISION = priorRevision
+    }
+  })
+
+  it('fails health closed when a preserved revision conflicts with the fleet manifest', async () => {
+    const priorRevision = process.env.NARCOSCOPE_REVISION
+    process.env.NARCOSCOPE_REVISION = 'a'.repeat(40)
+    const conflictServer = createNarcoscopeServer({
+      distDir: fileURLToPath(new URL('./dist', import.meta.url)),
+      releaseIdentityLoader: async () => ({
+        sourceCommit: 'b'.repeat(40),
+        releaseId: 'c'.repeat(64),
+        treeSha256: 'd'.repeat(64),
+      }),
+    })
+    await new Promise((resolveListen) => conflictServer.listen(0, '127.0.0.1', resolveListen))
+    const address = conflictServer.address()
+    try {
+      const response = await fetch(`http://127.0.0.1:${address.port}/healthz`)
+      expect(response.status).toBe(503)
+      expect(await response.json()).toMatchObject({
+        status: 'unavailable',
+        revision: null,
+        releaseIdentity: 'unavailable',
+      })
+    } finally {
+      await new Promise((resolveClose) => conflictServer.close(resolveClose))
+      process.env.NARCOSCOPE_REVISION = priorRevision
+    }
+  })
+
+  it('does not fall back to an environment revision when the fleet manifest is malformed', async () => {
+    const malformedServer = createNarcoscopeServer({
+      distDir: fileURLToPath(new URL('./dist', import.meta.url)),
+      releaseIdentityLoader: async () => { throw new Error('invalid manifest') },
+    })
+    await new Promise((resolveListen) => malformedServer.listen(0, '127.0.0.1', resolveListen))
+    const address = malformedServer.address()
+    try {
+      const response = await fetch(`http://127.0.0.1:${address.port}/healthz`)
+      expect(response.status).toBe(503)
+      expect(await response.json()).toMatchObject({
+        status: 'unavailable',
+        revision: null,
+        releaseIdentity: 'unavailable',
+      })
+    } finally {
+      await new Promise((resolveClose) => malformedServer.close(resolveClose))
+    }
   })
 
   it('fails health closed without an exact source revision', async () => {
