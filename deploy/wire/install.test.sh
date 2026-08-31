@@ -57,8 +57,10 @@ case "$command_name" in
     esac
     ;;
   list-timers)
-    printf 'NEXT LEFT LAST PASSED UNIT ACTIVATES\n'
     printf 'finite 3min - - narcoscope-wire.timer narcoscope-wire.service\n'
+    printf 'mock timer output line 2\n'
+    printf 'mock timer output line 3\n'
+    printf 'mock timer output tail\n'
     ;;
   *)
     echo "unexpected systemctl command: $command_name" >&2
@@ -88,18 +90,23 @@ fi
 
 : > "$SYSTEMCTL_LOG"
 : > "$INSTALL_LOG"
-run_installer \
+if ! run_installer \
   MOCK_ACTIVE_STATE=active \
   MOCK_SUB_STATE=waiting \
   MOCK_NEXT_REALTIME= \
   MOCK_NEXT_MONOTONIC='2min 59s' \
-  NARCOSCOPE_WIRE_ENABLE_TIMER=1 > "$TEST_ROOT/waiting.out"
+  NARCOSCOPE_WIRE_ENABLE_TIMER=1 > "$TEST_ROOT/waiting.out"; then
+  echo "ERROR: armed timer installation failed under pipefail" >&2
+  exit 11
+fi
 
 ENABLE_LINE="$(grep -nFx 'enable narcoscope-wire.timer' "$SYSTEMCTL_LOG" | cut -d: -f1)"
 RESTART_LINE="$(grep -nFx 'restart narcoscope-wire.timer' "$SYSTEMCTL_LOG" | cut -d: -f1)"
 SHOW_LINE="$(grep -n 'show narcoscope-wire.timer --property=ActiveState --value' "$SYSTEMCTL_LOG" | cut -d: -f1)"
 [[ -n "$ENABLE_LINE" && -n "$RESTART_LINE" && -n "$SHOW_LINE" ]]
 [[ "$ENABLE_LINE" -lt "$RESTART_LINE" && "$RESTART_LINE" -lt "$SHOW_LINE" ]]
+grep -Fxq 'list-timers narcoscope-wire.timer --no-pager --no-legend' "$SYSTEMCTL_LOG"
+grep -Fxq 'mock timer output tail' "$TEST_ROOT/waiting.out"
 
 : > "$SYSTEMCTL_LOG"
 if run_installer \

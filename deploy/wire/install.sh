@@ -55,7 +55,7 @@ if [[ "$ENABLE_TIMER" = "1" ]]; then
     die "$TIMER_UNIT has no finite next trigger (realtime=$NEXT_REALTIME monotonic=$NEXT_MONOTONIC)"
   fi
 
-  systemctl list-timers "$TIMER_UNIT" --no-pager | head -2
+  systemctl list-timers "$TIMER_UNIT" --no-pager --no-legend
 else
   systemctl disable --now "$TIMER_UNIT" >/dev/null 2>&1 || true
   echo "Installed with timer disabled for a controlled first run."
