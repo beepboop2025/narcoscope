@@ -29,7 +29,7 @@ context to people. The browser/API contract displays source rights, failures,
 legal stage and all available clocks.
 
 The timer is intentionally light on the shared Hetzner host: 256 MB memory cap,
-low CPU/I/O weights, six sources, 2 MB per-response ceiling, 15-second timeout,
+low CPU/I/O weights, seven sources, 2 MB per-response ceiling, 15-second timeout,
 and zero retries. A fetch failure preserves the previous publication-allowed
 items, marks the source `aging` until its declared stale-after threshold, then
 marks it `stale`; a source with no last-good receipt is `unavailable`.
