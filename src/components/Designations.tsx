@@ -1,219 +1,201 @@
-import { useMemo, useState, type ChangeEvent } from 'react'
+import { useEffect, useMemo, useState, type ChangeEvent } from 'react'
 import { useData } from '../lib/dataStore'
 import { BUNDLED_DESIGNATION_RECORDS, DESIGNATION_META, withBundled } from '../data/bundled'
 import { buildDesignationNetwork, searchDesignations } from '../lib/designationNetwork'
-import Explainer from './Explainer'
 import CountUp from '../motion/CountUp'
+import type { DesignationEntityType, DesignationRecord } from '../types'
 
 const PROGRAM_LABEL = DESIGNATION_META.programs as Record<string, string>
+const PAGE_SIZE = 50
 
-/** DOJ/FTC concentration bands, the same scale intelligence.ts uses for corridors. */
 function concentrationTier(hhi: number): string {
   if (hhi > 2500) return 'highly concentrated'
   if (hhi >= 1500) return 'moderately concentrated'
   return 'dispersed'
 }
 
+function typeLabel(type: DesignationEntityType): string {
+  return { individual: 'Person', organization: 'Organization', vessel: 'Vessel', aircraft: 'Aircraft' }[type]
+}
+
+function actionDescription(record: DesignationRecord): string {
+  const authorities = record.programs.map((program) => PROGRAM_LABEL[program] ?? program).join(', ')
+  return `U.S. Treasury OFAC lists this ${typeLabel(record.entityType).toLocaleLowerCase()} under ${authorities}. This records a designation, not a conviction or a finding of guilt.`
+}
+
 export default function Designations() {
   const { designationRecords: loadedDesignations } = useData()
   const designationRecords = withBundled(loadedDesignations, BUNDLED_DESIGNATION_RECORDS)
   const [program, setProgram] = useState('all')
+  const [entityType, setEntityType] = useState<'all' | DesignationEntityType>('all')
+  const [country, setCountry] = useState('all')
   const [query, setQuery] = useState('')
+  const [page, setPage] = useState(1)
+  const [selectedNumber, setSelectedNumber] = useState<number | null>(null)
 
-  const network = useMemo(
-    () => buildDesignationNetwork(designationRecords, program === 'all' ? {} : { program }),
-    [designationRecords, program],
+  const countries = useMemo(
+    () => [...new Set(designationRecords.flatMap((record) => record.countries))].sort((a, b) => a.localeCompare(b)),
+    [designationRecords],
   )
-
-  const matches = useMemo(
-    () => searchDesignations(designationRecords, query),
-    [designationRecords, query],
+  const scopedRecords = useMemo(
+    () => designationRecords.filter((record) => {
+      if (program !== 'all' && !record.programs.includes(program)) return false
+      if (entityType !== 'all' && record.entityType !== entityType) return false
+      return country === 'all' || record.countries.includes(country)
+    }),
+    [country, designationRecords, entityType, program],
   )
+  const matches = useMemo(() => {
+    if (query.trim().length < 2) return scopedRecords.map((record) => ({ ...record, matchedAlias: null }))
+    return searchDesignations(scopedRecords, query, scopedRecords.length)
+  }, [query, scopedRecords])
+  const pages = Math.max(1, Math.ceil(matches.length / PAGE_SIZE))
+  const visibleRecords = matches.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
+  const selected = designationRecords.find((record) => record.entityNumber === selectedNumber) ?? visibleRecords[0] ?? null
 
-  const bridges = network.nodes.filter((n) => n.articulationPoint)
+  useEffect(() => { setPage(1) }, [program, entityType, country, query])
+  useEffect(() => {
+    if (selectedNumber != null && !matches.some((record) => record.entityNumber === selectedNumber)) setSelectedNumber(null)
+  }, [matches, selectedNumber])
 
-  // Top jurisdictions by betweenness — the brokers of the designated network.
-  // Charted rather than only tabled because the striking finding (a country
-  // with few designations but high betweenness is a structural broker) is a
-  // relationship between two columns, which a bar makes visible at a glance.
+  const network = useMemo(() => buildDesignationNetwork(scopedRecords), [scopedRecords])
+  const bridges = network.nodes.filter((node) => node.articulationPoint)
   const brokerChart = useMemo(
-    () => network.nodes
-      .filter((n) => n.betweenness > 0)
-      .slice(0, 10)
-      .map((n) => ({
-        country: n.country.length > 18 ? `${n.country.slice(0, 17)}…` : n.country,
-        fullName: n.country,
-        betweenness: n.betweenness,
-        articulationPoint: n.articulationPoint,
-      })),
+    () => network.nodes.filter((node) => node.betweenness > 0).slice(0, 10).map((node) => ({
+      country: node.country.length > 18 ? `${node.country.slice(0, 17)}…` : node.country,
+      fullName: node.country,
+      betweenness: node.betweenness,
+      articulationPoint: node.articulationPoint,
+    })),
     [network],
   )
+  const counts = useMemo(() => ({
+    individual: designationRecords.filter((record) => record.entityType === 'individual').length,
+    organization: designationRecords.filter((record) => record.entityType === 'organization').length,
+    asset: designationRecords.filter((record) => record.entityType === 'vessel' || record.entityType === 'aircraft').length,
+  }), [designationRecords])
+
+  const clearFilters = () => {
+    setProgram('all')
+    setEntityType('all')
+    setCountry('all')
+    setQuery('')
+  }
 
   return (
-    <section>
-      <div className="controls">
+    <section className="entity-register" aria-labelledby="entity-register-title">
+      <header className="entity-register__header">
+        <div>
+          <p>Named public actions · privacy-minimized · continuously refreshed</p>
+          <h1 id="entity-register-title">Entity and action register</h1>
+          <span>Search people, organizations and assets named in OFAC’s public narcotics and transnational-crime programs. Every row states what the authority did—never an inferred association.</span>
+        </div>
+        <div className="entity-register__boundary" role="note">
+          <b>Legal-stage boundary</b>
+          <strong>Designation ≠ charge ≠ conviction</strong>
+          <p>A designation is a government action under a stated authority. It is not an adjudication of guilt, and records may later be removed.</p>
+        </div>
+      </header>
+
+      <div className="entity-register__stats" aria-label="Designation coverage">
+        <div><span>All public actions</span><strong><CountUp value={designationRecords.length} /></strong><small>OFAC entity records</small></div>
+        <div><span>People</span><strong><CountUp value={counts.individual} /></strong><small>named individuals</small></div>
+        <div><span>Organizations</span><strong><CountUp value={counts.organization} /></strong><small>named organizations</small></div>
+        <div><span>Assets</span><strong><CountUp value={counts.asset} /></strong><small>vessels + aircraft</small></div>
+      </div>
+
+      <div className="entity-register__filters">
+        <label><span>Name or published alias</span><input type="search" value={query} placeholder="Search exact name tokens…" onChange={(event) => setQuery(event.target.value)} /></label>
         <label>
-          Sanctions programme&nbsp;
-          <select value={program} onChange={(e: ChangeEvent<HTMLSelectElement>) => setProgram(e.target.value)}>
-            <option value="all">All narcotics &amp; TCO programmes</option>
-            {Object.entries(PROGRAM_LABEL).map(([code, label]) => (
-              <option key={code} value={code}>{label}</option>
-            ))}
+          <span>Legal authority</span>
+          <select value={program} onChange={(event: ChangeEvent<HTMLSelectElement>) => setProgram(event.target.value)}>
+            <option value="all">All narcotics + TCO programs</option>
+            {Object.entries(PROGRAM_LABEL).map(([code, label]) => <option key={code} value={code}>{label}</option>)}
           </select>
         </label>
         <label>
-          Search name or alias&nbsp;
-          <input
-            type="search"
-            value={query}
-            placeholder="e.g. Kings Romans, Chao Wei"
-            onChange={(e: ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)}
-          />
+          <span>Record type</span>
+          <select value={entityType} onChange={(event) => setEntityType(event.target.value as 'all' | DesignationEntityType)}>
+            <option value="all">People, organizations + assets</option><option value="individual">People</option><option value="organization">Organizations</option><option value="vessel">Vessels</option><option value="aircraft">Aircraft</option>
+          </select>
         </label>
+        <label>
+          <span>Country of record</span>
+          <select value={country} onChange={(event) => setCountry(event.target.value)}><option value="all">All published countries</option>{countries.map((value) => <option key={value} value={value}>{value}</option>)}</select>
+        </label>
+        <button type="button" onClick={clearFilters}>Clear filters</button>
       </div>
 
-      <div className="stat-band">
-        <div className="stat">
-          <span className="stat-value"><CountUp value={network.totalEntities} /></span>
-          <span className="stat-label">Designated entities</span>
-        </div>
-        <div className="stat">
-          <span className="stat-value"><CountUp value={network.crossBorderEntities} /></span>
-          <span className="stat-label">Recorded in 2+ countries</span>
-        </div>
-        <div className="stat">
-          <span className="stat-value"><CountUp value={network.nodes.length} group={false} /></span>
-          <span className="stat-label">Jurisdictions</span>
-        </div>
-        <div className="stat">
-          <span className="stat-value"><CountUp value={network.concentrationHHI} /></span>
-          <span className="stat-label">Concentration (HHI)</span>
-        </div>
+      <div className="entity-register__receipt">
+        <span className="entity-register__receipt-dot" aria-hidden="true" />
+        <strong>{matches.length.toLocaleString()} matching public actions</strong>
+        <span>Retrieved {DESIGNATION_META.downloaded}</span><span>Country-level locations only</span><span>No identity documents or birth dates</span>
       </div>
 
-      <Explainer
-        text={
-          `Across ${network.totalEntities.toLocaleString()} entities designated under these authorities, ` +
-          `${network.crossBorderEntities} are recorded by OFAC in more than one country — those are the ` +
-          `only entities that create a link between jurisdictions here. Designations are ` +
-          `${concentrationTier(network.concentrationHHI)} across ${network.nodes.length} countries ` +
-          `(HHI ${network.concentrationHHI.toLocaleString()}), and ${bridges.length} jurisdiction` +
-          `${bridges.length === 1 ? '' : 's'} sit at structural bridge points in the graph.`
-        }
-      />
-
-      {query.trim().length >= 2 ? (
-        <>
-          <h3>Search results — {matches.length} match{matches.length === 1 ? '' : 'es'}</h3>
-          <table className="data-table">
-            <thead>
-              <tr><th>Name</th><th>Type</th><th>Programme(s)</th><th>Countries</th><th>Matched via</th></tr>
-            </thead>
+      <div className="entity-register__workspace">
+        <div className="entity-register__table-wrap">
+          <table className="entity-register__table">
+            <thead><tr><th>Named record</th><th>Type</th><th>Action + authority</th><th>Country record</th><th>Matched through</th></tr></thead>
             <tbody>
-              {matches.map((m) => (
-                <tr key={m.entityNumber}>
-                  <td>{m.name}</td>
-                  <td>{m.entityType}</td>
-                  <td>{m.programs.map((p) => PROGRAM_LABEL[p] ?? p).join(', ')}</td>
-                  <td>{m.countries.join(', ') || '—'}</td>
-                  <td>{m.matchedAlias ? <em>alias: {m.matchedAlias}</em> : 'primary name'}</td>
+              {visibleRecords.map((record) => (
+                <tr key={record.entityNumber} className={selected?.entityNumber === record.entityNumber ? 'is-selected' : ''}>
+                  <td><button type="button" onClick={() => setSelectedNumber(record.entityNumber)}>{record.name}</button><small>OFAC #{record.entityNumber}</small></td>
+                  <td><span className={`entity-register__type entity-register__type--${record.entityType}`}>{typeLabel(record.entityType)}</span></td>
+                  <td><strong>Designation</strong><small>{record.programs.map((value) => PROGRAM_LABEL[value] ?? value).join(' · ')}</small></td>
+                  <td>{record.countries.join(' · ') || <em>Not published</em>}</td>
+                  <td>{record.matchedAlias ? <span>Alias: {record.matchedAlias}</span> : 'Primary name'}</td>
                 </tr>
               ))}
             </tbody>
           </table>
-          {matches.length === 0 ? (
-            <p className="note">No designated entity matches that name or any OFAC-published alias.</p>
-          ) : null}
-        </>
-      ) : null}
-
-      {brokerChart.length > 1 ? (
-        <div className="chart-card">
-          <h3>Broker jurisdictions — betweenness centrality</h3>
-          {/* Pure-CSS bars: a horizontal ranking needs no charting library, and
-              avoids recharts v3's vertical-BarChart quirks. Widths are relative
-              to the top bar so the shape is read as a ranking, not an axis. */}
-          <div className="bar-list">
-            {brokerChart.map((n) => (
-              <div className="bar-row" key={n.country}>
-                <span className="bar-label" title={n.fullName}>{n.country}</span>
-                <span className="bar-track">
-                  <span
-                    className={`bar-fill ${n.articulationPoint ? 'bar-fill--hot' : ''}`}
-                    style={{ width: `${(n.betweenness / brokerChart[0].betweenness) * 100}%` }}
-                  />
-                </span>
-                <span className="bar-value">{n.betweenness.toFixed(3)}{n.articulationPoint ? ' ⧉' : ''}</span>
-              </div>
-            ))}
-          </div>
-          <p className="note">
-            Betweenness = how often a jurisdiction sits on the shortest path between two others in
-            the designation graph. A high bar on few designations is a <strong>broker</strong>:
-            structurally central out of proportion to its own designation count. Coral bars marked
-            ⧉ are <strong>articulation points</strong> — removing them splits the graph.
-          </p>
+          {visibleRecords.length === 0 && <div className="entity-register__empty"><h2>No matching action record</h2><p>Change or clear the filters. An empty result is not evidence that no action exists outside this source.</p></div>}
+          {matches.length > PAGE_SIZE && (
+            <nav className="entity-register__pagination" aria-label="Entity register pages">
+              <button type="button" disabled={page === 1} onClick={() => setPage((value) => Math.max(1, value - 1))}>Previous</button><span>Page {page} of {pages}</span><button type="button" disabled={page === pages} onClick={() => setPage((value) => Math.min(pages, value + 1))}>Next</button>
+            </nav>
+          )}
         </div>
-      ) : null}
 
-      <h3>Jurisdictions by structural position</h3>
-      <table className="data-table">
-        <thead>
-          <tr>
-            <th>Country</th>
-            <th>Designations</th>
-            <th>Cross-border</th>
-            <th>Linked jurisdictions</th>
-            <th>Betweenness</th>
-            <th>Bridge</th>
-          </tr>
-        </thead>
-        <tbody>
-          {network.nodes.slice(0, 30).map((n) => (
-            <tr key={n.country}>
-              <td className={n.articulationPoint ? 'hot' : ''}>{n.country}</td>
-              <td>{n.designations.toLocaleString()}</td>
-              <td>{n.crossBorderDesignations}</td>
-              <td>{n.degree}</td>
-              <td>{n.betweenness.toFixed(4)}</td>
-              <td>{n.articulationPoint ? 'yes' : '—'}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+        <aside className="entity-register__dossier" aria-live="polite">
+          {selected ? (
+            <>
+              <header><span>Published action record</span><h2>{selected.name}</h2><p>{typeLabel(selected.entityType)} · OFAC #{selected.entityNumber}</p></header>
+              <div className="entity-register__stage"><span>Recorded legal stage</span><strong>OFAC designation</strong><small>Not a charge or conviction</small></div>
+              <section><h3>What the source says</h3><p>{actionDescription(selected)}</p></section>
+              <dl>
+                <div><dt>Authorities</dt><dd>{selected.programs.map((value) => PROGRAM_LABEL[value] ?? value).join('; ')}</dd></div>
+                <div><dt>Countries of record</dt><dd>{selected.countries.join('; ') || 'Not published in extracted fields'}</dd></div>
+                <div><dt>Published aliases</dt><dd>{selected.aliases.join('; ') || 'None in source'}</dd></div>
+                <div><dt>Retrieved</dt><dd>{DESIGNATION_META.downloaded}</dd></div>
+              </dl>
+              <div className="entity-register__excluded"><span>Privacy-minimized extraction</span><p>Street addresses, dates of birth, passport numbers and national identifiers are deliberately excluded.</p></div>
+              <a href={DESIGNATION_META.url} target="_blank" rel="noreferrer">Verify against the live OFAC list ↗</a>
+            </>
+          ) : <p>Select a public action record.</p>}
+        </aside>
+      </div>
 
-      <h3>Strongest jurisdiction links</h3>
-      <table className="data-table">
-        <thead>
-          <tr><th>Jurisdiction pair</th><th>Shared designations</th><th>Programme(s)</th></tr>
-        </thead>
-        <tbody>
-          {network.edges.slice(0, 20).map((e) => (
-            <tr key={`${e.from}|${e.to}`}>
-              <td>{e.from} — {e.to}</td>
-              <td>{e.weight}</td>
-              <td>{e.programs.map((p) => PROGRAM_LABEL[p] ?? p).join(', ')}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <details className="entity-register__analysis">
+        <summary><span>Jurisdiction structure</span><strong>Open the country-level designation graph</strong><small>{network.nodes.length} jurisdictions · {network.crossBorderEntities} cross-border records · no person-to-person edges</small></summary>
+        <div className="entity-register__analysis-intro">Across {network.totalEntities.toLocaleString()} filtered entities, {network.crossBorderEntities} are recorded by OFAC in more than one country. Designations are {concentrationTier(network.concentrationHHI)} across {network.nodes.length} jurisdictions (HHI {network.concentrationHHI.toLocaleString()}); {bridges.length} are structural articulation points in this country graph.</div>
+        {brokerChart.length > 1 && (
+          <div className="chart-card">
+            <h3>Country betweenness in the published designation graph</h3>
+            <div className="bar-list">{brokerChart.map((node) => <div className="bar-row" key={node.country}><span className="bar-label" title={node.fullName}>{node.country}</span><span className="bar-track"><span className={`bar-fill ${node.articulationPoint ? 'bar-fill--hot' : ''}`} style={{ width: `${(node.betweenness / brokerChart[0].betweenness) * 100}%` }} /></span><span className="bar-value">{node.betweenness.toFixed(3)}{node.articulationPoint ? ' ⧉' : ''}</span></div>)}</div>
+          </div>
+        )}
+        <div className="entity-register__analysis-tables">
+          <div><h3>Jurisdictions by structural position</h3><table className="data-table"><thead><tr><th>Country</th><th>Actions</th><th>Cross-border</th><th>Links</th><th>Betweenness</th></tr></thead><tbody>{network.nodes.slice(0, 30).map((node) => <tr key={node.country}><td className={node.articulationPoint ? 'hot' : ''}>{node.country}</td><td>{node.designations}</td><td>{node.crossBorderDesignations}</td><td>{node.degree}</td><td>{node.betweenness.toFixed(4)}</td></tr>)}</tbody></table></div>
+          <div><h3>Strongest country pairs</h3><table className="data-table"><thead><tr><th>Country pair</th><th>Shared records</th><th>Authorities</th></tr></thead><tbody>{network.edges.slice(0, 20).map((edge) => <tr key={`${edge.from}|${edge.to}`}><td>{edge.from} — {edge.to}</td><td>{edge.weight}</td><td>{edge.programs.map((value) => PROGRAM_LABEL[value] ?? value).join(', ')}</td></tr>)}</tbody></table></div>
+        </div>
+        <p className="note"><strong>Graph boundary.</strong> A country pair appears only when Treasury records one designated entity in both. There are no entity-to-entity edges because the public SDN flat file does not publish them. Shared authority, country or nationality never becomes an inferred association.</p>
+      </details>
 
-      <p className="note">
-        <strong>What the graph is.</strong> Nodes are countries; an edge exists when OFAC records a
-        single designated entity in both. Every edge is therefore something Treasury published.
-        There are deliberately <em>no</em> entity-to-entity edges: the public SDN file contains no
-        relationships between designated parties, so any such link would be invented by this tool,
-        and network metrics computed over invented edges measure only the join condition
-        (arXiv:2501.01508). Betweenness identifies jurisdictions that sit on paths between others;
-        &ldquo;bridge&rdquo; marks articulation points, whose removal would fragment the graph.
-      </p>
-
-      <p className="note">
-        <strong>What a designation is and is not.</strong> {DESIGNATION_META.note} Source:{' '}
-        <a href={DESIGNATION_META.url} target="_blank" rel="noreferrer">{DESIGNATION_META.source}</a>,
-        retrieved {DESIGNATION_META.downloaded}. {DESIGNATION_META.license}. Always check the live
-        SDN list before relying on any row — OFAC adds and removes entities continuously.
-      </p>
+      <footer className="entity-register__source">
+        <div><span>Source</span><p><a href={DESIGNATION_META.url} target="_blank" rel="noreferrer">{DESIGNATION_META.source}</a></p></div>
+        <div><span>Rights</span><p>{DESIGNATION_META.license}</p></div>
+        <div><span>Claim boundary</span><p>{DESIGNATION_META.note}</p></div>
+      </footer>
     </section>
   )
 }

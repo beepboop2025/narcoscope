@@ -40,12 +40,31 @@ export function createV1Handler(dependencies = {}) {
     const requestUrl = new URL(req.url, 'https://narcoscope.invalid')
     const name = String(req.query?.resource ?? requestUrl.searchParams.get('resource') ?? 'capabilities')
     const params = {
+      country: req.query?.country ?? requestUrl.searchParams.get('country'),
+      cursor: req.query?.cursor ?? requestUrl.searchParams.get('cursor'),
+      domain: req.query?.domain ?? requestUrl.searchParams.get('domain'),
+      entity_type: req.query?.entity_type ?? requestUrl.searchParams.get('entity_type'),
+      iso3: req.query?.iso3 ?? requestUrl.searchParams.get('iso3'),
+      lane: req.query?.lane ?? requestUrl.searchParams.get('lane'),
       limit: req.query?.limit ?? requestUrl.searchParams.get('limit'),
+      program: req.query?.program ?? requestUrl.searchParams.get('program'),
+      query: req.query?.query ?? requestUrl.searchParams.get('query'),
       slug: req.query?.slug ?? requestUrl.searchParams.get('slug'),
       artifact: req.query?.artifact ?? requestUrl.searchParams.get('artifact'),
+      year: req.query?.year ?? requestUrl.searchParams.get('year'),
     }
     try {
       const data = await resource(name, params, dependencies)
+      if (data?.status === 'unavailable') {
+        send(res, 503, {
+          ok: false,
+          resource: name,
+          error: 'unavailable',
+          message: 'The requested evidence is unavailable; absence is not zero coverage.',
+          data,
+        }, req.method === 'HEAD')
+        return
+      }
       send(res, 200, { ok: true, resource: name, data }, req.method === 'HEAD')
     } catch (error) {
       const clientError = error instanceof TypeError || error instanceof RangeError

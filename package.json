@@ -1,12 +1,12 @@
 {
   "name": "narcoscope",
   "private": true,
-  "version": "1.3.0",
+  "version": "1.4.0",
   "license": "MIT",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "npm run bridge:palimpsest-bri:check && npm run news:check && tsc --noEmit && vite build",
+    "build": "npm run bridge:palimpsest-bri:check && npm run news:check && npm run wire:check && tsc --noEmit && vite build",
     "start": "node server.mjs",
     "preview": "vite preview",
     "scrape:myanmar": "node scripts/scrape/myanmar-conflict-precursors.mjs",
@@ -15,6 +15,8 @@
     "bridge:palimpsest-bri:check": "node scripts/bridge/build-palimpsest-bri.mjs --check && node scripts/bridge/sync-palimpsest-bri-contracts.mjs --check",
     "news:build": "node scripts/newsroom/build-newsroom.mjs",
     "news:check": "node scripts/newsroom/build-newsroom.mjs --check",
+    "wire:collect": "node scripts/wire/collect.mjs",
+    "wire:check": "node scripts/wire/collect.mjs --check",
     "data:refresh": "node scripts/pipeline/run.mjs",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",

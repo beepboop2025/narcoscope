@@ -1,4 +1,6 @@
 export type TabId =
+  | 'atlas'
+  | 'wire'
   | 'overview'
   | 'newsroom'
   | 'intel'
@@ -42,6 +44,8 @@ export const LENS_GROUPS: readonly LensGroup[] = [
     label: 'Briefing',
     eyebrow: 'Start here',
     items: [
+      { id: 'atlas', label: 'Illicit-economy atlas', shortLabel: 'Atlas', description: 'Compare drug, arms, wildlife, raw-material and shadow-economy evidence one source-grained measure at a time.' },
+      { id: 'wire', label: 'Live evidence wire', shortLabel: 'Live wire', description: 'Follow newly retrieved official releases and reporting leads with rights, clocks and verification state attached.' },
       { id: 'overview', label: 'Global overview', shortLabel: 'Overview', description: 'The highest-signal official aggregates, trend breaks and data freshness in one view.' },
       { id: 'newsroom', label: 'Evidence newsroom', shortLabel: 'Newsroom', description: 'Citation-gated analysis with countercases, limitations and a machine-readable receipt.' },
       { id: 'intel', label: 'Enterprise intelligence', shortLabel: 'Intel', description: 'Multi-source risk cards that keep verification tier, staleness and conflicts visible.' },
@@ -73,7 +77,7 @@ export const LENS_GROUPS: readonly LensGroup[] = [
     eyebrow: 'Cross-record joins',
     items: [
       { id: 'triangulate', label: 'Triangulation', shortLabel: 'Triangulation', description: 'Find places where supply, price and harm move together—or visibly disagree.' },
-      { id: 'designations', label: 'Public designations', shortLabel: 'Designations', description: 'Search the public OFAC record and inspect authority and jurisdiction structure.' },
+      { id: 'designations', label: 'Entity and action register', shortLabel: 'Entities', description: 'Search privacy-minimized public legal actions while keeping designation, charge, sanction and conviction states distinct.' },
       { id: 'illicitfinance', label: 'Finance typologies', shortLabel: 'Finance', description: 'Keep public designation facts separate from reference typologies and inference.' },
       { id: 'wildlife', label: 'Wildlife seizures', shortLabel: 'Wildlife', description: 'Inspect the adjacent confiscation record without treating correlation as a shared cause.' },
     ],

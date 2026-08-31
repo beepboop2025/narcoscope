@@ -104,13 +104,13 @@ describe('Designations tab', () => {
     render(<Designations />)
     const input = document.querySelector('input[type=search]')
     fireEvent.change(input, { target: { value: 'chao wei' } })
-    expect(screen.getByText(/WEI, Zhao/)).toBeTruthy()
+    expect(screen.getAllByText(/WEI, Zhao/).length).toBeGreaterThan(0)
   })
 
   it('renders the jurisdiction structural-position table', () => {
     render(<Designations />)
-    expect(screen.getByText('Broker jurisdictions — betweenness centrality')).toBeTruthy()
-    expect(screen.getByText(/structural position/i)).toBeTruthy()
+    expect(screen.getByText(/country betweenness in the published designation graph/i)).toBeTruthy()
+    expect(screen.getAllByText(/structural position/i).length).toBeGreaterThan(0)
   })
 })
 

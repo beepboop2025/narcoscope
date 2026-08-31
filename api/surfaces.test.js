@@ -178,6 +178,9 @@ describe('NarcoScope public surfaces', () => {
   it('publishes and satisfies a JSON Schema 2020-12 output contract for every tool', async () => {
     const newsroom = await getNewsroom({ limit: 1 })
     const argumentsByTool = {
+      get_atlas: { domain: 'organized_crime', iso3: 'AFG', year: 2021, limit: 1 },
+      get_entities: { entity_type: 'organization', limit: 1 },
+      get_federation: { lane: 'palimpsest-bri' },
       get_newsroom: { limit: 1 },
       get_story: { slug: newsroom.articles[0].slug, artifact: 'metadata' },
     }
@@ -442,7 +445,7 @@ describe('NarcoScope public surfaces', () => {
     const registry = JSON.parse(readFileSync('server.json', 'utf8'))
     const hosted = JSON.parse(readFileSync('public/server.json', 'utf8'))
     expect(registry).toEqual(hosted)
-    expect(registry.version).toBe('1.3.0')
+    expect(registry.version).toBe('1.4.0')
     expect(registry.description.length).toBeLessThanOrEqual(100)
     expect(registry.websiteUrl).toBe('https://narcoscope.com')
     expect(registry.remotes).toEqual([{
@@ -451,11 +454,19 @@ describe('NarcoScope public surfaces', () => {
     }])
   })
 
-  it('advertises the same BRI context lane through OpenAPI and product discovery', () => {
+  it('advertises the BRI and illicit-economy lanes through OpenAPI and product discovery', () => {
     const openapi = JSON.parse(readFileSync('public/openapi.json', 'utf8'))
     const product = JSON.parse(readFileSync('public/product-card.json', 'utf8'))
     const artifact = JSON.parse(readFileSync('public/data/narcoscope-palimpsest-bri-v1.json', 'utf8'))
-    expect(openapi.info.version).toBe('1.3.0')
+    expect(openapi.info.version).toBe('1.4.0')
+    expect(openapi.paths).toHaveProperty('/atlas')
+    expect(openapi.paths).toHaveProperty('/entities')
+    expect(openapi.paths).toHaveProperty('/federation')
+    expect(openapi.paths['/atlas'].get.responses['503'].$ref)
+      .toBe('#/components/responses/Unavailable')
+    expect(openapi.paths['/entities'].get.description).toContain('administrative action')
+    expect(openapi.paths['/federation'].get.description).toContain('zero retries')
+    expect(openapi.paths['/federation'].get.description).toContain('never joined')
     expect(openapi.paths).toHaveProperty('/palimpsest-bri')
     expect(openapi.paths['/palimpsest-bri'].get.responses['200'].$ref)
       .toBe('#/components/responses/PalimpsestBriSuccess')
@@ -466,6 +477,11 @@ describe('NarcoScope public surfaces', () => {
       .toBe('#/$defs/artifact')
     expect(product.access.palimpsest_bri_context)
       .toBe('https://narcoscope.com/api/v1/palimpsest-bri')
+    expect(product.access).toMatchObject({
+      atlas: 'https://narcoscope.com/api/v1/atlas',
+      entities: 'https://narcoscope.com/api/v1/entities',
+      federation: 'https://narcoscope.com/api/v1/federation',
+    })
     expect(product.deployment).toMatchObject({
       canonical_live_origin: 'https://narcoscope.com',
       availability: 'live',
@@ -494,9 +510,14 @@ describe('NarcoScope public surfaces', () => {
     expect(JSON.stringify(catalog)).not.toContain('agent-card')
     expect(JSON.stringify(catalog)).not.toContain('drug-price-observatory.vercel.app')
     expect(aiCatalog).toMatchObject({
-      version: '1.3.0',
+      version: '1.4.0',
       apiCatalog: 'https://narcoscope.com/.well-known/api-catalog',
       mcpEndpoint: 'https://narcoscope.com/mcp',
+      resources: {
+        atlas: 'https://narcoscope.com/api/v1/atlas',
+        entities: 'https://narcoscope.com/api/v1/entities',
+        federation: 'https://narcoscope.com/api/v1/federation',
+      },
       availability: {
         status: 'live',
         customDomain: { url: 'https://narcoscope.com', status: 'configured' },

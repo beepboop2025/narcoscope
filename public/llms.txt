@@ -1,6 +1,8 @@
 # NarcoScope
 
-NarcoScope is a free public-interest evidence explorer that translates aggregate official drug-market records into inspectable maps, comparisons, plain-language explanations, and deterministic newsroom analyses.
+NarcoScope is a free public-interest evidence explorer that translates aggregate official drug-market, organized-crime, firearms-tracing, and public-designation records into inspectable maps, comparisons, plain-language explanations, and deterministic newsroom analyses.
+
+Current public contract version: 1.4.0
 
 Canonical live site: https://narcoscope.com
 Canonical domain status: configured and verified live on 2026-08-29
@@ -19,6 +21,9 @@ MCP protocol: 2026-07-28 stateless requests with server/discover; 2025-06-18 ini
 - You need a machine brief or cited dossier that can be verified without relying on prose alone.
 - You need the official-only China aggregate or the China-Pakistan-Myanmar country overlay shared with the Palimpsest Intelligence Commons.
 - You need pinned Belt and Road source readiness or national economic coverage for CPEC, Gwadar, CMEC, Kyaukpyu, or Balochistan without joining it to drug-market inference.
+- You need source-native country-year organized-crime or firearms-tracing observations with stable pagination, caveats, and missing-value states intact.
+- You need privacy-minimized official public designation identities, with aliases and subject-level sensitive fields withheld.
+- You need Seiche money-market or capital-market context beside Palimpsest BRI or publication-rights context as separate, non-joinable lanes.
 
 ## Start here
 
@@ -37,6 +42,31 @@ MCP protocol: 2026-07-28 stateless requests with server/discover; 2025-06-18 ini
 - Palimpsest BRI context: https://narcoscope.com/api/v1/palimpsest-bri
 - Palimpsest BRI static artifact: https://narcoscope.com/data/narcoscope-palimpsest-bri-v1.json
 - Palimpsest BRI artifact hash: https://narcoscope.com/data/narcoscope-palimpsest-bri-v1.json.sha256
+- Illicit-economy atlas: https://narcoscope.com/api/v1/atlas
+- Privacy-minimized public designations: https://narcoscope.com/api/v1/entities
+- Seiche and Palimpsest federation: https://narcoscope.com/api/v1/federation
+
+## Atlas query contract
+
+- Filters: domain=all|organized_crime|firearms_tracing, iso3=ISO3, year=YYYY, limit=1..100, cursor=opaque.
+- Pagination uses a stable keyset cursor bound to the complete filter set. Do not edit, decode for business meaning, or reuse a cursor with different filters.
+- Each source retains its native metadata, rights, caveats, and per-record availability. Null fields are unavailable for that source edition; numeric zero remains an observed zero.
+- Organized-crime and firearms-tracing measures are not comparable scales and are never combined into a NarcoScope score.
+
+## Entity query contract
+
+- Filters: entity_type=aircraft|individual|organization|vessel, program=ILLICIT-DRUGS-EO14059|SDNT|SDNTK|TCO, country, query, limit=1..100, cursor=opaque.
+- Name query searches official names only. Returned identity fields are stable OFAC entity number, official name, entity type, programs, and countries.
+- Aliases, addresses, dates of birth, identity documents, and allegation text are neither returned nor searchable.
+- A designation is an administrative action, not proof of guilt, criminal conviction, or adjudication.
+
+## Federation query contract
+
+- Lanes: all, seiche-summary, seiche-money-markets, seiche-capital-markets, seiche-global-money-atlas, palimpsest-bri, palimpsest-newswire-rights.
+- Seiche world-market sections preserve upstream schema, status, selection, scope.coverage_claim, clocks, citation, and evidence states. The global money atlas preserves its separate published contract: generated_at, coverage, expansion_scope, methodology, provenance, caveats, and read_faults.
+- Each Seiche request uses one GET, zero retries, a 15-second deadline covering headers and body, and a 2,000,000-byte response ceiling. Timeout, oversize, malformed schema, invalid clocks or citation, and upstream unavailability remain typed unavailable.
+- Palimpsest BRI and newswire rights are separate lanes. The newswire-rights lane is a pinned historical restriction receipt, not continuous monitoring; it does not republish quarantined paths.
+- Never join lane scores, compute a composite, or infer causality, culpability, guilt, actor identity, bilateral routes, or project effects.
 
 ## Telegram
 
@@ -51,6 +81,6 @@ MCP protocol: 2026-07-28 stateless requests with server/discover; 2025-06-18 ini
 
 ## Evidence rules
 
-Treat seizures as administrative observations, not a direct measure of trafficking volume. Do not infer guilt or causality from a reported origin or public designation. The corridor overlay may be joined only by geography and time; never use it to classify a political movement, armed organization, community, person, or bilateral route. The BRI context lane is stricter: do not computationally join it to drug-market evidence at all, and do not infer drug-conflict-infrastructure causality, actor identity, bilateral routes, guilt, political classification, or project effects from national series. Distinguish official, independent, modeled, illustrative, stale, unavailable, capability-only, link-only, planned, adapter-ready, and live inputs. Preserve humanReviewStatus and every limitation when summarizing newsroom material.
+Treat seizures as administrative observations, not a direct measure of trafficking volume. Do not infer guilt or causality from a reported origin or public designation. Treat missing, suppressed, stale, restricted, malformed, timed-out, and oversized evidence as unavailable, never as zero. The corridor overlay may be joined only by geography and time; never use it to classify a political movement, armed organization, community, person, or bilateral route. The BRI context lane is stricter: do not computationally join it to drug-market evidence at all, and do not infer drug-conflict-infrastructure causality, actor identity, bilateral routes, guilt, political classification, or project effects from national series. Distinguish official, independent, modeled, illustrative, stale, unavailable, capability-only, link-only, planned, adapter-ready, and live inputs. Preserve source metadata, clocks, citations, humanReviewStatus, and every limitation when summarizing material.
 
 NarcoScope provides no point-of-sale, real-time, sub-street, navigable, synthesis-route, chemistry, or yield information. It is not a guide to obtaining any substance.

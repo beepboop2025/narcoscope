@@ -4,8 +4,8 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "functions": {
-    "api/mcp.mjs": { "includeFiles": "{public/news/**,public/data/**,src/data/overview.json}" },
-    "api/v1.mjs": { "includeFiles": "{public/news/**,public/data/**,src/data/overview.json}" }
+    "api/mcp.mjs": { "includeFiles": "{public/news/**,public/data/**,src/data/overview.json,src/data/organizedCrime.json,src/data/firearmsTracing.json,src/data/designations.json}" },
+    "api/v1.mjs": { "includeFiles": "{public/news/**,public/data/**,src/data/overview.json,src/data/organizedCrime.json,src/data/firearmsTracing.json,src/data/designations.json}" }
   },
   "headers": [
     {

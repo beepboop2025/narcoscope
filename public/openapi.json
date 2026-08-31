@@ -2,8 +2,8 @@
   "openapi": "3.1.0",
   "info": {
     "title": "NarcoScope Public Evidence API",
-    "version": "1.3.0",
-    "description": "Read-only access to NarcoScope's aggregate official-data overview, citation-gated evidence newsroom, public Palimpsest bridges, and a separately pinned Belt and Road context lane. No endpoint provides point-of-sale, real-time, navigable, synthesis-route, or yield information, and BRI context cannot enter drug-market inference."
+    "version": "1.4.0",
+    "description": "Read-only access to NarcoScope's aggregate official-data overview, country-year illicit-economy atlas, privacy-minimized public designations, citation-gated newsroom, and non-joinable Seiche and Palimpsest context lanes. No endpoint provides point-of-sale, real-time, navigable, synthesis-route, or yield information; no federation endpoint creates a shared score, composite, causal inference, or culpability inference."
   },
   "servers": [
     {
@@ -1199,6 +1199,713 @@
         },
         "additionalProperties": false
       },
+      "Pagination": {
+        "type": "object",
+        "required": [
+          "limit",
+          "matched",
+          "returned",
+          "has_more",
+          "next_cursor"
+        ],
+        "properties": {
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "matched": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "returned": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "has_more": {
+            "type": "boolean"
+          },
+          "next_cursor": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^[A-Za-z0-9_-]+$",
+            "maxLength": 2048
+          }
+        },
+        "additionalProperties": false
+      },
+      "AtlasData": {
+        "type": "object",
+        "required": [
+          "schema",
+          "status",
+          "query",
+          "sources",
+          "page",
+          "records",
+          "limitations"
+        ],
+        "properties": {
+          "schema": {
+            "const": "narcoscope.api.atlas.v1"
+          },
+          "status": {
+            "enum": [
+              "available",
+              "partial",
+              "unavailable"
+            ]
+          },
+          "query": {
+            "type": "object",
+            "required": [
+              "domain",
+              "iso3",
+              "year"
+            ],
+            "properties": {
+              "domain": {
+                "enum": [
+                  "all",
+                  "firearms_tracing",
+                  "organized_crime"
+                ]
+              },
+              "iso3": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "pattern": "^[A-Z]{3}$"
+              },
+              "year": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 1900,
+                "maximum": 2200
+              }
+            },
+            "additionalProperties": false
+          },
+          "sources": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 2,
+            "items": {
+              "type": "object",
+              "required": [
+                "domain",
+                "status",
+                "record_count",
+                "metadata",
+                "error"
+              ],
+              "properties": {
+                "domain": {
+                  "enum": [
+                    "firearms_tracing",
+                    "organized_crime"
+                  ]
+                },
+                "status": {
+                  "enum": [
+                    "available",
+                    "unavailable"
+                  ]
+                },
+                "record_count": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0
+                },
+                "metadata": {
+                  "type": [
+                    "object",
+                    "null"
+                  ],
+                  "additionalProperties": true
+                },
+                "error": {
+                  "type": [
+                    "object",
+                    "null"
+                  ],
+                  "additionalProperties": true
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "page": {
+            "$ref": "#/components/schemas/Pagination"
+          },
+          "records": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "type": "object",
+              "required": [
+                "domain",
+                "meta",
+                "data"
+              ],
+              "properties": {
+                "domain": {
+                  "enum": [
+                    "firearms_tracing",
+                    "organized_crime"
+                  ]
+                },
+                "meta": {
+                  "type": "object",
+                  "additionalProperties": true
+                },
+                "data": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "limitations": {
+            "type": "array",
+            "minItems": 4,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "EntitiesData": {
+        "type": "object",
+        "required": [
+          "schema",
+          "status",
+          "query",
+          "source",
+          "page",
+          "records",
+          "disclaimer",
+          "privacy",
+          "error"
+        ],
+        "properties": {
+          "schema": {
+            "const": "narcoscope.api.entities.v1"
+          },
+          "status": {
+            "enum": [
+              "available",
+              "unavailable"
+            ]
+          },
+          "query": {
+            "type": "object",
+            "required": [
+              "entity_type",
+              "program",
+              "country",
+              "query"
+            ],
+            "properties": {
+              "entity_type": {
+                "enum": [
+                  "aircraft",
+                  "individual",
+                  "organization",
+                  "vessel",
+                  null
+                ]
+              },
+              "program": {
+                "enum": [
+                  "ILLICIT-DRUGS-EO14059",
+                  "SDNT",
+                  "SDNTK",
+                  "TCO",
+                  null
+                ]
+              },
+              "country": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "query": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "additionalProperties": false
+          },
+          "source": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": true
+          },
+          "page": {
+            "$ref": "#/components/schemas/Pagination"
+          },
+          "records": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "type": "object",
+              "required": [
+                "ofac_entity_number",
+                "name",
+                "entity_type",
+                "programs",
+                "countries",
+                "meta"
+              ],
+              "properties": {
+                "ofac_entity_number": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "name": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "entity_type": {
+                  "enum": [
+                    "aircraft",
+                    "individual",
+                    "organization",
+                    "vessel"
+                  ]
+                },
+                "programs": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": {
+                    "enum": [
+                      "ILLICIT-DRUGS-EO14059",
+                      "SDNT",
+                      "SDNTK",
+                      "TCO"
+                    ]
+                  }
+                },
+                "countries": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "meta": {
+                  "type": "object",
+                  "required": [
+                    "evidence_class",
+                    "adjudication",
+                    "source",
+                    "source_url",
+                    "downloaded_at"
+                  ],
+                  "properties": {
+                    "evidence_class": {
+                      "const": "administrative_action"
+                    },
+                    "adjudication": {
+                      "const": false
+                    },
+                    "source": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "source_url": {
+                      "type": "string",
+                      "format": "uri",
+                      "pattern": "^https://"
+                    },
+                    "downloaded_at": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "disclaimer": {
+            "type": "string",
+            "minLength": 1
+          },
+          "privacy": {
+            "type": "object",
+            "required": [
+              "returned_fields",
+              "withheld_fields",
+              "query_scope"
+            ],
+            "properties": {
+              "returned_fields": {
+                "type": "array",
+                "minItems": 5,
+                "items": {
+                  "type": "string"
+                }
+              },
+              "withheld_fields": {
+                "type": "array",
+                "minItems": 5,
+                "items": {
+                  "type": "string"
+                }
+              },
+              "query_scope": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "additionalProperties": false
+          },
+          "error": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "FederationData": {
+        "type": "object",
+        "required": [
+          "schema",
+          "status",
+          "retrieved_at",
+          "query",
+          "lanes",
+          "policy",
+          "limitations"
+        ],
+        "properties": {
+          "schema": {
+            "const": "narcoscope.api.federation.v1"
+          },
+          "status": {
+            "enum": [
+              "available",
+              "partial",
+              "unavailable"
+            ]
+          },
+          "retrieved_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "query": {
+            "type": "object",
+            "required": [
+              "lane"
+            ],
+            "properties": {
+              "lane": {
+                "enum": [
+                  "all",
+                  "palimpsest-bri",
+                  "palimpsest-newswire-rights",
+                  "seiche-capital-markets",
+                  "seiche-global-money-atlas",
+                  "seiche-money-markets",
+                  "seiche-summary"
+                ]
+              }
+            },
+            "additionalProperties": false
+          },
+          "lanes": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 6,
+            "items": {
+              "type": "object",
+              "required": [
+                "id",
+                "product",
+                "availability",
+                "evidence_status",
+                "upstream_schema",
+                "upstream_status",
+                "source_url",
+                "retrieved_at",
+                "clocks",
+                "scope",
+                "citation",
+                "transport",
+                "data",
+                "error",
+                "boundaries"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "product": {
+                  "enum": [
+                    "Palimpsest",
+                    "Seiche"
+                  ]
+                },
+                "availability": {
+                  "enum": [
+                    "available",
+                    "restricted",
+                    "unavailable"
+                  ]
+                },
+                "evidence_status": {
+                  "enum": [
+                    "derived",
+                    "observed",
+                    "restricted",
+                    "structural",
+                    "unavailable"
+                  ]
+                },
+                "upstream_schema": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "upstream_status": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "source_url": {
+                  "type": "string",
+                  "format": "uri",
+                  "pattern": "^https://"
+                },
+                "retrieved_at": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "clocks": {
+                  "type": [
+                    "object",
+                    "null"
+                  ],
+                  "additionalProperties": true
+                },
+                "scope": {
+                  "type": [
+                    "object",
+                    "null"
+                  ],
+                  "additionalProperties": true
+                },
+                "citation": {
+                  "type": [
+                    "object",
+                    "null"
+                  ],
+                  "additionalProperties": true
+                },
+                "transport": {
+                  "type": [
+                    "object",
+                    "null"
+                  ],
+                  "additionalProperties": true
+                },
+                "data": {
+                  "type": [
+                    "object",
+                    "null"
+                  ],
+                  "additionalProperties": true
+                },
+                "error": {
+                  "type": [
+                    "object",
+                    "null"
+                  ],
+                  "additionalProperties": true
+                },
+                "boundaries": {
+                  "type": "array",
+                  "minItems": 2,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "policy": {
+            "type": "object",
+            "required": [
+              "mode",
+              "cross_lane_join",
+              "composite_generation",
+              "causal_inference",
+              "culpability_inference",
+              "missing_value_policy"
+            ],
+            "properties": {
+              "mode": {
+                "const": "read_only_parallel_context"
+              },
+              "cross_lane_join": {
+                "const": "prohibited"
+              },
+              "composite_generation": {
+                "const": "prohibited"
+              },
+              "causal_inference": {
+                "const": "prohibited"
+              },
+              "culpability_inference": {
+                "const": "prohibited"
+              },
+              "missing_value_policy": {
+                "const": "unavailable_not_zero"
+              }
+            },
+            "additionalProperties": false
+          },
+          "limitations": {
+            "type": "array",
+            "minItems": 4,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "AtlasRestEnvelope": {
+        "type": "object",
+        "required": [
+          "ok",
+          "resource",
+          "data"
+        ],
+        "properties": {
+          "ok": {
+            "const": true
+          },
+          "resource": {
+            "const": "atlas"
+          },
+          "data": {
+            "$ref": "#/components/schemas/AtlasData"
+          }
+        },
+        "additionalProperties": false
+      },
+      "EntitiesRestEnvelope": {
+        "type": "object",
+        "required": [
+          "ok",
+          "resource",
+          "data"
+        ],
+        "properties": {
+          "ok": {
+            "const": true
+          },
+          "resource": {
+            "const": "entities"
+          },
+          "data": {
+            "$ref": "#/components/schemas/EntitiesData"
+          }
+        },
+        "additionalProperties": false
+      },
+      "FederationRestEnvelope": {
+        "type": "object",
+        "required": [
+          "ok",
+          "resource",
+          "data"
+        ],
+        "properties": {
+          "ok": {
+            "const": true
+          },
+          "resource": {
+            "const": "federation"
+          },
+          "data": {
+            "$ref": "#/components/schemas/FederationData"
+          }
+        },
+        "additionalProperties": false
+      },
+      "UnavailableEnvelope": {
+        "type": "object",
+        "required": [
+          "ok",
+          "resource",
+          "error",
+          "message",
+          "data"
+        ],
+        "properties": {
+          "ok": {
+            "const": false
+          },
+          "resource": {
+            "enum": [
+              "atlas",
+              "entities",
+              "federation"
+            ]
+          },
+          "error": {
+            "const": "unavailable"
+          },
+          "message": {
+            "type": "string",
+            "minLength": 1
+          },
+          "data": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/AtlasData"
+              },
+              {
+                "$ref": "#/components/schemas/EntitiesData"
+              },
+              {
+                "$ref": "#/components/schemas/FederationData"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
       "Error": {
         "type": "object",
         "required": [
@@ -1238,6 +1945,46 @@
           "application/json": {
             "schema": {
               "$ref": "#/components/schemas/PalimpsestBriRestEnvelope"
+            }
+          }
+        }
+      },
+      "AtlasSuccess": {
+        "description": "Country-year illicit-economy atlas response",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/AtlasRestEnvelope"
+            }
+          }
+        }
+      },
+      "EntitiesSuccess": {
+        "description": "Privacy-minimized OFAC designation response",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/EntitiesRestEnvelope"
+            }
+          }
+        }
+      },
+      "FederationSuccess": {
+        "description": "Separate Seiche and Palimpsest evidence lanes",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/FederationRestEnvelope"
+            }
+          }
+        }
+      },
+      "Unavailable": {
+        "description": "Typed unavailable evidence; absence is not zero coverage",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UnavailableEnvelope"
             }
           }
         }
@@ -1378,6 +2125,200 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/atlas": {
+      "get": {
+        "operationId": "getNarcoScopeIllicitEconomyAtlas",
+        "summary": "Page country-year organized-crime and firearms-tracing observations",
+        "description": "Returns the two source-native domains as separate records with their original metadata, per-record availability, caveats, and null-versus-zero distinction intact. The API never combines the domains into a shared score.",
+        "parameters": [
+          {
+            "name": "domain",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "all",
+                "firearms_tracing",
+                "organized_crime"
+              ],
+              "default": "all"
+            }
+          },
+          {
+            "name": "iso3",
+            "in": "query",
+            "description": "Case-insensitive ISO 3166-1 alpha-3 country code.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z]{3}$"
+            }
+          },
+          {
+            "name": "year",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1900,
+              "maximum": 2200
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 25
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "description": "Opaque stable keyset cursor bound to the complete filter set.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "maxLength": 2048
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/AtlasSuccess"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "503": {
+            "$ref": "#/components/responses/Unavailable"
+          }
+        }
+      }
+    },
+    "/entities": {
+      "get": {
+        "operationId": "getNarcoScopePublicDesignations",
+        "summary": "Page privacy-minimized public OFAC designation identities",
+        "description": "Returns only stable public entity number, official name, entity type, programs, and countries. Aliases and subject-level sensitive fields are withheld. A designation is an administrative action, not proof of guilt or an adjudication.",
+        "parameters": [
+          {
+            "name": "entity_type",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "aircraft",
+                "individual",
+                "organization",
+                "vessel"
+              ]
+            }
+          },
+          {
+            "name": "program",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ILLICIT-DRUGS-EO14059",
+                "SDNT",
+                "SDNTK",
+                "TCO"
+              ]
+            }
+          },
+          {
+            "name": "country",
+            "in": "query",
+            "description": "Exact country label after case-insensitive normalization.",
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100
+            }
+          },
+          {
+            "name": "query",
+            "in": "query",
+            "description": "Case-insensitive substring search over official names only; aliases are neither searched nor returned.",
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 25
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "description": "Opaque stable keyset cursor bound to the complete filter set.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "maxLength": 2048
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/EntitiesSuccess"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "503": {
+            "$ref": "#/components/responses/Unavailable"
+          }
+        }
+      }
+    },
+    "/federation": {
+      "get": {
+        "operationId": "getNarcoScopeFederatedContext",
+        "summary": "Read separate Seiche and Palimpsest public evidence lanes",
+        "description": "Fetches selected public Seiche world-market sections or its global money atlas with one GET, a 15-second whole-response deadline, a 2,000,000-byte ceiling, and zero retries. Palimpsest BRI and the pinned historical newswire-rights receipt remain separate lanes. Values are never joined, averaged into a composite, or used to infer causality or culpability.",
+        "parameters": [
+          {
+            "name": "lane",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "all",
+                "palimpsest-bri",
+                "palimpsest-newswire-rights",
+                "seiche-capital-markets",
+                "seiche-global-money-atlas",
+                "seiche-money-markets",
+                "seiche-summary"
+              ],
+              "default": "all"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/FederationSuccess"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "503": {
+            "$ref": "#/components/responses/Unavailable"
           }
         }
       }

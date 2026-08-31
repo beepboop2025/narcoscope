@@ -313,6 +313,90 @@ export interface WastewaterRecord {
 }
 
 // =============================================================================
+// COUNTRY-LEVEL ILLICIT-ECONOMY CONTEXT
+// =============================================================================
+
+/** Null means that indicator did not exist in that edition; it never means zero. */
+export type OrganizedCrimeScore = number | null
+
+export interface OrganizedCrimeMarkets {
+  humanTrafficking: OrganizedCrimeScore
+  humanSmuggling: OrganizedCrimeScore
+  extortion: OrganizedCrimeScore
+  armsTrafficking: OrganizedCrimeScore
+  counterfeitGoods: OrganizedCrimeScore
+  illicitTradeExcisableGoods: OrganizedCrimeScore
+  floraCrimes: OrganizedCrimeScore
+  faunaCrimes: OrganizedCrimeScore
+  nonRenewableResourceCrimes: OrganizedCrimeScore
+  heroinTrade: OrganizedCrimeScore
+  cocaineTrade: OrganizedCrimeScore
+  cannabisTrade: OrganizedCrimeScore
+  syntheticDrugTrade: OrganizedCrimeScore
+  cyberDependentCrimes: OrganizedCrimeScore
+  financialCrimes: OrganizedCrimeScore
+}
+
+export interface OrganizedCrimeActors {
+  average: OrganizedCrimeScore
+  mafiaStyleGroups: OrganizedCrimeScore
+  criminalNetworks: OrganizedCrimeScore
+  stateEmbeddedActors: OrganizedCrimeScore
+  foreignActors: OrganizedCrimeScore
+  privateSectorActors: OrganizedCrimeScore
+}
+
+export interface OrganizedCrimeResilience {
+  average: OrganizedCrimeScore
+  politicalLeadershipAndGovernance: OrganizedCrimeScore
+  governmentTransparencyAndAccountability: OrganizedCrimeScore
+  internationalCooperation: OrganizedCrimeScore
+  nationalPoliciesAndLaws: OrganizedCrimeScore
+  judicialSystemAndDetention: OrganizedCrimeScore
+  lawEnforcement: OrganizedCrimeScore
+  territorialIntegrity: OrganizedCrimeScore
+  antiMoneyLaundering: OrganizedCrimeScore
+  economicRegulatoryCapacity: OrganizedCrimeScore
+  victimAndWitnessSupport: OrganizedCrimeScore
+  prevention: OrganizedCrimeScore
+  nonStateActors: OrganizedCrimeScore
+}
+
+/** One reviewed GI-TOC country-edition assessment. All scores use its 1-10 scale. */
+export interface OrganizedCrimeRecord {
+  iso3: string
+  country: string
+  continent: string
+  region: string
+  year: 2021 | 2023 | 2025
+  criminality: number
+  criminalMarkets: number
+  markets: OrganizedCrimeMarkets
+  actors: OrganizedCrimeActors
+  resilience: OrganizedCrimeResilience
+}
+
+export type FirearmsTracingNature = 'C' | 'CA' | 'E' | 'G' | 'M' | 'N' | 'NA'
+export type FirearmsTracingReportingType = 'N' | 'G' | 'R'
+
+/**
+ * SDG 16.4.2 observation. `valuePercent` measures tracing effectiveness among
+ * seized/found/surrendered arms; it is not a count or illicit-flow volume.
+ */
+export interface FirearmsTracingRecord {
+  iso3: string
+  country: string
+  /** M49 is kept as a string exactly as the UNSD API emits it. */
+  m49: string
+  year: number
+  valuePercent: number
+  nature: FirearmsTracingNature
+  source: string
+  reportingType: FirearmsTracingReportingType
+  footnotes: string[]
+}
+
+// =============================================================================
 // OFFICIAL DESIGNATIONS
 // =============================================================================
 

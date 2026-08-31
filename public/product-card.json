@@ -1,6 +1,6 @@
 {
   "schema": "product-card.v1",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "name": "NarcoScope",
   "category": "public-interest evidence explorer",
   "headline": "Drug-market records you can inspect, cite, and challenge.",
@@ -16,7 +16,9 @@
     "Read newsroom analyses with sentence-level citations, correction history, and explicit abstentions.",
     "Import public aggregate China evidence or the official China-Pakistan-Myanmar country overlay through versioned Palimpsest bridges.",
     "Inspect pinned CPEC, Gwadar, CMEC, Kyaukpyu, Balochistan, and national economic coverage as a parallel Palimpsest context lane.",
-    "Give an AI agent read-only access to bounded, source-linked artifacts through MCP or OpenAPI."
+    "Give an AI agent read-only access to bounded, source-linked artifacts through MCP or OpenAPI.",
+    "Query country-year organized-crime and firearms-tracing observations without combining their native measures into a score.",
+    "Read Seiche money and capital markets beside Palimpsest BRI and publication-rights context as non-joinable evidence lanes."
   ],
   "proof": [
     "Every newsroom sentence and data row is citation-gated before publication.",
@@ -29,6 +31,8 @@
     "Seizure changes are not treated as trafficking-volume changes without independent modalities.",
     "A designation or reported origin is not an adjudication of guilt or causal proof.",
     "A shared geography or period never establishes a political, armed-actor, trafficking, or causal relationship.",
+    "Seiche, Palimpsest, and NarcoScope values are never averaged into a shared score or composite.",
+    "Named designation API rows omit aliases, addresses, dates of birth, identity documents, and allegation text; a designation is an administrative action, not proof of guilt.",
     "Belt and Road context never enters drug-market inference: drug-conflict-infrastructure causal joins, actor classification, bilateral route inference, guilt inference, political-movement classification, project attribution from national series, and tactical or navigable use are prohibited."
   ],
   "access": {
@@ -37,6 +41,9 @@
     "developers": "https://narcoscope.com/developers/",
     "api": "https://narcoscope.com/api/v1/capabilities",
     "api_catalog": "https://narcoscope.com/.well-known/api-catalog",
+    "atlas": "https://narcoscope.com/api/v1/atlas",
+    "entities": "https://narcoscope.com/api/v1/entities",
+    "federation": "https://narcoscope.com/api/v1/federation",
     "palimpsest_bridge": "https://narcoscope.com/api/v1/palimpsest-bridge",
     "palimpsest_corridors": "https://narcoscope.com/api/v1/palimpsest-corridors",
     "palimpsest_bri_context": "https://narcoscope.com/api/v1/palimpsest-bri",
@@ -63,6 +70,11 @@
       "name": "Palimpsest",
       "relationship": "Sister evidence desk for China information controls, Belt and Road economics, Pakistan and Myanmar corridor evidence, publication gaps, and sealed AI evaluations; adjacent context is not automatic corroboration",
       "url": "https://palimpsest.info/"
+    },
+    {
+      "name": "Seiche",
+      "relationship": "Separate public money-market and capital-market context; no shared model, composite, causal inference, or investment recommendation",
+      "url": "https://seiche.info/"
     },
     {
       "name": "My Quant Doesn't Speak English",

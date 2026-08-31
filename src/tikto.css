@@ -3,56 +3,56 @@
    Reusable system tokens and primitives (namespaced with --tk-* / .tk-*).
    ========================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap');
 
 :root {
-  --tk-void: #000000;
-  --tk-surface-1: #080808;
-  --tk-surface-2: #0e0e0e;
-  --tk-surface-3: #151515;
-  --tk-surface-4: #1d1d1d;
-  --tk-hover: #262626;
+  --tk-void: #dfe8e4;
+  --tk-surface-1: #f6f8f5;
+  --tk-surface-2: #edf2ee;
+  --tk-surface-3: #e4ece7;
+  --tk-surface-4: #d7e2dc;
+  --tk-hover: #d0ded7;
 
-  --tk-line-1: #1a1a1a;
-  --tk-line-2: #272727;
-  --tk-line-3: #383838;
+  --tk-line-1: #d2ded8;
+  --tk-line-2: #b9cbc3;
+  --tk-line-3: #91aaa1;
 
-  --tk-text-0: #ffffff;
-  --tk-text-1: #e2e8f0;
-  --tk-text-2: #94a3b8;
-  --tk-text-3: #64748b;
-  --tk-text-4: #475569;
+  --tk-text-0: #071f29;
+  --tk-text-1: #102d36;
+  --tk-text-2: #3f5b62;
+  --tk-text-3: #60767a;
+  --tk-text-4: #778b8d;
 
-  --tk-live: #06d6e0;
-  --tk-live-dim: #0891a2;
-  --tk-live-glow: rgba(6, 214, 224, 0.35);
+  --tk-live: #2f8c7b;
+  --tk-live-dim: #236b60;
+  --tk-live-glow: rgba(47, 140, 123, 0.2);
 
-  --tk-critical: #ff5b52;
+  --tk-critical: #a44534;
   --tk-critical-bg: rgba(239, 68, 68, 0.13);
   --tk-critical-line: rgba(239, 68, 68, 0.5);
-  --tk-warning: #ffb020;
+  --tk-warning: #b86446;
   --tk-warning-bg: rgba(245, 158, 11, 0.13);
   --tk-warning-line: rgba(245, 158, 11, 0.45);
-  --tk-watch: #4aa3ff;
+  --tk-watch: #2f7184;
   --tk-watch-bg: rgba(59, 130, 246, 0.13);
   --tk-watch-line: rgba(59, 130, 246, 0.42);
-  --tk-ok: #19c393;
+  --tk-ok: #2f8c7b;
   --tk-ok-bg: rgba(16, 185, 129, 0.13);
   --tk-ok-line: rgba(16, 185, 129, 0.42);
-  --tk-stale: #8593a8;
+  --tk-stale: #75837e;
   --tk-stale-bg: rgba(100, 116, 139, 0.16);
   --tk-stale-line: rgba(100, 116, 139, 0.45);
 
-  --tk-font-display: 'Outfit', system-ui, -apple-system, sans-serif;
+  --tk-font-display: 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
   --tk-font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
 
   --tk-label-size: 10px;
   --tk-label-tracking: 0.08em;
 
-  --tk-radius-sm: 8px;
-  --tk-radius-md: 11px;
-  --tk-radius-lg: 14px;
-  --tk-radius-xl: 18px;
+  --tk-radius-sm: 2px;
+  --tk-radius-md: 4px;
+  --tk-radius-lg: 6px;
+  --tk-radius-xl: 8px;
 
   --tk-dur-fast: 0.15s;
   --tk-dur: 0.25s;
@@ -60,9 +60,9 @@
   --tk-ease: cubic-bezier(0.4, 0, 0.2, 1);
   --tk-ease-spring: cubic-bezier(0.22, 1, 0.36, 1);
 
-  --tk-shadow-md: 0 6px 20px rgba(0, 0, 0, 0.6);
-  --tk-shadow-lg: 0 14px 36px rgba(0, 0, 0, 0.7);
-  color-scheme: dark;
+  --tk-shadow-md: 0 8px 24px rgba(10, 37, 48, 0.08);
+  --tk-shadow-lg: 0 16px 42px rgba(10, 37, 48, 0.11);
+  color-scheme: light;
 }
 
 [data-tk-theme='light'] {

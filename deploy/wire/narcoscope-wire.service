@@ -1,0 +1,30 @@
+[Unit]
+Description=NarcoScope bounded live evidence-wire capture
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+Environment=NARCOSCOPE_REPO=/opt/narcoscope
+Environment=NARCOSCOPE_WIRE_STATE_DIR=/var/lib/narcoscope-wire
+Environment=NARCOSCOPE_WIRE_LOCK_DIR=/run/lock/narcoscope-wire
+Environment=NARCOSCOPE_WIRE_PUBLISH=0
+Environment=NARCOSCOPE_WIRE_DEPLOY_KEY=/root/.ssh/narcoscope_deploy
+Environment=NARCOSCOPE_WIRE_BRANCH=main
+Environment=NARCOSCOPE_WIRE_RUN_ROOT=/var/tmp
+EnvironmentFile=-/etc/narcoscope/wire.env
+Environment=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ExecStart=/opt/narcoscope/deploy/wire/collect.sh
+StateDirectory=narcoscope-wire
+StateDirectoryMode=0700
+UMask=0077
+TimeoutStartSec=180
+Nice=15
+CPUWeight=20
+IOWeight=20
+MemoryMax=256M
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=read-only
+ProtectSystem=strict
+ReadWritePaths=/opt/narcoscope/.git /var/lib/narcoscope-wire /run/lock /var/tmp

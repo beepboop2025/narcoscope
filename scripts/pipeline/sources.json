@@ -187,14 +187,27 @@
     },
     {
       "id": "ocindex",
-      "name": "Global Organized Crime Index (GI-TOC) country scores",
-      "url": "https://ocindex.net/downloads",
+      "name": "Global Organized Crime Index 2025 open dataset (GI-TOC; 2021/2023/2025 editions)",
+      "url": "https://ocindex.net/assets/downloads/global_oc_index.xlsx",
       "format": "xlsx",
       "cadence": "biennial",
-      "license": "GI-TOC, attribution",
-      "automation": "manual",
-      "feeds": "NOT YET INTEGRATED — candidate context layer (criminality/resilience scores beside seizure data)",
-      "transform": "TODO"
+      "license": "GI-TOC open data; attribution required; source rights remain with GI-TOC",
+      "automation": "auto",
+      "availability": "Public workbook with 193 country assessments in each of the 2021, 2023 and 2025 editions. Scores are expert-assessed 1-10 index constructs, not incident counts, market volumes or person-level allegations.",
+      "feeds": "src/data/organizedCrime.json — deterministic country-year criminal-market, criminal-actor and resilience context with unavailable historical indicators preserved as null",
+      "transform": "scripts/convert/ocindex-to-json.mjs"
+    },
+    {
+      "id": "un-sdg-firearms-tracing",
+      "name": "UNSD Global SDG Database — indicator 16.4.2 firearms tracing (VC_ARM_SZTRACE)",
+      "url": "https://unstats.un.org/SDGAPI/v1/sdg/Series/Data?seriesCode=VC_ARM_SZTRACE",
+      "format": "json-api",
+      "cadence": "quarterly SDG database releases",
+      "license": "United Nations data; attribution and UN website/custodian-agency terms apply",
+      "automation": "auto",
+      "availability": "Public keyless API. Country-year percentage observations preserve source, nature, reporting type, footnotes, release and retrieval clock.",
+      "feeds": "src/data/firearmsTracing.json — tracing-effectiveness context only; explicitly not an illicit-arms-flow volume series",
+      "transform": "scripts/convert/un-sdg-firearms-to-json.mjs"
     },
     {
       "_section": "DEMAND-SIDE MODALITIES — independent of interdiction agencies. Everything above this line is collected by the same kind of body (customs, police, drug-control agencies) and therefore shares an enforcement-capacity bias. The sources below are collected by vital-statistics registrars and environmental chemists, which is what makes them able to corroborate or contradict the supply picture. See src/lib/triangulate.ts."

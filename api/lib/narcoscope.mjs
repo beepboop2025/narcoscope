@@ -1,7 +1,11 @@
 import { readFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 
+import { getFederation } from './federation.mjs'
+import { getAtlas, getEntities } from './illicit-economy.mjs'
 import { verifiedPalimpsestBriEnvelope } from './palimpsest-bri.mjs'
+
+export { getAtlas, getEntities, getFederation }
 
 export const SITE_URL = (process.env.NARCOSCOPE_SITE_URL ||
   'https://narcoscope.com').replace(/\/$/, '')
@@ -69,11 +73,26 @@ export function capabilities() {
         outcome: 'Inspect source readiness and national economic coverage for CPEC, Gwadar, CMEC, Kyaukpyu, and Balochistan in a parallel lane that cannot enter drug-market inference.',
         url: `${SITE_URL}/data/narcoscope-palimpsest-bri-v1.json`,
       },
+      {
+        id: 'illicit-economy-atlas',
+        title: 'Illicit economy and firearms atlas',
+        outcome: 'Query country-year organized-crime and firearms-tracing observations with native caveats, unavailable values, provenance, and stable pagination intact.',
+        url: `${SITE_URL}/api/v1/atlas`,
+      },
+      {
+        id: 'evidence-federation',
+        title: 'Seiche and Palimpsest parallel context',
+        outcome: 'Read money-market, capital-market, BRI, and publication-rights lanes without combining scores or inferring causality or culpability.',
+        url: `${SITE_URL}/api/v1/federation`,
+      },
     ],
     api: {
       base_url: `${SITE_URL}/api/v1`,
       openapi: `${SITE_URL}/openapi.json`,
-      resources: ['capabilities', 'overview', 'newsroom', 'story', 'palimpsest-bridge', 'palimpsest-corridors', 'palimpsest-bri'],
+      resources: [
+        'capabilities', 'overview', 'atlas', 'entities', 'federation', 'newsroom', 'story',
+        'palimpsest-bridge', 'palimpsest-corridors', 'palimpsest-bri',
+      ],
     },
     mcp: {
       endpoint: `${SITE_URL}/mcp`,
@@ -83,7 +102,11 @@ export function capabilities() {
       lifecycle: 'stateless-per-request',
       discovery_method: 'server/discover',
       legacy_initialization: true,
-      tools: ['list_capabilities', 'get_overview', 'get_newsroom', 'get_story', 'get_palimpsest_bridge', 'get_palimpsest_corridors', 'get_palimpsest_bri_context'],
+      tools: [
+        'list_capabilities', 'get_overview', 'get_atlas', 'get_entities', 'get_federation',
+        'get_newsroom', 'get_story', 'get_palimpsest_bridge', 'get_palimpsest_corridors',
+        'get_palimpsest_bri_context',
+      ],
     },
     feeds: {
       json: `${SITE_URL}/news/feed.json`,
@@ -95,6 +118,8 @@ export function capabilities() {
       'Administrative seizures do not measure trafficking volume without independent modalities.',
       'Origin labels and public designations are attributed records, not adjudications of guilt or causal proof.',
       'Illustrative datasets remain labelled and are excluded from official-only bridge artifacts.',
+      'Named designation records expose only approved public identity fields; addresses, identity documents, dates of birth, aliases, and free-text allegations are withheld from API output.',
+      'Seiche and Palimpsest remain separate context lanes: cross-lane joins, shared scores, composites, causal inference, and culpability inference are prohibited.',
       'Belt and Road context is a separate source-readiness and national-economic lane; no drug-conflict-infrastructure causal join, actor classification, bilateral route inference, guilt inference, political-movement classification, project attribution from national series, or tactical or navigable use is permitted.',
     ],
   }
@@ -200,10 +225,14 @@ export async function getPalimpsestBriContext(options = {}) {
   return verifiedPalimpsestBriEnvelope({ ...options, siteUrl: SITE_URL })
 }
 
-export async function resource(name, params = {}, { getBriContext = getPalimpsestBriContext } = {}) {
+export async function resource(name, params = {}, dependencies = {}) {
+  const getBriContext = dependencies.getBriContext ?? getPalimpsestBriContext
   switch (name) {
     case 'capabilities': return capabilities()
     case 'overview': return getOverview()
+    case 'atlas': return getAtlas(params, dependencies)
+    case 'entities': return getEntities(params, dependencies)
+    case 'federation': return getFederation(params, { ...dependencies, getBriContext })
     case 'newsroom': return getNewsroom(params)
     case 'story': return getStory(params)
     case 'palimpsest-bridge': return getPalimpsestBridge()

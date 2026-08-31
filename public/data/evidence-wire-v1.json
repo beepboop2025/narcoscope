@@ -1,0 +1,262 @@
+{
+  "schema": "narcoscope.evidence-wire.v1",
+  "generatedAt": "2026-08-31T03:18:15.936Z",
+  "status": "partial",
+  "window": {
+    "start": "2026-06-26T12:00:00.000Z",
+    "end": "2026-08-28T12:00:00.000Z"
+  },
+  "items": [
+    {
+      "id": "doj-justice-news-4c2da50c332ece995a2f",
+      "title": "Walmart Agrees to Pay $50 Million for Illegally Filling Unlawful Opioid Prescriptions",
+      "url": "https://www.justice.gov/opa/pr/walmart-agrees-pay-50-million-illegally-filling-unlawful-opioid-prescriptions",
+      "sourceId": "doj-justice-news",
+      "sourceName": "U.S. Department of Justice · Justice News",
+      "publishedAt": "2026-08-28T12:00:00.000Z",
+      "retrievedAt": "2026-08-31T03:18:15.936Z",
+      "evidenceClass": "official-action",
+      "verificationState": "source-published",
+      "legalStage": "settlement",
+      "topics": [
+        "drug markets"
+      ],
+      "countries": [],
+      "publicationAllowed": true
+    },
+    {
+      "id": "doj-justice-news-95b3d70060b2b28549ce",
+      "title": "Five men indicted for laundering fraud proceeds tied to ‘tech support,’ government, and financial institution imposter scams",
+      "url": "https://www.justice.gov/usao-wdwa/pr/five-men-indicted-laundering-fraud-proceeds-tied-tech-support-government-and-financial",
+      "sourceId": "doj-justice-news",
+      "sourceName": "U.S. Department of Justice · Justice News",
+      "publishedAt": "2026-08-28T12:00:00.000Z",
+      "retrievedAt": "2026-08-31T03:18:15.936Z",
+      "evidenceClass": "official-action",
+      "verificationState": "source-published",
+      "legalStage": "charge",
+      "topics": [
+        "illicit finance"
+      ],
+      "countries": [],
+      "publicationAllowed": true
+    },
+    {
+      "id": "doj-justice-news-78a6c202747d1466b9f6",
+      "title": "Nigerian National Sentenced for Laundering $3.1M in Scam Proceeds",
+      "url": "https://www.justice.gov/opa/pr/nigerian-national-sentenced-laundering-31m-scam-proceeds",
+      "sourceId": "doj-justice-news",
+      "sourceName": "U.S. Department of Justice · Justice News",
+      "publishedAt": "2026-08-28T12:00:00.000Z",
+      "retrievedAt": "2026-08-31T03:18:15.936Z",
+      "evidenceClass": "official-action",
+      "verificationState": "source-published",
+      "legalStage": "sentencing",
+      "topics": [
+        "illicit finance"
+      ],
+      "countries": [],
+      "publicationAllowed": true
+    },
+    {
+      "id": "doj-justice-news-a0e7ca003f70938b8ee3",
+      "title": "Portland Man Pleads Guilty to Drug Trafficking Charges",
+      "url": "https://www.justice.gov/usao-me/pr/portland-man-pleads-guilty-drug-trafficking-charges",
+      "sourceId": "doj-justice-news",
+      "sourceName": "U.S. Department of Justice · Justice News",
+      "publishedAt": "2026-08-28T12:00:00.000Z",
+      "retrievedAt": "2026-08-31T03:18:15.936Z",
+      "evidenceClass": "official-action",
+      "verificationState": "source-published",
+      "legalStage": "conviction",
+      "topics": [
+        "drug markets"
+      ],
+      "countries": [],
+      "publicationAllowed": true
+    },
+    {
+      "id": "treasury-press-2880e4e01f472afe9daf",
+      "title": "Treasury and State Departments Deliver Additional Sanctions Relief on Syria",
+      "url": "https://home.treasury.gov/news/press-releases/sb0612/",
+      "sourceId": "treasury-press",
+      "sourceName": "U.S. Treasury · Press releases",
+      "publishedAt": "2026-08-20T13:30:00.000Z",
+      "retrievedAt": "2026-08-31T03:18:15.936Z",
+      "evidenceClass": "official-action",
+      "verificationState": "source-published",
+      "legalStage": "designation",
+      "topics": [
+        "illicit finance"
+      ],
+      "countries": [],
+      "publicationAllowed": true
+    },
+    {
+      "id": "treasury-press-5686ed8b43f6443f58f0",
+      "title": "Treasury Increases Sanctions on Hizballah and Targets Network Smuggling Millions in Cash for Hizballah",
+      "url": "https://home.treasury.gov/news/press-releases/sb0611/",
+      "sourceId": "treasury-press",
+      "sourceName": "U.S. Treasury · Press releases",
+      "publishedAt": "2026-08-20T13:29:00.000Z",
+      "retrievedAt": "2026-08-31T03:18:15.936Z",
+      "evidenceClass": "official-action",
+      "verificationState": "source-published",
+      "legalStage": "designation",
+      "topics": [
+        "illicit finance"
+      ],
+      "countries": [],
+      "publicationAllowed": true
+    },
+    {
+      "id": "treasury-press-1b57b1d551451224398d",
+      "title": "Treasury Sanctions Major Ecuador-Based Cocaine Network Linked to Violent Gangs and Mexican Cartels",
+      "url": "https://home.treasury.gov/news/press-releases/sb0610/",
+      "sourceId": "treasury-press",
+      "sourceName": "U.S. Treasury · Press releases",
+      "publishedAt": "2026-08-20T08:45:59.000Z",
+      "retrievedAt": "2026-08-31T03:18:15.936Z",
+      "evidenceClass": "official-action",
+      "verificationState": "source-published",
+      "legalStage": "designation",
+      "topics": [
+        "drug markets",
+        "illicit finance"
+      ],
+      "countries": [],
+      "publicationAllowed": true
+    },
+    {
+      "id": "un-news-law-crime-5afdeb45ec2144f19a7d",
+      "title": "International Criminal Court: New US sanctions ‘a flagrant attack’ against its independence",
+      "url": "https://news.un.org/feed/view/en/story/2026/08/1168168",
+      "sourceId": "un-news-law-crime",
+      "sourceName": "United Nations News · Law and crime prevention",
+      "publishedAt": "2026-08-19T12:00:00.000Z",
+      "retrievedAt": "2026-08-31T03:18:15.936Z",
+      "evidenceClass": "official-release",
+      "verificationState": "source-published",
+      "legalStage": "not-applicable",
+      "topics": [
+        "illicit finance"
+      ],
+      "countries": [],
+      "publicationAllowed": true
+    },
+    {
+      "id": "un-news-law-crime-9b50336dcd54c9e756e0",
+      "title": "As deadly as war and as powerful as governments, global organized crime remains in the shadows",
+      "url": "https://news.un.org/feed/view/en/story/2026/07/1167867",
+      "sourceId": "un-news-law-crime",
+      "sourceName": "United Nations News · Law and crime prevention",
+      "publishedAt": "2026-07-05T12:00:00.000Z",
+      "retrievedAt": "2026-08-31T03:18:15.936Z",
+      "evidenceClass": "official-release",
+      "verificationState": "source-published",
+      "legalStage": "not-applicable",
+      "topics": [
+        "organized crime"
+      ],
+      "countries": [],
+      "publicationAllowed": true
+    },
+    {
+      "id": "un-news-law-crime-21f6a1e5f9127124d9c3",
+      "title": "Global drug use reaches record high as increasingly potent synthetic drugs spread",
+      "url": "https://news.un.org/feed/view/en/story/2026/06/1167817",
+      "sourceId": "un-news-law-crime",
+      "sourceName": "United Nations News · Law and crime prevention",
+      "publishedAt": "2026-06-26T12:00:00.000Z",
+      "retrievedAt": "2026-08-31T03:18:15.936Z",
+      "evidenceClass": "official-release",
+      "verificationState": "source-published",
+      "legalStage": "not-applicable",
+      "topics": [
+        "drug markets"
+      ],
+      "countries": [],
+      "publicationAllowed": true
+    }
+  ],
+  "sources": [
+    {
+      "id": "doj-justice-news",
+      "name": "U.S. Department of Justice · Justice News",
+      "url": "https://www.justice.gov/news/rss",
+      "status": "fresh",
+      "checkedAt": "2026-08-31T03:18:15.936Z",
+      "lastSuccessAt": "2026-08-31T03:18:15.936Z",
+      "cadenceMinutes": 15,
+      "staleAfterMinutes": 120,
+      "rights": "Public U.S. government release metadata; NarcoScope republishes titles, links and source clocks only.",
+      "detail": "25 source items read · 4 in-scope metadata items published"
+    },
+    {
+      "id": "un-news-law-crime",
+      "name": "United Nations News · Law and crime prevention",
+      "url": "https://news.un.org/feed/subscribe/en/news/topic/law-and-crime-prevention/feed/rss.xml",
+      "status": "fresh",
+      "checkedAt": "2026-08-31T03:18:15.936Z",
+      "lastSuccessAt": "2026-08-31T03:18:15.936Z",
+      "cadenceMinutes": 30,
+      "staleAfterMinutes": 180,
+      "rights": "Public United Nations feed metadata; NarcoScope republishes titles, links and source clocks only.",
+      "detail": "30 source items read · 3 in-scope metadata items published"
+    },
+    {
+      "id": "treasury-press",
+      "name": "U.S. Treasury · Press releases",
+      "url": "https://home.treasury.gov/news/press-releases",
+      "status": "fresh",
+      "checkedAt": "2026-08-31T03:18:15.936Z",
+      "lastSuccessAt": "2026-08-31T03:18:15.936Z",
+      "cadenceMinutes": 30,
+      "staleAfterMinutes": 240,
+      "rights": "Public U.S. government release metadata; NarcoScope republishes titles, links and source clocks only.",
+      "detail": "8 source items read · 3 in-scope metadata items published"
+    },
+    {
+      "id": "palimpsest-newswire-rights",
+      "name": "Palimpsest · newswire publication-rights receipt",
+      "url": "https://www.palimpsest.info/readings/newswire-latest.json",
+      "status": "restricted",
+      "checkedAt": "2026-08-31T03:18:15.936Z",
+      "lastSuccessAt": "2026-08-31T03:18:15.936Z",
+      "cadenceMinutes": 15,
+      "staleAfterMinutes": 90,
+      "rights": "Receipt only. Source content remains suppressed whenever Palimpsest publication_allowed is false.",
+      "detail": "palimpsest-restricted-publication-endpoint.v1 · publication suppressed by upstream rights policy · Current source policy denies publication of one or more upstream value families; this endpoint therefore exposes metadata only."
+    },
+    {
+      "id": "seiche-money-markets",
+      "name": "Seiche · global money-market context",
+      "url": "https://api.seiche.info/api/v2/money-markets",
+      "status": "partial",
+      "checkedAt": "2026-08-31T03:18:15.936Z",
+      "lastSuccessAt": "2026-08-31T03:18:15.936Z",
+      "cadenceMinutes": 15,
+      "staleAfterMinutes": 90,
+      "rights": "Read-only economic context receipt. Values never become NarcoScope illicit-market facts or person-level inferences.",
+      "detail": "seiche.global-money-markets.v1 · generated 2026-08-31T03:18:16.000Z"
+    },
+    {
+      "id": "seiche-capital-markets",
+      "name": "Seiche · capital-market context",
+      "url": "https://api.seiche.info/api/v2/world-markets?section=capital_markets",
+      "status": "fresh",
+      "checkedAt": "2026-08-31T03:18:15.936Z",
+      "lastSuccessAt": "2026-08-31T03:18:15.936Z",
+      "cadenceMinutes": 15,
+      "staleAfterMinutes": 90,
+      "rights": "Read-only economic context receipt. Values never become NarcoScope illicit-market facts or person-level inferences.",
+      "detail": "seiche.world-markets.v1 · generated 2026-08-31T03:12:21.000Z"
+    }
+  ],
+  "caveats": [
+    "The wire contains publication-allowed metadata and links, not full articles or private upstream records.",
+    "A source-published enforcement release records an official action; a charge or designation is not a conviction.",
+    "News items are leads and do not overwrite validated country, entity or market datasets.",
+    "After a bounded fetch failure, the last-good receipt remains aging only until that source's declared stale-after threshold; stale, unavailable and restricted remain visible states."
+  ]
+}

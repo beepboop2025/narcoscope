@@ -1,0 +1,95 @@
+{
+  "schema": "narcoscope.wire-sources.v1",
+  "maxResponseBytes": 2097152,
+  "timeoutMs": 15000,
+  "maxItemsPerSource": 40,
+  "retentionDays": 45,
+  "sources": [
+    {
+      "id": "doj-justice-news",
+      "name": "U.S. Department of Justice · Justice News",
+      "kind": "rss",
+      "url": "https://www.justice.gov/news/rss",
+      "cadenceMinutes": 15,
+      "staleAfterMinutes": 120,
+      "evidenceClass": "official-action",
+      "verificationState": "source-published",
+      "rights": "Public U.S. government release metadata; NarcoScope republishes titles, links and source clocks only.",
+      "publicationAllowed": true,
+      "requireRelevantTopic": true
+    },
+    {
+      "id": "un-news-law-crime",
+      "name": "United Nations News · Law and crime prevention",
+      "kind": "rss",
+      "url": "https://news.un.org/feed/subscribe/en/news/topic/law-and-crime-prevention/feed/rss.xml",
+      "cadenceMinutes": 30,
+      "staleAfterMinutes": 180,
+      "evidenceClass": "official-release",
+      "verificationState": "source-published",
+      "rights": "Public United Nations feed metadata; NarcoScope republishes titles, links and source clocks only.",
+      "publicationAllowed": true,
+      "requireRelevantTopic": true
+    },
+    {
+      "id": "treasury-press",
+      "name": "U.S. Treasury · Press releases",
+      "kind": "treasury-html",
+      "url": "https://home.treasury.gov/news/press-releases",
+      "cadenceMinutes": 30,
+      "staleAfterMinutes": 240,
+      "evidenceClass": "official-action",
+      "verificationState": "source-published",
+      "rights": "Public U.S. government release metadata; NarcoScope republishes titles, links and source clocks only.",
+      "publicationAllowed": true,
+      "requireRelevantTopic": true
+    },
+    {
+      "id": "palimpsest-newswire-rights",
+      "name": "Palimpsest · newswire publication-rights receipt",
+      "kind": "status-json",
+      "url": "https://palimpsest.info/readings/newswire-latest.json",
+      "cadenceMinutes": 15,
+      "staleAfterMinutes": 90,
+      "evidenceClass": "reported-lead",
+      "verificationState": "context-only",
+      "rights": "Receipt only. Source content remains suppressed whenever Palimpsest publication_allowed is false.",
+      "publicationAllowed": false,
+      "expectedStatus": "restricted"
+    },
+    {
+      "id": "seiche-money-markets",
+      "name": "Seiche · global money-market context",
+      "kind": "status-json",
+      "url": "https://api.seiche.info/api/v2/money-markets",
+      "cadenceMinutes": 15,
+      "staleAfterMinutes": 90,
+      "evidenceClass": "economic-context",
+      "verificationState": "context-only",
+      "rights": "Read-only economic context receipt. Values never become NarcoScope illicit-market facts or person-level inferences.",
+      "publicationAllowed": false
+    },
+    {
+      "id": "seiche-capital-markets",
+      "name": "Seiche · capital-market context",
+      "kind": "status-json",
+      "url": "https://api.seiche.info/api/v2/world-markets?section=capital_markets",
+      "cadenceMinutes": 15,
+      "staleAfterMinutes": 90,
+      "evidenceClass": "economic-context",
+      "verificationState": "context-only",
+      "rights": "Read-only economic context receipt. Values never become NarcoScope illicit-market facts or person-level inferences.",
+      "publicationAllowed": false
+    }
+  ],
+  "topicRules": [
+    { "topic": "drug markets", "pattern": "\\b(drug|narcotic|fentanyl|opioid|cocaine|heroin|methamphetamine|cannabis|ketamine|mdma|synthetic substance)\\b" },
+    { "topic": "arms trafficking", "pattern": "\\b(firearm|gun trafficking|weapons? trafficking|arms trafficking|ammunition|weapons? smuggling)\\b" },
+    { "topic": "illicit finance", "pattern": "\\b(money laundering|illicit finance|launder(?:ing|ed)?|sanction(?:s|ed)?|crypto(?:currency)? exchange|clandestine currency|drug proceeds)\\b" },
+    { "topic": "wildlife + environment", "pattern": "\\b(wildlife trafficking|ivory|rhino|pangolin|timber trafficking|environmental crime|illegal logging|biodiversity crime)\\b" },
+    { "topic": "raw materials", "pattern": "\\b(illicit (?:gold|oil|mineral)|illegal mining|critical mineral|resource smuggling|smuggling (?:gold|oil|minerals))\\b" },
+    { "topic": "human trafficking", "pattern": "\\b(human trafficking|sex trafficking|forced labo(?:u)?r|trafficking in persons)\\b" },
+    { "topic": "human smuggling", "pattern": "\\b(human smuggling|migrant smuggling|alien smuggling)\\b" },
+    { "topic": "organized crime", "pattern": "\\b(organized crime|transnational criminal|criminal network|cartel|racketeering|smuggling network)\\b" }
+  ]
+}
