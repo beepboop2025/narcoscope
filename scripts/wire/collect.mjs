@@ -207,6 +207,19 @@ function retainedItems(items, now, retentionDays) {
   })
 }
 
+function mergeSourceItems(currentItems, priorItems, now, config) {
+  const merged = new Map()
+  for (const item of retainedItems(priorItems, now, config.retentionDays)) merged.set(item.id, item)
+  for (const item of currentItems) merged.set(item.id, item)
+  return [...merged.values()]
+    .sort((left, right) => {
+      const timeDifference = new Date(right.publishedAt || right.retrievedAt).getTime()
+        - new Date(left.publishedAt || left.retrievedAt).getTime()
+      return timeDifference || left.id.localeCompare(right.id)
+    })
+    .slice(0, config.maxItemsPerSource)
+}
+
 function statusForFailure(source, oldReceipt, now) {
   const lastSuccess = new Date(oldReceipt?.lastSuccessAt ?? '').getTime()
   if (!Number.isFinite(lastSuccess)) return 'unavailable'
@@ -240,7 +253,8 @@ export async function buildWire({ config, previous = null, now = new Date(), fet
         }
       }
       const parsed = source.kind === 'treasury-html' ? parseTreasuryPress(body, finalUrl) : parseRss(body, finalUrl)
-      const items = normalizeItems(source, parsed, generatedAt, config)
+      const currentItems = normalizeItems(source, parsed, generatedAt, config)
+      const items = mergeSourceItems(currentItems, previousItems(previous, source.id), now, config)
       return {
         items,
         receipt: {
@@ -253,7 +267,7 @@ export async function buildWire({ config, previous = null, now = new Date(), fet
           cadenceMinutes: source.cadenceMinutes,
           staleAfterMinutes: source.staleAfterMinutes ?? null,
           rights: source.rights,
-          detail: `${parsed.length} source items read · ${items.length} in-scope metadata items published`,
+          detail: `${parsed.length} source items read · ${currentItems.length} current in-scope · ${items.length} retained metadata items published`,
         },
       }
     } catch (error) {
