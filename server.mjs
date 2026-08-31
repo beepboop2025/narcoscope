@@ -281,14 +281,9 @@ async function route(req, res, distDir, briLoader, releaseIdentityLoader) {
     } catch {
       fleetIdentityValid = false
     }
-    const configuredRevisionValid = !configuredRevision || COMMIT_RE.test(configuredRevision)
-    const revisionConflict = Boolean(
-      fleetIdentity && configuredRevision && configuredRevision !== fleetIdentity.sourceCommit,
-    )
     const revision = fleetIdentity?.sourceCommit || configuredRevision
     const revisionValid = fleetIdentityValid
-      && configuredRevisionValid
-      && !revisionConflict
+      && (fleetIdentity !== null || COMMIT_RE.test(configuredRevision))
       && COMMIT_RE.test(revision)
     let briArtifactVerified = false
     if (revisionValid) {
