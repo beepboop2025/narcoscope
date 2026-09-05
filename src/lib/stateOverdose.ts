@@ -20,7 +20,7 @@ export interface SubstanceOption { id: OverdoseSubstance; label: string }
 export const STATE_SUBSTANCES: SubstanceOption[] = [
   { id: 'all_drugs', label: 'All drug overdoses' },
   { id: 'synthetic_opioids', label: 'Synthetic opioids (fentanyl)' },
-  { id: 'psychostimulants', label: 'Psychostimulants (meth)' },
+  { id: 'psychostimulants', label: 'Psychostimulants with abuse potential' },
   { id: 'opioids_all', label: 'All opioids' },
   { id: 'cocaine', label: 'Cocaine' },
   { id: 'heroin', label: 'Heroin' },

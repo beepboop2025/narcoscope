@@ -55,7 +55,7 @@ const allDrugsPrev = usDeaths('all_drugs', prevYear)
 
 const SUBSTANCE_LABEL = {
   synthetic_opioids: 'Synthetic opioids (fentanyl)',
-  psychostimulants: 'Psychostimulants (meth)',
+  psychostimulants: 'Psychostimulants with abuse potential',
   cocaine: 'Cocaine',
   heroin: 'Heroin',
   opioids_all: 'All opioids',
