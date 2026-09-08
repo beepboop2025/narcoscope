@@ -115,6 +115,24 @@ describe('weekly global-market acquisition and durable replay', () => {
     await refreshGlobalMarkets({ ...f.options, now: NOW + 2 })
     expect(f.lane.collect).toHaveBeenCalledTimes(2)
   })
+  it.each(['older', 'missing'])('recovers an acquired snapshot into a %s checkout after interrupted publication', async state => {
+    const f = await fixture(), older = await fs.readFile(f.out, 'utf8')
+    const acquired = json(); acquired.observations[0].value = 2
+    f.lane.collect.mockImplementation(async (store, target) => {
+      await fs.writeFile(path.join(store, 'manifest.json'), '{}')
+      await fs.writeFile(target, JSON.stringify(acquired) + '\n')
+      return {}
+    })
+    await refreshGlobalMarkets(f.options)
+    const expected = await fs.readFile(f.out, 'utf8'), metadata = await fs.readFile(f.receipt, 'utf8')
+    if (state === 'missing') await fs.unlink(f.out)
+    else await fs.writeFile(f.out, older)
+    const recovered = await refreshGlobalMarkets({ ...f.options, now: NOW + 1 })
+    expect(recovered.results[0].outcome).toBe('replayed-offline')
+    expect(f.lane.collect.mock.calls.at(-1)[2]).toBe(true)
+    expect(await fs.readFile(f.out, 'utf8')).toBe(expected)
+    expect(await fs.readFile(f.receipt, 'utf8')).toBe(metadata)
+  })
   it('rejects concurrent writers without removing the other lock', async () => {
     const f = await fixture()
     await fs.mkdir(path.join(f.stateDir, 'refresh.lock'), { recursive: true })

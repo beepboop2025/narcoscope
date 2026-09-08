@@ -87,7 +87,10 @@ export async function refreshLane(lane, { root, stateDir, offline, now }) {
   const withinWeek = receipt && ['updated', 'partial'].includes(receipt.status) && receipt.lastSuccessAt && now - Date.parse(receipt.lastSuccessAt) < WEEK_MS
   const coolingDown = receipt?.status === 'acquisition-failed' && now - Date.parse(receipt.lastAttemptAt) < RETRY_MS
   const processorChanged = receipt && receipt.processorSha256 !== processorSha256
-  const replay = offline || (processorChanged && cached && withinWeek)
+  // Acquisition may succeed before publication fails. A new disposable
+  // checkout must recover those captures rather than retain an older Git copy.
+  const snapshotChanged = receipt && before?.sha256 !== receipt.snapshotSha256
+  const replay = offline || ((processorChanged || snapshotChanged) && cached && withinWeek)
   if (replay) {
     if (cached) await lane.collect(store, out, true)
     else if (!before) throw new Error(`Offline captures and public snapshot are both missing for ${lane.id}`)
@@ -96,7 +99,7 @@ export async function refreshLane(lane, { root, stateDir, offline, now }) {
     if (!offline && receipt) await atomicJson(receiptPath, { ...receipt, processorSha256, snapshotSha256: current.sha256 })
     return { id: lane.id, outcome: cached ? 'replayed-offline' : 'retained-offline', generatedAt: current.dataset.generatedAt, sha256: current.sha256 }
   }
-  if (before && (withinWeek || coolingDown)) {
+  if (before && ((withinWeek && !snapshotChanged) || coolingDown)) {
     return { id: lane.id, outcome: coolingDown ? 'retained-during-retry-cooldown' : 'retained-within-week', generatedAt: before.dataset.generatedAt, sha256: before.sha256 }
   }
   const attemptedAt = new Date(now).toISOString()
