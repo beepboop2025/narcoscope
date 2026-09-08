@@ -1,11 +1,13 @@
 name: tests
 
 on:
-  push:
   pull_request:
 
 jobs:
   test:
+    # Owner PRs and main use the equivalent credential-free Railway build gate.
+    # Outside contributors retain this executor until Railway admits their PRs.
+    if: github.event.pull_request.user.login != 'beepboop2025'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
