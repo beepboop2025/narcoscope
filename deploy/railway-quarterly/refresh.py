@@ -121,7 +121,10 @@ def checkout(mirror, env, source, work):
         path = work / relative
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(content)
-        path.chmod(0o555 if mode == "100755" else 0o444)
+        # Ownership protects source from the candidate. Ordinary Git modes let
+        # tests copy a fixture and then mutate their own copy (Node preserves
+        # mode bits during fs.cp); 0444 would make those copies unwritable too.
+        path.chmod(0o755 if mode == "100755" else 0o644)
         baseline[name] = digest(content)
         if allowed_output(name):
             os.chown(path, COLLECTOR_UID, COLLECTOR_UID)

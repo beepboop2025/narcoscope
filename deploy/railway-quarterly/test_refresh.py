@@ -154,7 +154,7 @@ class LinuxIsolationTests(unittest.TestCase):
             work.mkdir()
             locked = work / "source.js"
             locked.write_text("immutable")
-            locked.chmod(0o444)
+            locked.chmod(0o644)
             output = work / "allowed.json"
             output.write_text("{}")
             os.chown(output, isolation.COLLECTOR_UID, isolation.COLLECTOR_UID)
@@ -170,7 +170,7 @@ class LinuxIsolationTests(unittest.TestCase):
             fd = os.open(private_root / "publisher-key", os.O_RDONLY)
             os.set_inheritable(fd, True)
             probe = work / "probe.py"
-            probe.write_text("import os,subprocess\nfrom pathlib import Path\n"
+            probe.write_text("import os,subprocess,shutil\nfrom pathlib import Path\n"
                 + "for name in " + repr([str(private_root / "publisher-key"),
                     f"/proc/{os.getpid()}/environ", "/proc/1/environ"]) + ":\n"
                 + " try: Path(name).read_bytes()\n except PermissionError: pass\n else: raise AssertionError(name)\n"
@@ -179,6 +179,7 @@ class LinuxIsolationTests(unittest.TestCase):
                 + f"try: os.read({fd},32)\nexcept OSError: pass\nelse: raise AssertionError('inherited FD')\n"
                 + "assert not ({'GITHUB_TOKEN','GITHUB_DEPLOY_KEY','GIT_SSH_COMMAND','RAILWAY_TOKEN'} & set(os.environ))\n"
                 + "Path('allowed.json').write_text('{\"safe\":true}')\n"
+                + "copy=Path(os.environ['TMPDIR'])/'fixture-copy'; shutil.copy2('source.js',copy); copy.write_text('candidate-owned fixture')\n"
                 + "try: Path('public/openapi.json').unlink()\nexcept PermissionError: pass\nelse: raise AssertionError('sticky parent lost protected contract')\n"
                 + "Path('public/.news.stage-test').mkdir()\nPath('public/news').rename('public/.news.backup-test')\nPath('public/.news.stage-test').rename('public/news')\nPath('public/.news.backup-test').rmdir()\n"
                 + "subprocess.Popen(['sleep','90'], start_new_session=True)\n"
