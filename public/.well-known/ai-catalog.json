@@ -1,6 +1,6 @@
 {
   "schema": "ai-catalog.v1",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "name": "NarcoScope",
   "description": "Official drug-market evidence made legible with source, freshness, and claim boundaries intact.",
   "canonical": "https://narcoscope.com/product-card.json",
@@ -26,7 +26,10 @@
   },
   "mcpProtocol": {
     "current": "2026-07-28",
-    "legacy": ["2025-03-26", "2025-06-18"],
+    "legacy": [
+      "2025-03-26",
+      "2025-06-18"
+    ],
     "lifecycle": "stateless-per-request",
     "discoveryMethod": "server/discover",
     "registryPublication": "gated-on-live-version-proof"
@@ -34,7 +37,8 @@
   "resources": {
     "atlas": "https://narcoscope.com/api/v1/atlas",
     "entities": "https://narcoscope.com/api/v1/entities",
-    "federation": "https://narcoscope.com/api/v1/federation"
+    "federation": "https://narcoscope.com/api/v1/federation",
+    "connectedResearch": "https://narcoscope.com/api/v1/connected-research"
   },
   "evidenceBoundaries": {
     "missingValuePolicy": "unavailable_not_zero",
