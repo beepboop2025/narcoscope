@@ -35,7 +35,7 @@ describe('fixed-source drugs collector',()=>{
   })
   it('passes source parser regressions for suppression, intervals, source years and duplicate ambiguity',()=>{
     const result=spawnSync('python3',['-B','scripts/global-markets/drugs_workbooks_test.py'],{encoding:'utf8'})
-    expect(result.status,result.stderr).toBe(0)
+    expect(result.status,result.error?.message || result.stderr).toBe(0)
   })
   it('validates the actual retained educational dataset and separates observed from unavailable cells',()=>{
     const dataset=JSON.parse(fs.readFileSync('public/data/global-drugs-v1.json','utf8'))
