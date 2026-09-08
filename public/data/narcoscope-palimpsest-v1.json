@@ -43,7 +43,7 @@
         "localDataDate": "2026-09-08",
         "input": {
           "path": "src/data/prices.ts",
-          "sha256": "e36c1d7267df5b2d238bbaad6371043cfed73112a80821ba2ff1d107a452f969"
+          "sha256": "d6dd50265b8cd60716a52d7ce83840be02a0704a5c07c74a01309519d3dc3f73"
         }
       },
       "data": {

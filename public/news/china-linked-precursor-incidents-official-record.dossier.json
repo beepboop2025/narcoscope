@@ -204,13 +204,19 @@
         "date": "2026-09-08",
         "summary": "Deterministic source refresh; evidence, qualification and publication receipts were recomputed.",
         "revisionHash": "80205d90531598561be1e3c361c28c2e9cf4fd5e6f754343845ab7e1eb71903f"
+      },
+      {
+        "eventType": "data_refresh",
+        "date": "2026-09-08",
+        "summary": "Deterministic source refresh; evidence, qualification and publication receipts were recomputed.",
+        "revisionHash": "cbc401aa1ab758fade6f69396cdad6d4fd9ba0f70100d88fba0f32c695758a33"
       }
     ]
   },
   "promotion": {
     "fromContentClass": "machine_brief",
     "machineBriefUrl": "/news/china-linked-precursor-incidents-official-record.machine-brief.json",
-    "machineBriefContentHash": "876c8f0ef66d642b88a811b94ba4df793b0a688827d2648d64dfabcd9f15671b",
+    "machineBriefContentHash": "ca375b0d7301999c5e9e6f82c9896ef9af4662c56e6cccb15cb1dfc28fd98a0a",
     "requiredGate": "automated-evidence-analysis-gate.v1"
   },
   "title": "What the 2025 INCB precursor report says about China-linked incidents—and what it does not prove",
@@ -219,7 +225,7 @@
   "publishedAt": "2026-08-12T00:00:00.000Z",
   "updatedAt": "2026-09-08T00:00:00.000Z",
   "dataAsOf": "2026-09-08",
-  "revisionHash": "80205d90531598561be1e3c361c28c2e9cf4fd5e6f754343845ab7e1eb71903f",
+  "revisionHash": "cbc401aa1ab758fade6f69396cdad6d4fd9ba0f70100d88fba0f32c695758a33",
   "keyFigures": [
     {
       "id": "china-eu-upper-bound-mass",
@@ -2158,7 +2164,7 @@
     },
     "editorialCompleteness": {
       "correctionsStatus": "none_recorded",
-      "updateHistoryEventCount": 29,
+      "updateHistoryEventCount": 30,
       "initialPublicationRecorded": true,
       "rightToReplyStatus": "not_required",
       "outreachPerformed": false,
@@ -2180,12 +2186,12 @@
     },
     "deterministicHashes": {
       "algorithm": "sha256",
-      "revisionHash": "80205d90531598561be1e3c361c28c2e9cf4fd5e6f754343845ab7e1eb71903f",
-      "machineBriefContentHash": "876c8f0ef66d642b88a811b94ba4df793b0a688827d2648d64dfabcd9f15671b",
+      "revisionHash": "cbc401aa1ab758fade6f69396cdad6d4fd9ba0f70100d88fba0f32c695758a33",
+      "machineBriefContentHash": "ca375b0d7301999c5e9e6f82c9896ef9af4662c56e6cccb15cb1dfc28fd98a0a",
       "dossierContentHashScope": "canonical JSON of the dossier including this receipt and excluding the top-level contentHash field"
     },
     "failures": [],
     "passed": true
   },
-  "contentHash": "6cbdf419835fdc14d8a43ce5bbf65b2f06e45dad4a1528b18cddad5f4fdeaa64"
+  "contentHash": "9551628120609e9e37dc723e65e0afba37d24c2a73dc71a6d59c4154ec67b5a3"
 }
