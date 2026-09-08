@@ -168,7 +168,7 @@ export const TOOLS = Object.freeze({
   },
   get_connected_research: {
     title: 'Read China and regional economic research',
-    description: 'Return source-linked China economic findings, CPEC, Balochistan, BRI and Myanmar research questions, reporting metadata, and national debt and welfare indicators with their own dates. Country and theme context only; no actor or causal inference.',
+    description: 'Return source-linked China economic findings, CPEC, Balochistan, BRI and Myanmar research questions, reporting metadata, and dated national indicators. Optional hash-bound observatory summaries add economic histories, EU-reported trade and official methodology cases. SAFE quantities remain private. Country and theme context only; gaps do not establish concealment, actor relationships or causality.',
     inputSchema: { type: 'object', additionalProperties: false },
     outputSchema: CONNECTED_OUTPUT_SCHEMA,
     call: async () => loadConnectedResearch(),

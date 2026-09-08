@@ -2326,7 +2326,7 @@
     "/connected-research": {
       "get": {
         "summary": "Connected China and regional research",
-        "description": "Source-linked China economic findings, CPEC, Balochistan, BRI and Myanmar research questions, dated reporting and national economic indicators. No actor or causal inference.",
+        "description": "Source-linked China economic findings, CPEC, Balochistan, BRI and Myanmar research questions, dated reporting and national economic indicators. Optional hash-bound China evidence observatory summaries add economic histories, EU-reported trade, methodology cases and reviewed acquisition counts. SAFE quantities remain private; gaps do not establish concealment, actor relationships or causality.",
         "responses": {
           "200": {
             "description": "Hash-verified packaged research snapshot",
