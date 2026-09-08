@@ -1,98 +1,30 @@
-import { useEffect, useMemo, useState } from 'react'
-import {
-  LENS_GROUPS,
-  PRIMARY_DOSSIER_IDS,
-  PRIMARY_DOSSIERS,
-  groupForTab,
-  lensForTab,
-  type TabId,
-} from '../navigation'
+import { useEffect, useState } from 'react'
+import { LENS_GROUPS, PRIMARY_DOSSIERS, TABS, groupForTab, lensForTab, type TabId } from '../navigation'
 
-const GROUPED_LENSES = LENS_GROUPS.filter((group) => group.id !== 'regions')
-const primaryDossierIds = new Set<string>(PRIMARY_DOSSIER_IDS)
-
-export default function ResearchNav({
-  activeTab,
-  onSelect,
-}: {
-  activeTab: string
-  onSelect: (tab: TabId) => void
-}) {
-  const activeGroup = groupForTab(activeTab) ?? GROUPED_LENSES[0]
-  const groupedActive = GROUPED_LENSES.find((group) => group.id === activeGroup.id)
-  const [openGroupId, setOpenGroupId] = useState(groupedActive?.id ?? GROUPED_LENSES[0].id)
-
-  useEffect(() => {
-    if (groupedActive) setOpenGroupId(groupedActive.id)
-  }, [groupedActive])
-
-  const openGroup = useMemo(
-    () => GROUPED_LENSES.find((group) => group.id === openGroupId) ?? GROUPED_LENSES[0],
-    [openGroupId],
-  )
-  const activeLens = lensForTab(activeTab)
-  const primaryActive = primaryDossierIds.has(activeTab)
-
-  return (
-    <nav className="research-nav" aria-label="NarcoScope research lenses">
-      <div className="research-nav__inner">
-        <div className="research-nav__featured" aria-label="Primary regional dossiers">
-          <span className="research-nav__featured-label">BRI + regional evidence</span>
-          <div className="research-nav__featured-tabs">
-            {PRIMARY_DOSSIERS.map((item) => (
-              <button
-                key={item.id}
-                type="button"
-                className={`research-nav__featured-tab ${activeTab === item.id ? 'is-active' : ''}`}
-                aria-current={activeTab === item.id ? 'page' : undefined}
-                onClick={() => onSelect(item.id)}
-              >
-                {item.shortLabel}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="research-nav__groups" aria-label="Research areas">
-          {GROUPED_LENSES.map((group) => {
-            const isOpen = group.id === openGroup.id
-            const containsActive = group.id === activeGroup.id
-            return (
-              <button
-                key={group.id}
-                type="button"
-                className={`research-nav__group ${isOpen ? 'is-open' : ''} ${containsActive ? 'has-active' : ''}`}
-                aria-expanded={isOpen}
-                aria-controls="research-lens-list"
-                onClick={() => setOpenGroupId(group.id)}
-              >
-                <span>{group.eyebrow}</span>
-                {group.label}
-              </button>
-            )
-          })}
-        </div>
-
-        <div className={`research-nav__deck ${primaryActive ? 'research-nav__deck--primary-active' : ''}`} id="research-lens-list">
-          <div className="research-nav__tabs" aria-label={`${openGroup.label} views`}>
-            {openGroup.items.map((item) => (
-              <button
-                key={item.id}
-                type="button"
-                className={`research-nav__tab ${activeTab === item.id ? 'is-active' : ''}`}
-                aria-current={activeTab === item.id ? 'page' : undefined}
-                onClick={() => onSelect(item.id)}
-              >
-                {item.shortLabel}
-              </button>
-            ))}
-          </div>
-          <p className="research-nav__reading" aria-live="polite">
-            <span>{activeGroup.label} / {activeLens?.shortLabel ?? 'Overview'}</span>
-            {activeLens?.description}
-          </p>
-        </div>
-      </div>
-    </nav>
-  )
+export default function ResearchNav({ activeTab, onSelect }: { activeTab: string; onSelect: (tab: TabId) => void }) {
+  const [expanded, setExpanded] = useState(false)
+  const [query, setQuery] = useState('')
+  const [group, setGroup] = useState(groupForTab(activeTab)?.id ?? 'briefing')
+  useEffect(() => { setGroup(groupForTab(activeTab)?.id ?? 'briefing') }, [activeTab])
+  const select = (id: TabId) => { onSelect(id); setExpanded(false); setQuery('') }
+  const item = (entry: typeof TABS[number]) => <button type="button" key={entry.id}
+    className={'workspace-nav__item ' + (activeTab === entry.id ? 'is-active' : '')}
+    aria-current={activeTab === entry.id ? 'page' : undefined} onClick={() => select(entry.id)}>{entry.shortLabel}</button>
+  return <nav className={'workspace-nav ' + (expanded ? 'is-expanded' : '')} aria-label="NarcoScope research lenses">
+    <button type="button" className="workspace-nav__toggle" aria-expanded={expanded} aria-controls="workspace-navigation" onClick={() => setExpanded(!expanded)}>
+      <span>Browse research</span><span>{lensForTab(activeTab)?.shortLabel ?? 'All datasets'} <b aria-hidden="true">⌄</b></span>
+    </button>
+    <div className="workspace-nav__body" id="workspace-navigation">
+      <label className="workspace-nav__search"><span>Find a view</span><input type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Maps, prices, countries…" /></label>
+      {query ? <div className="workspace-nav__section"><p>Matching views</p>{TABS.filter((entry) => (entry.label + ' ' + entry.description).toLowerCase().includes(query.toLowerCase())).map(item)}</div> : <>
+        <div className="workspace-nav__section workspace-nav__primary"><p>World markets</p>{LENS_GROUPS[0].items.map(item)}</div>
+        {LENS_GROUPS.filter((entry) => !['data', 'regions'].includes(entry.id)).map((entry) => <div className="workspace-nav__section" key={entry.id}>
+          <button type="button" className="workspace-nav__group" aria-expanded={group === entry.id} aria-controls={'nav-' + entry.id} onClick={() => setGroup(group === entry.id ? '' : entry.id)}>{entry.label}<span aria-hidden="true">{group === entry.id ? '−' : '+'}</span></button>
+          {group === entry.id && <div id={'nav-' + entry.id}>{entry.items.map(item)}</div>}
+        </div>)}
+        <div className="workspace-nav__section"><p>Connected regional desks</p>{PRIMARY_DOSSIERS.map(item)}</div>
+      </>}
+      <a className="workspace-nav__partner" href="https://www.palimpsest.info/china/evidence/">Palimpsest<span>China, economics and the public record</span></a>
+    </div>
+  </nav>
 }

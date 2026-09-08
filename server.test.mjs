@@ -682,3 +682,33 @@ describe('Railway HTTP server', () => {
     expect(JSON.parse(response.body)).toEqual({ ok: false, error: 'invalid_path' })
   })
 })
+
+// Exercise the real Node adapter as well as direct handler parity.
+describe('Global market Node transport', () => {
+  it('does not inject legacy query parameters into the strict catalog', async () => {
+    const response = await fetch(baseUrl + '/api/v1/markets')
+    expect(response.status).toBe(200)
+    const body = await response.json()
+    expect(body.resource).toBe('markets')
+    expect(body.data.datasets).toHaveLength(2)
+  })
+  it('preserves exact empty dimensions and rejects duplicate parameters', async () => {
+    const response = await fetch(baseUrl + '/api/v1/market-observations?dataset=global-arms-economy&indicator=wb-informal-dge-p&geo=CHN&category=&subgroup=&limit=2')
+    expect(response.status).toBe(200)
+    const body = await response.json()
+    expect(body.data.observations).toHaveLength(2)
+    expect(body.data.observations.every(row => row.geoCode === 'CHN' && row.category === '' && row.subgroup === '')).toBe(true)
+    expect((await fetch(baseUrl + '/api/v1/markets?limit=2')).status).toBe(400)
+    expect((await fetch(baseUrl + '/api/v1/market-observations?geo=CHN&geo=PAK')).status).toBe(400)
+  })
+})
+
+// The source-dimension catalog is deliberately detailed; transport compression
+// must preserve its exact contract and respect explicit client opt-out.
+it('compresses the full market catalog without changing its evidence', async () => {
+  const zipped = await requestRaw('/api/v1/markets', { headers: { 'Accept-Encoding': 'gzip' } })
+  expect(zipped.headers['content-encoding']).toBe('gzip')
+  const refused = await requestRaw('/api/v1/markets', { headers: { 'Accept-Encoding': 'gzip;q=0' } })
+  expect(refused.headers['content-encoding']).toBeUndefined()
+  expect(JSON.parse(refused.body).data.datasets).toHaveLength(2)
+})

@@ -363,12 +363,10 @@ async function readBoundedBody(req) {
 }
 
 function apiQuery(requestUrl, resourceFromPath) {
-  return {
-    resource: resourceFromPath || requestUrl.searchParams.get('resource') || undefined,
-    limit: requestUrl.searchParams.get('limit') || undefined,
-    slug: requestUrl.searchParams.get('slug') || undefined,
-    artifact: requestUrl.searchParams.get('artifact') || undefined,
-  }
+  // Preserve only supplied query keys: undefined compatibility placeholders
+  // must not become unknown parameters in strict resource handlers.
+  return { ...Object.fromEntries(requestUrl.searchParams),
+    resource: resourceFromPath || requestUrl.searchParams.get('resource') || undefined }
 }
 
 function rawOriginPathname(requestTarget) {

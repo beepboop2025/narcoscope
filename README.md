@@ -10,7 +10,7 @@
 
 **Live: [narcoscope.com](https://narcoscope.com)** · evidence newsroom: **[narcoscope.com/#newsroom](https://narcoscope.com/#newsroom)**
 
-> Deployment status verified 2026-08-29: `narcoscope.com` is configured and is the canonical public origin. The apex serves the Vercel deployment; `www.narcoscope.com` serves the Railway deployment. Registry metadata and agents use the apex MCP endpoint.
+> Deployment status verified 2026-09-08: both `narcoscope.com` and `www.narcoscope.com` serve the Railway runtime. The Hetzner Fleet publisher deploys validated source from GitHub and verifies the exact commit on the provider and public origins. Registry metadata and agents use the apex MCP endpoint.
 
 An educational, public-good **data explorer** that makes the world's drug-trade
 data *legible*. UNODC, INCB, and EUDA already publish street (retail) prices,
@@ -332,7 +332,7 @@ playbook is [`docs/DATA_PIPELINE.md`](./docs/DATA_PIPELINE.md).
 
 ## License
 
-[MIT](./LICENSE) — free to use, adapt, and build on, with attribution.
+[MIT](./LICENSE) covers the application code. Data retains its source-specific license and attribution requirements. The WDR annexes are reproduced for this educational project; resale and other commercial reuse require publisher permission. The API and CSV exports preserve these terms.
 
 ## Connected China and regional research
 
@@ -345,3 +345,11 @@ Snapshots can also include the China evidence observatory: deduplicated economic
 The bridge admits four fixed public dataset routes and reviewed coverage counts. SAFE numeric records remain private; its card and download contain acquisition metadata only. Document absence, methodological revisions and trade disagreement do not establish concealment, culpability or causality. Official-announcement dates remain separate from collection dates.
 
 NBS statistical-data attribution, World Bank CC BY 4.0 attribution and publisher metadata-only terms remain source-specific. Shared geography or timing does not establish actor relationships, culpability or causality. Detailed collector/analysis methods are in Palimpsest’s `docs/CONNECTED-ECONOMIC-RESEARCH.md`.
+
+## Global market research workspace
+
+The shared dark research interface connects NarcoScope and Palimpsest. The data library queries source-native country, city, category, breakdown and period observations; it includes linked choropleth maps, comparison histories, geographic bars, source-record inspection and attributed CSV downloads. Existing seizure, organized-crime, regional, overdose and wastewater views remain accessible.
+
+The new library contains 129,217 source cells (74,373 numerical observations and 54,844 explicitly unavailable cells) across 58 indicators. Sources include the WDR2026 drug annexes, monthly Statistics Canada wastewater measurements, World Bank informality estimates, and source-licensed WDI conventional-arms and firm-survey series. Armament transfer TIV is not a monetary value or a classification of illegal trade. Informality models do not measure the entire black economy. Each source retains its reference dates and restrictions.
+
+`npm run markets:check` verifies the public source-bound catalog and contracts; `npm run workspace:build` produces the portable explorer used by Palimpsest. `/api/v1/markets` discovers coverage and valid filter combinations; `/api/v1/market-observations` returns paginated measurements. The MCP equivalents are `get_market_catalog` and `query_market_observations`. The source datasets remain external to the initial JavaScript bundle.

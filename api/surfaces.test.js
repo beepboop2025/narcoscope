@@ -203,7 +203,7 @@ describe('NarcoScope public surfaces', () => {
         .toEqual(response.result.structuredContent)
     }
     expect(toolOutputIsValid('get_overview', {})).toBe(false)
-  })
+  }, 15000) // Compiles every public schema and validates the full catalog under coverage.
 
   it('validates the real REST BRI envelope against the shared standalone contract', async () => {
     const response = responseRecorder()
@@ -445,7 +445,7 @@ describe('NarcoScope public surfaces', () => {
     const registry = JSON.parse(readFileSync('server.json', 'utf8'))
     const hosted = JSON.parse(readFileSync('public/server.json', 'utf8'))
     expect(registry).toEqual(hosted)
-    expect(registry.version).toBe('1.5.0')
+    expect(registry.version).toBe('1.6.0')
     expect(registry.description.length).toBeLessThanOrEqual(100)
     expect(registry.websiteUrl).toBe('https://narcoscope.com')
     expect(registry.remotes).toEqual([{
@@ -458,7 +458,7 @@ describe('NarcoScope public surfaces', () => {
     const openapi = JSON.parse(readFileSync('public/openapi.json', 'utf8'))
     const product = JSON.parse(readFileSync('public/product-card.json', 'utf8'))
     const artifact = JSON.parse(readFileSync('public/data/narcoscope-palimpsest-bri-v1.json', 'utf8'))
-    expect(openapi.info.version).toBe('1.5.0')
+    expect(openapi.info.version).toBe('1.6.0')
     expect(openapi.paths).toHaveProperty('/atlas')
     expect(openapi.paths).toHaveProperty('/entities')
     expect(openapi.paths).toHaveProperty('/federation')
@@ -510,7 +510,7 @@ describe('NarcoScope public surfaces', () => {
     expect(JSON.stringify(catalog)).not.toContain('agent-card')
     expect(JSON.stringify(catalog)).not.toContain('drug-price-observatory.vercel.app')
     expect(aiCatalog).toMatchObject({
-      version: '1.5.0',
+      version: '1.6.0',
       apiCatalog: 'https://narcoscope.com/.well-known/api-catalog',
       mcpEndpoint: 'https://narcoscope.com/mcp',
       resources: {

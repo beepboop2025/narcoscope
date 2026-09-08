@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 /**
- * Regenerate src/data/prices.ts from the UNODC World Drug Report 2025
+ * Regenerate src/data/prices.ts from a reviewed UNODC World Drug Report annex
  * Statistical Annex 8.1 ("Prices and purities of drugs") plus World Bank
  * GDP-per-capita (fetched live, NY.GDP.PCAP.CD) for the affordability lens.
  *
  * Source file (download first, or let scripts/pipeline/run.mjs do it):
- *   https://www.unodc.org/documents/data-and-analysis/WDR_2025/Annex/8.1_Prices_and_purities_of_drugs.xlsx
+ *   https://www.unodc.org/documents/data-and-analysis/WDR_2026/Annex/8.1_Prices_and_purities_of_drugs.xlsx
  *
  * Usage:
  *   npm install --no-save xlsx
@@ -19,6 +19,9 @@
  */
 
 import fs from 'node:fs'
+import { spawnSync } from 'node:child_process'
+import { fileURLToPath } from 'node:url'
+import { DRUG_MAP, isPerGram, reviewedEdition, resolvePrice, retainedGdpSnapshot, refreshGdpSnapshot } from './wdr-price-rules.mjs'
 
 import { fetchJsonWithRetry } from '../lib/http.mjs'
 
@@ -29,22 +32,28 @@ if (!xlsxPath) {
 }
 
 let xlsx
+let parsedSheets
 try {
   xlsx = (await import('xlsx')).default
 } catch {
-  console.error('The optional "xlsx" package is required: npm install --no-save xlsx')
-  process.exit(1)
+  const parser=fileURLToPath(new URL('../global-markets/drugs-workbooks.py',import.meta.url))
+  const result=spawnSync('python3',['-B',parser,'--kind','sheet-arrays','--input',xlsxPath],{encoding:'utf8',maxBuffer:32*1024*1024,timeout:60000})
+  if(result.status!==0)throw new Error(result.stderr||'Bounded XLSX reader failed')
+  parsedSheets=JSON.parse(result.stdout)
 }
 
-const DRUG_MAP = {
-  'Cocaine salts': 'cocaine',
-  'Heroin': 'heroin',
-  'Marijuana (herb)': 'cannabis',
-  'Methamphetamine': 'methamphetamine',
-}
 
 /** UNODC country name -> [ISO3, display label]. Extend when UNODC adds reporters. */
 const ISO3 = {
+  'Algeria':['DZA','Algeria'], 'Andorra':['AND','Andorra'], 'Argentina':['ARG','Argentina'],
+  'Armenia':['ARM','Armenia'], 'Austria':['AUT','Austria'], 'Bosnia and Herzegovina':['BIH','Bosnia and Herzegovina'],
+  'Costa Rica':['CRI','Costa Rica'], 'Croatia':['HRV','Croatia'], 'Israel':['ISR','Israel'],
+  'Mauritius':['MUS','Mauritius'], 'Mexico':['MEX','Mexico'], 'Mongolia':['MNG','Mongolia'],
+  'Netherlands':['NLD','Netherlands'], 'Nicaragua':['NIC','Nicaragua'], 'Norway':['NOR','Norway'],
+  'Qatar':['QAT','Qatar'], 'Republic of Korea':['KOR','Republic of Korea'], 'Seychelles':['SYC','Seychelles'],
+  'Singapore':['SGP','Singapore'], 'Slovenia':['SVN','Slovenia'], 'South Africa':['ZAF','South Africa'],
+  'State of Palestine':['PSE','State of Palestine'], 'Syrian Arab Republic':['SYR','Syrian Arab Republic'],
+  'United Arab Emirates':['ARE','United Arab Emirates'], 'Uzbekistan':['UZB','Uzbekistan'],
   'Albania': ['ALB', 'Albania'], 'Australia': ['AUS', 'Australia'], 'Bangladesh': ['BGD', 'Bangladesh'],
   'Belarus': ['BLR', 'Belarus'], 'Belgium': ['BEL', 'Belgium'],
   'Bolivia (Plurinational State of)': ['BOL', 'Bolivia'], 'Brunei Darussalam': ['BRN', 'Brunei'],
@@ -74,16 +83,15 @@ const ISO3 = {
 }
 
 const num = (v) => (typeof v === 'number' && Number.isFinite(v) ? v : null)
-const resolve = (typical, min, max) => {
-  if (num(typical) !== null) return num(typical)
-  if (num(min) !== null && num(max) !== null) return (num(min) + num(max)) / 2
-  return null
-}
+const resolve = resolvePrice
 const mean = (a) => a.reduce((s, x) => s + x, 0) / a.length
 
-const wb = xlsx.readFile(xlsxPath)
-const prices = xlsx.utils.sheet_to_json(wb.Sheets['Prices in USD'], { header: 1, defval: '' }).slice(2)
-const purities = xlsx.utils.sheet_to_json(wb.Sheets['Purities'], { header: 1, defval: '' }).slice(2)
+const wb = parsedSheets ? null : xlsx.readFile(xlsxPath)
+const priceSheet = parsedSheets?.['Prices in USD'] ?? xlsx.utils.sheet_to_json(wb.Sheets['Prices in USD'], { header: 1, defval: '' })
+const puritySheet = parsedSheets?.Purities ?? xlsx.utils.sheet_to_json(wb.Sheets.Purities, { header: 1, defval: '' })
+const edition = reviewedEdition(priceSheet[0]?.[0])
+const prices = priceSheet.slice(2)
+const purities = puritySheet.slice(2)
 
 const purityByKey = new Map()
 for (const r of purities) {
@@ -101,7 +109,7 @@ let skipped = 0
 const unknownCountries = new Set()
 for (const r of prices) {
   const [region, , country, , drug, , level, year, typical, min, max, unit] = r
-  if (level !== 'Retail' || unit !== 'Gram' || !DRUG_MAP[drug]) continue
+  if (level !== 'Retail' || !isPerGram(unit) || !DRUG_MAP[drug]) continue
   if (!ISO3[country]) { unknownCountries.add(country); continue }
   const price = resolve(typical, min, max)
   if (price === null) { skipped++; continue }
@@ -132,26 +140,20 @@ if (unknownCountries.size) {
 // ---- World Bank GDP per capita for every country in the dataset -----------
 const isoList = [...new Set(records.map((r) => r.iso3))].sort()
 const WB_URL = 'https://api.worldbank.org/v2/country/all/indicator/NY.GDP.PCAP.CD?format=json&per_page=20000&date=2020:2024'
-let payload
-try {
-  payload = await fetchJsonWithRetry(WB_URL)
-} catch (error) {
-  console.error(`World Bank API error: ${error.message}`)
-  process.exit(1)
+const today = new Date().toISOString().slice(0, 10)
+let gdpSnapshot=retainedGdpSnapshot(fs.readFileSync('src/data/prices.ts','utf8'))
+if(!process.argv.includes('--retain-gdp')) {
+  try {
+    const payload=await fetchJsonWithRetry(WB_URL)
+    gdpSnapshot=refreshGdpSnapshot(gdpSnapshot,payload,today,isoList)
+  } catch(error) {
+    console.error(`World Bank GDP refresh unavailable; preserving the prior values and retrieval dates: ${error.message}`)
+  }
 }
-const latest = new Map() // iso3 -> [year, value]
-for (const row of (payload[1] ?? [])) {
-  const iso3 = row?.countryiso3code
-  if (!iso3 || row.value == null) continue
-  const year = Number(row.date)
-  const cur = latest.get(iso3)
-  if (!cur || year > cur[0]) latest.set(iso3, [year, row.value])
-}
-const gdpMissing = isoList.filter((i) => !latest.has(i))
+const gdpMissing = isoList.filter((i) => !gdpSnapshot.entries.has(i))
 if (gdpMissing.length) console.error(`No World Bank GDP for: ${gdpMissing.join(', ')} (affordability shows n/a)`)
 
 // ---- emit prices.ts ---------------------------------------------------------
-const today = new Date().toISOString().slice(0, 10)
 let recordLines = ''
 let current = ''
 for (const r of records) {
@@ -161,10 +163,6 @@ for (const r of records) {
   }
   recordLines += `  { drug: '${r.drug}', country: '${r.country.replace(/'/g, "\\'")}', iso3: '${r.iso3}', region: '${r.region}', year: ${r.year}, priceUsdPerGram: ${r.priceUsdPerGram}, purityPct: ${r.purityPct} },\n`
 }
-const gdpLines = isoList
-  .filter((i) => latest.has(i))
-  .map((i) => `  ${i}: ${Math.round(latest.get(i)[1])}, // ${latest.get(i)[0]}`)
-  .join('\n')
 
 const out = `// =============================================================================
 // RETAIL ("STREET") PRICE DATASET — OFFICIAL UNODC DATA
@@ -174,20 +172,25 @@ const out = `// ================================================================
 // script, not this file, then regenerate (see scripts/pipeline/run.mjs).
 //
 // DATA PROVENANCE:
-// UNODC World Drug Report 2025 Statistical Annex, table 8.1 "Prices and
+// UNODC World Drug Report ${edition} Statistical Annex, table 8.1 "Prices and
 // purities of drugs" (sheets "Prices in USD" + "Purities"):
-//   https://www.unodc.org/documents/data-and-analysis/WDR_2025/Annex/8.1_Prices_and_purities_of_drugs.xlsx
+//   https://www.unodc.org/documents/data-and-analysis/WDR_${edition}/Annex/8.1_Prices_and_purities_of_drugs.xlsx
+// Educational/non-profit reproduction with attribution; commercial reuse requires
+// written UNODC permission. These data are not sublicensed under repository MIT.
 //
 // Extraction rules (deliberately conservative):
-//   • Retail level of sale, per-GRAM unit rows only.
+//   • Retail level of sale, "Gram" and "Grams" unit rows only.
 //   • Drug mapping: "Cocaine salts" → cocaine, "Heroin" → heroin,
 //     "Marijuana (herb)" → cannabis, "Methamphetamine" → methamphetamine.
+//     Reviewed newer labels include cocaine hydrochloride, cannabis herb,
+//     methamphetamine powder and crystal. The detailed global dataset retains
+//     source forms separately; this legacy four-drug view pools those labels.
 //   • Price = reported Typical_USD; if absent, midpoint of a complete
 //     Minimum–Maximum range; rows with neither are skipped (${skipped} skipped).
 //   • Multiple observations for one (drug, country, year) are averaged.
 //   • purityPct = retail purity (percent) where UNODC reports it; else null.
 //
-// GRAIN (deliberate guardrail): country + year + annual average ONLY.
+// GRAIN: country + year + reported retail price summary; not a continuous annual average.
 // Units: priceUsdPerGram = retail price per gram in nominal USD (year-of-record).
 // =============================================================================
 
@@ -204,14 +207,10 @@ export const DRUGS: DrugMeta[] = [
 export const PRICE_RECORDS: PriceRecord[] = [
 ${recordLines}]
 
-// World Bank GDP per capita, current US$ (NY.GDP.PCAP.CD), latest available
-// year per country, fetched ${today}. Rounded to whole dollars.
-export const GDP_PER_CAPITA_USD: Record<string, number> = {
-${gdpLines}
-}
+${gdpSnapshot.block}
 
 export const SOURCES: Source[] = [
-  { name: 'UNODC World Drug Report 2025 — Statistical Annexes 7.1 (seizures) & 8.1 (prices/purities)', url: 'https://www.unodc.org/unodc/en/data-and-analysis/world-drug-report-2025-annex.html' },
+  { name: 'UNODC World Drug Report ${edition} — Statistical Annex 8.1 (prices/purities)', url: 'https://www.unodc.org/unodc/en/data-and-analysis/world-drug-report-${edition}-annex.html' },
   { name: 'UNODC Myanmar Opium Survey 2025', url: 'https://www.unodc.org/documents/crop-monitoring/Myanmar/Myanmar_Opium_Survey_2025.pdf' },
   { name: 'Data: ACLED — acleddata.com (Myanmar conflict pressure)', url: 'https://acleddata.com' },
   { name: 'EUDA (EMCDDA) — price & purity data', url: 'https://www.euda.europa.eu/data' },

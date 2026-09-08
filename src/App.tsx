@@ -6,7 +6,6 @@ import Flows from './components/Flows'
 import DataLoader from './components/DataLoader'
 import { useData } from './lib/dataStore'
 import { SOURCES } from './data/prices'
-import { useSmoothScroll } from './motion/useSmoothScroll'
 import { usePrefersReducedMotion } from './motion/usePrefersReducedMotion'
 import Reveal from './motion/Reveal'
 import ResearchNav from './components/ResearchNav'
@@ -17,6 +16,7 @@ import { TABS, type TabId } from './navigation'
 
 export { resolveCorridorTabIndex } from './components/EvidenceCorridor'
 
+const GlobalMarketExplorer = lazy(() => import('./components/GlobalMarketExplorer'))
 const WorldMap = lazy(() => import('./components/WorldMap'))
 const MyanmarFocus = lazy(() => import('./components/MyanmarFocus'))
 const BriDossier = lazy(() => import('./components/BriDossier'))
@@ -45,15 +45,15 @@ const tabIds = new Set<string>(TABS.map((item) => item.id))
 
 export function resolveTabFromHash(hash: string): string | null {
   const requested = hash.replace(/^#\/?/, '')
-  if (requested === '') return 'atlas'
+  if (requested === '') return 'data'
   if (tabIds.has(requested)) return requested
   if (/^news-/.test(requested)) return 'newsroom'
   return null
 }
 
 function initialTab(): string {
-  if (typeof window === 'undefined') return 'atlas'
-  return resolveTabFromHash(window.location.hash) ?? 'atlas'
+  if (typeof window === 'undefined') return 'data'
+  return resolveTabFromHash(window.location.hash) ?? 'data'
 }
 
 /** Springs its contents in on mount — remounted per tab (key) for a crossfade. */
@@ -82,7 +82,6 @@ function BrandMark() {
 export default function App() {
   const { isSample } = useData()
   const [tab, setTab] = useState<string>(initialTab)
-  useSmoothScroll()
 
   useEffect(() => {
     const syncTabToLocation = () => {
@@ -114,27 +113,23 @@ export default function App() {
       <header className="app-header">
         <div className="hero-inner">
           <div className="hero-masthead">
-            <button type="button" className="brand" onClick={() => selectTab('atlas')} aria-label="Open NarcoScope atlas">
+            <button type="button" className="brand" onClick={() => selectTab('data')} aria-label="Open NarcoScope data explorer">
               <BrandMark />
-              <span><b>NarcoScope</b><small>Public-interest illicit-economy evidence</small></span>
+              <span><b>NarcoScope</b><small>World markets and illicit economies</small></span>
             </button>
-            <span
-              className={`data-badge tk-chip ${isSample ? 'tk-chip--warning' : 'tk-chip--ok'}`}
-              title={isSample
-                ? 'Official: street prices (WDR 2025 Annex 8.1), seizure globe (Annex 7.1), overdose mortality (CDC VSRR), sanctions designations (US Treasury OFAC), Myanmar opium + conflict (Opium Survey 2025; Data: ACLED), precursor corridors (INCB Precursors Report 2025). Still illustrative: Myanmar region-level flow volumes and precursor prices. Not loaded: wastewater (no automatable publisher).'
-                : 'All datasets replaced via the CSV loader — verify against the cited official sources.'}
-            >
-              {isSample ? 'Official data · some inputs illustrative' : 'Live data'}
-            </span>
+            <div className="masthead-actions">
+              <a className="research-project-link" href="https://www.palimpsest.info/china/evidence/">Palimpsest</a>
+              <span className="data-badge">{isSample ? 'Published data · source dates vary' : 'Local data loaded'}</span>
+            </div>
           </div>
           <div className="evidence-header">
             <div>
-              <p className="hero-kicker">Drug markets · arms · shadow economy · wildlife · raw materials</p>
-              <h1>Trace the record, <em>not the rumour.</em></h1>
-              <p className="lede">A continuously monitored atlas for published evidence, named public actions and economic context—with source boundaries kept intact.</p>
+
+              <h1>World markets, in detail.</h1>
+              <p className="lede">Explore drugs, arms and the black economy through reported observations, historical comparisons and source-linked records.</p>
             </div>
             <nav className="hero-actions" aria-label="NarcoScope entry points">
-              <button type="button" className="hero-action hero-action--primary" onClick={() => selectTab('atlas', true)}>Open atlas</button>
+              <button type="button" className="hero-action hero-action--primary" onClick={() => selectTab('data', true)}>Explore data</button>
               <button type="button" className="hero-action" onClick={() => selectTab('wire', true)}>Latest evidence</button>
               <a className="hero-action" href="/developers/">API + MCP</a>
             </nav>
@@ -143,11 +138,13 @@ export default function App() {
         </div>
       </header>
 
+      <div className="workspace-layout">
       <ResearchNav activeTab={tab} onSelect={selectTab} />
 
       <main id="research-workspace">
         <Suspense fallback={<div className="map-loading">Loading…</div>}>
           <TabPanel key={tab}>
+            {['data', 'drugs', 'arms', 'economy'].includes(tab) && <GlobalMarketExplorer market={tab === 'data' ? 'all' : tab as 'drugs' | 'arms' | 'economy'} />}
             {tab === 'atlas' && <IllicitEconomyAtlas />}
             {tab === 'wire' && <LiveEvidenceWire />}
             {tab === 'overview' && <Overview />}
@@ -181,7 +178,9 @@ export default function App() {
           </TabPanel>
         </Suspense>
       </main>
+      </div>
 
+      <details className="network-resources"><summary>Explore the connected research network</summary>
       <Reveal>
         <NetworkRelay />
       </Reveal>
@@ -190,12 +189,13 @@ export default function App() {
         <EvidenceCorridor onOpenNewsroom={() => selectTab('newsroom', true)} />
       </Reveal>
 
-      <Reveal>
+      </details>
+
         <footer className="app-footer tk-card tk-card--watch">
-          <DataLoader />
+          <details className="local-data-import"><summary>Import your own research data</summary><DataLoader /></details>
           <p className="disclaimer tk-degraded">
-            ⚠️ {isSample
-              ? 'Official data: street prices (UNODC WDR 2025 Annex 8.1 + World Bank GDP), the seizure globe (Annex 7.1), overdose mortality (CDC NCHS VSRR, provisional), sanctions designations (US Treasury OFAC SDN), Myanmar opium cultivation (UNODC Myanmar Opium Survey 2025), Myanmar conflict pressure (Data: ACLED), and precursor trafficking corridors (INCB Precursors Report 2025). Still illustrative: Myanmar region-level flow volumes and precursor prices. '
+            {isSample
+              ? 'Official data: street prices (UNODC WDR 2026 Annex 8.1 + retained World Bank GDP), the seizure globe (WDR 2025 Annex 7.1), overdose mortality (CDC NCHS VSRR, provisional), sanctions designations (US Treasury OFAC SDN), Myanmar opium cultivation (UNODC Myanmar Opium Survey 2025), Myanmar conflict pressure (Data: ACLED), and precursor trafficking corridors (INCB Precursors Report 2025). Still illustrative: Myanmar region-level flow volumes and precursor prices. '
               : 'Showing loaded data — verify against the cited official sources. '}
             This tool reports aggregate, published statistics (country and, for focus
             regions, province level) for awareness and research. It does not provide
@@ -236,7 +236,6 @@ export default function App() {
             <a href="https://github.com/beepboop2025/narcoscope" target="_blank" rel="noreferrer">Source code</a>
           </nav>
         </footer>
-      </Reveal>
     </div>
   )
 }

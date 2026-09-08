@@ -19,6 +19,9 @@ DEPLOY_KEY="${NARCOSCOPE_DEPLOY_KEY:-/root/.ssh/narcoscope_deploy}"
 BRANCH="${NARCOSCOPE_BRANCH:-main}"
 RUN_ROOT="${NARCOSCOPE_RUN_ROOT:-/var/tmp}"
 STATE_DIR="${NARCOSCOPE_STATE_DIR:-/var/lib/narcoscope-collector}"
+NARCOSCOPE_MARKET_STATE_DIR="${NARCOSCOPE_MARKET_STATE_DIR:-${STATE_DIR%/}/global-markets}"
+export NARCOSCOPE_MARKET_STATE_DIR
+export PYTHONDONTWRITEBYTECODE=1
 LOCK_DIR="${NARCOSCOPE_LOCK_DIR:-/run/lock/narcoscope-collector}"
 printf -v GIT_SSH_COMMAND 'ssh -i %q -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new' "$DEPLOY_KEY"
 export GIT_SSH_COMMAND
@@ -28,6 +31,9 @@ GENERATED_PATHS=(
   "public/data/narcoscope-palimpsest-corridors-v2.json"
   "public/data/narcoscope-palimpsest-bri-v1.json"
   "public/data/narcoscope-palimpsest-bri-v1.json.sha256"
+  "public/data/global-arms-economy-v1.json"
+  "public/data/global-drugs-v1.json"
+  "public/data/global-market-catalog-v1.json"
   "public/news"
 )
 
@@ -91,6 +97,8 @@ trap 'exit 143' TERM
 [[ -d "$REPO" ]] || { log "FAIL: repository directory does not exist: $REPO"; exit 1; }
 [[ -d "$RUN_ROOT" && -w "$RUN_ROOT" ]] || { log "FAIL: run root is not a writable directory: $RUN_ROOT"; exit 1; }
 [[ "$STATE_DIR" = /* && "$STATE_DIR" != "/" ]] || { log "FAIL: unsafe collector state directory"; exit 1; }
+[[ "$NARCOSCOPE_MARKET_STATE_DIR" = /* && "$NARCOSCOPE_MARKET_STATE_DIR" != "/" ]] || { log "FAIL: unsafe global-market state directory"; exit 1; }
+[[ "$NARCOSCOPE_MARKET_STATE_DIR" != "$REPO" && "$NARCOSCOPE_MARKET_STATE_DIR" != "$REPO"/* ]] || { log "FAIL: global-market state must remain outside the service repository"; exit 1; }
 [[ "$LOCK_DIR" = /* && "$LOCK_DIR" != "/" ]] || { log "FAIL: unsafe collector lock directory"; exit 1; }
 git check-ref-format "refs/heads/${BRANCH}" >/dev/null 2>&1 || { log "FAIL: invalid branch name"; exit 1; }
 
@@ -121,6 +129,7 @@ git -C "$REPO" worktree add --quiet --detach "$RUN_DIR" "origin/${BRANCH}"
 WORKTREE_ADDED=1
 cd "$RUN_DIR"
 log "isolated run directory ready: $RUN_DIR"
+log "global-market captures retained outside the checkout: $NARCOSCOPE_MARKET_STATE_DIR"
 
 # Dependencies (fast no-op when the lockfile is unchanged).
 npm ci --no-audit --no-fund --silent

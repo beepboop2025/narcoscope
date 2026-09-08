@@ -1,4 +1,8 @@
 export type TabId =
+  | 'data'
+  | 'drugs'
+  | 'arms'
+  | 'economy'
   | 'atlas'
   | 'wire'
   | 'overview'
@@ -39,6 +43,15 @@ export type LensGroup = {
  * contract instead of three lists that can quietly drift apart.
  */
 export const LENS_GROUPS: readonly LensGroup[] = [
+  {
+    id: 'data', label: 'Data library', eyebrow: 'Explore observations',
+    items: [
+      { id: 'data', label: 'World data explorer', shortLabel: 'All datasets', description: 'Explore source-defined observations through linked maps, histories and record-level tables.' },
+      { id: 'drugs', label: 'Drug markets and harms', shortLabel: 'Drugs', description: 'Compare substances, prices, seizures, cultivation and public-health measurements with their original units.' },
+      { id: 'arms', label: 'Arms and enforcement', shortLabel: 'Arms', description: 'Inspect reported arms statistics and their scope; formal transfers and tracing do not measure the illegal market.' },
+      { id: 'economy', label: 'Black economy and informality', shortLabel: 'Black economy', description: 'Follow modeled informal activity and reported economic-crime measures without equating informality with crime.' },
+    ],
+  },
   {
     id: 'briefing',
     label: 'Briefing',

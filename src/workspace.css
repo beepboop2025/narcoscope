@@ -1,0 +1,63 @@
+@import "./market-workspace.css";
+/* One research workspace across NarcoScope and Palimpsest. */
+html { font-size: 16px; }
+body, .app { font-family: var(--research-font); background: var(--research-bg); color: var(--research-text); }
+.app { max-width: 1800px; padding: 0 28px 32px; }
+.app-header { margin: 0 -28px 22px; padding: 0 28px; background: var(--research-bg); border-color: var(--research-line-subtle); }
+.hero-inner { padding: 18px 0 22px; }
+.hero-masthead { margin-bottom: 20px; padding-bottom: 18px; }
+.brand > span > b { font: 600 1.4rem/1.2 var(--research-font); letter-spacing: -.035em; }
+.brand > span > small { font: 400 .78rem/1.4 var(--research-font); letter-spacing: 0; text-transform: none; color: var(--research-secondary); }
+.brand-mark { stroke: var(--research-blue); }
+.brand-mark__signal { fill: var(--research-blue); stroke: var(--research-blue); }
+.masthead-actions { display: flex; align-items: center; gap: 18px; margin-left: auto; }
+.data-badge { color: var(--research-muted); border: 0; font: 400 .78rem/1.5 var(--research-font); padding: 0; }
+.evidence-header { gap: 16px 36px; }
+.evidence-header h1 { font: 500 clamp(1.6rem, 3vw, 2.7rem)/1.12 var(--research-font); max-width: none; letter-spacing: -.045em; }
+.evidence-header .lede { margin: 9px 0 0; font-size: .92rem; color: var(--research-secondary); max-width: 78ch; }
+.evidence-header .hero-actions { display: flex; gap: 8px; border: 0; min-width: 0; align-self: center; }
+.evidence-header .hero-action { width: auto; padding: 11px 14px; border: 1px solid var(--research-line); border-radius: 6px; font-size: .82rem; color: var(--research-secondary); }
+.evidence-header .hero-action::after { display: none; }
+.evidence-header .hero-action--primary { background: var(--research-raised); color: var(--research-text); }
+.evidence-header .hero-action:hover { padding: 11px 14px; color: var(--research-text); background: var(--research-hover); border-color: var(--research-blue); }
+.evidence-header .authority-bar { border: 0; margin: 0; padding: 0; font-size: .7rem; }
+.workspace-layout { display: grid; grid-template-columns: 216px minmax(0, 1fr); gap: 28px; align-items: start; }
+#research-workspace { scroll-margin-top: 15px; min-height: 65vh; }
+.workspace-nav { position: sticky; top: 14px; min-width: 0; color: var(--research-secondary); }
+.workspace-nav__body { max-height: calc(100vh - 28px); overflow-y: auto; scrollbar-width: thin; padding-right: 10px; }
+.workspace-nav__toggle { display: none; }
+.workspace-nav__search { display: grid; gap: 8px; margin-bottom: 22px; }
+.workspace-nav__search span { font-size: .8rem; }
+.workspace-nav__search input { width: 100%; min-width: 0; padding: 9px 10px; background: var(--research-surface); border: 1px solid var(--research-line); border-radius: 6px; color: var(--research-text); font-size: .8rem; }
+.workspace-nav__section { margin-bottom: 13px; }
+.workspace-nav__section > p { font: 500 .75rem/1.4 var(--research-font); color: var(--research-muted); padding: 7px 10px; margin: 0; }
+.workspace-nav__item { display: block; width: 100%; padding: 10px 12px; margin: 2px 0; background: transparent; border: 0; border-radius: 6px; color: var(--research-secondary); text-align: left; cursor: pointer; font: 400 .84rem/1.4 var(--research-font); }
+.workspace-nav__item:hover { background: var(--research-surface); color: var(--research-text); }
+.workspace-nav__item.is-active { background: #1b304d; color: #c8dcff; box-shadow: inset 3px 0 var(--research-blue); font-weight: 500; }
+.workspace-nav__group { display: flex; justify-content: space-between; width: 100%; padding: 9px 10px; color: var(--research-secondary); border: 0; background: transparent; text-align: left; cursor: pointer; font-size: .84rem; }
+.workspace-nav__group span { color: var(--research-muted); }
+.workspace-nav__partner { display: block; margin: 22px 8px 15px; padding-top: 16px; border-top: 1px solid var(--research-line); color: var(--research-green); font-size: .85rem; }
+.workspace-nav__partner span { display: block; font-size: .76rem; color: var(--research-muted); margin-top: 4px; }
+.network-resources { margin: 38px 0 15px 244px; border-top: 1px solid var(--research-line); }
+.network-resources > summary { padding: 18px 0; color: var(--research-secondary); cursor: pointer; }
+.network-resources .network-relay, .network-resources .evidence-corridor { margin-top: 12px; }
+.app-footer { margin-left: 244px; padding: 22px; background: var(--research-surface); }
+.connected-research { margin-top: 0; color: var(--research-text); background: var(--research-surface); }
+.connected-research a, .connected-research__observatory a { color: var(--research-blue); }
+.atlas__workbench { grid-template-columns: 150px minmax(300px, 1fr) minmax(220px, 290px); }
+.atlas__brief h1, .wire__header h1 { font-family: var(--research-font); font-size: clamp(1.7rem, 3vw, 2.4rem); line-height: 1.15; }
+.atlas__brief-stats dd { font-family: var(--research-font); font-variant-numeric: tabular-nums; }
+.atlas__country { stroke: var(--research-bg); }
+@media (max-width: 1300px) { .market-coverage { gap: 10px; } .market-heading { display: block; } .market-coverage { text-align: left; margin-top: 16px; gap: 28px; } .atlas__workbench { grid-template-columns: 140px minmax(0, 1fr); } .atlas__dossier { grid-column: 1 / -1; } .market-visuals { grid-template-columns: minmax(0, 1fr); } .market-visual--ranking .recharts-responsive-container { max-height: 280px; } }
+@media (max-width: 960px) { .app { padding: 0 18px 24px; } .app-header { margin: 0 -18px 18px; padding: 0 18px; } .workspace-layout { grid-template-columns: 180px minmax(0, 1fr); gap: 18px; } .evidence-header .hero-actions { display: none; } .market-filters { grid-template-columns: 1fr 1fr; } .market-find { grid-template-columns: 1fr; } .network-resources, .app-footer { margin-left: 198px; } .market-method { grid-template-columns: 1fr; gap: 24px; } .market-panel-title label { min-width: 160px; } .market-definition { gap: 15px; } }
+@media (max-width: 700px) {
+  .app { padding: 0 14px 20px; } .app-header { margin: 0 -14px 14px; padding: 0 14px; } .hero-inner { padding: 15px 0; } .hero-masthead { gap: 10px; padding-bottom: 13px; margin-bottom: 14px; } .brand-mark { width: 28px; height: 28px; } .brand > span > b { font-size: 1.2rem; } .brand > span > small { font-size: .65rem; } .masthead-actions { gap: 0; } .masthead-actions .data-badge { display: none; } .research-project-link { font-size: .72rem; padding: 7px 8px; } .evidence-header { display: block; } .evidence-header h1 { font: 500 1.65rem/1.12 var(--research-font); } .evidence-header .lede { font-size: .82rem; line-height: 1.6; } .evidence-header .authority-bar { display: none; }
+  .workspace-layout { display: block; } .workspace-nav { position: relative; top: auto; margin-bottom: 20px; } .workspace-nav__toggle { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 12px 13px; background: var(--research-surface); color: var(--research-text); border: 1px solid var(--research-line); border-radius: 6px; font-size: .78rem; text-align: left; } .workspace-nav__toggle > span:last-child { color: var(--research-blue); } .workspace-nav__body { display: none; max-height: 70vh; padding: 15px; border: 1px solid var(--research-line); background: var(--research-surface); } .workspace-nav.is-expanded .workspace-nav__body { display: block; } .workspace-nav__primary { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; } .workspace-nav__primary > p { grid-column: 1 / -1; } .workspace-nav__section { margin-bottom: 8px; } .workspace-nav__item { min-height: 42px; }
+  .network-resources, .app-footer { margin-left: 0; } .app-footer { padding: 15px; } .market-heading { padding-bottom: 17px; } .market-heading h2 { font-size: 1.65rem; } .market-heading p { font-size: .82rem; } .market-coverage { gap: 22px; } .market-coverage span { font-size: .65rem; } .market-coverage strong { font-size: 1.1rem; } .market-find { padding: 13px; gap: 12px; } .market-definition { grid-template-columns: 1fr; margin: 20px 0 16px; gap: 12px; } .market-definition > div:last-child { display: flex; flex-wrap: wrap; gap: 6px 14px; text-align: left; } .market-definition h3 { font-size: 1.1rem; } .market-filters { gap: 10px; } .market-explorer input, .market-explorer select { font-size: .8rem; }
+  .market-panel-title { padding: 15px 13px 10px; } .market-panel-title h3 { font-size: .9rem; } .market-map { padding: 0 5px; } .market-map__svg { min-height: 185px; } .market-map__legend { font-size: .6rem; gap: 6px; } .market-map__legend i { width: 48px; } .market-map__hover { padding: 10px 8px; font-size: .7rem; } .market-history .market-panel-title { flex-direction: column; } .market-history .market-panel-title label { width: 100%; max-width: none; } .market-comparisons { padding: 0 13px 12px; } .market-record-tools { flex-wrap: wrap; padding: 0 13px 12px; } .market-record-tools label { width: 100%; } .market-note { margin-right: 13px; margin-left: 13px; } .market-method { margin-top: 20px; } .market-connected { padding: 17px; } .market-connected > div { flex-direction: column; gap: 15px; }
+}
+
+.app { --font-editorial: var(--research-font); --font-body: var(--research-font); }
+.app-footer { opacity: 1; transform: none; }
+
+.local-data-import > summary { cursor: pointer; padding: 8px 0 16px; font-size: .85rem; color:var(--research-secondary); }

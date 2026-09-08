@@ -39,6 +39,9 @@ jobs:
             public/data/narcoscope-palimpsest-corridors-v2.json
             public/data/narcoscope-palimpsest-bri-v1.json
             public/data/narcoscope-palimpsest-bri-v1.json.sha256
+            public/data/global-arms-economy-v1.json
+            public/data/global-drugs-v1.json
+            public/data/global-market-catalog-v1.json
             public/news
           branch: data-refresh/automated
           commit-message: 'data: quarterly open-source refresh (UNODC annexes + World Bank GDP)'

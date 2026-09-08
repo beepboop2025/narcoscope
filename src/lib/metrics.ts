@@ -23,16 +23,19 @@ export function affordabilityDays(priceUsd: number | null, iso3: string): number
   return priceUsd / daily
 }
 
-/** Year-over-year % change for the latest two points of a {year, price} series. */
+/** Year-over-year % change, available only for unique consecutive annual points. */
 export function latestYoYChange(
   series: { year: number; price: number }[] | null | undefined,
 ): number | null {
   if (!series || series.length < 2) return null
+  if (series.some(({ year, price }) => !Number.isInteger(year) || !Number.isFinite(price) || price < 0)) return null
+  if (new Set(series.map(({ year }) => year)).size !== series.length) return null
   const sorted = [...series].sort((a, b) => a.year - b.year)
   const last = sorted[sorted.length - 1]
   const prev = sorted[sorted.length - 2]
-  if (prev.price === 0) return null
-  return ((last.price - prev.price) / prev.price) * 100
+  if (last.year !== prev.year + 1 || prev.price === 0) return null
+  const change = ((last.price - prev.price) / prev.price) * 100
+  return Number.isFinite(change) ? change : null
 }
 
 /**

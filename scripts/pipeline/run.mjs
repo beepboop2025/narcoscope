@@ -66,7 +66,7 @@ if (!offline) {
 const bySourceId = Object.fromEntries(sources.map((s) => [s.id, s]))
 
 console.log('· regenerating street prices (+ live World Bank GDP fetch) …')
-run('node', ['scripts/convert/wdr-prices-to-ts.mjs', rawPath(bySourceId['wdr-prices'])])
+run('node', ['scripts/convert/wdr-prices-to-ts.mjs', rawPath(bySourceId['wdr-prices']), ...(offline ? ['--retain-gdp'] : [])])
 
 console.log('· regenerating seizures dataset …')
 run('node', ['scripts/convert/wdr-seizures-to-json.mjs', rawPath(bySourceId['wdr-seizures'])])
@@ -123,6 +123,12 @@ console.log('· regenerating pinned Palimpsest Belt and Road context …')
 run('node', ['scripts/bridge/build-palimpsest-bri.mjs'])
 run('node', ['scripts/bridge/sync-palimpsest-bri-contracts.mjs'])
 
+// Heavy global histories acquire at most weekly using a durable private cache
+// outside this checkout. A transport outage retains a validated, dated snapshot;
+// parse/schema/hash errors still fail the refresh before publication.
+console.log('· refreshing global arms/economy/drug histories and catalog (weekly acquisition cadence) …')
+run('node', ['scripts/pipeline/refresh-global-markets.mjs', ...(offline ? ['--offline'] : [])])
+
 // The evidence newsroom consumes only checked-in official-source snapshots.
 // It is regenerated after the bridge so its revision/content hashes and feeds
 // always describe the same reviewed data revision as the public aggregate.
@@ -142,6 +148,9 @@ const diff = spawnSync('git', [
   'public/data/narcoscope-palimpsest-corridors-v2.json',
   'public/data/narcoscope-palimpsest-bri-v1.json',
   'public/data/narcoscope-palimpsest-bri-v1.json.sha256',
+  'public/data/global-arms-economy-v1.json',
+  'public/data/global-drugs-v1.json',
+  'public/data/global-market-catalog-v1.json',
   'public/news',
 ], { encoding: 'utf8' }).stdout.trim()
 console.log(diff || '  (no data changes — sources unchanged since last run)')

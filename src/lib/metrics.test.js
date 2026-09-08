@@ -35,9 +35,9 @@ describe('affordabilityDays(priceUsd, iso3)', () => {
 })
 
 describe('latestYoYChange(series)', () => {
-  it('returns the correct percentage change for a sorted series with >=2 points', () => {
+  it('returns the correct percentage change for consecutive annual points', () => {
     const series = [
-      { year: 2018, price: 100 },
+      { year: 2020, price: 100 },
       { year: 2021, price: 120 },
     ]
     assert.equal(latestYoYChange(series), 20)
@@ -46,9 +46,20 @@ describe('latestYoYChange(series)', () => {
   it('returns the correct percentage change for an unsorted series', () => {
     const series = [
       { year: 2021, price: 120 },
-      { year: 2018, price: 100 },
+      { year: 2020, price: 100 },
     ]
     assert.equal(latestYoYChange(series), 20)
+  })
+
+  it('leaves a multi-year gap unavailable instead of calling it year-over-year', () => {
+    assert.equal(latestYoYChange([{ year: 2018, price: 100 }, { year: 2021, price: 120 }]), null)
+    assert.equal(latestYoYChange([{ year: 2020, price: 100 }, { year: 2021, price: 110 }, { year: 2023, price: 120 }]), null)
+  })
+
+  it('refuses ambiguous duplicate years and nonfinite values', () => {
+    assert.equal(latestYoYChange([{ year: 2020, price: 100 }, { year: 2020, price: 110 }, { year: 2021, price: 120 }]), null)
+    assert.equal(latestYoYChange([{ year: 2020, price: Infinity }, { year: 2021, price: 120 }]), null)
+    assert.equal(latestYoYChange([{ year: 2020, price: 100 }, { year: NaN, price: 120 }]), null)
   })
 
   it('returns null for fewer than 2 points', () => {
