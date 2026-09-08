@@ -3637,6 +3637,63 @@
           }
         }
       }
+    },
+    "/research-network": {
+      "get": {
+        "summary": "Palimpsest research catalog with separate Seiche funding context",
+        "parameters": [
+          {
+            "name": "topic",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "all",
+                "china",
+                "regions",
+                "information_controls",
+                "model_evaluations",
+                "funding",
+                "institutions",
+                "liquidity",
+                "global_data"
+              ],
+              "default": "all"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000,
+              "default": 0
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 25,
+              "default": 12
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Source-attributed connected research; preserve stale and restricted states"
+          },
+          "400": {
+            "description": "Invalid or duplicate arguments"
+          },
+          "503": {
+            "description": "Upstream unavailable or incompatible"
+          }
+        }
+      }
     }
   }
 }

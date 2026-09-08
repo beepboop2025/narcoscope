@@ -66,8 +66,8 @@ export function createV1Handler(dependencies = {}) {
       year: req.query?.year ?? requestUrl.searchParams.get('year'),
     }
     try {
-      if (['markets', 'market-observations'].includes(name)) {
-        const allowed = new Set(name === 'markets' ? [] : ['dataset', 'indicator', 'geo', 'category', 'subgroup', 'from', 'to', 'page', 'limit'])
+      if (['markets', 'market-observations', 'research-network'].includes(name)) {
+        const allowed = new Set(name === 'research-network' ? ['topic', 'offset', 'limit'] : name === 'markets' ? [] : ['dataset', 'indicator', 'geo', 'category', 'subgroup', 'from', 'to', 'page', 'limit'])
         params = {}
         for (const key of new Set([...requestUrl.searchParams.keys(), ...Object.keys(req.query ?? {})])) {
           if (key === 'resource') continue

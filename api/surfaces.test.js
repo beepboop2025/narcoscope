@@ -193,7 +193,11 @@ describe('NarcoScope public surfaces', () => {
         id: name,
         method: 'tools/call',
         params: { name, arguments: argumentsByTool[name] ?? {} },
-      })
+      }, name === 'research_network' ? { fetchImpl: async () => new Response(JSON.stringify({
+        schema: 'seiche.research-network.v1', status: 'available', context_only: true,
+        selection: { topic: 'all', offset: 0, limit: 12 }, datasets: [],
+        eligibility: { blend_into_score: false, training: false, execution: false },
+      })) } : {})
       expect(response.result.isError).toBe(false)
       expect(
         validate(response.result.structuredContent),
@@ -450,7 +454,7 @@ describe('NarcoScope public surfaces', () => {
     expect(registry.websiteUrl).toBe('https://narcoscope.com')
     expect(registry.remotes).toEqual([{
       type: 'streamable-http',
-      url: 'https://narcoscope.com/mcp',
+      url: 'https://www.narcoscope.com/mcp',
     }])
   })
 
@@ -500,7 +504,7 @@ describe('NarcoScope public surfaces', () => {
     const aiCatalog = JSON.parse(readFileSync('public/.well-known/ai-catalog.json', 'utf8'))
     expect(catalog.linkset.map((entry) => entry.anchor)).toEqual([
       'https://narcoscope.com/api/v1',
-      'https://narcoscope.com/mcp',
+      'https://www.narcoscope.com/mcp',
     ])
     expect(catalog.linkset[0]['service-desc']).toEqual([{
       href: 'https://narcoscope.com/openapi.json',
@@ -512,7 +516,7 @@ describe('NarcoScope public surfaces', () => {
     expect(aiCatalog).toMatchObject({
       version: '1.6.0',
       apiCatalog: 'https://narcoscope.com/.well-known/api-catalog',
-      mcpEndpoint: 'https://narcoscope.com/mcp',
+      mcpEndpoint: 'https://www.narcoscope.com/mcp',
       resources: {
         atlas: 'https://narcoscope.com/api/v1/atlas',
         entities: 'https://narcoscope.com/api/v1/entities',
