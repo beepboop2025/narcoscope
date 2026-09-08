@@ -1,30 +1,25 @@
 # NarcoScope 24/7 data collector (Hetzner)
 
-Keeps the live site's data fresh by running the open-data pipeline on a schedule
-and pushing validated changes, which trigger a Vercel redeploy.
+Keeps the public datasets fresh by running the validated collection pipeline on
+Hetzner. GitHub stores accepted source; the Hetzner Fleet publisher deploys the
+source to the existing Railway runtime and verifies its exact commit.
 
 ## Production topology
 
 ```text
-narcoscope.com ──► Vercel project `narcoscope.io` ──► static app + newsroom
-                         ▲
-                         │ deploy on validated main push
-                         │
-Hetzner `ubuntu-8gb-fsn1-2` ──► GitHub main
-        daily collector only · Palimpsest.info project
+narcoscope.com / www.narcoscope.com -> Railway public runtime
+                                         ^
+                                         | verified Fleet publisher bundle
+Hetzner daily collector -> GitHub main -> Hetzner Fleet publisher
 ```
 
-The public domain does **not** point at the collector. The collector has no web
-service and needs no inbound port other than SSH; it fetches public datasets,
-validates the full repository, and pushes only an accepted refresh. This keeps a
-bad upstream file away from both Git and production.
+Both public domains were verified on Railway on 8 September 2026. The collector
+has no public web service. It fetches public datasets and pushes only accepted
+refreshes. Private captures stay on Hetzner, outside disposable checkouts.
 
-Current production is already on Hetzner: `narcoscope-collector.timer` is enabled
-and active on `ubuntu-8gb-fsn1-2` in the **Palimpsest.info** project. Its accepted
-state lives in Git and the public site remains stateless. Split NarcoScope into a
-dedicated project/server only when it gains a database, analyst-only data, or a
-resource-isolation requirement; the present collector does not justify a second
-billable server.
+The daily `narcoscope-collector.timer` runs on `ubuntu-8gb-fsn1-2`. Its histories
+and disposable runs can use the attached volume through the path settings below,
+while small health receipts remain in `/var/lib/narcoscope-collector`.
 
 ## What it does, each run
 
@@ -66,8 +61,8 @@ collector process is alive before removing it; `/run` is cleared on reboot.
 ## One-time provisioning (as root on the box)
 
 ```bash
-# 1. Node (LTS) via nodesource, plus unzip (StatCan converter needs it)
-curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && apt-get install -y nodejs unzip
+# 1. Node (LTS) via nodesource, Python 3 and unzip (dataset parsers need them)
+curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && apt-get install -y nodejs python3 unzip
 
 # 2. Clone
 git clone https://github.com/beepboop2025/narcoscope.git /opt/narcoscope
@@ -180,3 +175,41 @@ checkout and never assumes its branch can fast-forward safely.
 
 Cadence is daily at 05:17 UTC (`.timer`); most sources are monthly/annual, OFAC
 is continuous. Change `OnCalendar` in the timer to go more often.
+
+## Retained global-market histories
+
+The normal pipeline also runs `scripts/pipeline/refresh-global-markets.mjs` for
+the arms/economy and drugs histories, then rebuilds their catalog. Acquisition is
+eligible once per seven days. Daily runs validate the accepted public snapshots
+and read the private schedule receipts; they do not download or parse the full
+histories again. A changed parser replays retained captures within that window.
+
+Raw captures, hashes, source receipts and refresh metadata live outside the
+disposable worktree at `/var/lib/narcoscope-collector/global-markets`. Set
+`NARCOSCOPE_MARKET_STATE_DIR` to override this dedicated directory. The process
+requires ownership of it, rejects a symlink or a path inside the checkout, and
+sets mode 0700. Captures and receipts use mode 0600. These are private research
+files, including sources whose quantitative republication is still unresolved;
+only the three exact public JSON outputs are staged for publication.
+
+A bounded network or upstream HTTP failure retains the previously validated
+snapshot with its original source and generation dates, records
+`acquisition-failed` in the lane's `refresh.json`, and waits one day before a
+retry. Inspect these lane receipts as well as the overall service receipt:
+pipeline completion can include an explicitly retained older source. A schema,
+parser, hash, size or public-contract failure stops the refresh. Missing values
+remain unavailable. A first run with no valid snapshot cannot hide a download
+failure behind an empty replacement.
+
+For a deterministic local replay, set the same variable to a retained private
+store and run `node scripts/pipeline/refresh-global-markets.mjs --offline`.
+This makes no source requests and does not advance source or schedule clocks.
+Without retained captures it validates and keeps the checked-in public snapshot.
+Local default state is `~/.local/state/narcoscope/global-markets`.
+
+Activation requires installing the reviewed collector script and service unit
+with `install.sh`; Python 3 is checked before installation. An existing daily
+timer needs no extra weekly timer. Retained captures may be copied into the
+`arms-economy` and `drugs` subdirectories with their original receipts and
+permissions; do not manufacture receipts or copy only normalized public data
+as raw evidence. The first online run can also populate an empty state directory.

@@ -123,11 +123,11 @@ function featureIso3(feature: (typeof countries)[number]): string {
 }
 
 function colorFor(value: NumericLeaf, measure: Measure): string {
-  if (value == null || !Number.isFinite(value)) return '#d5ded9'
+  if (value == null || !Number.isFinite(value)) return '#233349'
   const normalized = Math.max(0, Math.min(1, value / (measure.unit === 'percent' ? 100 : 10)))
   const stops = measure.palette === 'capacity'
-    ? ['#edd8ce', '#deb69f', '#c78d72', '#7caa9e', '#438a7a', '#155e57']
-    : ['#d7e5df', '#a9c9bc', '#6da694', '#2f7c70', '#b78045', '#a04d36']
+    ? ['#263d58', '#325874', '#397585', '#499c9e', '#65bbae', '#90ddc5']
+    : ['#263d58', '#40567a', '#676e96', '#9b80a4', '#d49aa2', '#f4b598']
   return stops[Math.round(normalized * (stops.length - 1))]
 }
 

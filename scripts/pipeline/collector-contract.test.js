@@ -29,6 +29,9 @@ const derivedPublicArtifacts = [
   'public/data/narcoscope-palimpsest-corridors-v2.json',
   'public/data/narcoscope-palimpsest-bri-v1.json',
   'public/data/narcoscope-palimpsest-bri-v1.json.sha256',
+  'public/data/global-arms-economy-v1.json',
+  'public/data/global-drugs-v1.json',
+  'public/data/global-market-catalog-v1.json',
   'public/news',
 ]
 
@@ -49,6 +52,22 @@ describe('automated refresh publication contract', () => {
     const workflow = read('.github/workflows/data-refresh.yml')
 
     for (const artifact of derivedPublicArtifacts) expect(workflow).toContain(`            ${artifact}\n`)
+  })
+
+  it('keeps WDR 2026 prices and routes retained histories through their own collectors', () => {
+    const registry = JSON.parse(read('scripts/pipeline/sources.json'))
+    const sources = Array.isArray(registry) ? registry : registry.sources
+    const prices = sources.find(source => source.id === 'wdr-prices')
+    expect(prices.url).toBe('https://www.unodc.org/documents/data-and-analysis/WDR_2026/Annex/8.1_Prices_and_purities_of_drugs.xlsx')
+    const histories = sources.filter(source => source.id?.startsWith('global-market-'))
+    expect(histories).toHaveLength(14)
+    expect(new Set(histories.map(source => source.id)).size).toBe(histories.length)
+    for (const source of histories) {
+      expect(['collector-xlsx', 'collector-json-api', 'collector-zip']).toContain(source.format)
+      expect(source.automation).toBe('auto')
+    }
+    const pipeline = read('scripts/pipeline/run.mjs')
+    expect(pipeline).toContain("'scripts/pipeline/refresh-global-markets.mjs'")
   })
 
   it('publishes only validated output while preserving and isolating a dirty service checkout', () => {
@@ -77,6 +96,9 @@ describe('automated refresh publication contract', () => {
     fs.writeFileSync(path.join(serviceRepo, 'public/data/narcoscope-palimpsest-corridors-v2.json'), '{}\n')
     fs.writeFileSync(path.join(serviceRepo, 'public/data/narcoscope-palimpsest-bri-v1.json'), '{}\n')
     fs.writeFileSync(path.join(serviceRepo, 'public/data/narcoscope-palimpsest-bri-v1.json.sha256'), 'fixture\n')
+    for (const name of ['global-arms-economy-v1.json', 'global-drugs-v1.json', 'global-market-catalog-v1.json']) {
+      fs.writeFileSync(path.join(serviceRepo, 'public/data', name), '{}\n')
+    }
     fs.writeFileSync(path.join(serviceRepo, 'public/news/index.json'), '{}\n')
     fs.writeFileSync(path.join(serviceRepo, 'package.json'), '{"private":true}\n')
     runOk('git', ['add', '.'], { cwd: serviceRepo })
@@ -158,7 +180,13 @@ exit 64
 set -euo pipefail
 if [[ "\${1:-}" == "ci" ]]; then exit 0; fi
 if [[ "\${1:-}" == "run" && "\${2:-}" == "data:refresh" ]]; then
+  [[ "$NARCOSCOPE_MARKET_STATE_DIR" != "$PWD"/* ]]
+  mkdir -p "$NARCOSCOPE_MARKET_STATE_DIR"
+  printf 'private retained fixture' > "$NARCOSCOPE_MARKET_STATE_DIR/capture.fixture"
   printf '{"version":"validated"}\\n' > src/data/sample.json
+  printf '{"version":"validated"}\\n' > public/data/global-arms-economy-v1.json
+  printf '{"version":"validated"}\\n' > public/data/global-drugs-v1.json
+  printf '{"version":"validated"}\\n' > public/data/global-market-catalog-v1.json
   exit 0
 fi
 exit 64
@@ -182,6 +210,8 @@ exit 64
     expect(runOk('git', ['worktree', 'list', '--porcelain'], { cwd: serviceRepo }).stdout.match(/^worktree /gm))
       .toHaveLength(1)
     expect(fs.readdirSync(runRoot)).toEqual([])
+    expect(fs.readFileSync(path.join(stateDir, 'global-markets/capture.fixture'), 'utf8')).toBe('private retained fixture')
+    expect(runOk('git', [`--git-dir=${origin}`, 'show', 'main:public/data/global-arms-economy-v1.json']).stdout).toBe('{"version":"validated"}\n')
     expect(runOk('git', [`--git-dir=${origin}`, 'show', 'main:src/data/sample.json']).stdout)
       .toBe('{"version":"validated"}\n')
     expect(fs.existsSync(lockDir)).toBe(false)

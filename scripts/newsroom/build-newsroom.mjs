@@ -1480,7 +1480,8 @@ export function renderArticleHtml(dossier) {
   <link rel="alternate" type="application/atom+xml" href="${SITE_ORIGIN}/news/feed.xml" title="NarcoScope evidence newsroom">
   <script type="application/ld+json">${structuredData}</script>
   <style>
-    :root { color-scheme: dark; --bg:#050505; --panel:#0d0d0d; --line:#292929; --text:#e2e8f0; --muted:#94a3b8; --live:#06d6e0; --warn:#ffb020; }
+    @import url("/research-theme.css");
+    :root { color-scheme: dark; --bg:var(--research-bg); --panel:var(--research-surface); --line:var(--research-line); --text:var(--research-text); --muted:var(--research-secondary); --live:var(--research-blue); --warn:var(--research-amber); }
     * { box-sizing: border-box; }
     body { margin:0; background:var(--bg); color:var(--text); font:16px/1.7 system-ui,-apple-system,sans-serif; }
     a { color:var(--live); }
@@ -1533,6 +1534,7 @@ export function renderArticleHtml(dossier) {
     .update-history code { overflow-wrap:anywhere; }
     .hashes { margin-top:4rem; padding-top:1rem; border-top:1px solid var(--line); display:flex; flex-wrap:wrap; gap:.8rem 1.2rem; color:var(--muted); font-size:.72rem; }
     .hashes code { overflow-wrap:anywhere; }
+  body,h1,h2,h3 { font-family:var(--research-font); }
   </style>
 </head>
 <body>${body}

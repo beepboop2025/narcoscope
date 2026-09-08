@@ -15,6 +15,7 @@ if [[ "$ENABLE_TIMER" != "0" && "$ENABLE_TIMER" != "1" ]]; then
 fi
 
 command -v node >/dev/null || { echo "ERROR: node not installed — see deploy/collector/README.md"; exit 1; }
+command -v python3 >/dev/null || { echo "ERROR: Python 3 is required for bounded global-market workbook parsing"; exit 1; }
 # unzip is needed by the StatCan wastewater converter; ensure it is present.
 command -v unzip >/dev/null || { echo "· installing unzip"; apt-get install -y unzip >/dev/null; }
 [ -d "$REPO/.git" ] || { echo "ERROR: repo not cloned at $REPO"; exit 1; }

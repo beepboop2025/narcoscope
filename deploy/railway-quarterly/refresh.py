@@ -26,7 +26,32 @@ PUBLIC_FILES = {
     "public/data/narcoscope-palimpsest-corridors-v2.json",
     "public/data/narcoscope-palimpsest-bri-v1.json",
     "public/data/narcoscope-palimpsest-bri-v1.json.sha256",
+    "public/data/global-arms-economy-v1.json",
+    "public/data/global-drugs-v1.json",
+    "public/data/global-market-catalog-v1.json",
 }
+
+
+def prepare_market_state(directory=None, require_mount=False):
+    """A dedicated, non-secret cache persists beyond candidate checkout removal."""
+    state = Path(directory or os.getenv("NARCOSCOPE_MARKET_STATE_DIR", "/data/narcoscope-global-markets"))
+    if not state.is_absolute() or state == Path("/") or ".." in state.parts:
+        raise ValueError("Unsafe global-market state directory")
+    if any(parent.is_symlink() for parent in (state, *state.parents)):
+        raise ValueError("Global-market state path contains a symbolic link")
+    resolved = state.resolve()
+    if resolved == CONTROLLER or CONTROLLER in resolved.parents:
+        raise ValueError("Global-market state must remain outside the controller")
+    if require_mount and not any(parent != Path("/") and parent.is_mount()
+                                 for parent in (state, *state.parents)):
+        raise ValueError("Global-market state requires a mounted durable volume")
+    state.parent.mkdir(parents=True, exist_ok=True, mode=0o755)
+    state.mkdir(exist_ok=True, mode=0o700)
+    if not state.is_dir():
+        raise ValueError("Global-market state is not a directory")
+    os.chown(state, COLLECTOR_UID, COLLECTOR_UID)
+    state.chmod(0o700)
+    return state
 
 
 def controller_digest():
@@ -142,12 +167,17 @@ def checkout(mirror, env, source, work):
     return baseline
 
 
-def run_step(work, scratch, args, timeout):
+def run_step(work, scratch, args, timeout, market_state=None):
     scratch.mkdir(mode=0o700)
     os.chown(scratch, COLLECTOR_UID, COLLECTOR_UID)
     env = {"PATH": "/usr/local/bin:/usr/bin:/bin", "HOME": str(scratch), "TMPDIR": str(scratch),
            "GIT_CONFIG_NOSYSTEM": "1", "GIT_CONFIG_GLOBAL": "/dev/null",
-           "GIT_TERMINAL_PROMPT": "0", "NODE_OPTIONS": "--max-old-space-size=3072"}
+           "GIT_TERMINAL_PROMPT": "0", "NODE_OPTIONS": "--max-old-space-size=3072",
+           "PYTHONDONTWRITEBYTECODE": "1"}
+    if market_state is not None:
+        if not market_state.is_absolute() or market_state == work or work in market_state.parents:
+            raise ValueError("Private market state cannot be a disposable candidate path")
+        env["NARCOSCOPE_MARKET_STATE_DIR"] = str(market_state)
     process = subprocess.Popen(args, cwd=work, env=env, stdin=subprocess.DEVNULL,
         close_fds=True, preexec_fn=drop_privileges, start_new_session=True)
     try:
@@ -262,6 +292,7 @@ def main():
             event("RAILWAY_QUARTERLY_PENDING_REVIEW", pull_request=pending["number"],
                   source=pending["head"]["sha"], deployment=deployment)
             return 0
+    market_state = prepare_market_state(require_mount=deployment != "local")
     with tempfile.TemporaryDirectory(prefix="quarterly-private-") as private, \
             tempfile.TemporaryDirectory(prefix="quarterly-candidate-") as public:
         private_root, public_root = Path(private), Path(public)
@@ -284,7 +315,8 @@ def main():
         event("quarterly_start", source=source, deployment=deployment,
               controller=controller_digest(), controller_source=controller_source)
         run_step(work, public_root / "npm", ["npm", "ci"], 300)
-        run_step(work, public_root / "pipeline", ["node", "scripts/pipeline/run.mjs"], 1500)
+        run_step(work, public_root / "pipeline", ["node", "scripts/pipeline/run.mjs"], 1500,
+                 market_state=market_state)
         changed = validate_outputs(work, baseline)
         commit = propose(mirror, env, source, changed, branch, api, deployment, apply)
         if not apply:

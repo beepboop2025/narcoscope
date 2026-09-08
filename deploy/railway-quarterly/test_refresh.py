@@ -95,6 +95,33 @@ class BoundaryTests(unittest.TestCase):
                      "public/data/evidence-wire-v1.json", "public/news/evil.sh"]:
             self.assertFalse(refresh.allowed_output(name), name)
 
+    def test_global_market_allowlist_is_exact(self):
+        for name in ["global-arms-economy-v1.json", "global-drugs-v1.json", "global-market-catalog-v1.json"]:
+            self.assertTrue(refresh.allowed_output("public/data/" + name))
+        for name in ["public/data/global-drugs-v2.json", "public/data/global-drugs-v1.json.tmp",
+                     "public/data/manifest.json", "public/data/raw/fixture.zip"]:
+            self.assertFalse(refresh.allowed_output(name))
+
+    def test_live_market_cache_requires_a_volume_and_rejects_unsafe_paths(self):
+        for directory in ["relative/cache", "/", "/data/../controller"]:
+            with self.subTest(directory=directory), self.assertRaisesRegex(ValueError, "Unsafe"):
+                refresh.prepare_market_state(directory)
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            state = root / "retained"
+            with patch.object(Path, "is_mount", return_value=False):
+                with self.assertRaisesRegex(ValueError, "mounted durable volume"):
+                    refresh.prepare_market_state(str(state), require_mount=True)
+            with patch.object(refresh.os, "chown") as chown:
+                prepared = refresh.prepare_market_state(str(state))
+                self.assertEqual(prepared, state)
+                chown.assert_called_once_with(state, refresh.COLLECTOR_UID, refresh.COLLECTOR_UID)
+                self.assertEqual(state.stat().st_mode & 0o777, 0o700)
+            link = root / "link"
+            link.symlink_to(state)
+            with self.assertRaisesRegex(ValueError, "symbolic link"):
+                refresh.prepare_market_state(str(link))
+
     def test_quarter_is_stable_and_main_is_never_a_destination(self):
         self.assertEqual(refresh.quarter_branch(datetime(2026, 9, 8, tzinfo=timezone.utc)),
                          "data-refresh/railway-2026-q3")
@@ -178,6 +205,7 @@ class LinuxIsolationTests(unittest.TestCase):
                 + " try: Path(name).write_text('injected')\n except PermissionError: pass\n else: raise AssertionError(name)\n"
                 + f"try: os.read({fd},32)\nexcept OSError: pass\nelse: raise AssertionError('inherited FD')\n"
                 + "assert not ({'GITHUB_TOKEN','GITHUB_DEPLOY_KEY','GIT_SSH_COMMAND','RAILWAY_TOKEN'} & set(os.environ))\n"
+                + "assert os.environ['PYTHONDONTWRITEBYTECODE']=='1'\n"
                 + "Path('allowed.json').write_text('{\"safe\":true}')\n"
                 + "copy=Path(os.environ['TMPDIR'])/'fixture-copy'; shutil.copy2('source.js',copy); copy.write_text('candidate-owned fixture')\n"
                 + "try: Path('public/openapi.json').unlink()\nexcept PermissionError: pass\nelse: raise AssertionError('sticky parent lost protected contract')\n"

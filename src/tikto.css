@@ -6,40 +6,40 @@
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap');
 
 :root {
-  --tk-void: #dfe8e4;
-  --tk-surface-1: #f6f8f5;
-  --tk-surface-2: #edf2ee;
-  --tk-surface-3: #e4ece7;
-  --tk-surface-4: #d7e2dc;
-  --tk-hover: #d0ded7;
+  --tk-void: var(--research-bg);
+  --tk-surface-1: var(--research-surface);
+  --tk-surface-2: var(--research-raised);
+  --tk-surface-3: #1c2e44;
+  --tk-surface-4: #243952;
+  --tk-hover: var(--research-hover);
 
-  --tk-line-1: #d2ded8;
-  --tk-line-2: #b9cbc3;
-  --tk-line-3: #91aaa1;
+  --tk-line-1: var(--research-line-subtle);
+  --tk-line-2: var(--research-line);
+  --tk-line-3: #526b89;
 
-  --tk-text-0: #071f29;
-  --tk-text-1: #102d36;
-  --tk-text-2: #3f5b62;
-  --tk-text-3: #60767a;
-  --tk-text-4: #778b8d;
+  --tk-text-0: #f2f6fc;
+  --tk-text-1: var(--research-text);
+  --tk-text-2: var(--research-secondary);
+  --tk-text-3: var(--research-muted);
+  --tk-text-4: #91a3bb;
 
-  --tk-live: #2f8c7b;
-  --tk-live-dim: #236b60;
+  --tk-live: var(--research-green);
+  --tk-live-dim: var(--research-blue);
   --tk-live-glow: rgba(47, 140, 123, 0.2);
 
-  --tk-critical: #a44534;
+  --tk-critical: var(--research-red);
   --tk-critical-bg: rgba(239, 68, 68, 0.13);
   --tk-critical-line: rgba(239, 68, 68, 0.5);
-  --tk-warning: #b86446;
+  --tk-warning: var(--research-amber);
   --tk-warning-bg: rgba(245, 158, 11, 0.13);
   --tk-warning-line: rgba(245, 158, 11, 0.45);
-  --tk-watch: #2f7184;
+  --tk-watch: var(--research-blue);
   --tk-watch-bg: rgba(59, 130, 246, 0.13);
   --tk-watch-line: rgba(59, 130, 246, 0.42);
-  --tk-ok: #2f8c7b;
+  --tk-ok: var(--research-green);
   --tk-ok-bg: rgba(16, 185, 129, 0.13);
   --tk-ok-line: rgba(16, 185, 129, 0.42);
-  --tk-stale: #75837e;
+  --tk-stale: #a2b0c3;
   --tk-stale-bg: rgba(100, 116, 139, 0.16);
   --tk-stale-line: rgba(100, 116, 139, 0.45);
 
@@ -62,30 +62,7 @@
 
   --tk-shadow-md: 0 8px 24px rgba(10, 37, 48, 0.08);
   --tk-shadow-lg: 0 16px 42px rgba(10, 37, 48, 0.11);
-  color-scheme: light;
-}
-
-[data-tk-theme='light'] {
-  --tk-void: #f7f8fa;
-  --tk-surface-1: #ffffff;
-  --tk-surface-2: #f3f5f8;
-  --tk-surface-3: #ecf0f4;
-  --tk-surface-4: #e2e8f0;
-  --tk-hover: #dbe2ea;
-  --tk-line-1: #e6eaef;
-  --tk-line-2: #d5dce4;
-  --tk-line-3: #c2cbd6;
-  --tk-text-0: #0a1322;
-  --tk-text-1: #1c2738;
-  --tk-text-2: #45556b;
-  --tk-text-3: #66758c;
-  --tk-text-4: #8a98ac;
-  --tk-live: #0892b8;
-  --tk-live-dim: #0b6e8c;
-  --tk-live-glow: rgba(8, 146, 184, 0.22);
-  --tk-shadow-md: 0 6px 20px rgba(20, 30, 50, 0.1);
-  --tk-shadow-lg: 0 14px 36px rgba(20, 30, 50, 0.14);
-  color-scheme: light;
+  color-scheme: dark;
 }
 
 *, *::before, *::after {

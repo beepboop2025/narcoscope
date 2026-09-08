@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "NarcoScope Public Evidence API",
-    "version": "1.5.0",
+    "version": "1.6.0",
     "description": "Read-only access to NarcoScope's aggregate official-data overview, country-year illicit-economy atlas, privacy-minimized public designations, citation-gated newsroom, and non-joinable Seiche and Palimpsest context lanes. No endpoint provides point-of-sale, real-time, navigable, synthesis-route, or yield information; no federation endpoint creates a shared score, composite, causal inference, or culpability inference."
   },
   "servers": [
@@ -1926,6 +1926,1118 @@
           }
         },
         "additionalProperties": false
+      },
+      "GlobalMarketCatalog": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schema",
+          "status",
+          "generatedAt",
+          "unavailableDatasets",
+          "limitations",
+          "datasets",
+          "relatedResources"
+        ],
+        "properties": {
+          "schema": {
+            "const": "narcoscope.global-market-catalog.v1"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "available",
+              "partial",
+              "unavailable"
+            ]
+          },
+          "generatedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "unavailableDatasets": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "global-drugs",
+                "global-arms-economy"
+              ]
+            },
+            "maxItems": 2
+          },
+          "limitations": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "maxItems": 60
+          },
+          "datasets": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "title",
+                "sha256",
+                "generatedAt",
+                "sources",
+                "indicators",
+                "coverage",
+                "limitations"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "enum": [
+                    "global-drugs",
+                    "global-arms-economy"
+                  ]
+                },
+                "title": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 240
+                },
+                "sha256": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "generatedAt": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "sources": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "id",
+                      "name",
+                      "publisher",
+                      "url",
+                      "downloadUrl",
+                      "license",
+                      "licenseUrl",
+                      "retrievedAt",
+                      "sha256",
+                      "bytes",
+                      "notes"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,159}$"
+                      },
+                      "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 1000
+                      },
+                      "publisher": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 1000
+                      },
+                      "url": {
+                        "type": "string",
+                        "format": "uri",
+                        "pattern": "^https://",
+                        "maxLength": 4096
+                      },
+                      "downloadUrl": {
+                        "type": "string",
+                        "format": "uri",
+                        "pattern": "^https://",
+                        "maxLength": 4096
+                      },
+                      "license": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 1000
+                      },
+                      "licenseUrl": {
+                        "type": "string",
+                        "format": "uri",
+                        "pattern": "^https://",
+                        "maxLength": 4096
+                      },
+                      "retrievedAt": {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "sha256": {
+                        "type": "string",
+                        "pattern": "^[a-f0-9]{64}$"
+                      },
+                      "bytes": {
+                        "type": "integer",
+                        "minimum": 1
+                      },
+                      "notes": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 2000
+                        },
+                        "maxItems": 60
+                      }
+                    }
+                  },
+                  "maxItems": 80
+                },
+                "indicators": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "id",
+                      "sourceId",
+                      "market",
+                      "label",
+                      "unit",
+                      "measureType",
+                      "description",
+                      "limitations",
+                      "featured",
+                      "coverage",
+                      "dimensions"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,159}$"
+                      },
+                      "sourceId": {
+                        "type": "string",
+                        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,159}$"
+                      },
+                      "market": {
+                        "type": "string",
+                        "enum": [
+                          "drugs",
+                          "arms",
+                          "economy"
+                        ]
+                      },
+                      "label": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "unit": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "measureType": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "description": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 2500
+                      },
+                      "limitations": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 2000
+                        },
+                        "maxItems": 60
+                      },
+                      "featured": {
+                        "type": "boolean"
+                      },
+                      "coverage": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "observations",
+                          "numericObservations",
+                          "reported",
+                          "estimated",
+                          "unavailable",
+                          "firstPeriod",
+                          "lastPeriod",
+                          "firstNumericPeriod",
+                          "lastNumericPeriod"
+                        ],
+                        "properties": {
+                          "observations": {
+                            "type": "integer",
+                            "minimum": 0
+                          },
+                          "numericObservations": {
+                            "type": "integer",
+                            "minimum": 0
+                          },
+                          "reported": {
+                            "type": "integer",
+                            "minimum": 0
+                          },
+                          "estimated": {
+                            "type": "integer",
+                            "minimum": 0
+                          },
+                          "unavailable": {
+                            "type": "integer",
+                            "minimum": 0
+                          },
+                          "firstPeriod": {
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "pattern": "^(18|19|20|21)[0-9]{2}(-(0[1-9]|1[0-2]))?$"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "lastPeriod": {
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "pattern": "^(18|19|20|21)[0-9]{2}(-(0[1-9]|1[0-2]))?$"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "firstNumericPeriod": {
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "pattern": "^(18|19|20|21)[0-9]{2}(-(0[1-9]|1[0-2]))?$"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "lastNumericPeriod": {
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "pattern": "^(18|19|20|21)[0-9]{2}(-(0[1-9]|1[0-2]))?$"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          }
+                        }
+                      },
+                      "dimensions": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "geographies",
+                          "categories",
+                          "subgroups",
+                          "selections"
+                        ],
+                        "properties": {
+                          "geographies": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "code",
+                                "name",
+                                "level"
+                              ],
+                              "properties": {
+                                "code": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 180
+                                },
+                                "name": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 180
+                                },
+                                "level": {
+                                  "type": "string",
+                                  "enum": [
+                                    "country",
+                                    "region",
+                                    "city",
+                                    "world"
+                                  ]
+                                }
+                              }
+                            },
+                            "maxItems": 500000
+                          },
+                          "categories": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "minLength": 0,
+                              "maxLength": 500
+                            },
+                            "maxItems": 500000
+                          },
+                          "subgroups": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "minLength": 0,
+                              "maxLength": 500
+                            },
+                            "maxItems": 500000
+                          },
+                          "selections": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "category",
+                                "subgroup",
+                                "firstPeriod",
+                                "lastPeriod",
+                                "lastNumericPeriod",
+                                "latestNumericObservations"
+                              ],
+                              "properties": {
+                                "category": {
+                                  "type": "string",
+                                  "minLength": 0,
+                                  "maxLength": 500
+                                },
+                                "subgroup": {
+                                  "type": "string",
+                                  "minLength": 0,
+                                  "maxLength": 500
+                                },
+                                "firstPeriod": {
+                                  "anyOf": [
+                                    {
+                                      "type": "string",
+                                      "pattern": "^(18|19|20|21)[0-9]{2}(-(0[1-9]|1[0-2]))?$"
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                },
+                                "lastPeriod": {
+                                  "anyOf": [
+                                    {
+                                      "type": "string",
+                                      "pattern": "^(18|19|20|21)[0-9]{2}(-(0[1-9]|1[0-2]))?$"
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                },
+                                "lastNumericPeriod": {
+                                  "anyOf": [
+                                    {
+                                      "type": "string",
+                                      "pattern": "^(18|19|20|21)[0-9]{2}(-(0[1-9]|1[0-2]))?$"
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                },
+                                "latestNumericObservations": {
+                                  "type": "integer",
+                                  "minimum": 0
+                                }
+                              }
+                            },
+                            "maxItems": 500000
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "maxItems": 500
+                },
+                "coverage": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "observations",
+                    "numericObservations",
+                    "reported",
+                    "estimated",
+                    "unavailable",
+                    "firstPeriod",
+                    "lastPeriod",
+                    "firstNumericPeriod",
+                    "lastNumericPeriod"
+                  ],
+                  "properties": {
+                    "observations": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "numericObservations": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "reported": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "estimated": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "unavailable": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "firstPeriod": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "pattern": "^(18|19|20|21)[0-9]{2}(-(0[1-9]|1[0-2]))?$"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "lastPeriod": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "pattern": "^(18|19|20|21)[0-9]{2}(-(0[1-9]|1[0-2]))?$"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "firstNumericPeriod": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "pattern": "^(18|19|20|21)[0-9]{2}(-(0[1-9]|1[0-2]))?$"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "lastNumericPeriod": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "pattern": "^(18|19|20|21)[0-9]{2}(-(0[1-9]|1[0-2]))?$"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  }
+                },
+                "limitations": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 2000
+                  },
+                  "maxItems": 60
+                }
+              }
+            },
+            "maxItems": 2
+          },
+          "relatedResources": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "title",
+                "url",
+                "description"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,159}$"
+                },
+                "title": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 240
+                },
+                "url": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 4096
+                },
+                "description": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            "maxItems": 10
+          }
+        }
+      },
+      "MarketObservations": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schema",
+          "status",
+          "generatedAt",
+          "unavailableDatasets",
+          "limitations",
+          "filters",
+          "pagination",
+          "datasets",
+          "indicators",
+          "sources",
+          "observations"
+        ],
+        "properties": {
+          "schema": {
+            "const": "narcoscope.market-observations.v1"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "available",
+              "partial",
+              "unavailable"
+            ]
+          },
+          "generatedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "unavailableDatasets": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "global-drugs",
+                "global-arms-economy"
+              ]
+            },
+            "maxItems": 2
+          },
+          "limitations": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "maxItems": 60
+          },
+          "filters": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "dataset",
+              "indicator",
+              "geo",
+              "category",
+              "subgroup",
+              "from",
+              "to"
+            ],
+            "properties": {
+              "dataset": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "global-drugs",
+                      "global-arms-economy"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "indicator": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "geo": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "category": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 0,
+                    "maxLength": 500
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "subgroup": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 0,
+                    "maxLength": 500
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "from": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "pattern": "^(18|19|20|21)[0-9]{2}(-(0[1-9]|1[0-2]))?$"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "to": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "pattern": "^(18|19|20|21)[0-9]{2}(-(0[1-9]|1[0-2]))?$"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          },
+          "pagination": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "page",
+              "limit",
+              "total",
+              "pages",
+              "nextPage"
+            ],
+            "properties": {
+              "page": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 1000000
+              },
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 500
+              },
+              "total": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "pages": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "nextPage": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 2
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          },
+          "datasets": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "sha256",
+                "generatedAt"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "enum": [
+                    "global-drugs",
+                    "global-arms-economy"
+                  ]
+                },
+                "sha256": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "generatedAt": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              }
+            },
+            "maxItems": 2
+          },
+          "indicators": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "sourceId",
+                "market",
+                "label",
+                "unit",
+                "measureType",
+                "description",
+                "limitations",
+                "datasetId"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,159}$"
+                },
+                "sourceId": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,159}$"
+                },
+                "market": {
+                  "type": "string",
+                  "enum": [
+                    "drugs",
+                    "arms",
+                    "economy"
+                  ]
+                },
+                "label": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500
+                },
+                "unit": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500
+                },
+                "measureType": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500
+                },
+                "description": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2500
+                },
+                "limitations": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 2000
+                  },
+                  "maxItems": 60
+                },
+                "datasetId": {
+                  "type": "string",
+                  "enum": [
+                    "global-drugs",
+                    "global-arms-economy"
+                  ]
+                }
+              }
+            },
+            "maxItems": 1000
+          },
+          "sources": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "name",
+                "publisher",
+                "url",
+                "downloadUrl",
+                "license",
+                "licenseUrl",
+                "retrievedAt",
+                "sha256",
+                "bytes",
+                "notes",
+                "datasetId"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,159}$"
+                },
+                "name": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1000
+                },
+                "publisher": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1000
+                },
+                "url": {
+                  "type": "string",
+                  "format": "uri",
+                  "pattern": "^https://",
+                  "maxLength": 4096
+                },
+                "downloadUrl": {
+                  "type": "string",
+                  "format": "uri",
+                  "pattern": "^https://",
+                  "maxLength": 4096
+                },
+                "license": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1000
+                },
+                "licenseUrl": {
+                  "type": "string",
+                  "format": "uri",
+                  "pattern": "^https://",
+                  "maxLength": 4096
+                },
+                "retrievedAt": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "sha256": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "bytes": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "notes": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 2000
+                  },
+                  "maxItems": 60
+                },
+                "datasetId": {
+                  "type": "string",
+                  "enum": [
+                    "global-drugs",
+                    "global-arms-economy"
+                  ]
+                }
+              }
+            },
+            "maxItems": 160
+          },
+          "observations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "indicatorId",
+                "geoCode",
+                "geoName",
+                "geoLevel",
+                "period",
+                "category",
+                "subgroup",
+                "value",
+                "lower",
+                "upper",
+                "status",
+                "sourceLocator",
+                "datasetId",
+                "sourceId",
+                "unit",
+                "measureType"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,159}$"
+                },
+                "indicatorId": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,159}$"
+                },
+                "geoCode": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "geoName": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "geoLevel": {
+                  "type": "string",
+                  "enum": [
+                    "country",
+                    "region",
+                    "city",
+                    "world"
+                  ]
+                },
+                "period": {
+                  "type": "string",
+                  "pattern": "^(18|19|20|21)[0-9]{2}(-(0[1-9]|1[0-2]))?$"
+                },
+                "category": {
+                  "type": "string",
+                  "minLength": 0,
+                  "maxLength": 500
+                },
+                "subgroup": {
+                  "type": "string",
+                  "minLength": 0,
+                  "maxLength": 500
+                },
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "lower": {
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "upper": {
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "reported",
+                    "estimated",
+                    "unavailable"
+                  ]
+                },
+                "sourceLocator": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "datasetId": {
+                  "type": "string",
+                  "enum": [
+                    "global-drugs",
+                    "global-arms-economy"
+                  ]
+                },
+                "sourceId": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,159}$"
+                },
+                "unit": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500
+                },
+                "measureType": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500
+                }
+              }
+            },
+            "maxItems": 500
+          }
+        }
       }
     },
     "responses": {
@@ -2337,6 +3449,191 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/markets": {
+      "get": {
+        "operationId": "getMarketCatalog",
+        "summary": "Discover granular drugs, arms and informal-economy evidence",
+        "description": "Indicator-specific countries, categories, subgroups, native units, numeric and unavailable coverage, source hashes and source-specific reuse restrictions. Legacy atlas and drug histories remain linked but are not recounted.",
+        "responses": {
+          "200": {
+            "description": "Source-bound published data. Partial coverage lists unavailable datasets explicitly.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "ok",
+                    "resource",
+                    "data"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "const": true
+                    },
+                    "resource": {
+                      "const": "markets"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/GlobalMarketCatalog"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "503": {
+            "$ref": "#/components/responses/Unavailable"
+          }
+        }
+      }
+    },
+    "/market-observations": {
+      "get": {
+        "operationId": "queryMarketObservations",
+        "summary": "Query granular native-unit observations",
+        "description": "Bounded source-dimension filtering with source locators, dataset hashes, exact units, uncertainty and missing values. Duplicate and unknown parameters are rejected. A valid empty query returns zero matches; missing datasets remain unavailable. Source-specific licenses remain attached.",
+        "parameters": [
+          {
+            "name": "dataset",
+            "in": "query",
+            "required": false,
+            "description": "Dataset ID from the catalog. Omit to query both available datasets.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "global-drugs",
+                "global-arms-economy"
+              ]
+            }
+          },
+          {
+            "name": "indicator",
+            "in": "query",
+            "required": false,
+            "description": "Exact source-native indicator ID from the catalog.",
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            }
+          },
+          {
+            "name": "geo",
+            "in": "query",
+            "required": false,
+            "description": "Exact geography code from indicator dimensions; no implicit country-name mapping.",
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "description": "Exact category. Empty string matches empty categories; omitted means all.",
+            "schema": {
+              "type": "string",
+              "maxLength": 500
+            }
+          },
+          {
+            "name": "subgroup",
+            "in": "query",
+            "required": false,
+            "description": "Exact subgroup. Empty string matches empty subgroups; omitted means all.",
+            "schema": {
+              "type": "string",
+              "maxLength": 500
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "description": "Inclusive first year or month. A row must fit wholly within the requested interval; annual rows are not disaggregated.",
+            "schema": {
+              "type": "string",
+              "pattern": "^(18|19|20|21)[0-9]{2}(-(0[1-9]|1[0-2]))?$"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "description": "Inclusive last year or month. Native source periods are preserved.",
+            "schema": {
+              "type": "string",
+              "pattern": "^(18|19|20|21)[0-9]{2}(-(0[1-9]|1[0-2]))?$"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "description": "One-based page in stable dataset/indicator/geography/category/subgroup/period order. Retain dataset hashes across pages and restart if they change.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000000,
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Maximum returned observations per page. No automatic market-size aggregation or unit conversion.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 500,
+              "default": 200
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Source-bound published data. Partial coverage lists unavailable datasets explicitly.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "ok",
+                    "resource",
+                    "data"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "const": true
+                    },
+                    "resource": {
+                      "const": "market-observations"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/MarketObservations"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "503": {
+            "$ref": "#/components/responses/Unavailable"
           }
         }
       }

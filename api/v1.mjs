@@ -1,3 +1,4 @@
+import { gzipSync } from 'node:zlib'
 import { resource, SITE_URL } from './lib/narcoscope.mjs'
 
 const CACHE = 'public, max-age=60, s-maxage=300, stale-while-revalidate=3600'
@@ -13,14 +14,25 @@ function headers(res) {
   res.setHeader('X-Content-Type-Options', 'nosniff')
 }
 
-function send(res, status, payload, head = false) {
+function sendResponse(res, status, payload, head = false, encoding = '') {
   headers(res)
   res.statusCode = status
-  res.end(head ? '' : `${JSON.stringify(payload)}\n`)
+  const acceptsGzip = String(encoding).split(',').some(part => {
+    const [name, quality] = part.trim().split(';')
+    return name === 'gzip' && (!quality || /^q=(?:1(?:\.0*)?|0?\.[0-9]*[1-9][0-9]*)$/.test(quality.trim()))
+  })
+  const raw = Buffer.from(`${JSON.stringify(payload)}\n`)
+  const body = acceptsGzip && raw.length >= 1024 ? gzipSync(raw, { level: 4 }) : raw
+  res.setHeader('Vary', 'Accept-Encoding')
+  if (body !== raw) res.setHeader('Content-Encoding', 'gzip')
+  res.setHeader('Content-Length', String(body.length))
+  res.end(head ? '' : body === raw ? raw.toString() : body)
+
 }
 
 export function createV1Handler(dependencies = {}) {
   return async function handler(req, res) {
+    const send = (res, status, payload, head = false) => sendResponse(res, status, payload, head, req.headers?.['accept-encoding'])
     if (req.method === 'OPTIONS') {
       headers(res)
       res.statusCode = 204
@@ -39,7 +51,7 @@ export function createV1Handler(dependencies = {}) {
 
     const requestUrl = new URL(req.url, 'https://narcoscope.invalid')
     const name = String(req.query?.resource ?? requestUrl.searchParams.get('resource') ?? 'capabilities')
-    const params = {
+    let params = {
       country: req.query?.country ?? requestUrl.searchParams.get('country'),
       cursor: req.query?.cursor ?? requestUrl.searchParams.get('cursor'),
       domain: req.query?.domain ?? requestUrl.searchParams.get('domain'),
@@ -54,6 +66,16 @@ export function createV1Handler(dependencies = {}) {
       year: req.query?.year ?? requestUrl.searchParams.get('year'),
     }
     try {
+      if (['markets', 'market-observations'].includes(name)) {
+        const allowed = new Set(name === 'markets' ? [] : ['dataset', 'indicator', 'geo', 'category', 'subgroup', 'from', 'to', 'page', 'limit'])
+        params = {}
+        for (const key of new Set([...requestUrl.searchParams.keys(), ...Object.keys(req.query ?? {})])) {
+          if (key === 'resource') continue
+          if (!allowed.has(key)) throw new TypeError(`Unknown market query parameter: ${key}`)
+          if (requestUrl.searchParams.getAll(key).length > 1 || Array.isArray(req.query?.[key])) throw new TypeError(`Duplicate market query parameter: ${key}`)
+          params[key] = req.query?.[key] ?? requestUrl.searchParams.get(key)
+        }
+      }
       const data = await resource(name, params, dependencies)
       if (data?.status === 'unavailable') {
         send(res, 503, {

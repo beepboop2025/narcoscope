@@ -40,29 +40,29 @@
       "measurement": {
         "status": "official_reported",
         "valueType": "statistical_measurement",
-        "method": "UNODC typical retail value, with a documented midpoint fallback for a complete minimum and maximum range",
+        "method": "UNODC typical retail value, with a midpoint fallback for a complete range; multiple reports and reviewed source forms are averaged at country, drug and year grain",
         "unit": "nominal USD per gram; purity in percent where reported",
         "grain": "country, drug and year"
       },
       "temporalCoverage": {
         "kind": "year_range",
-        "fromYear": 2019,
-        "toYear": 2019,
+        "fromYear": 2020,
+        "toYear": 2024,
         "snapshotDate": null
       },
       "provenance": {
         "publisher": "United Nations Office on Drugs and Crime",
-        "title": "World Drug Report 2025, Statistical Annex 8.1: Prices and purities of drugs",
-        "url": "https://www.unodc.org/documents/data-and-analysis/WDR_2025/Annex/8.1_Prices_and_purities_of_drugs.xlsx",
-        "sourceEdition": "2025",
+        "title": "World Drug Report 2026, Statistical Annex 8.1: Prices and purities of drugs",
+        "url": "https://www.unodc.org/documents/data-and-analysis/WDR_2026/Annex/8.1_Prices_and_purities_of_drugs.xlsx",
+        "sourceEdition": "2026",
         "localDataDate": "2026-09-08",
         "input": {
           "path": "src/data/prices.ts",
-          "sha256": "ee5073d74347e386e43449d61b662c0abf338d16dd71da0f28f20e43e9557748"
+          "sha256": "e36c1d7267df5b2d238bbaad6371043cfed73112a80821ba2ff1d107a452f969"
         }
       },
       "data": {
-        "recordCount": 9,
+        "recordCount": 25,
         "countries": [
           {
             "geography": {
@@ -71,31 +71,73 @@
               "iso3": "CHN"
             },
             "coverageStatus": "observed",
-            "recordCount": 4,
+            "recordCount": 11,
             "observations": [
               {
                 "drug": "cannabis",
-                "year": 2019,
-                "priceUsdPerGram": 39.65,
+                "year": 2021,
+                "priceUsdPerGram": 55.59,
                 "purityPct": null
               },
               {
-                "drug": "cocaine",
-                "year": 2019,
-                "priceUsdPerGram": 127.21,
-                "purityPct": 40
+                "drug": "cannabis",
+                "year": 2023,
+                "priceUsdPerGram": 47.21,
+                "purityPct": null
               },
               {
                 "drug": "heroin",
-                "year": 2019,
-                "priceUsdPerGram": 88.18,
-                "purityPct": 35
+                "year": 2020,
+                "priceUsdPerGram": 122.84,
+                "purityPct": 44
+              },
+              {
+                "drug": "heroin",
+                "year": 2021,
+                "priceUsdPerGram": 141.38,
+                "purityPct": null
+              },
+              {
+                "drug": "heroin",
+                "year": 2022,
+                "priceUsdPerGram": 187.82,
+                "purityPct": null
+              },
+              {
+                "drug": "heroin",
+                "year": 2023,
+                "priceUsdPerGram": 207.08,
+                "purityPct": null
+              },
+              {
+                "drug": "heroin",
+                "year": 2024,
+                "priceUsdPerGram": 222.35,
+                "purityPct": null
               },
               {
                 "drug": "methamphetamine",
-                "year": 2019,
-                "priceUsdPerGram": 50.13,
-                "purityPct": 72
+                "year": 2020,
+                "priceUsdPerGram": 123.42,
+                "purityPct": 90
+              },
+              {
+                "drug": "methamphetamine",
+                "year": 2022,
+                "priceUsdPerGram": 179.77,
+                "purityPct": null
+              },
+              {
+                "drug": "methamphetamine",
+                "year": 2023,
+                "priceUsdPerGram": 228.35,
+                "purityPct": null
+              },
+              {
+                "drug": "methamphetamine",
+                "year": 2024,
+                "priceUsdPerGram": 291.83,
+                "purityPct": null
               }
             ]
           },
@@ -106,24 +148,90 @@
               "iso3": "MMR"
             },
             "coverageStatus": "observed",
-            "recordCount": 3,
+            "recordCount": 14,
             "observations": [
               {
                 "drug": "cannabis",
-                "year": 2019,
-                "priceUsdPerGram": 0.2,
+                "year": 2020,
+                "priceUsdPerGram": 0.25,
+                "purityPct": null
+              },
+              {
+                "drug": "cannabis",
+                "year": 2021,
+                "priceUsdPerGram": 0.22,
+                "purityPct": null
+              },
+              {
+                "drug": "cannabis",
+                "year": 2022,
+                "priceUsdPerGram": 0.18,
+                "purityPct": null
+              },
+              {
+                "drug": "cannabis",
+                "year": 2023,
+                "priceUsdPerGram": 0.16,
+                "purityPct": null
+              },
+              {
+                "drug": "cannabis",
+                "year": 2024,
+                "priceUsdPerGram": 0.09,
                 "purityPct": null
               },
               {
                 "drug": "heroin",
-                "year": 2019,
-                "priceUsdPerGram": 19.63,
+                "year": 2020,
+                "priceUsdPerGram": 25.35,
+                "purityPct": null
+              },
+              {
+                "drug": "heroin",
+                "year": 2021,
+                "priceUsdPerGram": 22.09,
+                "purityPct": null
+              },
+              {
+                "drug": "heroin",
+                "year": 2022,
+                "priceUsdPerGram": 1.82,
+                "purityPct": null
+              },
+              {
+                "drug": "heroin",
+                "year": 2023,
+                "priceUsdPerGram": 15.95,
+                "purityPct": null
+              },
+              {
+                "drug": "heroin",
+                "year": 2024,
+                "priceUsdPerGram": 9.33,
                 "purityPct": null
               },
               {
                 "drug": "methamphetamine",
-                "year": 2019,
-                "priceUsdPerGram": 6.54,
+                "year": 2020,
+                "priceUsdPerGram": 1.45,
+                "purityPct": null
+              },
+              {
+                "drug": "methamphetamine",
+                "year": 2021,
+                "priceUsdPerGram": 12.62,
+                "purityPct": null
+              },
+              {
+                "drug": "methamphetamine",
+                "year": 2022,
+                "priceUsdPerGram": 10.39,
+                "purityPct": null
+              },
+              {
+                "drug": "methamphetamine",
+                "year": 2023,
+                "priceUsdPerGram": 9.12,
                 "purityPct": null
               }
             ]
@@ -134,27 +242,17 @@
               "iso2": "PK",
               "iso3": "PAK"
             },
-            "coverageStatus": "observed",
-            "recordCount": 2,
-            "observations": [
-              {
-                "drug": "cocaine",
-                "year": 2019,
-                "priceUsdPerGram": 106.42,
-                "purityPct": null
-              },
-              {
-                "drug": "methamphetamine",
-                "year": 2019,
-                "priceUsdPerGram": 9.98,
-                "purityPct": null
-              }
-            ]
+            "coverageStatus": "no_matching_rows_in_snapshot",
+            "recordCount": 0,
+            "observations": []
           }
         ]
       },
       "limitations": [
-        "The retained extract contains one year for these countries and cannot establish a trend.",
+        "Country and drug reporting is incomplete across years; absent rows are unavailable, and no missing year is interpolated.",
+        "Pakistan has no matching retail per-gram observations in this retained edition; this is not evidence of a zero price or absent drug market.",
+        "This legacy four-drug summary pools reviewed forms and reports; use the global drugs dataset for separate source entries and original units.",
+        "WDR data reproduction is limited to educational and non-profit use with attribution; commercial reuse requires prior written UNODC permission.",
         "Prices are nominal reported retail values, not market-size, availability or transaction-volume estimates.",
         "Cross-country price comparisons require exchange-rate, purchasing-power, purity and reporting-context caveats."
       ]

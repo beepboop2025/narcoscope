@@ -2,7 +2,7 @@
 
 NarcoScope is a free public-interest evidence explorer that translates aggregate official drug-market, organized-crime, firearms-tracing, and public-designation records into inspectable maps, comparisons, plain-language explanations, and deterministic newsroom analyses.
 
-Current public contract version: 1.5.0
+Current public contract version: 1.6.0
 
 Canonical live site: https://narcoscope.com
 Canonical domain status: configured and verified live on 2026-08-29

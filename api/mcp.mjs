@@ -17,6 +17,8 @@ import {
 import { TOOL_OUTPUT_SCHEMAS } from './lib/mcp-output-schemas.mjs'
 import { PALIMPSEST_BRI_OUTPUT_SCHEMA } from './lib/palimpsest-bri.mjs'
 import { CONNECTED_OUTPUT_SCHEMA, loadConnectedResearch } from '../lib/connected-research.mjs'
+import { getMarketCatalog, queryMarketObservations, MARKET_QUERY_INPUT_SCHEMA } from '../lib/global-markets.mjs'
+import { MARKET_CATALOG_OUTPUT_SCHEMA, MARKET_QUERY_OUTPUT_SCHEMA } from '../lib/global-market-schemas.mjs'
 
 export const PROTOCOL_VERSION = '2026-07-28'
 export const LEGACY_PROTOCOL_VERSION = '2025-06-18'
@@ -25,7 +27,7 @@ export const SUPPORTED_PROTOCOL_VERSIONS = new Set([
   LEGACY_PROTOCOL_VERSION,
   PROTOCOL_VERSION,
 ])
-export const SERVER_VERSION = '1.5.0'
+export const SERVER_VERSION = '1.6.0'
 const MAX_BODY_BYTES = 256 * 1024
 const DISCOVERY_TTL_MS = 5 * 60 * 1000
 const PUBLIC_CACHE_SCOPE = 'public'
@@ -173,6 +175,20 @@ export const TOOLS = Object.freeze({
     outputSchema: CONNECTED_OUTPUT_SCHEMA,
     call: async () => loadConnectedResearch(),
   },
+  get_market_catalog: {
+    title: 'Discover granular global market evidence',
+    description: 'List drugs, arms and informal-economy datasets, native indicator units, exact country/category/subgroup dimensions, numeric and unavailable coverage, source hashes and source-specific reuse restrictions. Legacy atlas and price histories remain distinct resources.',
+    inputSchema: { type: 'object', additionalProperties: false },
+    outputSchema: MARKET_CATALOG_OUTPUT_SCHEMA,
+    call: getMarketCatalog,
+  },
+  query_market_observations: {
+    title: 'Query granular market observations',
+    description: 'Filter published observations by dataset, indicator, geography, category, subgroup and inclusive reference period with bounded stable pagination (default 200, maximum 500). Retain dataset hashes across pages. Units, source locators, estimates and unavailable values remain explicit. No market-size aggregation, unit conversion or causal inference.',
+    inputSchema: MARKET_QUERY_INPUT_SCHEMA,
+    outputSchema: MARKET_QUERY_OUTPUT_SCHEMA,
+    call: queryMarketObservations,
+  },
 })
 
 const contractValidator = new Ajv2020({ allErrors: true, strict: true, validateFormats: true })
@@ -189,7 +205,7 @@ const SERVER_INFO = Object.freeze({
   version: SERVER_VERSION,
 })
 const SERVER_CAPABILITIES = Object.freeze({ tools: Object.freeze({ listChanged: false }) })
-const SERVER_INSTRUCTIONS = 'Use NarcoScope for aggregate official drug-market evidence, country-year illicit-economy context, privacy-minimized administrative designations, and bounded newsroom analysis. Start with list_capabilities, get_atlas, or get_newsroom. Treat seizures and designations as administrative observations, not trafficking-volume estimates or proof of guilt. Seiche and Palimpsest remain separate evidence lanes: never create a shared score or composite, or infer guilt, culpability, political or armed-actor relationships, bilateral routes, project effects, tactical or navigable use, or causality from shared geography, timing, origin labels, designations, or Belt and Road context.'
+const SERVER_INSTRUCTIONS = 'Use NarcoScope for aggregate official drug-market evidence, country-year illicit-economy context, privacy-minimized administrative designations, and bounded newsroom analysis. Start with list_capabilities, get_market_catalog, get_atlas, or get_newsroom. Query granular country/category/subgroup/period observations with query_market_observations; preserve their source-specific licenses, units, estimates and dataset hashes across pages. Do not add administrative counts, legal arms-transfer indicators or modeled informal output into an illicit-market total. Treat seizures and designations as administrative observations, not trafficking-volume estimates or proof of guilt. Seiche and Palimpsest remain separate evidence lanes: never create a shared score or composite, or infer guilt, culpability, political or armed-actor relationships, bilateral routes, project effects, tactical or navigable use, or causality from shared geography, timing, origin labels, designations, or Belt and Road context.'
 
 export function toolInputIsValid(name, data) {
   return INPUT_VALIDATORS[name]?.(data) === true
