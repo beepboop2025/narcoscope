@@ -333,3 +333,11 @@ playbook is [`docs/DATA_PIPELINE.md`](./docs/DATA_PIPELINE.md).
 ## License
 
 [MIT](./LICENSE) — free to use, adapt, and build on, with attribution.
+
+## Connected China and regional research
+
+BRI, CPEC/Gwadar, Balochistan and Myanmar views include a shared Palimpsest research desk. Switch the research area to China for detailed NBS findings. Annual national debt, reserve, current-account and inflation comparisons keep reference years visible; they do not measure project or district outcomes.
+
+The REST resource is `/api/v1/connected-research`; MCP exposes `get_connected_research`. Both serve the validated `public/data/palimpsest-connected-research-v1.json` snapshot with its SHA-256 sidecar. `npm run bridge:connected:sync` refreshes from the fixed Palimpsest URL; `npm run bridge:connected:check` verifies the packaged copy offline. The Hetzner wire publisher refreshes it during scheduled publication. Failed acquisition preserves the dated copy.
+
+NBS statistical-data attribution, World Bank CC BY 4.0 attribution and publisher metadata-only terms remain source-specific. Shared geography or timing does not establish actor relationships, culpability or causality. Detailed collector/analysis methods are in Palimpsest’s `docs/CONNECTED-ECONOMIC-RESEARCH.md`.

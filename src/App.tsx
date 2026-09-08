@@ -20,6 +20,7 @@ export { resolveCorridorTabIndex } from './components/EvidenceCorridor'
 const WorldMap = lazy(() => import('./components/WorldMap'))
 const MyanmarFocus = lazy(() => import('./components/MyanmarFocus'))
 const BriDossier = lazy(() => import('./components/BriDossier'))
+const ConnectedResearch = lazy(() => import('./components/ConnectedResearch'))
 const IntelligenceBriefing = lazy(() => import('./components/IntelligenceBriefing'))
 // Both lazy: each pulls in a several-hundred-kB bundled dataset (CDC mortality,
 // OFAC designations) that has no business in the initial payload.
@@ -160,11 +161,12 @@ export default function App() {
             {tab === 'designations' && <Designations />}
             {tab === 'illicitfinance' && <IllicitFinance />}
             {tab === 'wildlife' && <WildlifeSeizures />}
-            {tab === 'bri' && <BriDossier scope="bri" />}
-            {tab === 'balochistan' && <BriDossier scope="balochistan" />}
-            {tab === 'pakistan-gwadar' && <BriDossier scope="pakistan-gwadar" />}
+            {tab === 'bri' && <><ConnectedResearch region="bri" /><BriDossier scope="bri" /></>}
+            {tab === 'balochistan' && <><ConnectedResearch region="balochistan" /><BriDossier scope="balochistan" /></>}
+            {tab === 'pakistan-gwadar' && <><ConnectedResearch region="cpec" /><BriDossier scope="pakistan-gwadar" /></>}
             {tab === 'myanmar' && (
               <div className="myanmar-workspace">
+                <ConnectedResearch region="myanmar" />
                 <BriDossier scope="myanmar" />
                 <div className="bri-parallel-divider" role="note" aria-label="Separate Myanmar evidence lane">
                   <span>Separate NarcoScope lane</span>

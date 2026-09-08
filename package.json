@@ -1,12 +1,12 @@
 {
   "name": "narcoscope",
   "private": true,
-  "version": "1.4.0",
+  "version": "1.5.0",
   "license": "MIT",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "npm run bridge:palimpsest-bri:check && npm run news:check && npm run wire:check && tsc --noEmit && vite build",
+    "build": "npm run bridge:palimpsest-bri:check && npm run bridge:connected:check && npm run news:check && npm run wire:check && tsc --noEmit && vite build",
     "start": "node server.mjs",
     "preview": "vite preview",
     "scrape:myanmar": "node scripts/scrape/myanmar-conflict-precursors.mjs",
@@ -25,7 +25,9 @@
     "data:overdose": "node scripts/convert/cdc-overdose-to-json.mjs",
     "data:designations": "node scripts/convert/ofac-designations-to-json.mjs",
     "data:wastewater": "node scripts/convert/statcan-wastewater-to-json.mjs",
-    "private:import:scamshield": "node scripts/private/import-scamshield-summary.mjs"
+    "private:import:scamshield": "node scripts/private/import-scamshield-summary.mjs",
+    "bridge:connected:sync": "node scripts/bridge/sync-connected-research.mjs",
+    "bridge:connected:check": "node scripts/bridge/sync-connected-research.mjs --check"
   },
   "dependencies": {
     "@react-spring/web": "^9.7.5",

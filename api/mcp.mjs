@@ -16,6 +16,7 @@ import {
 } from './lib/narcoscope.mjs'
 import { TOOL_OUTPUT_SCHEMAS } from './lib/mcp-output-schemas.mjs'
 import { PALIMPSEST_BRI_OUTPUT_SCHEMA } from './lib/palimpsest-bri.mjs'
+import { CONNECTED_OUTPUT_SCHEMA, loadConnectedResearch } from '../lib/connected-research.mjs'
 
 export const PROTOCOL_VERSION = '2026-07-28'
 export const LEGACY_PROTOCOL_VERSION = '2025-06-18'
@@ -24,7 +25,7 @@ export const SUPPORTED_PROTOCOL_VERSIONS = new Set([
   LEGACY_PROTOCOL_VERSION,
   PROTOCOL_VERSION,
 ])
-export const SERVER_VERSION = '1.4.0'
+export const SERVER_VERSION = '1.5.0'
 const MAX_BODY_BYTES = 256 * 1024
 const DISCOVERY_TTL_MS = 5 * 60 * 1000
 const PUBLIC_CACHE_SCOPE = 'public'
@@ -164,6 +165,13 @@ export const TOOLS = Object.freeze({
     inputSchema: { type: 'object', additionalProperties: false },
     outputSchema: PALIMPSEST_BRI_OUTPUT_SCHEMA,
     call: async (_args, { getBriContext = getPalimpsestBriContext } = {}) => getBriContext(),
+  },
+  get_connected_research: {
+    title: 'Read China and regional economic research',
+    description: 'Return source-linked China economic findings, CPEC, Balochistan, BRI and Myanmar research questions, reporting metadata, and national debt and welfare indicators with their own dates. Country and theme context only; no actor or causal inference.',
+    inputSchema: { type: 'object', additionalProperties: false },
+    outputSchema: CONNECTED_OUTPUT_SCHEMA,
+    call: async () => loadConnectedResearch(),
   },
 })
 

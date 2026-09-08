@@ -153,12 +153,27 @@ publish_if_changed() {
   WORKTREE_ADDED=1
 
   local public_wire="$RUN_DIR/public/data/evidence-wire-v1.json"
+  local research_changed=0
+  local generated_paths=("public/data/evidence-wire-v1.json")
+  if [[ -f "$RUN_DIR/scripts/bridge/sync-connected-research.mjs" ]]; then
+    if node "$RUN_DIR/scripts/bridge/sync-connected-research.mjs"; then
+      node "$RUN_DIR/scripts/bridge/sync-connected-research.mjs" --check
+      generated_paths+=("public/data/palimpsest-connected-research-v1.json" "public/data/palimpsest-connected-research-v1.json.sha256")
+      if ! git -C "$RUN_DIR" diff --quiet -- "public/data/palimpsest-connected-research-v1.json"; then
+        research_changed=1
+      fi
+    else
+      log "Palimpsest research refresh unavailable; retaining the packaged snapshot"
+    fi
+  fi
   local semantic_result=10
   if [[ -f "$public_wire" ]]; then
     if node "$RUN_DIR/scripts/wire/collect.mjs" --output "$LATEST" --semantic-equal "$public_wire"; then
-      write_publication_receipt "no_changes" "$(git -C "$RUN_DIR" rev-parse HEAD)"
-      log "no semantic public-wire changes"
-      return
+      if [[ "$research_changed" -eq 0 ]]; then
+        write_publication_receipt "no_changes" "$(git -C "$RUN_DIR" rev-parse HEAD)"
+        log "no semantic public-wire or connected-research changes"
+        return
+      fi
     else
       semantic_result=$?
       if [[ "$semantic_result" -ne 10 ]]; then
@@ -170,8 +185,8 @@ publish_if_changed() {
 
   install -m 0644 -- "$LATEST" "$public_wire"
   node "$RUN_DIR/scripts/wire/collect.mjs" --check --output "$public_wire"
-  git -C "$RUN_DIR" add -- "public/data/evidence-wire-v1.json"
-  if git -C "$RUN_DIR" diff --cached --quiet -- "public/data/evidence-wire-v1.json"; then
+  git -C "$RUN_DIR" add -- "${generated_paths[@]}"
+  if git -C "$RUN_DIR" diff --cached --quiet -- "${generated_paths[@]}"; then
     write_publication_receipt "byte_only_noop" "$(git -C "$RUN_DIR" rev-parse HEAD)"
     log "semantic change produced no Git diff"
     return

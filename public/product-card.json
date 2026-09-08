@@ -1,6 +1,6 @@
 {
   "schema": "product-card.v1",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "name": "NarcoScope",
   "category": "public-interest evidence explorer",
   "headline": "Drug-market records you can inspect, cite, and challenge.",

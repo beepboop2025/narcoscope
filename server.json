@@ -3,7 +3,7 @@
   "name": "io.github.beepboop2025/narcoscope",
   "title": "NarcoScope — illicit-economy evidence atlas",
   "description": "Read bounded illicit-economy evidence with provenance, privacy, availability, and federation intact.",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "repository": {
     "url": "https://github.com/beepboop2025/narcoscope",
     "source": "github"

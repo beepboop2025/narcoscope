@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "NarcoScope Public Evidence API",
-    "version": "1.4.0",
+    "version": "1.5.0",
     "description": "Read-only access to NarcoScope's aggregate official-data overview, country-year illicit-economy atlas, privacy-minimized public designations, citation-gated newsroom, and non-joinable Seiche and Palimpsest context lanes. No endpoint provides point-of-sale, real-time, navigable, synthesis-route, or yield information; no federation endpoint creates a shared score, composite, causal inference, or culpability inference."
   },
   "servers": [
@@ -2319,6 +2319,24 @@
           },
           "503": {
             "$ref": "#/components/responses/Unavailable"
+          }
+        }
+      }
+    },
+    "/connected-research": {
+      "get": {
+        "summary": "Connected China and regional research",
+        "description": "Source-linked China economic findings, CPEC, Balochistan, BRI and Myanmar research questions, dated reporting and national economic indicators. No actor or causal inference.",
+        "responses": {
+          "200": {
+            "description": "Hash-verified packaged research snapshot",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
           }
         }
       }
