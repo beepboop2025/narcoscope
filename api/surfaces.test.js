@@ -193,7 +193,11 @@ describe('NarcoScope public surfaces', () => {
         id: name,
         method: 'tools/call',
         params: { name, arguments: argumentsByTool[name] ?? {} },
-      })
+      }, name === 'research_network' ? { fetchImpl: async () => new Response(JSON.stringify({
+        schema: 'seiche.research-network.v1', status: 'available', context_only: true,
+        selection: { topic: 'all', offset: 0, limit: 12 }, datasets: [],
+        eligibility: { blend_into_score: false, training: false, execution: false },
+      })) } : {})
       expect(response.result.isError).toBe(false)
       expect(
         validate(response.result.structuredContent),

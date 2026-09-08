@@ -15,6 +15,7 @@ import {
   SITE_URL,
 } from './lib/narcoscope.mjs'
 import { TOOL_OUTPUT_SCHEMAS } from './lib/mcp-output-schemas.mjs'
+import { readResearchNetwork, RESEARCH_NETWORK_INPUT_SCHEMA, RESEARCH_NETWORK_OUTPUT_SCHEMA } from '../lib/research-network.mjs'
 import { PALIMPSEST_BRI_OUTPUT_SCHEMA } from './lib/palimpsest-bri.mjs'
 import { CONNECTED_OUTPUT_SCHEMA, loadConnectedResearch } from '../lib/connected-research.mjs'
 import { getMarketCatalog, queryMarketObservations, MARKET_QUERY_INPUT_SCHEMA } from '../lib/global-markets.mjs'
@@ -44,6 +45,12 @@ const ALLOWED_ORIGINS = new Set([
 ])
 
 export const TOOLS = Object.freeze({
+  research_network: {
+    title: 'Connect global evidence with funding and institution research',
+    description: 'Read Palimpsest’s complete source catalog by topic alongside Seiche funding context, with next steps into LiquiLens filings and Undertow liquidity. Source dates, rights and missingness stay attached; no actor, route, criminal or causal inference is implied.',
+    inputSchema: RESEARCH_NETWORK_INPUT_SCHEMA, outputSchema: RESEARCH_NETWORK_OUTPUT_SCHEMA,
+    call: readResearchNetwork,
+  },
   list_capabilities: {
     title: 'Discover NarcoScope',
     description: 'List the evidence explorer, newsroom, API, feeds, MCP tools, audiences, and safety boundaries.',

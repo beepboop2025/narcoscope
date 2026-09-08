@@ -25,6 +25,7 @@ export default function ResearchNav({ activeTab, onSelect }: { activeTab: string
         <div className="workspace-nav__section"><p>Connected regional desks</p>{PRIMARY_DOSSIERS.map(item)}</div>
       </>}
       <a className="workspace-nav__partner" href="https://www.palimpsest.info/china/evidence/">Palimpsest<span>China, economics and the public record</span></a>
+      <a className="workspace-nav__partner" href="https://seiche.info/#RESEARCH/global_data/0">Seiche<span>Connect this evidence with funding, institution and liquidity research</span></a>
     </div>
   </nav>
 }

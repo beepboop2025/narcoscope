@@ -353,3 +353,16 @@ The shared dark research interface connects NarcoScope and Palimpsest. The data 
 The new library contains 129,217 source cells (74,373 numerical observations and 54,844 explicitly unavailable cells) across 58 indicators. Sources include the WDR2026 drug annexes, monthly Statistics Canada wastewater measurements, World Bank informality estimates, and source-licensed WDI conventional-arms and firm-survey series. Armament transfer TIV is not a monetary value or a classification of illegal trade. Informality models do not measure the entire black economy. Each source retains its reference dates and restrictions.
 
 `npm run markets:check` verifies the public source-bound catalog and contracts; `npm run workspace:build` produces the portable explorer used by Palimpsest. `/api/v1/markets` discovers coverage and valid filter combinations; `/api/v1/market-observations` returns paginated measurements. The MCP equivalents are `get_market_catalog` and `query_market_observations`. The source datasets remain external to the initial JavaScript bundle.
+
+## Connected research
+
+The Seiche `research_network` tool and `/api/v2/research-network` endpoint
+connect Palimpsest's complete source catalog with separately completed funding
+context and explicit research steps into LiquiLens, Undertow and NarcoScope.
+Use `topic`, `offset` and `limit`; follow `next_offset` for remaining datasets.
+The human desk is <https://seiche.info/#RESEARCH>. Telegram readers can use
+`/research china`, `/research regions` or `/research liquidity`.
+
+Catalog rows are references, not permission to redistribute source values or
+change a score. Source clocks, rights and missingness remain attached. The
+retrieved catalog hash is a byte identity, not a producer attestation.

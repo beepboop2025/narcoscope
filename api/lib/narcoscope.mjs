@@ -5,6 +5,7 @@ import { getFederation } from './federation.mjs'
 import { getAtlas, getEntities } from './illicit-economy.mjs'
 import { verifiedPalimpsestBriEnvelope } from './palimpsest-bri.mjs'
 import { loadConnectedResearch } from '../../lib/connected-research.mjs'
+import { readResearchNetwork } from '../../lib/research-network.mjs'
 import { getMarketCatalog, queryMarketObservations } from '../../lib/global-markets.mjs'
 
 export { getAtlas, getEntities, getFederation }
@@ -99,7 +100,7 @@ export function capabilities() {
       openapi: `${SITE_URL}/openapi.json`,
       resources: [
         'capabilities', 'overview', 'atlas', 'entities', 'federation', 'newsroom', 'story',
-        'palimpsest-bridge', 'palimpsest-corridors', 'palimpsest-bri', 'connected-research', 'markets', 'market-observations',
+        'palimpsest-bridge', 'palimpsest-corridors', 'palimpsest-bri', 'connected-research', 'research-network', 'markets', 'market-observations',
       ],
     },
     mcp: {
@@ -111,6 +112,7 @@ export function capabilities() {
       discovery_method: 'server/discover',
       legacy_initialization: true,
       tools: [
+        'research_network',
         'list_capabilities', 'get_overview', 'get_atlas', 'get_entities', 'get_federation',
         'get_newsroom', 'get_story', 'get_palimpsest_bridge', 'get_palimpsest_corridors',
         'get_palimpsest_bri_context', 'get_connected_research', 'get_market_catalog', 'query_market_observations',
@@ -247,6 +249,7 @@ export async function resource(name, params = {}, dependencies = {}) {
     case 'palimpsest-corridors': return getPalimpsestCorridors()
     case 'palimpsest-bri': return getBriContext()
     case 'connected-research': return loadConnectedResearch()
+    case 'research-network': return readResearchNetwork(params, dependencies)
     case 'markets': return getMarketCatalog(params, dependencies)
     case 'market-observations': return queryMarketObservations(params, dependencies)
     default: throw new RangeError(`unknown resource: ${name}`)

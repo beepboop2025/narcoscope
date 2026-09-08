@@ -38,7 +38,8 @@
     "atlas": "https://narcoscope.com/api/v1/atlas",
     "entities": "https://narcoscope.com/api/v1/entities",
     "federation": "https://narcoscope.com/api/v1/federation",
-    "connectedResearch": "https://narcoscope.com/api/v1/connected-research"
+    "connectedResearch": "https://narcoscope.com/api/v1/connected-research",
+    "researchNetwork": "https://narcoscope.com/api/v1/research-network"
   },
   "evidenceBoundaries": {
     "missingValuePolicy": "unavailable_not_zero",
