@@ -37,8 +37,9 @@ class BoundaryTests(unittest.TestCase):
         try:
             request = urllib.request.Request(f"http://127.0.0.1:{server.server_port}/start",
                                              headers={"Authorization": "Bearer fixture"})
-            with self.assertRaises(urllib.error.HTTPError):
+            with self.assertRaises(urllib.error.HTTPError) as raised:
                 urllib.request.build_opener(refresh.NoRedirect()).open(request, timeout=3)
+            raised.exception.close()
             self.assertEqual(received, ["/start"])
         finally:
             server.shutdown()

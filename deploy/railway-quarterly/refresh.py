@@ -79,6 +79,7 @@ class GitHub:
             with urllib.request.build_opener(NoRedirect()).open(request, timeout=30) as response:
                 raw = response.read(2 * 1024 * 1024 + 1)
         except urllib.error.HTTPError as error:
+            error.close()
             raise RuntimeError(f"GitHub {method} {path}: HTTP {error.code}") from None
         if len(raw) > 2 * 1024 * 1024:
             raise ValueError("GitHub response exceeds limit")
