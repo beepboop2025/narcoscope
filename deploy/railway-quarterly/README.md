@@ -12,6 +12,10 @@ no credentials; `QUARTERLY_APPLY=1` additionally requires `GITHUB_DEPLOY_KEY` fo
 this repository and the owner's existing `GITHUB_TOKEN` for draft PR creation.
 Both credentials stay in the root controller. The candidate gets a clean
 environment, closed inherited descriptors, UID/GID 65532 and no_new_privs.
+Authenticated API redirects are rejected. `assemble.py` verifies the exact
+commit against an explicitly supplied trusted SSH allowed-signers file and
+materializes only fixed Git blobs. The image and runtime verify its source and
+per-file manifest before executing the controller.
 
 Source code remains root-owned. Only data outputs and disposable dependency/raw
 directories are writable. All candidate processes are killed before the
@@ -20,8 +24,9 @@ reviewed paths, then constructs a Git tree directly from the accepted bytes.
 The current main must still match the tested source before any push.
 
 Proposals use `data-refresh/railway-YYYY-qN`. An existing open proposal is left for
-review; the controller never force-pushes, replaces an existing branch, merges a
-PR, or modifies repository permissions. A branch left without a PR after an API
+review; an empty expected-ref lease permits only atomic creation of a missing
+branch. The controller never replaces an existing branch, merges a PR, or
+modifies repository permissions. A branch left without a PR after an API
 failure is an explicit recovery condition. A source, parser or data-validation
 failure produces no proposal. Manual and API-key source classes remain excluded
 by the existing pipeline. Native CI and Registry publication keep their separate

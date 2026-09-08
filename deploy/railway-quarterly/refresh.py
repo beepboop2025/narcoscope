@@ -20,6 +20,7 @@ REPOSITORY = "beepboop2025/narcoscope"
 REMOTE = "https://github.com/" + REPOSITORY + ".git"
 MAX_TREE_BYTES = 512 * 1024 * 1024
 DISPOSABLE = {"node_modules", "data-raw"}
+CONTROLLER_FILES = ("Dockerfile", "refresh.py", "isolation.py", "test_refresh.py", "github-known-hosts")
 PUBLIC_FILES = {
     "public/data/narcoscope-palimpsest-v1.json",
     "public/data/narcoscope-palimpsest-corridors-v2.json",
@@ -29,9 +30,20 @@ PUBLIC_FILES = {
 
 
 def controller_digest():
-    files = ("Dockerfile", "refresh.py", "isolation.py", "test_refresh.py", "github-known-hosts")
     return digest(b"".join(name.encode() + b"\0" + (CONTROLLER / name).read_bytes()
-                           for name in files))
+                           for name in CONTROLLER_FILES))
+
+
+def verify_controller():
+    manifest = json.loads(read_regular(CONTROLLER / "manifest.json"))
+    if (manifest.get("schema") != 1 or manifest.get("repository") != REPOSITORY or
+            not re.fullmatch(r"[a-f0-9]{40}", manifest.get("source_commit", "")) or
+            set(manifest.get("files", {})) != set(CONTROLLER_FILES)):
+        raise ValueError("Invalid controller manifest")
+    for name, expected in manifest["files"].items():
+        if digest(read_regular(CONTROLLER / name)) != expected:
+            raise ValueError("Controller bytes differ from signed assembly")
+    return manifest["source_commit"]
 
 
 def allowed_output(name):
@@ -44,6 +56,11 @@ def allowed_output(name):
 
 def quarter_branch(now):
     return f"data-refresh/railway-{now.year}-q{(now.month - 1) // 3 + 1}"
+
+
+class NoRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, request, fp, code, message, headers, new_url):
+        raise urllib.error.HTTPError(request.full_url, code, "Authenticated redirects refused", headers, fp)
 
 
 class GitHub:
@@ -59,7 +76,7 @@ class GitHub:
                 "Accept": "application/vnd.github+json", "Content-Type": "application/json",
                 "X-GitHub-Api-Version": "2022-11-28", "User-Agent": "narcoscope-quarterly-railway"})
         try:
-            with urllib.request.urlopen(request, timeout=30) as response:
+            with urllib.request.build_opener(NoRedirect()).open(request, timeout=30) as response:
                 raw = response.read(2 * 1024 * 1024 + 1)
         except urllib.error.HTTPError as error:
             raise RuntimeError(f"GitHub {method} {path}: HTTP {error.code}") from None
@@ -202,7 +219,12 @@ def propose(mirror, env, source, changed, branch, api, deployment, apply):
         return commit
     if git(mirror, env, "ls-remote", "origin", "refs/heads/" + branch).strip():
         raise ValueError("Quarterly branch already exists; refusing to replace it")
-    git(mirror, env, "push", "git@github.com:" + REPOSITORY + ".git", f"{commit}:refs/heads/{branch}")
+    if git(mirror, env, "ls-remote", "origin", "refs/heads/main").decode().split()[0] != source:
+        raise ValueError("Main advanced immediately before proposal push")
+    # An empty expected ref is an atomic create-only condition. Even a branch
+    # created after ls-remote cannot be overwritten or fast-forwarded here.
+    git(mirror, env, "push", f"--force-with-lease=refs/heads/{branch}:",
+        "git@github.com:" + REPOSITORY + ".git", f"{commit}:refs/heads/{branch}")
     body = (f"Quarterly proposal generated from `{source}` by the isolated Railway controller.\n\n"
             "The existing open-data fetch, transform, TypeScript and dataset-integrity tests passed. "
             "Review the data and source changes before merging; this job does not publish or merge.\n\n"
@@ -221,6 +243,7 @@ def main():
     if os.geteuid() != 0:
         raise RuntimeError("Controller requires root; candidate runs as separate UID")
     resource.setrlimit(resource.RLIMIT_CORE, (0, 0))
+    controller_source = verify_controller()
     apply = os.getenv("QUARTERLY_APPLY") == "1"
     token = os.environ.pop("GITHUB_TOKEN", "")
     key = os.environ.pop("GITHUB_DEPLOY_KEY", "")
@@ -254,7 +277,8 @@ def main():
         work = public_root / "repo"
         work.mkdir(mode=0o755)
         baseline = checkout(mirror, env, source, work)
-        event("quarterly_start", source=source, deployment=deployment, controller=controller_digest())
+        event("quarterly_start", source=source, deployment=deployment,
+              controller=controller_digest(), controller_source=controller_source)
         run_step(work, public_root / "npm", ["npm", "ci"], 300)
         run_step(work, public_root / "pipeline", ["node", "scripts/pipeline/run.mjs"], 1500)
         changed = validate_outputs(work, baseline)

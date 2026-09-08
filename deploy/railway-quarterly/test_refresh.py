@@ -2,18 +2,90 @@
 
 from datetime import datetime, timezone
 import json
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import os
 from pathlib import Path
 import subprocess
 import tempfile
+import threading
 import unittest
 from unittest.mock import patch
+import urllib.error
+import urllib.request
 
 import refresh
 import isolation
 
 
 class BoundaryTests(unittest.TestCase):
+    def test_authenticated_redirect_never_reaches_target(self):
+        received = []
+
+        class Handler(BaseHTTPRequestHandler):
+            def do_GET(self):
+                received.append(self.path)
+                self.send_response(302)
+                self.send_header("Location", "/credential-target")
+                self.end_headers()
+
+            def log_message(self, *args):
+                pass
+
+        server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        try:
+            request = urllib.request.Request(f"http://127.0.0.1:{server.server_port}/start",
+                                             headers={"Authorization": "Bearer fixture"})
+            with self.assertRaises(urllib.error.HTTPError):
+                urllib.request.build_opener(refresh.NoRedirect()).open(request, timeout=3)
+            self.assertEqual(received, ["/start"])
+        finally:
+            server.shutdown()
+            server.server_close()
+            thread.join()
+
+    def test_controller_manifest_rejects_changed_program(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            files = {name: refresh.digest(b"trusted") for name in refresh.CONTROLLER_FILES}
+            for name in files:
+                (root / name).write_bytes(b"trusted")
+            (root / "manifest.json").write_text(json.dumps({"schema": 1,
+                "repository": refresh.REPOSITORY, "source_commit": "a" * 40, "files": files}))
+            with patch.object(refresh, "CONTROLLER", root):
+                self.assertEqual(refresh.verify_controller(), "a" * 40)
+                (root / "isolation.py").write_bytes(b"modified")
+                with self.assertRaisesRegex(ValueError, "differ"):
+                    refresh.verify_controller()
+
+    def test_empty_ref_lease_rejects_concurrent_branch_creation(self):
+        # Real Git regression: an ordinary push could fast-forward this other
+        # writer's branch. The reviewed empty-ref condition must reject it.
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            remote = root / "origin.git"
+            local = root / "writer.git"
+            env = {**os.environ, "GIT_CONFIG_NOSYSTEM": "1", "GIT_CONFIG_GLOBAL": "/dev/null",
+                   "GIT_AUTHOR_NAME": "fixture", "GIT_COMMITTER_NAME": "fixture",
+                   "GIT_AUTHOR_EMAIL": "fixture@example.invalid", "GIT_COMMITTER_EMAIL": "fixture@example.invalid"}
+
+            def git(*args, data=None):
+                return subprocess.check_output(["git", *args], input=data, env=env,
+                                               stderr=subprocess.DEVNULL).decode().strip()
+
+            git("init", "--bare", str(remote))
+            git("init", "--bare", str(local))
+            tree = git("--git-dir", str(local), "mktree", data=b"")
+            first = git("--git-dir", str(local), "commit-tree", tree, data=b"first\n")
+            second = git("--git-dir", str(local), "commit-tree", tree, "-p", first, data=b"second\n")
+            ref = "refs/heads/data-refresh/railway-2026-q3"
+            git("--git-dir", str(local), "push", str(remote), f"{first}:{ref}")
+            with self.assertRaises(subprocess.CalledProcessError):
+                git("--git-dir", str(local), "push", f"--force-with-lease={ref}:",
+                    str(remote), f"{second}:{ref}")
+            self.assertEqual(git("--git-dir", str(remote), "rev-parse", ref), first)
+
     def test_only_legacy_data_outputs_are_proposable(self):
         for name in ["src/data/prices.ts", "public/news/feed.xml", *refresh.PUBLIC_FILES]:
             self.assertTrue(refresh.allowed_output(name), name)
@@ -85,6 +157,15 @@ class LinuxIsolationTests(unittest.TestCase):
             output = work / "allowed.json"
             output.write_text("{}")
             os.chown(output, isolation.COLLECTOR_UID, isolation.COLLECTOR_UID)
+            public_data = work / "public"
+            public_data.mkdir(mode=0o1777)
+            public_data.chmod(0o1777)
+            protected = public_data / "openapi.json"
+            protected.write_text("immutable")
+            protected.chmod(0o444)
+            news = public_data / "news"
+            news.mkdir()
+            os.chown(news, isolation.COLLECTOR_UID, isolation.COLLECTOR_UID)
             fd = os.open(private_root / "publisher-key", os.O_RDONLY)
             os.set_inheritable(fd, True)
             probe = work / "probe.py"
@@ -97,6 +178,8 @@ class LinuxIsolationTests(unittest.TestCase):
                 + f"try: os.read({fd},32)\nexcept OSError: pass\nelse: raise AssertionError('inherited FD')\n"
                 + "assert not ({'GITHUB_TOKEN','GITHUB_DEPLOY_KEY','GIT_SSH_COMMAND','RAILWAY_TOKEN'} & set(os.environ))\n"
                 + "Path('allowed.json').write_text('{\"safe\":true}')\n"
+                + "try: Path('public/openapi.json').unlink()\nexcept PermissionError: pass\nelse: raise AssertionError('sticky parent lost protected contract')\n"
+                + "Path('public/.news.stage-test').mkdir()\nPath('public/news').rename('public/.news.backup-test')\nPath('public/.news.stage-test').rename('public/news')\nPath('public/.news.backup-test').rmdir()\n"
                 + "subprocess.Popen(['sleep','90'], start_new_session=True)\n"
                 + "print('QUARTERLY_CREDENTIAL_ISOLATION_PASS', flush=True)\n")
             os.environ["GITHUB_TOKEN"] = "parent-token-fixture"
