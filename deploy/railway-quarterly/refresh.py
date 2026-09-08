@@ -113,6 +113,11 @@ def checkout(mirror, env, source, work):
         path = work / name
         path.mkdir(mode=0o755)
         os.chown(path, COLLECTOR_UID, COLLECTOR_UID)
+    # The newsroom swaps its complete directory atomically. A root-owned sticky
+    # parent permits its staging directory while protecting all other public
+    # contracts; only the reviewed news directory belongs to the writer.
+    (work / "public").chmod(0o1777)
+    os.chown(work / "public/news", COLLECTOR_UID, COLLECTOR_UID)
     return baseline
 
 
