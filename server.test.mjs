@@ -616,7 +616,7 @@ describe('Railway HTTP server', () => {
     expect(apiCatalog.headers.get('link')).toContain('rel="api-catalog"')
     expect(apiCatalog.headers.get('access-control-allow-origin')).toBe('*')
     expect((await apiCatalog.json()).linkset.map((entry) => entry.anchor)).toContain(
-      'https://narcoscope.com/mcp',
+      'https://www.narcoscope.com/mcp',
     )
     expect(apiCatalogHead.status).toBe(200)
     expect(await apiCatalogHead.text()).toBe('')

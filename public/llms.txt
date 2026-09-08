@@ -11,7 +11,7 @@ Product card: https://narcoscope.com/product-card.json
 API Catalog (RFC 9727): https://narcoscope.com/.well-known/api-catalog
 OpenAPI: https://narcoscope.com/openapi.json
 MCP manifest: https://narcoscope.com/server.json
-MCP endpoint: https://narcoscope.com/mcp
+MCP endpoint: https://www.narcoscope.com/mcp
 MCP protocol: 2026-07-28 stateless requests with server/discover; 2025-06-18 initialization remains available for legacy clients
 
 ## Use NarcoScope when

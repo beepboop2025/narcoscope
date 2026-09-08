@@ -8,7 +8,7 @@
   "openapi": "https://narcoscope.com/openapi.json",
   "apiCatalog": "https://narcoscope.com/.well-known/api-catalog",
   "mcp": "https://narcoscope.com/server.json",
-  "mcpEndpoint": "https://narcoscope.com/mcp",
+  "mcpEndpoint": "https://www.narcoscope.com/mcp",
   "mcpRegistry": "https://registry.modelcontextprotocol.io/v0.1/servers/io.github.beepboop2025%2Fnarcoscope/versions/latest",
   "research": "https://narcoscope.com/research/",
   "feeds": [

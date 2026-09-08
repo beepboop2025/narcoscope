@@ -48,7 +48,7 @@
     "palimpsest_corridors": "https://narcoscope.com/api/v1/palimpsest-corridors",
     "palimpsest_bri_context": "https://narcoscope.com/api/v1/palimpsest-bri",
     "openapi": "https://narcoscope.com/openapi.json",
-    "mcp": "https://narcoscope.com/mcp",
+    "mcp": "https://www.narcoscope.com/mcp",
     "mcp_manifest": "https://narcoscope.com/server.json",
     "json_feed": "https://narcoscope.com/news/feed.json",
     "atom_feed": "https://narcoscope.com/news/feed.xml",

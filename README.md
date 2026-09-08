@@ -26,14 +26,14 @@ top of that public data: clean charts, maps, and plain-English explanations.
 - RFC 9727 API Catalog: `https://narcoscope.com/.well-known/api-catalog`
 - OpenAPI: `https://narcoscope.com/openapi.json`
 - MCP manifest: `https://narcoscope.com/server.json`
-- Streamable HTTP MCP: `https://narcoscope.com/mcp`
+- Streamable HTTP MCP: `https://www.narcoscope.com/mcp`
 - Machine-readable product context: `https://narcoscope.com/.well-known/ai-catalog.json`
 - Agent-readable guide: `https://narcoscope.com/llms.txt`
 
 ```json
 {
   "mcpServers": {
-    "narcoscope": { "url": "https://narcoscope.com/mcp" }
+    "narcoscope": { "url": "https://www.narcoscope.com/mcp" }
   }
 }
 ```
