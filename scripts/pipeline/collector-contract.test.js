@@ -131,6 +131,7 @@ exit 64
         NARCOSCOPE_BRANCH: 'main',
         NARCOSCOPE_RUN_ROOT: runRoot,
         NARCOSCOPE_STATE_DIR: stateDir,
+        NARCOSCOPE_MARKET_STATE_DIR: path.join(stateDir, 'global-markets'),
         NARCOSCOPE_LOCK_DIR: lockDir,
       },
     })
@@ -168,6 +169,7 @@ exit 64
         NARCOSCOPE_BRANCH: 'main',
         NARCOSCOPE_RUN_ROOT: runRoot,
         NARCOSCOPE_STATE_DIR: stateDir,
+        NARCOSCOPE_MARKET_STATE_DIR: path.join(stateDir, 'global-markets'),
         NARCOSCOPE_LOCK_DIR: lockDir,
       },
     })
@@ -201,6 +203,7 @@ exit 64
         NARCOSCOPE_BRANCH: 'main',
         NARCOSCOPE_RUN_ROOT: runRoot,
         NARCOSCOPE_STATE_DIR: stateDir,
+        NARCOSCOPE_MARKET_STATE_DIR: path.join(stateDir, 'global-markets'),
         NARCOSCOPE_LOCK_DIR: lockDir,
       },
     })
@@ -239,6 +242,7 @@ exit 64
         NARCOSCOPE_BRANCH: 'main',
         NARCOSCOPE_RUN_ROOT: runRoot,
         NARCOSCOPE_STATE_DIR: stateDir,
+        NARCOSCOPE_MARKET_STATE_DIR: path.join(stateDir, 'global-markets'),
         NARCOSCOPE_LOCK_DIR: lockDir,
       },
     })
