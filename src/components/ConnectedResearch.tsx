@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
 import './ConnectedResearch.css'
+import ChinaEvidenceObservatory, { type Observatory } from './ChinaEvidenceObservatory'
 
 type Report = { title: string; url: string; source_name: string; published_at: string }
 type Finding = { title: string; text: string; limit: string; evidence: { source_url: string; released_at: string }[] }
 type Indicator = { name: string; unit: string; country_code: string; source_url: string; latest_available: { value: number; period_end: string } | null }
 type Region = { region: string; title: string; thesis: string; palimpsest_path: string; last_30_days_items: number; last_30_days_independence_groups: number; questions: { title: string; question: string; assessment: string; recent_reporting: Report[]; missing_evidence: string[] }[]; national_indicators: Indicator[]; economic_findings: EconomicFinding[] }
-type Research = { schema: string; generated_at: string; regions: Region[]; china_findings: Finding[]; source_clocks: Record<string, string> }
+type Research = { schema: string; generated_at: string; regions: Region[]; china_findings: Finding[]; source_clocks: Record<string, string>; observatory?: Observatory }
 type EconomicFinding = { id: string; title: string; text: string; interpretation: string; evidence: { source_url: string }[] }
 
 export default function ConnectedResearch({ region = 'bri' }: { region?: string }) {
@@ -34,6 +35,7 @@ export default function ConnectedResearch({ region = 'bri' }: { region?: string 
     <p className="connected-research__clock">Snapshot captured {data.generated_at.slice(0, 10)}{ageDays > 1 ? ` · ${ageDays} days old` : ''}. Economic observations retain their own reference years and release dates.</p>
     <div className="connected-research__actions"><a href={`https://www.palimpsest.info${current.palimpsest_path}`}>Open the full Palimpsest dossier</a><a href="https://www.palimpsest.info/china/economy/">Explore China’s economic tables</a><a href="/api/v1/connected-research">Research API</a></div>
     {selected === 'china' && <div className="connected-research__grid">{data.china_findings.map(finding => <article key={finding.title + finding.text}><h3>{finding.title}</h3><p>{finding.text}</p><p className="connected-research__note">{finding.limit}</p><a href={finding.evidence[0].source_url}>NBS source, {finding.evidence[0].released_at.slice(0, 10)}</a></article>)}</div>}
+    {data.observatory && <ChinaEvidenceObservatory data={data.observatory} region={selected} />}
     <h3>What the annual economic record shows</h3>
     <div className="connected-research__grid">{current.economic_findings.map(finding => <article key={finding.id}><h3>{finding.title}</h3><p>{finding.text}</p><p className="connected-research__note">{finding.interpretation}</p><a href={finding.evidence[0].source_url}>World Bank national series</a></article>)}</div>
     <p>{current.last_30_days_items} captured reports from {current.last_30_days_independence_groups} publisher groups in the last 30 days of this snapshot.</p>

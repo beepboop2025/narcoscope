@@ -340,4 +340,8 @@ BRI, CPEC/Gwadar, Balochistan and Myanmar views include a shared Palimpsest rese
 
 The REST resource is `/api/v1/connected-research`; MCP exposes `get_connected_research`. Both serve the validated `public/data/palimpsest-connected-research-v1.json` snapshot with its SHA-256 sidecar. `npm run bridge:connected:sync` refreshes from the fixed Palimpsest URL; `npm run bridge:connected:check` verifies the packaged copy offline. The Hetzner wire publisher refreshes it during scheduled publication. Failed acquisition preserves the dated copy.
 
+Snapshots can also include the China evidence observatory: deduplicated economic histories, EU-reported trade, official-document changes and historical methodology cases. China shows the complete findings; regional views show the separately attributed trade context. The optional `observatory` summary adds a fifth named input hash and a matching source clock. Its hash identifies the full Palimpsest evidence snapshot; the packaged-file SHA-256 also binds the summary served by REST and MCP. Older four-input snapshots remain readable.
+
+The bridge admits four fixed public dataset routes and reviewed coverage counts. SAFE numeric records remain private; its card and download contain acquisition metadata only. Document absence, methodological revisions and trade disagreement do not establish concealment, culpability or causality. Official-announcement dates remain separate from collection dates.
+
 NBS statistical-data attribution, World Bank CC BY 4.0 attribution and publisher metadata-only terms remain source-specific. Shared geography or timing does not establish actor relationships, culpability or causality. Detailed collector/analysis methods are in Palimpsest’s `docs/CONNECTED-ECONOMIC-RESEARCH.md`.
