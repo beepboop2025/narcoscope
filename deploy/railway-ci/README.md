@@ -1,6 +1,6 @@
 # Railway portable CI
 
-This credential-free build runs the existing tests workflow on Node20:
+This credential-free build runs the existing tests workflow on Node 20:
 `npm ci`, `npm test -- --coverage`, and `npm run build`, including the checked-in
 bridge/news/wire contracts and TypeScript/Vite production build. Failures stop
 the image build and fail Railway's native commit check. The finite runtime
