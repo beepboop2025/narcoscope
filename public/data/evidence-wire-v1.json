@@ -1,6 +1,6 @@
 {
   "schema": "narcoscope.evidence-wire.v1",
-  "generatedAt": "2026-09-09T22:40:17.138Z",
+  "generatedAt": "2026-09-09T22:50:37.958Z",
   "status": "partial",
   "window": {
     "start": "2026-06-26T12:00:00.000Z",
@@ -14,7 +14,7 @@
       "sourceId": "europol-news",
       "sourceName": "Europol · Newsroom",
       "publishedAt": null,
-      "retrievedAt": "2026-09-09T22:40:17.138Z",
+      "retrievedAt": "2026-09-09T22:50:37.958Z",
       "evidenceClass": "official-release",
       "verificationState": "source-published",
       "legalStage": "not-applicable",
@@ -31,7 +31,7 @@
       "sourceId": "europol-news",
       "sourceName": "Europol · Newsroom",
       "publishedAt": null,
-      "retrievedAt": "2026-09-09T22:40:17.138Z",
+      "retrievedAt": "2026-09-09T22:50:37.958Z",
       "evidenceClass": "official-release",
       "verificationState": "source-published",
       "legalStage": "not-applicable",
@@ -48,7 +48,7 @@
       "sourceId": "europol-news",
       "sourceName": "Europol · Newsroom",
       "publishedAt": null,
-      "retrievedAt": "2026-09-09T22:40:17.138Z",
+      "retrievedAt": "2026-09-09T22:50:37.958Z",
       "evidenceClass": "official-release",
       "verificationState": "source-published",
       "legalStage": "not-applicable",
@@ -65,7 +65,7 @@
       "sourceId": "europol-news",
       "sourceName": "Europol · Newsroom",
       "publishedAt": null,
-      "retrievedAt": "2026-09-09T22:40:17.138Z",
+      "retrievedAt": "2026-09-09T22:50:37.958Z",
       "evidenceClass": "official-release",
       "verificationState": "source-published",
       "legalStage": "not-applicable",
@@ -82,7 +82,7 @@
       "sourceId": "doj-justice-news",
       "sourceName": "U.S. Department of Justice · Justice News",
       "publishedAt": "2026-09-09T12:00:00.000Z",
-      "retrievedAt": "2026-09-09T22:40:17.138Z",
+      "retrievedAt": "2026-09-09T22:50:37.958Z",
       "evidenceClass": "official-action",
       "verificationState": "source-published",
       "legalStage": "sentencing",
@@ -156,6 +156,23 @@
       "evidenceClass": "official-action",
       "verificationState": "source-published",
       "legalStage": "sentencing",
+      "topics": [
+        "arms trafficking"
+      ],
+      "countries": [],
+      "publicationAllowed": true
+    },
+    {
+      "id": "doj-justice-news-3c4cab78d0f844205867",
+      "title": "South Bend Man Found Guilty by Jury for Unlawful Possession of a Firearm",
+      "url": "https://www.justice.gov/usao-ndin/pr/south-bend-man-found-guilty-jury-unlawful-possession-firearm",
+      "sourceId": "doj-justice-news",
+      "sourceName": "U.S. Department of Justice · Justice News",
+      "publishedAt": "2026-09-09T12:00:00.000Z",
+      "retrievedAt": "2026-09-09T22:50:37.958Z",
+      "evidenceClass": "official-action",
+      "verificationState": "source-published",
+      "legalStage": "report",
       "topics": [
         "arms trafficking"
       ],
@@ -238,7 +255,7 @@
       "sourceId": "doj-justice-news",
       "sourceName": "U.S. Department of Justice · Justice News",
       "publishedAt": "2026-09-09T12:00:00.000Z",
-      "retrievedAt": "2026-09-09T22:40:17.138Z",
+      "retrievedAt": "2026-09-09T22:50:37.958Z",
       "evidenceClass": "official-action",
       "verificationState": "source-published",
       "legalStage": "sentencing",
@@ -272,7 +289,7 @@
       "sourceId": "doj-justice-news",
       "sourceName": "U.S. Department of Justice · Justice News",
       "publishedAt": "2026-09-09T12:00:00.000Z",
-      "retrievedAt": "2026-09-09T22:40:17.138Z",
+      "retrievedAt": "2026-09-09T22:50:37.958Z",
       "evidenceClass": "official-action",
       "verificationState": "source-published",
       "legalStage": "sentencing",
@@ -335,6 +352,23 @@
       "publicationAllowed": true
     },
     {
+      "id": "doj-justice-news-dd9b5295752317acff52",
+      "title": "12 Robertson County Defendants Charged in Federal Cocaine Trafficking Case",
+      "url": "https://www.justice.gov/usao-mdtn/pr/12-robertson-county-defendants-charged-federal-cocaine-trafficking-case",
+      "sourceId": "doj-justice-news",
+      "sourceName": "U.S. Department of Justice · Justice News",
+      "publishedAt": "2026-09-09T12:00:00.000Z",
+      "retrievedAt": "2026-09-09T22:50:37.958Z",
+      "evidenceClass": "official-action",
+      "verificationState": "source-published",
+      "legalStage": "charge",
+      "topics": [
+        "drug markets"
+      ],
+      "countries": [],
+      "publicationAllowed": true
+    },
+    {
       "id": "doj-justice-news-e1f926eb8d30f22e9cb7",
       "title": "Pensacola Man Sentenced for Drug Distribution & Weapons Charges",
       "url": "https://www.justice.gov/usao-ndfl/pr/pensacola-man-sentenced-drug-distribution-weapons-charges",
@@ -345,6 +379,23 @@
       "evidenceClass": "official-action",
       "verificationState": "source-published",
       "legalStage": "sentencing",
+      "topics": [
+        "drug markets"
+      ],
+      "countries": [],
+      "publicationAllowed": true
+    },
+    {
+      "id": "doj-justice-news-f57e1de7cd41c3fc788f",
+      "title": "Three Defendants Charged with Fentanyl Trafficking",
+      "url": "https://www.justice.gov/usao-mn/pr/three-defendants-charged-fentanyl-trafficking",
+      "sourceId": "doj-justice-news",
+      "sourceName": "U.S. Department of Justice · Justice News",
+      "publishedAt": "2026-09-09T12:00:00.000Z",
+      "retrievedAt": "2026-09-09T22:50:37.958Z",
+      "evidenceClass": "official-action",
+      "verificationState": "source-published",
+      "legalStage": "charge",
       "topics": [
         "drug markets"
       ],
@@ -375,7 +426,7 @@
       "sourceId": "treasury-press",
       "sourceName": "U.S. Treasury · Press releases",
       "publishedAt": "2026-09-08T14:30:00.000Z",
-      "retrievedAt": "2026-09-09T22:40:17.138Z",
+      "retrievedAt": "2026-09-09T22:50:37.958Z",
       "evidenceClass": "official-action",
       "verificationState": "source-published",
       "legalStage": "report",
@@ -767,7 +818,7 @@
       "sourceId": "treasury-press",
       "sourceName": "U.S. Treasury · Press releases",
       "publishedAt": "2026-09-04T14:30:00.000Z",
-      "retrievedAt": "2026-09-09T22:40:17.138Z",
+      "retrievedAt": "2026-09-09T22:50:37.958Z",
       "evidenceClass": "official-action",
       "verificationState": "source-published",
       "legalStage": "designation",
@@ -864,58 +915,6 @@
       "publicationAllowed": true
     },
     {
-      "id": "doj-justice-news-00e551bb792b01bb5b47",
-      "title": "Kansas City Man Pleads Guilty to Drug and Firearms Charges",
-      "url": "https://www.justice.gov/usao-wdmo/pr/kansas-city-man-pleads-guilty-drug-and-firearms-charges",
-      "sourceId": "doj-justice-news",
-      "sourceName": "U.S. Department of Justice · Justice News",
-      "publishedAt": "2026-09-04T12:00:00.000Z",
-      "retrievedAt": "2026-09-04T20:53:22.489Z",
-      "evidenceClass": "official-action",
-      "verificationState": "source-published",
-      "legalStage": "conviction",
-      "topics": [
-        "drug markets"
-      ],
-      "countries": [],
-      "publicationAllowed": true
-    },
-    {
-      "id": "doj-justice-news-21577e2158b17aa8bb18",
-      "title": "Montgomery Man Sentenced to Federal Prison for Firearm and Drug Trafficking Offenses",
-      "url": "https://www.justice.gov/usao-mdal/pr/montgomery-man-sentenced-federal-prison-firearm-and-drug-trafficking-offenses",
-      "sourceId": "doj-justice-news",
-      "sourceName": "U.S. Department of Justice · Justice News",
-      "publishedAt": "2026-09-04T12:00:00.000Z",
-      "retrievedAt": "2026-09-04T17:56:32.939Z",
-      "evidenceClass": "official-action",
-      "verificationState": "source-published",
-      "legalStage": "sentencing",
-      "topics": [
-        "drug markets",
-        "arms trafficking"
-      ],
-      "countries": [],
-      "publicationAllowed": true
-    },
-    {
-      "id": "doj-justice-news-2f58bdca8d40bad4b541",
-      "title": "Illegal Alien from Georgia Charged for Conspiracy to Launder Proceeds of $1.3B Health Care Fraud Scheme",
-      "url": "https://www.justice.gov/opa/pr/illegal-alien-georgia-charged-conspiracy-launder-proceeds-13b-health-care-fraud-scheme",
-      "sourceId": "doj-justice-news",
-      "sourceName": "U.S. Department of Justice · Justice News",
-      "publishedAt": "2026-09-04T12:00:00.000Z",
-      "retrievedAt": "2026-09-04T19:10:41.933Z",
-      "evidenceClass": "official-action",
-      "verificationState": "source-published",
-      "legalStage": "charge",
-      "topics": [
-        "illicit finance"
-      ],
-      "countries": [],
-      "publicationAllowed": true
-    },
-    {
       "id": "treasury-press-2880e4e01f472afe9daf",
       "title": "Treasury and State Departments Deliver Additional Sanctions Relief on Syria",
       "url": "https://home.treasury.gov/news/press-releases/sb0612/",
@@ -974,7 +973,7 @@
       "sourceId": "un-news-law-crime",
       "sourceName": "United Nations News · Law and crime prevention",
       "publishedAt": "2026-08-19T12:00:00.000Z",
-      "retrievedAt": "2026-09-09T22:40:17.138Z",
+      "retrievedAt": "2026-09-09T22:50:37.958Z",
       "evidenceClass": "official-release",
       "verificationState": "source-published",
       "legalStage": "not-applicable",
@@ -991,7 +990,7 @@
       "sourceId": "un-news-law-crime",
       "sourceName": "United Nations News · Law and crime prevention",
       "publishedAt": "2026-07-05T12:00:00.000Z",
-      "retrievedAt": "2026-09-09T22:40:17.138Z",
+      "retrievedAt": "2026-09-09T22:50:37.958Z",
       "evidenceClass": "official-release",
       "verificationState": "source-published",
       "legalStage": "not-applicable",
@@ -1008,7 +1007,7 @@
       "sourceId": "un-news-law-crime",
       "sourceName": "United Nations News · Law and crime prevention",
       "publishedAt": "2026-06-26T12:00:00.000Z",
-      "retrievedAt": "2026-09-09T22:40:17.138Z",
+      "retrievedAt": "2026-09-09T22:50:37.958Z",
       "evidenceClass": "official-release",
       "verificationState": "source-published",
       "legalStage": "not-applicable",
@@ -1025,20 +1024,20 @@
       "name": "U.S. Department of Justice · Justice News",
       "url": "https://www.justice.gov/news/rss",
       "status": "fresh",
-      "checkedAt": "2026-09-09T22:40:17.138Z",
-      "lastSuccessAt": "2026-09-09T22:40:17.138Z",
+      "checkedAt": "2026-09-09T22:50:37.958Z",
+      "lastSuccessAt": "2026-09-09T22:50:37.958Z",
       "cadenceMinutes": 15,
       "staleAfterMinutes": 120,
       "rights": "Public U.S. government release metadata; NarcoScope republishes titles, links and source clocks only.",
-      "detail": "25 source items read · 4 current in-scope · 40 retained metadata items published"
+      "detail": "25 source items read · 6 current in-scope · 40 retained metadata items published"
     },
     {
       "id": "un-news-law-crime",
       "name": "United Nations News · Law and crime prevention",
       "url": "https://news.un.org/feed/subscribe/en/news/topic/law-and-crime-prevention/feed/rss.xml",
       "status": "fresh",
-      "checkedAt": "2026-09-09T22:40:17.138Z",
-      "lastSuccessAt": "2026-09-09T22:40:17.138Z",
+      "checkedAt": "2026-09-09T22:50:37.958Z",
+      "lastSuccessAt": "2026-09-09T22:50:37.958Z",
       "cadenceMinutes": 30,
       "staleAfterMinutes": 180,
       "rights": "Public United Nations feed metadata; NarcoScope republishes titles, links and source clocks only.",
@@ -1049,8 +1048,8 @@
       "name": "Europol · Newsroom",
       "url": "https://www.europol.europa.eu/cms/api/rss/news",
       "status": "fresh",
-      "checkedAt": "2026-09-09T22:40:17.138Z",
-      "lastSuccessAt": "2026-09-09T22:40:17.138Z",
+      "checkedAt": "2026-09-09T22:50:37.958Z",
+      "lastSuccessAt": "2026-09-09T22:50:37.958Z",
       "cadenceMinutes": 30,
       "staleAfterMinutes": 180,
       "rights": "Public European Union agency feed metadata; NarcoScope republishes titles, links and source clocks only.",
@@ -1061,8 +1060,8 @@
       "name": "U.S. Treasury · Press releases",
       "url": "https://home.treasury.gov/news/press-releases",
       "status": "fresh",
-      "checkedAt": "2026-09-09T22:40:17.138Z",
-      "lastSuccessAt": "2026-09-09T22:40:17.138Z",
+      "checkedAt": "2026-09-09T22:50:37.958Z",
+      "lastSuccessAt": "2026-09-09T22:50:37.958Z",
       "cadenceMinutes": 30,
       "staleAfterMinutes": 240,
       "rights": "Public U.S. government release metadata; NarcoScope republishes titles, links and source clocks only.",
@@ -1071,38 +1070,38 @@
     {
       "id": "palimpsest-newswire-rights",
       "name": "Palimpsest · newswire publication-rights receipt",
-      "url": "https://palimpsest.info/readings/newswire-latest.json",
-      "status": "aging",
-      "checkedAt": "2026-09-09T22:40:17.138Z",
-      "lastSuccessAt": "2026-09-09T22:30:05.707Z",
+      "url": "https://www.palimpsest.info/readings/newswire-latest.json",
+      "status": "restricted",
+      "checkedAt": "2026-09-09T22:50:37.958Z",
+      "lastSuccessAt": "2026-09-09T22:50:37.958Z",
       "cadenceMinutes": 15,
       "staleAfterMinutes": 90,
       "rights": "Receipt only. Source content remains suppressed whenever Palimpsest publication_allowed is false.",
-      "detail": "Bounded fetch failed: HTTP 502"
+      "detail": "palimpsest-restricted-publication-endpoint.v1 · publication suppressed by upstream rights policy · Current source policy denies publication of one or more upstream value families; this endpoint therefore exposes metadata only."
     },
     {
       "id": "seiche-money-markets",
       "name": "Seiche · global money-market context",
       "url": "https://api.seiche.info/api/v2/money-markets",
       "status": "partial",
-      "checkedAt": "2026-09-09T22:40:17.138Z",
-      "lastSuccessAt": "2026-09-09T22:40:17.138Z",
+      "checkedAt": "2026-09-09T22:50:37.958Z",
+      "lastSuccessAt": "2026-09-09T22:50:37.958Z",
       "cadenceMinutes": 15,
       "staleAfterMinutes": 90,
       "rights": "Read-only economic context receipt. Values never become NarcoScope illicit-market facts or person-level inferences.",
-      "detail": "seiche.global-money-markets.v1 · generated 2026-09-09T22:40:17.000Z"
+      "detail": "seiche.global-money-markets.v1 · generated 2026-09-09T22:50:38.000Z"
     },
     {
       "id": "seiche-capital-markets",
       "name": "Seiche · capital-market context",
       "url": "https://api.seiche.info/api/v2/world-markets?section=capital_markets",
       "status": "fresh",
-      "checkedAt": "2026-09-09T22:40:17.138Z",
-      "lastSuccessAt": "2026-09-09T22:40:17.138Z",
+      "checkedAt": "2026-09-09T22:50:37.958Z",
+      "lastSuccessAt": "2026-09-09T22:50:37.958Z",
       "cadenceMinutes": 15,
       "staleAfterMinutes": 90,
       "rights": "Read-only economic context receipt. Values never become NarcoScope illicit-market facts or person-level inferences.",
-      "detail": "seiche.world-markets.v1 · generated 2026-09-09T22:26:50.000Z"
+      "detail": "seiche.world-markets.v1 · generated 2026-09-09T22:39:59.000Z"
     }
   ],
   "caveats": [
