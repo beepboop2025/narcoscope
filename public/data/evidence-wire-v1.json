@@ -1,12 +1,80 @@
 {
   "schema": "narcoscope.evidence-wire.v1",
-  "generatedAt": "2026-09-10T15:58:10.455Z",
+  "generatedAt": "2026-09-10T16:08:46.993Z",
   "status": "partial",
   "window": {
     "start": "2026-06-26T12:00:00.000Z",
     "end": "2026-09-10T12:00:00.000Z"
   },
   "items": [
+    {
+      "id": "europol-news-a750ee27e50f26511a8d",
+      "title": "Drug trafficking investigation leads to some of the world’s biggest underground bankers",
+      "url": "https://www.europol.europa.eu/media-press/newsroom/news/drug-trafficking-investigation-leads-to-some-of-world-biggest-underground-bankers",
+      "sourceId": "europol-news",
+      "sourceName": "Europol · Newsroom",
+      "publishedAt": null,
+      "retrievedAt": "2026-09-10T16:08:46.993Z",
+      "evidenceClass": "official-release",
+      "verificationState": "source-published",
+      "legalStage": "not-applicable",
+      "topics": [
+        "drug markets"
+      ],
+      "countries": [],
+      "publicationAllowed": true
+    },
+    {
+      "id": "europol-news-b0da85a4e84b3afdfbc3",
+      "title": "Museum heists turn violent: new Europol report on cultural property theft tactics",
+      "url": "https://www.europol.europa.eu/media-press/newsroom/news/museum-heists-turn-violent-new-europol-report-cultural-property-theft-tactics",
+      "sourceId": "europol-news",
+      "sourceName": "Europol · Newsroom",
+      "publishedAt": null,
+      "retrievedAt": "2026-09-10T16:08:46.993Z",
+      "evidenceClass": "official-release",
+      "verificationState": "source-published",
+      "legalStage": "not-applicable",
+      "topics": [
+        "cultural property crime"
+      ],
+      "countries": [],
+      "publicationAllowed": true
+    },
+    {
+      "id": "europol-news-b4165ce9a96f0241d558",
+      "title": "Syrian migrant smugglers arrested in coordinated strike in Germany and Serbia",
+      "url": "https://www.europol.europa.eu/media-press/newsroom/news/syrian-migrant-smugglers-arrested-in-coordinated-strike-in-germany-and-serbia",
+      "sourceId": "europol-news",
+      "sourceName": "Europol · Newsroom",
+      "publishedAt": null,
+      "retrievedAt": "2026-09-10T16:08:46.993Z",
+      "evidenceClass": "official-release",
+      "verificationState": "source-published",
+      "legalStage": "not-applicable",
+      "topics": [
+        "human smuggling"
+      ],
+      "countries": [],
+      "publicationAllowed": true
+    },
+    {
+      "id": "europol-news-ca702bf72b9880662f32",
+      "title": "78 arrests in bust of major Western Mediterranean smuggling network in Spain",
+      "url": "https://www.europol.europa.eu/media-press/newsroom/news/78-arrests-in-bust-of-major-western-mediterranean-smuggling-network-in-spain",
+      "sourceId": "europol-news",
+      "sourceName": "Europol · Newsroom",
+      "publishedAt": null,
+      "retrievedAt": "2026-09-10T16:08:46.993Z",
+      "evidenceClass": "official-release",
+      "verificationState": "source-published",
+      "legalStage": "not-applicable",
+      "topics": [
+        "organized crime"
+      ],
+      "countries": [],
+      "publicationAllowed": true
+    },
     {
       "id": "europol-news-5372e4699099d6caf219",
       "title": "Drug trafficking investigation leads to some of the world’s biggest underground bankers",
@@ -76,86 +144,35 @@
       "publicationAllowed": true
     },
     {
-      "id": "europol-news-a750ee27e50f26511a8d",
-      "title": "Drug trafficking investigation leads to some of the world’s biggest underground bankers",
-      "url": "https://www.europol.europa.eu/media-press/newsroom/news/drug-trafficking-investigation-leads-to-some-of-world-biggest-underground-bankers",
-      "sourceId": "europol-news",
-      "sourceName": "Europol · Newsroom",
-      "publishedAt": null,
-      "retrievedAt": "2026-09-10T15:48:02.135Z",
-      "evidenceClass": "official-release",
-      "verificationState": "source-published",
-      "legalStage": "not-applicable",
-      "topics": [
-        "drug markets"
-      ],
-      "countries": [],
-      "publicationAllowed": true
-    },
-    {
-      "id": "europol-news-b0da85a4e84b3afdfbc3",
-      "title": "Museum heists turn violent: new Europol report on cultural property theft tactics",
-      "url": "https://www.europol.europa.eu/media-press/newsroom/news/museum-heists-turn-violent-new-europol-report-cultural-property-theft-tactics",
-      "sourceId": "europol-news",
-      "sourceName": "Europol · Newsroom",
-      "publishedAt": null,
-      "retrievedAt": "2026-09-10T15:48:02.135Z",
-      "evidenceClass": "official-release",
-      "verificationState": "source-published",
-      "legalStage": "not-applicable",
-      "topics": [
-        "cultural property crime"
-      ],
-      "countries": [],
-      "publicationAllowed": true
-    },
-    {
-      "id": "europol-news-b4165ce9a96f0241d558",
-      "title": "Syrian migrant smugglers arrested in coordinated strike in Germany and Serbia",
-      "url": "https://www.europol.europa.eu/media-press/newsroom/news/syrian-migrant-smugglers-arrested-in-coordinated-strike-in-germany-and-serbia",
-      "sourceId": "europol-news",
-      "sourceName": "Europol · Newsroom",
-      "publishedAt": null,
-      "retrievedAt": "2026-09-10T15:48:02.135Z",
-      "evidenceClass": "official-release",
-      "verificationState": "source-published",
-      "legalStage": "not-applicable",
-      "topics": [
-        "human smuggling"
-      ],
-      "countries": [],
-      "publicationAllowed": true
-    },
-    {
-      "id": "europol-news-ca702bf72b9880662f32",
-      "title": "78 arrests in bust of major Western Mediterranean smuggling network in Spain",
-      "url": "https://www.europol.europa.eu/media-press/newsroom/news/78-arrests-in-bust-of-major-western-mediterranean-smuggling-network-in-spain",
-      "sourceId": "europol-news",
-      "sourceName": "Europol · Newsroom",
-      "publishedAt": null,
-      "retrievedAt": "2026-09-10T15:48:02.135Z",
-      "evidenceClass": "official-release",
-      "verificationState": "source-published",
-      "legalStage": "not-applicable",
-      "topics": [
-        "organized crime"
-      ],
-      "countries": [],
-      "publicationAllowed": true
-    },
-    {
       "id": "doj-justice-news-1ddbb902255c400dbb9b",
       "title": "Auburn Man Pleads Guilty to Wire Fraud, Money Laundering, and Unlawful Employment of Aliens",
       "url": "https://www.justice.gov/usao-mdal/pr/auburn-man-pleads-guilty-wire-fraud-money-laundering-and-unlawful-employment-aliens",
       "sourceId": "doj-justice-news",
       "sourceName": "U.S. Department of Justice · Justice News",
       "publishedAt": "2026-09-10T12:00:00.000Z",
-      "retrievedAt": "2026-09-10T15:58:10.455Z",
+      "retrievedAt": "2026-09-10T16:08:46.993Z",
       "evidenceClass": "official-action",
       "verificationState": "source-published",
       "legalStage": "conviction",
       "topics": [
         "illicit finance"
+      ],
+      "countries": [],
+      "publicationAllowed": true
+    },
+    {
+      "id": "doj-justice-news-2b8fe589056d0428a0f8",
+      "title": "Defendants sentenced after pleading guilty in Georgia prison drug trafficking conspiracy",
+      "url": "https://www.justice.gov/usao-sdga/pr/defendants-sentenced-after-pleading-guilty-georgia-prison-drug-trafficking-conspiracy",
+      "sourceId": "doj-justice-news",
+      "sourceName": "U.S. Department of Justice · Justice News",
+      "publishedAt": "2026-09-10T12:00:00.000Z",
+      "retrievedAt": "2026-09-10T16:08:46.993Z",
+      "evidenceClass": "official-action",
+      "verificationState": "source-published",
+      "legalStage": "sentencing",
+      "topics": [
+        "drug markets"
       ],
       "countries": [],
       "publicationAllowed": true
@@ -167,7 +184,7 @@
       "sourceId": "doj-justice-news",
       "sourceName": "U.S. Department of Justice · Justice News",
       "publishedAt": "2026-09-10T12:00:00.000Z",
-      "retrievedAt": "2026-09-10T15:58:10.455Z",
+      "retrievedAt": "2026-09-10T16:08:46.993Z",
       "evidenceClass": "official-action",
       "verificationState": "source-published",
       "legalStage": "sentencing",
@@ -184,12 +201,29 @@
       "sourceId": "doj-justice-news",
       "sourceName": "U.S. Department of Justice · Justice News",
       "publishedAt": "2026-09-10T12:00:00.000Z",
-      "retrievedAt": "2026-09-10T15:58:10.455Z",
+      "retrievedAt": "2026-09-10T16:08:46.993Z",
       "evidenceClass": "official-action",
       "verificationState": "source-published",
       "legalStage": "conviction",
       "topics": [
         "arms trafficking"
+      ],
+      "countries": [],
+      "publicationAllowed": true
+    },
+    {
+      "id": "doj-justice-news-e3f8250659fc7a79806f",
+      "title": "California Man Sentenced to 72 Months in Prison for Fraudulently Obtaining $46 Million In Public Benefits and Laundering Proceeds to China",
+      "url": "https://www.justice.gov/usao-mdpa/pr/california-man-sentenced-72-months-prison-fraudulently-obtaining-46-million-public",
+      "sourceId": "doj-justice-news",
+      "sourceName": "U.S. Department of Justice · Justice News",
+      "publishedAt": "2026-09-10T12:00:00.000Z",
+      "retrievedAt": "2026-09-10T16:08:46.993Z",
+      "evidenceClass": "official-action",
+      "verificationState": "source-published",
+      "legalStage": "sentencing",
+      "topics": [
+        "illicit finance"
       ],
       "countries": [],
       "publicationAllowed": true
@@ -201,10 +235,44 @@
       "sourceId": "doj-justice-news",
       "sourceName": "U.S. Department of Justice · Justice News",
       "publishedAt": "2026-09-10T12:00:00.000Z",
-      "retrievedAt": "2026-09-10T15:58:10.455Z",
+      "retrievedAt": "2026-09-10T16:08:46.993Z",
       "evidenceClass": "official-action",
       "verificationState": "source-published",
       "legalStage": "charge",
+      "topics": [
+        "drug markets"
+      ],
+      "countries": [],
+      "publicationAllowed": true
+    },
+    {
+      "id": "doj-justice-news-f71790aa0b9665f8c542",
+      "title": "Brookhaven Man Sentenced to 40 Months for being a Felon in Possession of a Firearm",
+      "url": "https://www.justice.gov/usao-sdms/pr/brookhaven-man-sentenced-40-months-being-felon-possession-firearm",
+      "sourceId": "doj-justice-news",
+      "sourceName": "U.S. Department of Justice · Justice News",
+      "publishedAt": "2026-09-10T12:00:00.000Z",
+      "retrievedAt": "2026-09-10T16:08:46.993Z",
+      "evidenceClass": "official-action",
+      "verificationState": "source-published",
+      "legalStage": "sentencing",
+      "topics": [
+        "arms trafficking"
+      ],
+      "countries": [],
+      "publicationAllowed": true
+    },
+    {
+      "id": "doj-justice-news-f7b7c37899c4f201d0d9",
+      "title": "Massachusetts Man Sentenced to Nearly Six Years for Trafficking Methamphetamine",
+      "url": "https://www.justice.gov/usao-nh/pr/massachusetts-man-sentenced-nearly-six-years-trafficking-methamphetamine",
+      "sourceId": "doj-justice-news",
+      "sourceName": "U.S. Department of Justice · Justice News",
+      "publishedAt": "2026-09-10T12:00:00.000Z",
+      "retrievedAt": "2026-09-10T16:08:46.993Z",
+      "evidenceClass": "official-action",
+      "verificationState": "source-published",
+      "legalStage": "sentencing",
       "topics": [
         "drug markets"
       ],
@@ -409,7 +477,7 @@
       "sourceId": "doj-justice-news",
       "sourceName": "U.S. Department of Justice · Justice News",
       "publishedAt": "2026-09-09T12:00:00.000Z",
-      "retrievedAt": "2026-09-10T15:58:10.455Z",
+      "retrievedAt": "2026-09-10T16:08:46.993Z",
       "evidenceClass": "official-action",
       "verificationState": "source-published",
       "legalStage": "report",
@@ -666,7 +734,7 @@
       "sourceId": "treasury-press",
       "sourceName": "U.S. Treasury · Press releases",
       "publishedAt": "2026-09-08T14:30:00.000Z",
-      "retrievedAt": "2026-09-10T15:58:10.455Z",
+      "retrievedAt": "2026-09-10T16:08:46.993Z",
       "evidenceClass": "official-action",
       "verificationState": "source-published",
       "legalStage": "report",
@@ -779,74 +847,6 @@
       "publicationAllowed": true
     },
     {
-      "id": "doj-justice-news-66bdd03e943196d00b1e",
-      "title": "Lafourche Parish Resident Sentenced for Furthering a Drug Trafficking Conspiracy",
-      "url": "https://www.justice.gov/usao-edla/pr/lafourche-parish-resident-sentenced-furthering-drug-trafficking-conspiracy",
-      "sourceId": "doj-justice-news",
-      "sourceName": "U.S. Department of Justice · Justice News",
-      "publishedAt": "2026-09-08T12:00:00.000Z",
-      "retrievedAt": "2026-09-09T15:54:08.451Z",
-      "evidenceClass": "official-action",
-      "verificationState": "source-published",
-      "legalStage": "sentencing",
-      "topics": [
-        "drug markets"
-      ],
-      "countries": [],
-      "publicationAllowed": true
-    },
-    {
-      "id": "doj-justice-news-73937e233961d75625a7",
-      "title": "Armed Drug Trafficker from Springfield, Massachusetts Sentenced to 144 Months for Conspiring to Distribute Fentanyl and Cocaine in Bennington, Vermont",
-      "url": "https://www.justice.gov/usao-vt/pr/armed-drug-trafficker-springfield-massachusetts-sentenced-144-months-conspiring",
-      "sourceId": "doj-justice-news",
-      "sourceName": "U.S. Department of Justice · Justice News",
-      "publishedAt": "2026-09-08T12:00:00.000Z",
-      "retrievedAt": "2026-09-09T13:48:40.957Z",
-      "evidenceClass": "official-action",
-      "verificationState": "source-published",
-      "legalStage": "sentencing",
-      "topics": [
-        "drug markets"
-      ],
-      "countries": [],
-      "publicationAllowed": true
-    },
-    {
-      "id": "doj-justice-news-7e9d3728c28a19f2484c",
-      "title": "Sioux Falls Man Sentenced to Over 4 Years in Federal Prison for Possession with Intent to Distribute Methamphetamine",
-      "url": "https://www.justice.gov/usao-sd/pr/sioux-falls-man-sentenced-over-4-years-federal-prison-possession-intent-distribute",
-      "sourceId": "doj-justice-news",
-      "sourceName": "U.S. Department of Justice · Justice News",
-      "publishedAt": "2026-09-08T12:00:00.000Z",
-      "retrievedAt": "2026-09-09T13:48:40.957Z",
-      "evidenceClass": "official-action",
-      "verificationState": "source-published",
-      "legalStage": "sentencing",
-      "topics": [
-        "drug markets"
-      ],
-      "countries": [],
-      "publicationAllowed": true
-    },
-    {
-      "id": "doj-justice-news-7fb9a15e3d6efe2fcf10",
-      "title": "Eastern NC Drug Pipeline Dismantled: 35 Years Federal Prison",
-      "url": "https://www.justice.gov/usao-ednc/pr/eastern-nc-drug-pipeline-dismantled-35-years-federal-prison",
-      "sourceId": "doj-justice-news",
-      "sourceName": "U.S. Department of Justice · Justice News",
-      "publishedAt": "2026-09-08T12:00:00.000Z",
-      "retrievedAt": "2026-09-08T19:39:11.441Z",
-      "evidenceClass": "official-action",
-      "verificationState": "source-published",
-      "legalStage": "report",
-      "topics": [
-        "drug markets"
-      ],
-      "countries": [],
-      "publicationAllowed": true
-    },
-    {
       "id": "europol-news-41f37ae9d77cbd5e2e0e",
       "title": "Migrant smuggling network using rental cars dismantled across the Balkans",
       "url": "https://www.europol.europa.eu/media-press/newsroom/news/migrant-smuggling-network-using-rental-cars-dismantled-across-balkans",
@@ -888,7 +888,7 @@
       "sourceId": "treasury-press",
       "sourceName": "U.S. Treasury · Press releases",
       "publishedAt": "2026-09-04T14:30:00.000Z",
-      "retrievedAt": "2026-09-10T15:58:10.455Z",
+      "retrievedAt": "2026-09-10T16:08:46.993Z",
       "evidenceClass": "official-action",
       "verificationState": "source-published",
       "legalStage": "designation",
@@ -992,7 +992,7 @@
       "sourceId": "un-news-law-crime",
       "sourceName": "United Nations News · Law and crime prevention",
       "publishedAt": "2026-08-19T12:00:00.000Z",
-      "retrievedAt": "2026-09-10T15:58:10.455Z",
+      "retrievedAt": "2026-09-10T16:08:46.993Z",
       "evidenceClass": "official-release",
       "verificationState": "source-published",
       "legalStage": "not-applicable",
@@ -1009,7 +1009,7 @@
       "sourceId": "un-news-law-crime",
       "sourceName": "United Nations News · Law and crime prevention",
       "publishedAt": "2026-07-05T12:00:00.000Z",
-      "retrievedAt": "2026-09-10T15:58:10.455Z",
+      "retrievedAt": "2026-09-10T16:08:46.993Z",
       "evidenceClass": "official-release",
       "verificationState": "source-published",
       "legalStage": "not-applicable",
@@ -1026,7 +1026,7 @@
       "sourceId": "un-news-law-crime",
       "sourceName": "United Nations News · Law and crime prevention",
       "publishedAt": "2026-06-26T12:00:00.000Z",
-      "retrievedAt": "2026-09-10T15:58:10.455Z",
+      "retrievedAt": "2026-09-10T16:08:46.993Z",
       "evidenceClass": "official-release",
       "verificationState": "source-published",
       "legalStage": "not-applicable",
@@ -1043,20 +1043,20 @@
       "name": "U.S. Department of Justice · Justice News",
       "url": "https://www.justice.gov/news/rss",
       "status": "fresh",
-      "checkedAt": "2026-09-10T15:58:10.455Z",
-      "lastSuccessAt": "2026-09-10T15:58:10.455Z",
+      "checkedAt": "2026-09-10T16:08:46.993Z",
+      "lastSuccessAt": "2026-09-10T16:08:46.993Z",
       "cadenceMinutes": 15,
       "staleAfterMinutes": 120,
       "rights": "Public U.S. government release metadata; NarcoScope republishes titles, links and source clocks only.",
-      "detail": "25 source items read · 10 current in-scope · 40 retained metadata items published"
+      "detail": "25 source items read · 9 current in-scope · 40 retained metadata items published"
     },
     {
       "id": "un-news-law-crime",
       "name": "United Nations News · Law and crime prevention",
       "url": "https://news.un.org/feed/subscribe/en/news/topic/law-and-crime-prevention/feed/rss.xml",
       "status": "fresh",
-      "checkedAt": "2026-09-10T15:58:10.455Z",
-      "lastSuccessAt": "2026-09-10T15:58:10.455Z",
+      "checkedAt": "2026-09-10T16:08:46.993Z",
+      "lastSuccessAt": "2026-09-10T16:08:46.993Z",
       "cadenceMinutes": 30,
       "staleAfterMinutes": 180,
       "rights": "Public United Nations feed metadata; NarcoScope republishes titles, links and source clocks only.",
@@ -1067,8 +1067,8 @@
       "name": "Europol · Newsroom",
       "url": "https://www.europol.europa.eu/cms/api/rss/news",
       "status": "fresh",
-      "checkedAt": "2026-09-10T15:58:10.455Z",
-      "lastSuccessAt": "2026-09-10T15:58:10.455Z",
+      "checkedAt": "2026-09-10T16:08:46.993Z",
+      "lastSuccessAt": "2026-09-10T16:08:46.993Z",
       "cadenceMinutes": 30,
       "staleAfterMinutes": 180,
       "rights": "Public European Union agency feed metadata; NarcoScope republishes titles, links and source clocks only.",
@@ -1079,8 +1079,8 @@
       "name": "U.S. Treasury · Press releases",
       "url": "https://home.treasury.gov/news/press-releases",
       "status": "fresh",
-      "checkedAt": "2026-09-10T15:58:10.455Z",
-      "lastSuccessAt": "2026-09-10T15:58:10.455Z",
+      "checkedAt": "2026-09-10T16:08:46.993Z",
+      "lastSuccessAt": "2026-09-10T16:08:46.993Z",
       "cadenceMinutes": 30,
       "staleAfterMinutes": 240,
       "rights": "Public U.S. government release metadata; NarcoScope republishes titles, links and source clocks only.",
@@ -1091,8 +1091,8 @@
       "name": "Palimpsest · newswire publication-rights receipt",
       "url": "https://www.palimpsest.info/readings/newswire-latest.json",
       "status": "restricted",
-      "checkedAt": "2026-09-10T15:58:10.455Z",
-      "lastSuccessAt": "2026-09-10T15:58:10.455Z",
+      "checkedAt": "2026-09-10T16:08:46.993Z",
+      "lastSuccessAt": "2026-09-10T16:08:46.993Z",
       "cadenceMinutes": 15,
       "staleAfterMinutes": 90,
       "rights": "Receipt only. Source content remains suppressed whenever Palimpsest publication_allowed is false.",
@@ -1103,24 +1103,24 @@
       "name": "Seiche · global money-market context",
       "url": "https://api.seiche.info/api/v2/money-markets",
       "status": "partial",
-      "checkedAt": "2026-09-10T15:58:10.455Z",
-      "lastSuccessAt": "2026-09-10T15:58:10.455Z",
+      "checkedAt": "2026-09-10T16:08:46.993Z",
+      "lastSuccessAt": "2026-09-10T16:08:46.993Z",
       "cadenceMinutes": 15,
       "staleAfterMinutes": 90,
       "rights": "Read-only economic context receipt. Values never become NarcoScope illicit-market facts or person-level inferences.",
-      "detail": "seiche.global-money-markets.v1 · generated 2026-09-10T15:58:10.000Z"
+      "detail": "seiche.global-money-markets.v1 · generated 2026-09-10T16:08:47.000Z"
     },
     {
       "id": "seiche-capital-markets",
       "name": "Seiche · capital-market context",
       "url": "https://api.seiche.info/api/v2/world-markets?section=capital_markets",
       "status": "fresh",
-      "checkedAt": "2026-09-10T15:58:10.455Z",
-      "lastSuccessAt": "2026-09-10T15:58:10.455Z",
+      "checkedAt": "2026-09-10T16:08:46.993Z",
+      "lastSuccessAt": "2026-09-10T16:08:46.993Z",
       "cadenceMinutes": 15,
       "staleAfterMinutes": 90,
       "rights": "Read-only economic context receipt. Values never become NarcoScope illicit-market facts or person-level inferences.",
-      "detail": "seiche.world-markets.v1 · generated 2026-09-10T15:53:22.000Z"
+      "detail": "seiche.world-markets.v1 · generated 2026-09-10T16:06:31.000Z"
     }
   ],
   "caveats": [
