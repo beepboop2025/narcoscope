@@ -474,6 +474,12 @@ async function serveStatic(req, res, requestUrl, distDir) {
       '<https://narcoscope.com/.well-known/api-catalog>; rel="api-catalog"; type="application/linkset+json"',
     )
   }
+  // These published, credential-free records support the reciprocal research
+  // relay. Keep the browser-readable scope limited to its index and dossiers.
+  if (relativePath === 'news/index.json'
+      || /^news\/[a-z0-9]+(?:-[a-z0-9]+)*\.dossier\.json$/.test(relativePath)) {
+    res.setHeader('Access-Control-Allow-Origin', '*')
+  }
   res.setHeader('Content-Length', String(fileStat.size))
   res.setHeader(
     'Cache-Control',
