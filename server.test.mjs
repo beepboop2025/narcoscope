@@ -72,6 +72,11 @@ beforeAll(async () => {
   const distDir = await mkdtemp(join(tmpdir(), 'narcoscope-server-'))
   await mkdir(join(distDir, 'assets'))
   await mkdir(join(distDir, '.well-known'))
+  await mkdir(join(distDir, 'news'))
+  await writeFile(join(distDir, 'news', 'index.json'), '{"articles":[]}')
+  await writeFile(join(distDir, 'news', 'public-record.dossier.json'), '{"title":"Public record"}')
+  await writeFile(join(distDir, 'news', 'public-record.html'), '<title>Public record</title>')
+  await writeFile(join(distDir, 'news', 'feed.json'), '{"items":[]}')
   await writeFile(join(distDir, 'index.html'), '<!doctype html><title>NarcoScope</title>')
   await writeFile(join(distDir, 'robots.txt'), 'User-agent: *\n')
   await writeFile(join(distDir, '.well-known', 'security.txt'), 'Contact: mailto:security@narcoscope.com\n')
@@ -629,6 +634,31 @@ describe('Railway HTTP server', () => {
     expect(await spaHead.text()).toBe('')
     expect(missingWellKnown.status).toBe(404)
     expect(missingWellKnown.headers.get('cache-control')).toBe('no-store')
+  })
+
+  it.each(['GET', 'HEAD'])('allows the public newsroom relay to read JSON with %s', async (method) => {
+    for (const path of ['/news/index.json', '/news/public-record.dossier.json']) {
+      const response = await fetch(baseUrl + path, {
+        method, headers: { Origin: 'https://www.palimpsest.info' },
+      })
+      expect(response.status).toBe(200)
+      expect(response.headers.get('content-type')).toContain('application/json')
+      expect(response.headers.get('access-control-allow-origin')).toBe('*')
+      expect(response.headers.get('access-control-allow-credentials')).toBeNull()
+      if (method === 'HEAD') expect(await response.text()).toBe('')
+      else expect(await response.json()).toBeTypeOf('object')
+    }
+  })
+
+  it.each([
+    ['/news/public-record.html', 200], ['/news/feed.json', 200],
+    ['/news/missing.dossier.json', 404], ['/server.mjs', 404],
+  ])('keeps relay CORS scoped for %s', async (path, status) => {
+    const response = await fetch(baseUrl + path, {
+      headers: { Origin: 'https://www.palimpsest.info' },
+    })
+    expect(response.status).toBe(status)
+    expect(response.headers.get('access-control-allow-origin')).toBeNull()
   })
 
   it.each([
