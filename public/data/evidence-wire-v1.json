@@ -1,6 +1,6 @@
 {
   "schema": "narcoscope.evidence-wire.v1",
-  "generatedAt": "2026-09-17T19:35:02.976Z",
+  "generatedAt": "2026-09-17T20:15:46.126Z",
   "status": "partial",
   "window": {
     "start": "2026-06-26T12:00:00.000Z",
@@ -14,7 +14,7 @@
       "sourceId": "europol-news",
       "sourceName": "Europol · Newsroom",
       "publishedAt": null,
-      "retrievedAt": "2026-09-17T19:35:02.976Z",
+      "retrievedAt": "2026-09-17T20:15:46.126Z",
       "evidenceClass": "official-release",
       "verificationState": "source-published",
       "legalStage": "not-applicable",
@@ -31,7 +31,7 @@
       "sourceId": "europol-news",
       "sourceName": "Europol · Newsroom",
       "publishedAt": null,
-      "retrievedAt": "2026-09-17T19:35:02.976Z",
+      "retrievedAt": "2026-09-17T20:15:46.126Z",
       "evidenceClass": "official-release",
       "verificationState": "source-published",
       "legalStage": "not-applicable",
@@ -48,7 +48,7 @@
       "sourceId": "europol-news",
       "sourceName": "Europol · Newsroom",
       "publishedAt": null,
-      "retrievedAt": "2026-09-17T19:35:02.976Z",
+      "retrievedAt": "2026-09-17T20:15:46.126Z",
       "evidenceClass": "official-release",
       "verificationState": "source-published",
       "legalStage": "not-applicable",
@@ -94,6 +94,40 @@
       "publicationAllowed": true
     },
     {
+      "id": "doj-justice-news-20d9c4370666e45a4812",
+      "title": "Buffalo man arrested on fentanyl charge",
+      "url": "https://www.justice.gov/usao-wdny/pr/buffalo-man-arrested-fentanyl-charge",
+      "sourceId": "doj-justice-news",
+      "sourceName": "U.S. Department of Justice · Justice News",
+      "publishedAt": "2026-09-17T12:00:00.000Z",
+      "retrievedAt": "2026-09-17T20:15:46.126Z",
+      "evidenceClass": "official-action",
+      "verificationState": "source-published",
+      "legalStage": "charge",
+      "topics": [
+        "drug markets"
+      ],
+      "countries": [],
+      "publicationAllowed": true
+    },
+    {
+      "id": "doj-justice-news-21b97f2daebce9c08a7f",
+      "title": "Alabama Man Pleads Guilty in Federal Court to Sex Trafficking and Child Pornography Charges",
+      "url": "https://www.justice.gov/usao-ndil/pr/alabama-man-pleads-guilty-federal-court-sex-trafficking-and-child-pornography-charges",
+      "sourceId": "doj-justice-news",
+      "sourceName": "U.S. Department of Justice · Justice News",
+      "publishedAt": "2026-09-17T12:00:00.000Z",
+      "retrievedAt": "2026-09-17T20:15:46.126Z",
+      "evidenceClass": "official-action",
+      "verificationState": "source-published",
+      "legalStage": "conviction",
+      "topics": [
+        "human trafficking"
+      ],
+      "countries": [],
+      "publicationAllowed": true
+    },
+    {
       "id": "doj-justice-news-2a6aabf9ccf853e7e0e3",
       "title": "Pensacola Mail Handler Pleads Guilty to Drug and Postal Crimes",
       "url": "https://www.justice.gov/usao-ndfl/pr/pensacola-mail-handler-pleads-guilty-drug-and-postal-crimes",
@@ -111,13 +145,30 @@
       "publicationAllowed": true
     },
     {
+      "id": "doj-justice-news-2b3a6a7911e0ecd49644",
+      "title": "Federal Jury Finds North Kingstown Man Guilty of Attempted Sex Trafficking of a Child",
+      "url": "https://www.justice.gov/usao-ri/pr/federal-jury-finds-north-kingstown-man-guilty-attempted-sex-trafficking-child",
+      "sourceId": "doj-justice-news",
+      "sourceName": "U.S. Department of Justice · Justice News",
+      "publishedAt": "2026-09-17T12:00:00.000Z",
+      "retrievedAt": "2026-09-17T20:15:46.126Z",
+      "evidenceClass": "official-action",
+      "verificationState": "source-published",
+      "legalStage": "report",
+      "topics": [
+        "human trafficking"
+      ],
+      "countries": [],
+      "publicationAllowed": true
+    },
+    {
       "id": "doj-justice-news-42a30f542289983c6e48",
       "title": "Recidivist New Castle Felon Sentenced to More Than 17 and a Half Years in Prison for Trafficking Fentanyl, Heroin, and Cocaine While on Federal Supervised Release",
       "url": "https://www.justice.gov/usao-wdpa/pr/recidivist-new-castle-felon-sentenced-more-17-and-half-years-prison-trafficking",
       "sourceId": "doj-justice-news",
       "sourceName": "U.S. Department of Justice · Justice News",
       "publishedAt": "2026-09-17T12:00:00.000Z",
-      "retrievedAt": "2026-09-17T19:35:02.976Z",
+      "retrievedAt": "2026-09-17T20:05:31.930Z",
       "evidenceClass": "official-action",
       "verificationState": "source-published",
       "legalStage": "sentencing",
@@ -134,7 +185,7 @@
       "sourceId": "doj-justice-news",
       "sourceName": "U.S. Department of Justice · Justice News",
       "publishedAt": "2026-09-17T12:00:00.000Z",
-      "retrievedAt": "2026-09-17T19:35:02.976Z",
+      "retrievedAt": "2026-09-17T20:05:31.930Z",
       "evidenceClass": "official-action",
       "verificationState": "source-published",
       "legalStage": "sentencing",
@@ -151,12 +202,29 @@
       "sourceId": "doj-justice-news",
       "sourceName": "U.S. Department of Justice · Justice News",
       "publishedAt": "2026-09-17T12:00:00.000Z",
-      "retrievedAt": "2026-09-17T19:35:02.976Z",
+      "retrievedAt": "2026-09-17T20:05:31.930Z",
       "evidenceClass": "official-action",
       "verificationState": "source-published",
       "legalStage": "charge",
       "topics": [
         "arms trafficking"
+      ],
+      "countries": [],
+      "publicationAllowed": true
+    },
+    {
+      "id": "doj-justice-news-946d2fd9236574fb8d19",
+      "title": "Arizona woman, Dallas man receive lengthy federal prison sentences as part of Homeland Security Task Force investigation into deadly fentanyl overdose in the Eastern District of Texas",
+      "url": "https://www.justice.gov/usao-edtx/pr/arizona-woman-dallas-man-receive-lengthy-federal-prison-sentences-part-homeland",
+      "sourceId": "doj-justice-news",
+      "sourceName": "U.S. Department of Justice · Justice News",
+      "publishedAt": "2026-09-17T12:00:00.000Z",
+      "retrievedAt": "2026-09-17T20:15:46.126Z",
+      "evidenceClass": "official-action",
+      "verificationState": "source-published",
+      "legalStage": "report",
+      "topics": [
+        "drug markets"
       ],
       "countries": [],
       "publicationAllowed": true
@@ -185,7 +253,7 @@
       "sourceId": "doj-justice-news",
       "sourceName": "U.S. Department of Justice · Justice News",
       "publishedAt": "2026-09-17T12:00:00.000Z",
-      "retrievedAt": "2026-09-17T19:35:02.976Z",
+      "retrievedAt": "2026-09-17T20:15:46.126Z",
       "evidenceClass": "official-action",
       "verificationState": "source-published",
       "legalStage": "conviction",
@@ -206,6 +274,23 @@
       "evidenceClass": "official-action",
       "verificationState": "source-published",
       "legalStage": "sentencing",
+      "topics": [
+        "drug markets"
+      ],
+      "countries": [],
+      "publicationAllowed": true
+    },
+    {
+      "id": "doj-justice-news-d7c53535abaf9434ad50",
+      "title": "17 Individuals Charged with Drug Trafficking as part of the Homeland Security Task Force (HSTF) Initiative",
+      "url": "https://www.justice.gov/usao-pr/pr/17-individuals-charged-drug-trafficking-part-homeland-security-task-force-hstf",
+      "sourceId": "doj-justice-news",
+      "sourceName": "U.S. Department of Justice · Justice News",
+      "publishedAt": "2026-09-17T12:00:00.000Z",
+      "retrievedAt": "2026-09-17T20:15:46.126Z",
+      "evidenceClass": "official-action",
+      "verificationState": "source-published",
+      "legalStage": "charge",
       "topics": [
         "drug markets"
       ],
@@ -236,7 +321,7 @@
       "sourceId": "doj-justice-news",
       "sourceName": "U.S. Department of Justice · Justice News",
       "publishedAt": "2026-09-17T12:00:00.000Z",
-      "retrievedAt": "2026-09-17T19:35:02.976Z",
+      "retrievedAt": "2026-09-17T20:15:46.126Z",
       "evidenceClass": "official-action",
       "verificationState": "source-published",
       "legalStage": "sentencing",
@@ -253,7 +338,7 @@
       "sourceId": "doj-justice-news",
       "sourceName": "U.S. Department of Justice · Justice News",
       "publishedAt": "2026-09-17T12:00:00.000Z",
-      "retrievedAt": "2026-09-17T19:35:02.976Z",
+      "retrievedAt": "2026-09-17T20:15:46.126Z",
       "evidenceClass": "official-action",
       "verificationState": "source-published",
       "legalStage": "sentencing",
@@ -775,98 +860,13 @@
       "publicationAllowed": true
     },
     {
-      "id": "doj-justice-news-23c7f2a0c05f66d26885",
-      "title": "Nigerian Man Previously Ordered Removed from U.S. Convicted of Unlawfully Possessing Firearm",
-      "url": "https://www.justice.gov/usao-sdin/pr/nigerian-man-previously-ordered-removed-us-convicted-unlawfully-possessing-firearm",
-      "sourceId": "doj-justice-news",
-      "sourceName": "U.S. Department of Justice · Justice News",
-      "publishedAt": "2026-09-15T12:00:00.000Z",
-      "retrievedAt": "2026-09-15T18:27:44.949Z",
-      "evidenceClass": "official-action",
-      "verificationState": "source-published",
-      "legalStage": "conviction",
-      "topics": [
-        "arms trafficking"
-      ],
-      "countries": [],
-      "publicationAllowed": true
-    },
-    {
-      "id": "doj-justice-news-23cb4357d85ed12a118f",
-      "title": "High-Ranking MS-13 Gang Member Sentenced to 60 Years’ Imprisonment for Racketeering, Seven Murders, Multiple Attempted Murders, Arson, and Firearms Offenses",
-      "url": "https://www.justice.gov/usao-edny/pr/high-ranking-ms-13-gang-member-sentenced-60-years-imprisonment-racketeering-seven",
-      "sourceId": "doj-justice-news",
-      "sourceName": "U.S. Department of Justice · Justice News",
-      "publishedAt": "2026-09-15T12:00:00.000Z",
-      "retrievedAt": "2026-09-15T22:04:49.959Z",
-      "evidenceClass": "official-action",
-      "verificationState": "source-published",
-      "legalStage": "sentencing",
-      "topics": [
-        "organized crime"
-      ],
-      "countries": [],
-      "publicationAllowed": true
-    },
-    {
-      "id": "doj-justice-news-348cea84c729cc763695",
-      "title": "Downtown L.A. Residents Arrested on Federal Complaint Alleging Possession of More Than 42 Kilograms of Fentanyl, Small Alligator in Stash House",
-      "url": "https://www.justice.gov/usao-cdca/pr/downtown-la-residents-arrested-federal-complaint-alleging-possession-more-42-kilograms",
-      "sourceId": "doj-justice-news",
-      "sourceName": "U.S. Department of Justice · Justice News",
-      "publishedAt": "2026-09-15T12:00:00.000Z",
-      "retrievedAt": "2026-09-15T19:19:56.148Z",
-      "evidenceClass": "official-action",
-      "verificationState": "source-published",
-      "legalStage": "charge",
-      "topics": [
-        "drug markets"
-      ],
-      "countries": [],
-      "publicationAllowed": true
-    },
-    {
-      "id": "doj-justice-news-3af8f4ed62d81d5761b3",
-      "title": "Washington DC Felon Sentenced for Illegally Possessing Firearm",
-      "url": "https://www.justice.gov/usao-md/pr/washington-dc-felon-sentenced-illegally-possessing-firearm",
-      "sourceId": "doj-justice-news",
-      "sourceName": "U.S. Department of Justice · Justice News",
-      "publishedAt": "2026-09-15T12:00:00.000Z",
-      "retrievedAt": "2026-09-15T20:42:34.953Z",
-      "evidenceClass": "official-action",
-      "verificationState": "source-published",
-      "legalStage": "sentencing",
-      "topics": [
-        "arms trafficking"
-      ],
-      "countries": [],
-      "publicationAllowed": true
-    },
-    {
-      "id": "doj-justice-news-4618a2dd65b5d0d2b77e",
-      "title": "Prior felon charged with new cocaine charge",
-      "url": "https://www.justice.gov/usao-wdny/pr/prior-felon-charged-new-cocaine-charge",
-      "sourceId": "doj-justice-news",
-      "sourceName": "U.S. Department of Justice · Justice News",
-      "publishedAt": "2026-09-15T12:00:00.000Z",
-      "retrievedAt": "2026-09-16T17:08:42.131Z",
-      "evidenceClass": "official-action",
-      "verificationState": "source-published",
-      "legalStage": "charge",
-      "topics": [
-        "drug markets"
-      ],
-      "countries": [],
-      "publicationAllowed": true
-    },
-    {
       "id": "treasury-press-f5e63e5a599b7b5ccdd0",
       "title": "Operation Economic Outcast Sanctions Major Bank Helping Iran Evade Sanctions",
       "url": "https://home.treasury.gov/news/press-releases/sb0629/",
       "sourceId": "treasury-press",
       "sourceName": "U.S. Treasury · Press releases",
       "publishedAt": "2026-09-11T09:00:00.000Z",
-      "retrievedAt": "2026-09-17T19:35:02.976Z",
+      "retrievedAt": "2026-09-17T20:15:46.126Z",
       "evidenceClass": "official-action",
       "verificationState": "source-published",
       "legalStage": "designation",
@@ -900,7 +900,7 @@
       "sourceId": "treasury-press",
       "sourceName": "U.S. Treasury · Press releases",
       "publishedAt": "2026-09-08T14:30:00.000Z",
-      "retrievedAt": "2026-09-17T19:35:02.976Z",
+      "retrievedAt": "2026-09-17T20:15:46.126Z",
       "evidenceClass": "official-action",
       "verificationState": "source-published",
       "legalStage": "report",
@@ -1056,7 +1056,7 @@
       "sourceId": "un-news-law-crime",
       "sourceName": "United Nations News · Law and crime prevention",
       "publishedAt": "2026-08-19T12:00:00.000Z",
-      "retrievedAt": "2026-09-17T19:35:02.976Z",
+      "retrievedAt": "2026-09-17T20:15:46.126Z",
       "evidenceClass": "official-release",
       "verificationState": "source-published",
       "legalStage": "not-applicable",
@@ -1073,7 +1073,7 @@
       "sourceId": "un-news-law-crime",
       "sourceName": "United Nations News · Law and crime prevention",
       "publishedAt": "2026-07-05T12:00:00.000Z",
-      "retrievedAt": "2026-09-17T19:35:02.976Z",
+      "retrievedAt": "2026-09-17T20:15:46.126Z",
       "evidenceClass": "official-release",
       "verificationState": "source-published",
       "legalStage": "not-applicable",
@@ -1090,7 +1090,7 @@
       "sourceId": "un-news-law-crime",
       "sourceName": "United Nations News · Law and crime prevention",
       "publishedAt": "2026-06-26T12:00:00.000Z",
-      "retrievedAt": "2026-09-17T19:35:02.976Z",
+      "retrievedAt": "2026-09-17T20:15:46.126Z",
       "evidenceClass": "official-release",
       "verificationState": "source-published",
       "legalStage": "not-applicable",
@@ -1107,20 +1107,20 @@
       "name": "U.S. Department of Justice · Justice News",
       "url": "https://www.justice.gov/news/rss",
       "status": "fresh",
-      "checkedAt": "2026-09-17T19:35:02.976Z",
-      "lastSuccessAt": "2026-09-17T19:35:02.976Z",
+      "checkedAt": "2026-09-17T20:15:46.126Z",
+      "lastSuccessAt": "2026-09-17T20:15:46.126Z",
       "cadenceMinutes": 15,
       "staleAfterMinutes": 120,
       "rights": "Public U.S. government release metadata; NarcoScope republishes titles, links and source clocks only.",
-      "detail": "25 source items read · 6 current in-scope · 40 retained metadata items published"
+      "detail": "25 source items read · 8 current in-scope · 40 retained metadata items published"
     },
     {
       "id": "un-news-law-crime",
       "name": "United Nations News · Law and crime prevention",
       "url": "https://news.un.org/feed/subscribe/en/news/topic/law-and-crime-prevention/feed/rss.xml",
       "status": "fresh",
-      "checkedAt": "2026-09-17T19:35:02.976Z",
-      "lastSuccessAt": "2026-09-17T19:35:02.976Z",
+      "checkedAt": "2026-09-17T20:15:46.126Z",
+      "lastSuccessAt": "2026-09-17T20:15:46.126Z",
       "cadenceMinutes": 30,
       "staleAfterMinutes": 180,
       "rights": "Public United Nations feed metadata; NarcoScope republishes titles, links and source clocks only.",
@@ -1131,8 +1131,8 @@
       "name": "Europol · Newsroom",
       "url": "https://www.europol.europa.eu/cms/api/rss/news",
       "status": "fresh",
-      "checkedAt": "2026-09-17T19:35:02.976Z",
-      "lastSuccessAt": "2026-09-17T19:35:02.976Z",
+      "checkedAt": "2026-09-17T20:15:46.126Z",
+      "lastSuccessAt": "2026-09-17T20:15:46.126Z",
       "cadenceMinutes": 30,
       "staleAfterMinutes": 180,
       "rights": "Public European Union agency feed metadata; NarcoScope republishes titles, links and source clocks only.",
@@ -1143,8 +1143,8 @@
       "name": "U.S. Treasury · Press releases",
       "url": "https://home.treasury.gov/news/press-releases",
       "status": "fresh",
-      "checkedAt": "2026-09-17T19:35:02.976Z",
-      "lastSuccessAt": "2026-09-17T19:35:02.976Z",
+      "checkedAt": "2026-09-17T20:15:46.126Z",
+      "lastSuccessAt": "2026-09-17T20:15:46.126Z",
       "cadenceMinutes": 30,
       "staleAfterMinutes": 240,
       "rights": "Public U.S. government release metadata; NarcoScope republishes titles, links and source clocks only.",
@@ -1155,8 +1155,8 @@
       "name": "Palimpsest · newswire publication-rights receipt",
       "url": "https://www.palimpsest.info/readings/newswire-latest.json",
       "status": "restricted",
-      "checkedAt": "2026-09-17T19:35:02.976Z",
-      "lastSuccessAt": "2026-09-17T19:35:02.976Z",
+      "checkedAt": "2026-09-17T20:15:46.126Z",
+      "lastSuccessAt": "2026-09-17T20:15:46.126Z",
       "cadenceMinutes": 15,
       "staleAfterMinutes": 90,
       "rights": "Receipt only. Source content remains suppressed whenever Palimpsest publication_allowed is false.",
@@ -1167,24 +1167,24 @@
       "name": "Seiche · global money-market context",
       "url": "https://api.seiche.info/api/v2/money-markets",
       "status": "partial",
-      "checkedAt": "2026-09-17T19:35:02.976Z",
-      "lastSuccessAt": "2026-09-17T19:35:02.976Z",
+      "checkedAt": "2026-09-17T20:15:46.126Z",
+      "lastSuccessAt": "2026-09-17T20:15:46.126Z",
       "cadenceMinutes": 15,
       "staleAfterMinutes": 90,
       "rights": "Read-only economic context receipt. Values never become NarcoScope illicit-market facts or person-level inferences.",
-      "detail": "seiche.global-money-markets.v1 · generated 2026-09-17T19:35:03.000Z"
+      "detail": "seiche.global-money-markets.v1 · generated 2026-09-17T20:15:46.000Z"
     },
     {
       "id": "seiche-capital-markets",
       "name": "Seiche · capital-market context",
       "url": "https://api.seiche.info/api/v2/world-markets?section=capital_markets",
       "status": "fresh",
-      "checkedAt": "2026-09-17T19:35:02.976Z",
-      "lastSuccessAt": "2026-09-17T19:35:02.976Z",
+      "checkedAt": "2026-09-17T20:15:46.126Z",
+      "lastSuccessAt": "2026-09-17T20:15:46.126Z",
       "cadenceMinutes": 15,
       "staleAfterMinutes": 90,
       "rights": "Read-only economic context receipt. Values never become NarcoScope illicit-market facts or person-level inferences.",
-      "detail": "seiche.world-markets.v1 · generated 2026-09-17T19:28:00.000Z"
+      "detail": "seiche.world-markets.v1 · generated 2026-09-17T20:05:13.000Z"
     }
   ],
   "caveats": [
