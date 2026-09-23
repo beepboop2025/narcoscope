@@ -1,7 +1,7 @@
 {
   "schemaVersion": "narcoscope.newsroom.index.v1",
   "title": "NarcoScope evidence newsroom",
-  "generatedAt": "2026-09-22T00:00:00.000Z",
+  "generatedAt": "2026-09-23T00:00:00.000Z",
   "feeds": {
     "json": "/news/feed.json",
     "atom": "/news/feed.xml"
@@ -13,14 +13,14 @@
       "title": "What the 2025 INCB precursor report says about China-linked incidents—and what it does not prove",
       "dek": "Nine reported incidents, nearly five tonnes, and one crucial missing join: the official record identifies an origin, but it does not establish a causal chain to US deaths or measure lawful industrial trade.",
       "contentClass": "automated_evidence_analysis",
-      "dataAsOf": "2026-09-22",
+      "dataAsOf": "2026-09-23",
       "publishedAt": "2026-08-12T00:00:00.000Z",
-      "updatedAt": "2026-09-22T00:00:00.000Z",
+      "updatedAt": "2026-09-23T00:00:00.000Z",
       "htmlUrl": "/news/china-linked-precursor-incidents-official-record.html",
       "dossierUrl": "/news/china-linked-precursor-incidents-official-record.dossier.json",
       "machineBriefUrl": "/news/china-linked-precursor-incidents-official-record.machine-brief.json",
-      "revisionHash": "cda5392091a06ac7d354f7a11ef6609aeb01d8b8c83e948eed2175bc460dfcb7",
-      "contentHash": "6578a804590d5f9a96e0574cc405f8e99c2140da345c444beeea49f23899e9d5",
+      "revisionHash": "4e4c4fa4cd5255b7c36ee0b3106927a60c4bd82c9ebaf502302fc3ad78008560",
+      "contentHash": "8e3aaa410a317b39484c4ee40007ef47950bcb83a17af9b1867f6a7220c0abdd",
       "automationDisclosure": "Written by deterministic typed templates from checked-in official-source aggregates; no generative model is used at build time.",
       "humanReviewStatus": "not_recorded",
       "correctionsStatus": "none_recorded",

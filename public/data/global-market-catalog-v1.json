@@ -1,13 +1,13 @@
 {
   "schema": "narcoscope.global-market-catalog.v1",
   "status": "available",
-  "generatedAt": "2026-09-08T17:24:38.226Z",
+  "generatedAt": "2026-09-23T05:38:10.541Z",
   "datasets": [
     {
       "id": "global-drugs",
       "title": "Drug markets: global reported supply, treatment, prices and monthly wastewater",
-      "generatedAt": "2026-09-08T17:24:38.226Z",
-      "sha256": "25496e832cc0e1fc67e20363e2d6bee2ab9bcaa1307e1d1251df31739cce2226",
+      "generatedAt": "2026-09-23T05:38:10.541Z",
+      "sha256": "e6cbb3f4b0b45327c17e2bdc25ef859e19d3cc1f3fa0b2889ff858962a4ed6a6",
       "sources": [
         {
           "id": "statcan-13100820",
@@ -17,9 +17,9 @@
           "downloadUrl": "https://www150.statcan.gc.ca/n1/tbl/csv/13100820-eng.zip",
           "license": "Statistics Canada Open Licence; reproduction and distribution permitted with source acknowledgement.",
           "licenseUrl": "https://www.statcan.gc.ca/en/reference/licence",
-          "retrievedAt": "2026-09-08T17:12:20.200081Z",
-          "sha256": "8e83ca98b9cecb0ad08823ea7a7dec1246871351026a0270938f7a7799c272bb",
-          "bytes": 134181,
+          "retrievedAt": "2026-09-23T05:38:04.039Z",
+          "sha256": "5d601ea9e3a6b8d983394a0dd4715ef493e892147c7f192d7b5659ba35278f5e",
+          "bytes": 134183,
           "notes": [
             "Source: Statistics Canada, Canadian Wastewater Survey; tables 13-10-0820-01 and 13-10-0871-01. Normalized monthly estimates and 95% confidence intervals; no Statistics Canada endorsement is implied.",
             "Source dates end in 2020 or 2023. This is additional analyte and monthly granularity, not a claim of new 2026 wastewater sampling.",
@@ -34,9 +34,9 @@
           "downloadUrl": "https://www150.statcan.gc.ca/n1/tbl/csv/13100871-eng.zip",
           "license": "Statistics Canada Open Licence; reproduction and distribution permitted with source acknowledgement.",
           "licenseUrl": "https://www.statcan.gc.ca/en/reference/licence",
-          "retrievedAt": "2026-09-08T17:12:19.903131Z",
-          "sha256": "9198e75691a8c9d67f480ea951eb4ff4a3c676ba94ddb8cef4e7a183781ea128",
-          "bytes": 85201,
+          "retrievedAt": "2026-09-23T05:38:04.493Z",
+          "sha256": "ecb434c38c00d7d6193bf862faafd599a60d16e8e188aeea2700515ff31d3c1d",
+          "bytes": 85197,
           "notes": [
             "Source: Statistics Canada, Canadian Wastewater Survey; tables 13-10-0820-01 and 13-10-0871-01. Normalized monthly estimates and 95% confidence intervals; no Statistics Canada endorsement is implied.",
             "Source dates end in 2020 or 2023. This is additional analyte and monthly granularity, not a claim of new 2026 wastewater sampling.",
