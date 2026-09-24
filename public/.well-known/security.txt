@@ -1,0 +1,4 @@
+Contact: https://github.com/beepboop2025/narcoscope/security/advisories/new
+Canonical: https://narcoscope.com/.well-known/security.txt
+Expires: 2027-09-24T23:59:59Z
+Preferred-Languages: en

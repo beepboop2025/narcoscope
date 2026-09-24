@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" style="background:#090f18;opacity:0">
+<html lang="en" style="background:#090f18">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -15,6 +15,12 @@
     <title>NarcoScope — The public-interest illicit-economy evidence atlas</title>
     <meta name="description" content="Continuously monitored evidence on drug markets, illicit economies, arms, wildlife, raw materials, public legal actions and financial context—with provenance intact." />
     <meta name="theme-color" content="#090f18" />
+    <style>
+      .startup-summary { max-width: 54rem; margin: 0 auto; padding: 3rem 1.5rem; color: #e5e7eb; font: 1rem/1.6 system-ui, sans-serif; }
+      .startup-summary h1 { font-size: 2rem; line-height: 1.2; }
+      .startup-summary a { color: #a8d9e6; }
+      .startup-summary nav { display: flex; flex-wrap: wrap; gap: 1rem; }
+    </style>
     <meta name="robots" content="index,follow,max-snippet:-1" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="NarcoScope" />
@@ -39,7 +45,19 @@
     />
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <main class="startup-summary">
+        <h1>NarcoScope</h1>
+        <p>A public-interest evidence atlas for drug markets, illicit economies, arms, wildlife and raw materials.</p>
+        <p>Explore source-dated records, country comparisons and research guides. Observations retain their provenance, publication rights and coverage limits.</p>
+        <nav aria-label="Research resources">
+          <a href="/research/">Research guides</a>
+          <a href="/news/feed.json">Evidence feed</a>
+          <a href="/llms.txt">Data and integration guide</a>
+        </nav>
+        <noscript><p>Enable JavaScript to explore the interactive atlas.</p></noscript>
+      </main>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
