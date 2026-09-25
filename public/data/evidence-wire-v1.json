@@ -1,6 +1,6 @@
 {
   "schema": "narcoscope.evidence-wire.v1",
-  "generatedAt": "2026-09-25T18:25:29.388Z",
+  "generatedAt": "2026-09-25T19:16:58.188Z",
   "status": "partial",
   "window": {
     "start": "2026-06-26T12:00:00.000Z",
@@ -14,7 +14,7 @@
       "sourceId": "europol-news",
       "sourceName": "Europol · Newsroom",
       "publishedAt": null,
-      "retrievedAt": "2026-09-25T18:25:29.388Z",
+      "retrievedAt": "2026-09-25T19:16:58.188Z",
       "evidenceClass": "official-release",
       "verificationState": "source-published",
       "legalStage": "not-applicable",
@@ -31,7 +31,7 @@
       "sourceId": "europol-news",
       "sourceName": "Europol · Newsroom",
       "publishedAt": null,
-      "retrievedAt": "2026-09-25T18:25:29.388Z",
+      "retrievedAt": "2026-09-25T19:16:58.188Z",
       "evidenceClass": "official-release",
       "verificationState": "source-published",
       "legalStage": "not-applicable",
@@ -48,7 +48,7 @@
       "sourceId": "europol-news",
       "sourceName": "Europol · Newsroom",
       "publishedAt": null,
-      "retrievedAt": "2026-09-25T18:25:29.388Z",
+      "retrievedAt": "2026-09-25T19:16:58.188Z",
       "evidenceClass": "official-release",
       "verificationState": "source-published",
       "legalStage": "not-applicable",
@@ -65,7 +65,7 @@
       "sourceId": "doj-justice-news",
       "sourceName": "U.S. Department of Justice · Justice News",
       "publishedAt": "2026-09-25T12:00:00.000Z",
-      "retrievedAt": "2026-09-25T18:25:29.388Z",
+      "retrievedAt": "2026-09-25T19:06:50.121Z",
       "evidenceClass": "official-action",
       "verificationState": "source-published",
       "legalStage": "sentencing",
@@ -93,13 +93,31 @@
       "publicationAllowed": true
     },
     {
+      "id": "doj-justice-news-5a82cb8364f91f9192ce",
+      "title": "Cuban National Convicted for International Alien Smuggling and Money Laundering Conspiracy",
+      "url": "https://www.justice.gov/opa/pr/cuban-national-convicted-international-alien-smuggling-and-money-laundering-conspiracy",
+      "sourceId": "doj-justice-news",
+      "sourceName": "U.S. Department of Justice · Justice News",
+      "publishedAt": "2026-09-25T12:00:00.000Z",
+      "retrievedAt": "2026-09-25T19:16:58.188Z",
+      "evidenceClass": "official-action",
+      "verificationState": "source-published",
+      "legalStage": "conviction",
+      "topics": [
+        "illicit finance",
+        "human smuggling"
+      ],
+      "countries": [],
+      "publicationAllowed": true
+    },
+    {
       "id": "doj-justice-news-658d283e87a4d4782ea9",
       "title": "Northumberland County Man Indicted On Drug Trafficking Offenses",
       "url": "https://www.justice.gov/usao-mdpa/pr/northumberland-county-man-indicted-drug-trafficking-offenses",
       "sourceId": "doj-justice-news",
       "sourceName": "U.S. Department of Justice · Justice News",
       "publishedAt": "2026-09-25T12:00:00.000Z",
-      "retrievedAt": "2026-09-25T18:25:29.388Z",
+      "retrievedAt": "2026-09-25T19:06:50.121Z",
       "evidenceClass": "official-action",
       "verificationState": "source-published",
       "legalStage": "charge",
@@ -116,10 +134,27 @@
       "sourceId": "doj-justice-news",
       "sourceName": "U.S. Department of Justice · Justice News",
       "publishedAt": "2026-09-25T12:00:00.000Z",
-      "retrievedAt": "2026-09-25T18:25:29.388Z",
+      "retrievedAt": "2026-09-25T19:16:58.188Z",
       "evidenceClass": "official-action",
       "verificationState": "source-published",
       "legalStage": "charge",
+      "topics": [
+        "drug markets"
+      ],
+      "countries": [],
+      "publicationAllowed": true
+    },
+    {
+      "id": "doj-justice-news-7a9a6f64abf32150ee64",
+      "title": "Federal Jury Convicts Orleans Parish Man of Drug-Trafficking and Firearms Offenses",
+      "url": "https://www.justice.gov/usao-edla/pr/federal-jury-convicts-orleans-parish-man-drug-trafficking-and-firearms-offenses",
+      "sourceId": "doj-justice-news",
+      "sourceName": "U.S. Department of Justice · Justice News",
+      "publishedAt": "2026-09-25T12:00:00.000Z",
+      "retrievedAt": "2026-09-25T19:16:58.188Z",
+      "evidenceClass": "official-action",
+      "verificationState": "source-published",
+      "legalStage": "conviction",
       "topics": [
         "drug markets"
       ],
@@ -133,7 +168,7 @@
       "sourceId": "doj-justice-news",
       "sourceName": "U.S. Department of Justice · Justice News",
       "publishedAt": "2026-09-25T12:00:00.000Z",
-      "retrievedAt": "2026-09-25T18:25:29.388Z",
+      "retrievedAt": "2026-09-25T19:16:58.188Z",
       "evidenceClass": "official-action",
       "verificationState": "source-published",
       "legalStage": "sentencing",
@@ -180,16 +215,51 @@
       "publicationAllowed": true
     },
     {
+      "id": "doj-justice-news-d6919d6f66ab8e107bbb",
+      "title": "Wilmington Man Charged with Fentanyl Trafficking and Firearm Offenses",
+      "url": "https://www.justice.gov/usao-de/pr/wilmington-man-charged-fentanyl-trafficking-and-firearm-offenses",
+      "sourceId": "doj-justice-news",
+      "sourceName": "U.S. Department of Justice · Justice News",
+      "publishedAt": "2026-09-25T12:00:00.000Z",
+      "retrievedAt": "2026-09-25T19:16:58.188Z",
+      "evidenceClass": "official-action",
+      "verificationState": "source-published",
+      "legalStage": "charge",
+      "topics": [
+        "drug markets",
+        "arms trafficking"
+      ],
+      "countries": [],
+      "publicationAllowed": true
+    },
+    {
       "id": "doj-justice-news-ea0673745a0fc2aa69a1",
       "title": "A McDuffie County man was sentenced to 10 years in prison for drug-related charges",
       "url": "https://www.justice.gov/usao-sdga/pr/mcduffie-county-man-was-sentenced-10-years-prison-drug-related-charges",
       "sourceId": "doj-justice-news",
       "sourceName": "U.S. Department of Justice · Justice News",
       "publishedAt": "2026-09-25T12:00:00.000Z",
-      "retrievedAt": "2026-09-25T18:25:29.388Z",
+      "retrievedAt": "2026-09-25T19:06:50.121Z",
       "evidenceClass": "official-action",
       "verificationState": "source-published",
       "legalStage": "sentencing",
+      "topics": [
+        "drug markets"
+      ],
+      "countries": [],
+      "publicationAllowed": true
+    },
+    {
+      "id": "doj-justice-news-f492b8fcef679adb3b4e",
+      "title": "Milton Man Indicted on Federal Drug Trafficking and Firearms Charges",
+      "url": "https://www.justice.gov/usao-de/pr/milton-man-indicted-federal-drug-trafficking-and-firearms-charges",
+      "sourceId": "doj-justice-news",
+      "sourceName": "U.S. Department of Justice · Justice News",
+      "publishedAt": "2026-09-25T12:00:00.000Z",
+      "retrievedAt": "2026-09-25T19:16:58.188Z",
+      "evidenceClass": "official-action",
+      "verificationState": "source-published",
+      "legalStage": "charge",
       "topics": [
         "drug markets"
       ],
@@ -203,7 +273,7 @@
       "sourceId": "doj-justice-news",
       "sourceName": "U.S. Department of Justice · Justice News",
       "publishedAt": "2026-09-25T12:00:00.000Z",
-      "retrievedAt": "2026-09-25T18:25:29.388Z",
+      "retrievedAt": "2026-09-25T19:06:50.121Z",
       "evidenceClass": "official-action",
       "verificationState": "source-published",
       "legalStage": "charge",
@@ -674,40 +744,6 @@
       "publicationAllowed": true
     },
     {
-      "id": "doj-justice-news-fa8b44690ba6987bd843",
-      "title": "Former New Hampshire Residents Indicted For Scheme to Steal and Launder Money Stolen From ATMs",
-      "url": "https://www.justice.gov/usao-nh/pr/former-new-hampshire-residents-indicted-scheme-steal-and-launder-money-stolen-atms",
-      "sourceId": "doj-justice-news",
-      "sourceName": "U.S. Department of Justice · Justice News",
-      "publishedAt": "2026-09-24T12:00:00.000Z",
-      "retrievedAt": "2026-09-24T20:39:41.082Z",
-      "evidenceClass": "official-action",
-      "verificationState": "source-published",
-      "legalStage": "charge",
-      "topics": [
-        "illicit finance"
-      ],
-      "countries": [],
-      "publicationAllowed": true
-    },
-    {
-      "id": "doj-justice-news-fddb9e22ed1c9cd1eda3",
-      "title": "Jefferson City Man Sentenced to Eight Years for Illegal Possession of a Firearm",
-      "url": "https://www.justice.gov/usao-wdmo/pr/jefferson-city-man-sentenced-eight-years-illegal-possession-firearm",
-      "sourceId": "doj-justice-news",
-      "sourceName": "U.S. Department of Justice · Justice News",
-      "publishedAt": "2026-09-24T12:00:00.000Z",
-      "retrievedAt": "2026-09-25T15:18:55.436Z",
-      "evidenceClass": "official-action",
-      "verificationState": "source-published",
-      "legalStage": "sentencing",
-      "topics": [
-        "arms trafficking"
-      ],
-      "countries": [],
-      "publicationAllowed": true
-    },
-    {
       "id": "europol-news-5372e4699099d6caf219",
       "title": "Drug trafficking investigation leads to some of the world’s biggest underground bankers",
       "url": "http://www.europol.europa.eu/media-press/newsroom/news/drug-trafficking-investigation-leads-to-some-of-world-biggest-underground-bankers",
@@ -754,41 +790,6 @@
       "legalStage": "not-applicable",
       "topics": [
         "drug markets"
-      ],
-      "countries": [],
-      "publicationAllowed": true
-    },
-    {
-      "id": "doj-justice-news-00015c94517237352c44",
-      "title": "Okmulgee Resident Sentenced To Over 80 Years In Prison For Federal Drug And Gun Crimes",
-      "url": "https://www.justice.gov/usao-edok/pr/okmulgee-resident-sentenced-over-80-years-prison-federal-drug-and-gun-crimes",
-      "sourceId": "doj-justice-news",
-      "sourceName": "U.S. Department of Justice · Justice News",
-      "publishedAt": "2026-09-23T12:00:00.000Z",
-      "retrievedAt": "2026-09-23T22:41:06.117Z",
-      "evidenceClass": "official-action",
-      "verificationState": "source-published",
-      "legalStage": "sentencing",
-      "topics": [
-        "drug markets"
-      ],
-      "countries": [],
-      "publicationAllowed": true
-    },
-    {
-      "id": "doj-justice-news-216f6999e57aa871af83",
-      "title": "10 Indicted in Takedown of Major Philadelphia Cocaine Trafficking Organization That Coordinated With Mexican Cartel",
-      "url": "https://www.justice.gov/usao-edpa/pr/10-indicted-takedown-major-philadelphia-cocaine-trafficking-organization-coordinated",
-      "sourceId": "doj-justice-news",
-      "sourceName": "U.S. Department of Justice · Justice News",
-      "publishedAt": "2026-09-23T12:00:00.000Z",
-      "retrievedAt": "2026-09-23T20:57:36.119Z",
-      "evidenceClass": "official-action",
-      "verificationState": "source-published",
-      "legalStage": "charge",
-      "topics": [
-        "drug markets",
-        "organized crime"
       ],
       "countries": [],
       "publicationAllowed": true
@@ -885,7 +886,7 @@
       "sourceId": "treasury-press",
       "sourceName": "U.S. Treasury · Press releases",
       "publishedAt": "2026-09-11T09:00:00.000Z",
-      "retrievedAt": "2026-09-25T18:25:29.388Z",
+      "retrievedAt": "2026-09-25T19:16:58.188Z",
       "evidenceClass": "official-action",
       "verificationState": "source-published",
       "legalStage": "designation",
@@ -1075,7 +1076,7 @@
       "sourceId": "un-news-law-crime",
       "sourceName": "United Nations News · Law and crime prevention",
       "publishedAt": "2026-08-19T12:00:00.000Z",
-      "retrievedAt": "2026-09-25T18:25:29.388Z",
+      "retrievedAt": "2026-09-25T19:16:58.188Z",
       "evidenceClass": "official-release",
       "verificationState": "source-published",
       "legalStage": "not-applicable",
@@ -1092,7 +1093,7 @@
       "sourceId": "un-news-law-crime",
       "sourceName": "United Nations News · Law and crime prevention",
       "publishedAt": "2026-07-05T12:00:00.000Z",
-      "retrievedAt": "2026-09-25T18:25:29.388Z",
+      "retrievedAt": "2026-09-25T19:16:58.188Z",
       "evidenceClass": "official-release",
       "verificationState": "source-published",
       "legalStage": "not-applicable",
@@ -1109,7 +1110,7 @@
       "sourceId": "un-news-law-crime",
       "sourceName": "United Nations News · Law and crime prevention",
       "publishedAt": "2026-06-26T12:00:00.000Z",
-      "retrievedAt": "2026-09-25T18:25:29.388Z",
+      "retrievedAt": "2026-09-25T19:16:58.188Z",
       "evidenceClass": "official-release",
       "verificationState": "source-published",
       "legalStage": "not-applicable",
@@ -1126,8 +1127,8 @@
       "name": "U.S. Department of Justice · Justice News",
       "url": "https://www.justice.gov/news/rss",
       "status": "fresh",
-      "checkedAt": "2026-09-25T18:25:29.388Z",
-      "lastSuccessAt": "2026-09-25T18:25:29.388Z",
+      "checkedAt": "2026-09-25T19:16:58.188Z",
+      "lastSuccessAt": "2026-09-25T19:16:58.188Z",
       "cadenceMinutes": 15,
       "staleAfterMinutes": 120,
       "rights": "Public U.S. government release metadata; NarcoScope republishes titles, links and source clocks only.",
@@ -1138,8 +1139,8 @@
       "name": "United Nations News · Law and crime prevention",
       "url": "https://news.un.org/feed/subscribe/en/news/topic/law-and-crime-prevention/feed/rss.xml",
       "status": "fresh",
-      "checkedAt": "2026-09-25T18:25:29.388Z",
-      "lastSuccessAt": "2026-09-25T18:25:29.388Z",
+      "checkedAt": "2026-09-25T19:16:58.188Z",
+      "lastSuccessAt": "2026-09-25T19:16:58.188Z",
       "cadenceMinutes": 30,
       "staleAfterMinutes": 180,
       "rights": "Public United Nations feed metadata; NarcoScope republishes titles, links and source clocks only.",
@@ -1150,8 +1151,8 @@
       "name": "Europol · Newsroom",
       "url": "https://www.europol.europa.eu/cms/api/rss/news",
       "status": "fresh",
-      "checkedAt": "2026-09-25T18:25:29.388Z",
-      "lastSuccessAt": "2026-09-25T18:25:29.388Z",
+      "checkedAt": "2026-09-25T19:16:58.188Z",
+      "lastSuccessAt": "2026-09-25T19:16:58.188Z",
       "cadenceMinutes": 30,
       "staleAfterMinutes": 180,
       "rights": "Public European Union agency feed metadata; NarcoScope republishes titles, links and source clocks only.",
@@ -1162,8 +1163,8 @@
       "name": "U.S. Treasury · Press releases",
       "url": "https://home.treasury.gov/news/press-releases",
       "status": "fresh",
-      "checkedAt": "2026-09-25T18:25:29.388Z",
-      "lastSuccessAt": "2026-09-25T18:25:29.388Z",
+      "checkedAt": "2026-09-25T19:16:58.188Z",
+      "lastSuccessAt": "2026-09-25T19:16:58.188Z",
       "cadenceMinutes": 30,
       "staleAfterMinutes": 240,
       "rights": "Public U.S. government release metadata; NarcoScope republishes titles, links and source clocks only.",
@@ -1174,8 +1175,8 @@
       "name": "Palimpsest · newswire publication-rights receipt",
       "url": "https://www.palimpsest.info/readings/newswire-latest.json",
       "status": "restricted",
-      "checkedAt": "2026-09-25T18:25:29.388Z",
-      "lastSuccessAt": "2026-09-25T18:25:29.388Z",
+      "checkedAt": "2026-09-25T19:16:58.188Z",
+      "lastSuccessAt": "2026-09-25T19:16:58.188Z",
       "cadenceMinutes": 15,
       "staleAfterMinutes": 90,
       "rights": "Receipt only. Source content remains suppressed whenever Palimpsest publication_allowed is false.",
@@ -1186,24 +1187,24 @@
       "name": "Seiche · global money-market context",
       "url": "https://api.seiche.info/api/v2/money-markets",
       "status": "partial",
-      "checkedAt": "2026-09-25T18:25:29.388Z",
-      "lastSuccessAt": "2026-09-25T18:25:29.388Z",
+      "checkedAt": "2026-09-25T19:16:58.188Z",
+      "lastSuccessAt": "2026-09-25T19:16:58.188Z",
       "cadenceMinutes": 15,
       "staleAfterMinutes": 90,
       "rights": "Read-only economic context receipt. Values never become NarcoScope illicit-market facts or person-level inferences.",
-      "detail": "seiche.global-money-markets.v1 · generated 2026-09-25T18:25:29.000Z"
+      "detail": "seiche.global-money-markets.v1 · generated 2026-09-25T19:16:58.000Z"
     },
     {
       "id": "seiche-capital-markets",
       "name": "Seiche · capital-market context",
       "url": "https://api.seiche.info/api/v2/world-markets?section=capital_markets",
       "status": "fresh",
-      "checkedAt": "2026-09-25T18:25:29.388Z",
-      "lastSuccessAt": "2026-09-25T18:25:29.388Z",
+      "checkedAt": "2026-09-25T19:16:58.188Z",
+      "lastSuccessAt": "2026-09-25T19:16:58.188Z",
       "cadenceMinutes": 15,
       "staleAfterMinutes": 90,
       "rights": "Read-only economic context receipt. Values never become NarcoScope illicit-market facts or person-level inferences.",
-      "detail": "seiche.world-markets.v1 · generated 2026-09-25T18:18:48.000Z"
+      "detail": "seiche.world-markets.v1 · generated 2026-09-25T19:13:57.000Z"
     }
   ],
   "caveats": [
