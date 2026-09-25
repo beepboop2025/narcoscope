@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "npm run shell:check && npm run bridge:palimpsest-bri:check && npm run bridge:connected:check && npm run news:check && npm run wire:check && npm run markets:check && tsc --noEmit && vite build && npm run workspace:build",
+    "build": "npm run bridge:palimpsest-bri:check && npm run bridge:connected:check && npm run news:check && npm run wire:check && npm run markets:check && npm run shell:check && tsc --noEmit && vite build && npm run workspace:build",
     "shell:sync": "node scripts/ui/sync-research-shell.mjs",
     "shell:check": "node scripts/ui/sync-research-shell.mjs --check",
     "start": "node server.mjs",
