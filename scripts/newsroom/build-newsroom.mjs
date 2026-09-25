@@ -18,6 +18,7 @@ import { createHash } from 'node:crypto'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { renderFamilyHeader } from '../ui/family-header.mjs'
 
 export const NEWSROOM_PIPELINE_VERSION = 'narcoscope.newsroom.pipeline.v2'
 export const MACHINE_BRIEF_SCHEMA_VERSION = 'narcoscope.newsroom.machine-brief.v1'
@@ -1537,7 +1538,7 @@ export function renderArticleHtml(dossier) {
   body,h1,h2,h3 { font-family:var(--research-font); }
   </style>
 </head>
-<body>${body}
+<body>${renderFamilyHeader()}${body}
 </body>
 </html>
 `

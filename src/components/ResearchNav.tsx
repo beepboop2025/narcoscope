@@ -7,6 +7,7 @@ export default function ResearchNav({ activeTab, onSelect }: { activeTab: string
   const [group, setGroup] = useState(groupForTab(activeTab)?.id ?? 'briefing')
   useEffect(() => { setGroup(groupForTab(activeTab)?.id ?? 'briefing') }, [activeTab])
   const select = (id: TabId) => { onSelect(id); setExpanded(false); setQuery('') }
+  const matches = TABS.filter(entry => (entry.label + ' ' + entry.description).toLowerCase().includes(query.trim().toLowerCase()))
   const item = (entry: typeof TABS[number]) => <button type="button" key={entry.id}
     className={'workspace-nav__item ' + (activeTab === entry.id ? 'is-active' : '')}
     aria-current={activeTab === entry.id ? 'page' : undefined} onClick={() => select(entry.id)}>{entry.shortLabel}</button>
@@ -16,7 +17,7 @@ export default function ResearchNav({ activeTab, onSelect }: { activeTab: string
     </button>
     <div className="workspace-nav__body" id="workspace-navigation">
       <label className="workspace-nav__search"><span>Find a view</span><input type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Maps, prices, countries…" /></label>
-      {query ? <div className="workspace-nav__section"><p>Matching views</p>{TABS.filter((entry) => (entry.label + ' ' + entry.description).toLowerCase().includes(query.toLowerCase())).map(item)}</div> : <>
+      {query.trim() ? <div className="workspace-nav__section"><p>Matching views</p>{matches.map(item)}{!matches.length && <p className="workspace-nav__empty" role="status">No matching views. Try a country, market or source.</p>}</div> : <>
         <div className="workspace-nav__section workspace-nav__primary"><p>World markets</p>{LENS_GROUPS[0].items.map(item)}</div>
         {LENS_GROUPS.filter((entry) => !['data', 'regions'].includes(entry.id)).map((entry) => <div className="workspace-nav__section" key={entry.id}>
           <button type="button" className="workspace-nav__group" aria-expanded={group === entry.id} aria-controls={'nav-' + entry.id} onClick={() => setGroup(group === entry.id ? '' : entry.id)}>{entry.label}<span aria-hidden="true">{group === entry.id ? '−' : '+'}</span></button>

@@ -12,6 +12,7 @@ import ResearchNav from './components/ResearchNav'
 import NetworkRelay from './components/NetworkRelay'
 import AuthorityBar from './components/AuthorityBar'
 import EvidenceCorridor from './components/EvidenceCorridor'
+import NetworkFlow from './components/NetworkFlow'
 import { TABS, type TabId } from './navigation'
 
 export { resolveCorridorTabIndex } from './components/EvidenceCorridor'
@@ -81,6 +82,7 @@ function BrandMark() {
 
 export default function App() {
   const { isSample } = useData()
+  const reducedMotion = usePrefersReducedMotion()
   const [tab, setTab] = useState<string>(initialTab)
 
   useEffect(() => {
@@ -103,7 +105,7 @@ export default function App() {
     }
     if (revealWorkspace && typeof window !== 'undefined') {
       window.requestAnimationFrame(() => {
-        document.getElementById('research-workspace')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        document.getElementById('research-workspace')?.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block: 'start' })
       })
     }
   }
@@ -117,22 +119,27 @@ export default function App() {
               <BrandMark />
               <span><b>NarcoScope</b><small>World markets and illicit economies</small></span>
             </button>
-            <div className="masthead-actions">
-              <a className="research-project-link" href="https://www.palimpsest.info/china/evidence/">Palimpsest</a>
-              <span className="data-badge">{isSample ? 'Published data · source dates vary' : 'Local data loaded'}</span>
-            </div>
+            <nav className="family-network" aria-label="Research products">
+              <a href="https://liquilens.in/">LiquiLens</a>
+              <a href="https://seiche.info/#today">Seiche</a>
+              <a href="https://liquilens-undertow.com/">Undertow</a>
+              <a href="https://www.palimpsest.info/">Palimpsest</a>
+              <a href="/" aria-current="page">NarcoScope</a>
+            </nav>
+            <a className="family-api" href="/developers/">API & agents</a>
           </div>
           <div className="evidence-header">
             <div>
 
               <h1>World markets, in detail.</h1>
               <p className="lede">Explore drugs, arms and the black economy through reported observations, historical comparisons and source-linked records.</p>
+              <p className="data-badge">{isSample ? 'Published data · source dates vary' : 'Local data loaded'}</p>
+              <nav className="hero-actions" aria-label="NarcoScope entry points">
+                <button type="button" className="hero-action hero-action--primary" onClick={() => selectTab('data', true)}>Explore data</button>
+                <button type="button" className="hero-action" onClick={() => selectTab('wire', true)}>Latest evidence</button>
+              </nav>
             </div>
-            <nav className="hero-actions" aria-label="NarcoScope entry points">
-              <button type="button" className="hero-action hero-action--primary" onClick={() => selectTab('data', true)}>Explore data</button>
-              <button type="button" className="hero-action" onClick={() => selectTab('wire', true)}>Latest evidence</button>
-              <a className="hero-action" href="/developers/">API + MCP</a>
-            </nav>
+            <NetworkFlow />
             <AuthorityBar tab={tab} label={TABS.find((item) => item.id === tab)?.label ?? 'Illicit-economy evidence'} />
           </div>
         </div>

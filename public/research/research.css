@@ -6,3 +6,11 @@
 
 :root { --bg:var(--research-bg); --panel:var(--research-surface); --line:var(--research-line); --ink:var(--research-text); --muted:var(--research-secondary); --cyan:var(--research-blue); --coral:var(--research-amber); }
 body { background:var(--research-bg); color:var(--research-text); font-family:var(--research-font); } h1,h2,h3 { font-family:var(--research-font); } .site-nav,.card { background:var(--research-surface); }
+.site-nav { position: static; background: var(--research-bg); }
+.site-nav .brand { display: none; }
+.site-nav .nav-links { margin-left: 0; flex-wrap: wrap; padding: 12px 0; }
+.site-nav .nav-links a { display: inline-flex; }
+.hero { padding-top: 44px; }
+.hero h1 { font-family: var(--research-font); font-size: clamp(30px, 4vw, 46px); line-height: 1.12; max-width: 25ch; }
+.card h2, .card h3, .answer h3 { font-family: var(--research-font); }
+.proof > div, .card, .answer, .source-box { background: var(--research-surface); border-radius: var(--research-radius); }
