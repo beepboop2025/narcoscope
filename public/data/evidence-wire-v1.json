@@ -1,6 +1,6 @@
 {
   "schema": "narcoscope.evidence-wire.v1",
-  "generatedAt": "2026-10-08T21:03:28.011Z",
+  "generatedAt": "2026-10-08T21:24:11.257Z",
   "status": "partial",
   "window": {
     "start": "2026-06-26T12:00:00.000Z",
@@ -14,7 +14,7 @@
       "sourceId": "europol-news",
       "sourceName": "Europol · Newsroom",
       "publishedAt": null,
-      "retrievedAt": "2026-10-08T21:03:28.011Z",
+      "retrievedAt": "2026-10-08T21:13:55.507Z",
       "evidenceClass": "official-release",
       "verificationState": "source-published",
       "legalStage": "not-applicable",
@@ -314,13 +314,30 @@
       "publicationAllowed": true
     },
     {
+      "id": "doj-justice-news-bcd7afa22e19674424e8",
+      "title": "Kansas City Man Sentenced to 28 Years for Hobbs Act Robbery and Firearm Violations",
+      "url": "https://www.justice.gov/usao-wdmo/pr/kansas-city-man-sentenced-28-years-hobbs-act-robbery-and-firearm-violations",
+      "sourceId": "doj-justice-news",
+      "sourceName": "U.S. Department of Justice · Justice News",
+      "publishedAt": "2026-10-08T12:00:00.000Z",
+      "retrievedAt": "2026-10-08T21:24:11.257Z",
+      "evidenceClass": "official-action",
+      "verificationState": "source-published",
+      "legalStage": "sentencing",
+      "topics": [
+        "arms trafficking"
+      ],
+      "countries": [],
+      "publicationAllowed": true
+    },
+    {
       "id": "doj-justice-news-be10c4eb9b1b129ac53d",
       "title": "23 Skid Row Drug Dealers Arrested as Part of Homeland Security Task Force Takedown Targeting High-Crime Areas of Los Angeles",
       "url": "https://www.justice.gov/usao-cdca/pr/23-skid-row-drug-dealers-arrested-part-homeland-security-task-force-takedown-targeting",
       "sourceId": "doj-justice-news",
       "sourceName": "U.S. Department of Justice · Justice News",
       "publishedAt": "2026-10-08T12:00:00.000Z",
-      "retrievedAt": "2026-10-08T21:03:28.011Z",
+      "retrievedAt": "2026-10-08T21:24:11.257Z",
       "evidenceClass": "official-action",
       "verificationState": "source-published",
       "legalStage": "charge",
@@ -688,23 +705,6 @@
       "publicationAllowed": true
     },
     {
-      "id": "doj-justice-news-46892edb371abe92df84",
-      "title": "Two Men Who Conspired to Distribute Fentanyl That Proved Deadly Each Sentenced to At Least 20 Years in Federal Prison",
-      "url": "https://www.justice.gov/usao-edar/pr/two-men-who-conspired-distribute-fentanyl-proved-deadly-each-sentenced-least-20-years",
-      "sourceId": "doj-justice-news",
-      "sourceName": "U.S. Department of Justice · Justice News",
-      "publishedAt": "2026-10-07T12:00:00.000Z",
-      "retrievedAt": "2026-10-08T14:19:54.479Z",
-      "evidenceClass": "official-action",
-      "verificationState": "source-published",
-      "legalStage": "sentencing",
-      "topics": [
-        "drug markets"
-      ],
-      "countries": [],
-      "publicationAllowed": true
-    },
-    {
       "id": "europol-news-46330623dbe46830ca61",
       "title": "Seven arrests in Brazil during crackdown on South America-Europe cocaine pipeline",
       "url": "https://www.europol.europa.eu/media-press/newsroom/news/seven-arrests-in-brazil-during-crackdown-south-america-europe-cocaine-pipeline",
@@ -728,7 +728,7 @@
       "sourceId": "un-news-law-crime",
       "sourceName": "United Nations News · Law and crime prevention",
       "publishedAt": "2026-10-03T12:00:00.000Z",
-      "retrievedAt": "2026-10-08T21:03:28.011Z",
+      "retrievedAt": "2026-10-08T21:24:11.257Z",
       "evidenceClass": "official-release",
       "verificationState": "source-published",
       "legalStage": "not-applicable",
@@ -745,7 +745,7 @@
       "sourceId": "treasury-press",
       "sourceName": "U.S. Treasury · Press releases",
       "publishedAt": "2026-10-02T19:30:00.000Z",
-      "retrievedAt": "2026-10-08T21:03:28.011Z",
+      "retrievedAt": "2026-10-08T21:13:55.507Z",
       "evidenceClass": "official-action",
       "verificationState": "source-published",
       "legalStage": "designation",
@@ -1122,7 +1122,7 @@
       "sourceId": "un-news-law-crime",
       "sourceName": "United Nations News · Law and crime prevention",
       "publishedAt": "2026-08-19T12:00:00.000Z",
-      "retrievedAt": "2026-10-08T21:03:28.011Z",
+      "retrievedAt": "2026-10-08T21:24:11.257Z",
       "evidenceClass": "official-release",
       "verificationState": "source-published",
       "legalStage": "not-applicable",
@@ -1139,7 +1139,7 @@
       "sourceId": "un-news-law-crime",
       "sourceName": "United Nations News · Law and crime prevention",
       "publishedAt": "2026-07-05T12:00:00.000Z",
-      "retrievedAt": "2026-10-08T21:03:28.011Z",
+      "retrievedAt": "2026-10-08T21:24:11.257Z",
       "evidenceClass": "official-release",
       "verificationState": "source-published",
       "legalStage": "not-applicable",
@@ -1156,7 +1156,7 @@
       "sourceId": "un-news-law-crime",
       "sourceName": "United Nations News · Law and crime prevention",
       "publishedAt": "2026-06-26T12:00:00.000Z",
-      "retrievedAt": "2026-10-08T21:03:28.011Z",
+      "retrievedAt": "2026-10-08T21:24:11.257Z",
       "evidenceClass": "official-release",
       "verificationState": "source-published",
       "legalStage": "not-applicable",
@@ -1173,20 +1173,20 @@
       "name": "U.S. Department of Justice · Justice News",
       "url": "https://www.justice.gov/news/rss",
       "status": "fresh",
-      "checkedAt": "2026-10-08T21:03:28.011Z",
-      "lastSuccessAt": "2026-10-08T21:03:28.011Z",
+      "checkedAt": "2026-10-08T21:24:11.257Z",
+      "lastSuccessAt": "2026-10-08T21:24:11.257Z",
       "cadenceMinutes": 15,
       "staleAfterMinutes": 120,
       "rights": "Public U.S. government release metadata; NarcoScope republishes titles, links and source clocks only.",
-      "detail": "25 source items read · 1 current in-scope · 40 retained metadata items published"
+      "detail": "25 source items read · 2 current in-scope · 40 retained metadata items published"
     },
     {
       "id": "un-news-law-crime",
       "name": "United Nations News · Law and crime prevention",
       "url": "https://news.un.org/feed/subscribe/en/news/topic/law-and-crime-prevention/feed/rss.xml",
       "status": "fresh",
-      "checkedAt": "2026-10-08T21:03:28.011Z",
-      "lastSuccessAt": "2026-10-08T21:03:28.011Z",
+      "checkedAt": "2026-10-08T21:24:11.257Z",
+      "lastSuccessAt": "2026-10-08T21:24:11.257Z",
       "cadenceMinutes": 30,
       "staleAfterMinutes": 180,
       "rights": "Public United Nations feed metadata; NarcoScope republishes titles, links and source clocks only.",
@@ -1195,62 +1195,62 @@
     {
       "id": "europol-news",
       "name": "Europol · Newsroom",
-      "url": "https://www.europol.europa.eu/cms/api/rss/news",
-      "status": "fresh",
-      "checkedAt": "2026-10-08T21:03:28.011Z",
-      "lastSuccessAt": "2026-10-08T21:03:28.011Z",
+      "url": "https://www.europol.europa.eu/rss.xml",
+      "status": "aging",
+      "checkedAt": "2026-10-08T21:24:11.257Z",
+      "lastSuccessAt": "2026-10-08T21:13:55.507Z",
       "cadenceMinutes": 30,
       "staleAfterMinutes": 180,
       "rights": "Public European Union agency feed metadata; NarcoScope republishes titles, links and source clocks only.",
-      "detail": "10 source items read · 1 current in-scope · 17 retained metadata items published"
+      "detail": "Bounded fetch failed: fetch failed"
     },
     {
       "id": "treasury-press",
       "name": "U.S. Treasury · Press releases",
       "url": "https://home.treasury.gov/news/press-releases",
-      "status": "fresh",
-      "checkedAt": "2026-10-08T21:03:28.011Z",
-      "lastSuccessAt": "2026-10-08T21:03:28.011Z",
+      "status": "aging",
+      "checkedAt": "2026-10-08T21:24:11.257Z",
+      "lastSuccessAt": "2026-10-08T21:13:55.507Z",
       "cadenceMinutes": 30,
       "staleAfterMinutes": 240,
       "rights": "Public U.S. government release metadata; NarcoScope republishes titles, links and source clocks only.",
-      "detail": "8 source items read · 1 current in-scope · 7 retained metadata items published"
+      "detail": "Bounded fetch failed: timeout after 15000ms"
     },
     {
       "id": "palimpsest-newswire-rights",
       "name": "Palimpsest · newswire publication-rights receipt",
-      "url": "https://www.palimpsest.info/readings/newswire-latest.json",
-      "status": "restricted",
-      "checkedAt": "2026-10-08T21:03:28.011Z",
-      "lastSuccessAt": "2026-10-08T21:03:28.011Z",
+      "url": "https://palimpsest.info/readings/newswire-latest.json",
+      "status": "aging",
+      "checkedAt": "2026-10-08T21:24:11.257Z",
+      "lastSuccessAt": "2026-10-08T21:13:55.507Z",
       "cadenceMinutes": 15,
       "staleAfterMinutes": 90,
       "rights": "Receipt only. Source content remains suppressed whenever Palimpsest publication_allowed is false.",
-      "detail": "palimpsest-restricted-publication-endpoint.v1 · publication suppressed by upstream rights policy · Current source policy denies publication of one or more upstream value families; this endpoint therefore exposes metadata only."
+      "detail": "Bounded fetch failed: timeout after 15000ms"
     },
     {
       "id": "seiche-money-markets",
       "name": "Seiche · global money-market context",
       "url": "https://api.seiche.info/api/v2/money-markets",
       "status": "stale",
-      "checkedAt": "2026-10-08T21:03:28.011Z",
+      "checkedAt": "2026-10-08T21:24:11.257Z",
       "lastSuccessAt": "2026-10-06T07:01:59.134Z",
       "cadenceMinutes": 15,
       "staleAfterMinutes": 90,
       "rights": "Read-only economic context receipt. Values never become NarcoScope illicit-market facts or person-level inferences.",
-      "detail": "Bounded fetch failed: response exceeds 2097152 byte ceiling"
+      "detail": "Bounded fetch failed: timeout after 15000ms"
     },
     {
       "id": "seiche-capital-markets",
       "name": "Seiche · capital-market context",
       "url": "https://api.seiche.info/api/v2/world-markets?section=capital_markets",
       "status": "fresh",
-      "checkedAt": "2026-10-08T21:03:28.011Z",
-      "lastSuccessAt": "2026-10-08T21:03:28.011Z",
+      "checkedAt": "2026-10-08T21:24:11.257Z",
+      "lastSuccessAt": "2026-10-08T21:24:11.257Z",
       "cadenceMinutes": 15,
       "staleAfterMinutes": 90,
       "rights": "Read-only economic context receipt. Values never become NarcoScope illicit-market facts or person-level inferences.",
-      "detail": "seiche.world-markets.v1 · generated 2026-10-08T20:55:31.000Z"
+      "detail": "seiche.world-markets.v1 · generated 2026-10-08T21:09:31.000Z"
     }
   ],
   "caveats": [
