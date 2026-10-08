@@ -1,7 +1,7 @@
 {
   "schema": "narcoscope.global-market-catalog.v1",
   "status": "available",
-  "generatedAt": "2026-09-23T05:38:10.541Z",
+  "generatedAt": "2026-10-08T05:28:39.505Z",
   "datasets": [
     {
       "id": "global-drugs",
@@ -214397,8 +214397,8 @@
     {
       "id": "global-arms-economy",
       "title": "Arms transfers, informal economies and firm-reported corruption",
-      "generatedAt": "2026-09-08T17:17:47.239Z",
-      "sha256": "c9c4c05b94441a80ff560b12796abb151a87c90330c3e46cd7e499e5827f9720",
+      "generatedAt": "2026-10-08T05:28:39.505Z",
+      "sha256": "17e3de61456aa3cd7b7a24aad8c2551f01c1c19aa0765028be6651bdb3d80ca1",
       "sources": [
         {
           "id": "wb-informality",
@@ -214427,9 +214427,9 @@
           "downloadUrl": "https://api.worldbank.org/v2/country?format=json&per_page=400",
           "license": "CC BY 4.0 with World Bank dataset terms",
           "licenseUrl": "https://datacatalog.worldbank.org/public-licenses",
-          "retrievedAt": "2026-09-08T17:17:10.869Z",
-          "sha256": "d29d57f8adf954c5e2a1520a02fb2c7b45575d8db3bd327a9dff47d66914231c",
-          "bytes": 113590,
+          "retrievedAt": "2026-10-08T05:28:39.505Z",
+          "sha256": "c9acf3932785191a649cbc04c3056af4cf64a236e5c3b49d49be25ddb0440bce",
+          "bytes": 113954,
           "notes": [
             "Country and aggregate classifications bind the geography level of WDI observations. No economic measurements are drawn from this response."
           ]
