@@ -1,9 +1,9 @@
 {
   "schema": "narcoscope.evidence-wire.v1",
-  "generatedAt": "2026-10-08T17:47:19.500Z",
+  "generatedAt": "2026-10-08T17:57:31.497Z",
   "status": "partial",
   "window": {
-    "start": "2026-09-04T14:30:00.000Z",
+    "start": "2026-06-26T12:00:00.000Z",
     "end": "2026-10-08T12:00:00.000Z"
   },
   "items": [
@@ -14,7 +14,7 @@
       "sourceId": "europol-news",
       "sourceName": "Europol · Newsroom",
       "publishedAt": null,
-      "retrievedAt": "2026-10-08T17:47:19.500Z",
+      "retrievedAt": "2026-10-08T17:57:31.497Z",
       "evidenceClass": "official-release",
       "verificationState": "source-published",
       "legalStage": "not-applicable",
@@ -65,7 +65,7 @@
       "sourceId": "doj-justice-news",
       "sourceName": "U.S. Department of Justice · Justice News",
       "publishedAt": "2026-10-08T12:00:00.000Z",
-      "retrievedAt": "2026-10-08T17:47:19.500Z",
+      "retrievedAt": "2026-10-08T17:57:31.497Z",
       "evidenceClass": "official-action",
       "verificationState": "source-published",
       "legalStage": "sentencing",
@@ -116,7 +116,7 @@
       "sourceId": "doj-justice-news",
       "sourceName": "U.S. Department of Justice · Justice News",
       "publishedAt": "2026-10-08T12:00:00.000Z",
-      "retrievedAt": "2026-10-08T17:47:19.500Z",
+      "retrievedAt": "2026-10-08T17:57:31.497Z",
       "evidenceClass": "official-action",
       "verificationState": "source-published",
       "legalStage": "conviction",
@@ -252,7 +252,7 @@
       "sourceId": "doj-justice-news",
       "sourceName": "U.S. Department of Justice · Justice News",
       "publishedAt": "2026-10-08T12:00:00.000Z",
-      "retrievedAt": "2026-10-08T17:47:19.500Z",
+      "retrievedAt": "2026-10-08T17:57:31.497Z",
       "evidenceClass": "official-action",
       "verificationState": "source-published",
       "legalStage": "sentencing",
@@ -728,7 +728,7 @@
       "sourceId": "un-news-law-crime",
       "sourceName": "United Nations News · Law and crime prevention",
       "publishedAt": "2026-10-03T12:00:00.000Z",
-      "retrievedAt": "2026-10-08T17:37:07.137Z",
+      "retrievedAt": "2026-10-08T17:57:31.497Z",
       "evidenceClass": "official-release",
       "verificationState": "source-published",
       "legalStage": "not-applicable",
@@ -745,7 +745,7 @@
       "sourceId": "treasury-press",
       "sourceName": "U.S. Treasury · Press releases",
       "publishedAt": "2026-10-02T19:30:00.000Z",
-      "retrievedAt": "2026-10-08T17:37:07.137Z",
+      "retrievedAt": "2026-10-08T17:57:31.497Z",
       "evidenceClass": "official-action",
       "verificationState": "source-published",
       "legalStage": "designation",
@@ -1114,6 +1114,57 @@
       ],
       "countries": [],
       "publicationAllowed": true
+    },
+    {
+      "id": "un-news-law-crime-5afdeb45ec2144f19a7d",
+      "title": "International Criminal Court: New US sanctions ‘a flagrant attack’ against its independence",
+      "url": "https://news.un.org/feed/view/en/story/2026/08/1168168",
+      "sourceId": "un-news-law-crime",
+      "sourceName": "United Nations News · Law and crime prevention",
+      "publishedAt": "2026-08-19T12:00:00.000Z",
+      "retrievedAt": "2026-10-08T17:57:31.497Z",
+      "evidenceClass": "official-release",
+      "verificationState": "source-published",
+      "legalStage": "not-applicable",
+      "topics": [
+        "illicit finance"
+      ],
+      "countries": [],
+      "publicationAllowed": true
+    },
+    {
+      "id": "un-news-law-crime-9b50336dcd54c9e756e0",
+      "title": "As deadly as war and as powerful as governments, global organized crime remains in the shadows",
+      "url": "https://news.un.org/feed/view/en/story/2026/07/1167867",
+      "sourceId": "un-news-law-crime",
+      "sourceName": "United Nations News · Law and crime prevention",
+      "publishedAt": "2026-07-05T12:00:00.000Z",
+      "retrievedAt": "2026-10-08T17:57:31.497Z",
+      "evidenceClass": "official-release",
+      "verificationState": "source-published",
+      "legalStage": "not-applicable",
+      "topics": [
+        "organized crime"
+      ],
+      "countries": [],
+      "publicationAllowed": true
+    },
+    {
+      "id": "un-news-law-crime-21f6a1e5f9127124d9c3",
+      "title": "Global drug use reaches record high as increasingly potent synthetic drugs spread",
+      "url": "https://news.un.org/feed/view/en/story/2026/06/1167817",
+      "sourceId": "un-news-law-crime",
+      "sourceName": "United Nations News · Law and crime prevention",
+      "publishedAt": "2026-06-26T12:00:00.000Z",
+      "retrievedAt": "2026-10-08T17:57:31.497Z",
+      "evidenceClass": "official-release",
+      "verificationState": "source-published",
+      "legalStage": "not-applicable",
+      "topics": [
+        "drug markets"
+      ],
+      "countries": [],
+      "publicationAllowed": true
     }
   ],
   "sources": [
@@ -1122,8 +1173,8 @@
       "name": "U.S. Department of Justice · Justice News",
       "url": "https://www.justice.gov/news/rss",
       "status": "fresh",
-      "checkedAt": "2026-10-08T17:47:19.500Z",
-      "lastSuccessAt": "2026-10-08T17:47:19.500Z",
+      "checkedAt": "2026-10-08T17:57:31.497Z",
+      "lastSuccessAt": "2026-10-08T17:57:31.497Z",
       "cadenceMinutes": 15,
       "staleAfterMinutes": 120,
       "rights": "Public U.S. government release metadata; NarcoScope republishes titles, links and source clocks only.",
@@ -1133,21 +1184,21 @@
       "id": "un-news-law-crime",
       "name": "United Nations News · Law and crime prevention",
       "url": "https://news.un.org/feed/subscribe/en/news/topic/law-and-crime-prevention/feed/rss.xml",
-      "status": "aging",
-      "checkedAt": "2026-10-08T17:47:19.500Z",
-      "lastSuccessAt": "2026-10-08T17:37:07.137Z",
+      "status": "fresh",
+      "checkedAt": "2026-10-08T17:57:31.497Z",
+      "lastSuccessAt": "2026-10-08T17:57:31.497Z",
       "cadenceMinutes": 30,
       "staleAfterMinutes": 180,
       "rights": "Public United Nations feed metadata; NarcoScope republishes titles, links and source clocks only.",
-      "detail": "Bounded fetch failed: fetch failed"
+      "detail": "30 source items read · 4 current in-scope · 4 retained metadata items published"
     },
     {
       "id": "europol-news",
       "name": "Europol · Newsroom",
       "url": "https://www.europol.europa.eu/cms/api/rss/news",
       "status": "fresh",
-      "checkedAt": "2026-10-08T17:47:19.500Z",
-      "lastSuccessAt": "2026-10-08T17:47:19.500Z",
+      "checkedAt": "2026-10-08T17:57:31.497Z",
+      "lastSuccessAt": "2026-10-08T17:57:31.497Z",
       "cadenceMinutes": 30,
       "staleAfterMinutes": 180,
       "rights": "Public European Union agency feed metadata; NarcoScope republishes titles, links and source clocks only.",
@@ -1157,49 +1208,49 @@
       "id": "treasury-press",
       "name": "U.S. Treasury · Press releases",
       "url": "https://home.treasury.gov/news/press-releases",
-      "status": "aging",
-      "checkedAt": "2026-10-08T17:47:19.500Z",
-      "lastSuccessAt": "2026-10-08T17:37:07.137Z",
+      "status": "fresh",
+      "checkedAt": "2026-10-08T17:57:31.497Z",
+      "lastSuccessAt": "2026-10-08T17:57:31.497Z",
       "cadenceMinutes": 30,
       "staleAfterMinutes": 240,
       "rights": "Public U.S. government release metadata; NarcoScope republishes titles, links and source clocks only.",
-      "detail": "Bounded fetch failed: fetch failed"
+      "detail": "8 source items read · 1 current in-scope · 7 retained metadata items published"
     },
     {
       "id": "palimpsest-newswire-rights",
       "name": "Palimpsest · newswire publication-rights receipt",
-      "url": "https://palimpsest.info/readings/newswire-latest.json",
-      "status": "aging",
-      "checkedAt": "2026-10-08T17:47:19.500Z",
-      "lastSuccessAt": "2026-10-08T17:37:07.137Z",
+      "url": "https://www.palimpsest.info/readings/newswire-latest.json",
+      "status": "restricted",
+      "checkedAt": "2026-10-08T17:57:31.497Z",
+      "lastSuccessAt": "2026-10-08T17:57:31.497Z",
       "cadenceMinutes": 15,
       "staleAfterMinutes": 90,
       "rights": "Receipt only. Source content remains suppressed whenever Palimpsest publication_allowed is false.",
-      "detail": "Bounded fetch failed: fetch failed"
+      "detail": "palimpsest-restricted-publication-endpoint.v1 · publication suppressed by upstream rights policy · Current source policy denies publication of one or more upstream value families; this endpoint therefore exposes metadata only."
     },
     {
       "id": "seiche-money-markets",
       "name": "Seiche · global money-market context",
       "url": "https://api.seiche.info/api/v2/money-markets",
       "status": "stale",
-      "checkedAt": "2026-10-08T17:47:19.500Z",
+      "checkedAt": "2026-10-08T17:57:31.497Z",
       "lastSuccessAt": "2026-10-06T07:01:59.134Z",
       "cadenceMinutes": 15,
       "staleAfterMinutes": 90,
       "rights": "Read-only economic context receipt. Values never become NarcoScope illicit-market facts or person-level inferences.",
-      "detail": "Bounded fetch failed: fetch failed"
+      "detail": "Bounded fetch failed: response exceeds 2097152 byte ceiling"
     },
     {
       "id": "seiche-capital-markets",
       "name": "Seiche · capital-market context",
       "url": "https://api.seiche.info/api/v2/world-markets?section=capital_markets",
-      "status": "aging",
-      "checkedAt": "2026-10-08T17:47:19.500Z",
-      "lastSuccessAt": "2026-10-08T17:37:07.137Z",
+      "status": "fresh",
+      "checkedAt": "2026-10-08T17:57:31.497Z",
+      "lastSuccessAt": "2026-10-08T17:57:31.497Z",
       "cadenceMinutes": 15,
       "staleAfterMinutes": 90,
       "rights": "Read-only economic context receipt. Values never become NarcoScope illicit-market facts or person-level inferences.",
-      "detail": "Bounded fetch failed: fetch failed"
+      "detail": "seiche.world-markets.v1 · generated 2026-10-08T17:54:18.000Z"
     }
   ],
   "caveats": [
