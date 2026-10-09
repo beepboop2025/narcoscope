@@ -1,10 +1,10 @@
 {
   "schema": "narcoscope.evidence-wire.v1",
-  "generatedAt": "2026-10-09T13:30:33.820Z",
+  "generatedAt": "2026-10-09T13:39:24.135Z",
   "status": "partial",
   "window": {
     "start": "2026-06-26T12:00:00.000Z",
-    "end": "2026-10-08T12:00:00.000Z"
+    "end": "2026-10-09T12:00:00.000Z"
   },
   "items": [
     {
@@ -14,7 +14,7 @@
       "sourceId": "europol-news",
       "sourceName": "Europol · Newsroom",
       "publishedAt": null,
-      "retrievedAt": "2026-10-09T13:30:33.820Z",
+      "retrievedAt": "2026-10-09T13:39:24.135Z",
       "evidenceClass": "official-release",
       "verificationState": "source-published",
       "legalStage": "not-applicable",
@@ -31,10 +31,27 @@
       "sourceId": "europol-news",
       "sourceName": "Europol · Newsroom",
       "publishedAt": null,
-      "retrievedAt": "2026-10-09T13:30:33.820Z",
+      "retrievedAt": "2026-10-09T13:39:24.135Z",
       "evidenceClass": "official-release",
       "verificationState": "source-published",
       "legalStage": "not-applicable",
+      "topics": [
+        "drug markets"
+      ],
+      "countries": [],
+      "publicationAllowed": true
+    },
+    {
+      "id": "doj-justice-news-4db3941bee3bb31c9830",
+      "title": "Tallahassee Man Sentenced to Over 20 Years for Distribution of Methamphetamine and Cocaine",
+      "url": "https://www.justice.gov/usao-ndfl/pr/tallahassee-man-sentenced-over-20-years-distribution-methamphetamine-and-cocaine",
+      "sourceId": "doj-justice-news",
+      "sourceName": "U.S. Department of Justice · Justice News",
+      "publishedAt": "2026-10-09T12:00:00.000Z",
+      "retrievedAt": "2026-10-09T13:39:24.135Z",
+      "evidenceClass": "official-action",
+      "verificationState": "source-published",
+      "legalStage": "sentencing",
       "topics": [
         "drug markets"
       ],
@@ -331,6 +348,23 @@
       "publicationAllowed": true
     },
     {
+      "id": "doj-justice-news-bbd6f779921ab16f2c33",
+      "title": "Armed drug dealer pleads guilty following Homeland Security Task Force investigation",
+      "url": "https://www.justice.gov/usao-wdny/pr/armed-drug-dealer-pleads-guilty-following-homeland-security-task-force-investigation",
+      "sourceId": "doj-justice-news",
+      "sourceName": "U.S. Department of Justice · Justice News",
+      "publishedAt": "2026-10-08T12:00:00.000Z",
+      "retrievedAt": "2026-10-09T13:39:24.135Z",
+      "evidenceClass": "official-action",
+      "verificationState": "source-published",
+      "legalStage": "conviction",
+      "topics": [
+        "drug markets"
+      ],
+      "countries": [],
+      "publicationAllowed": true
+    },
+    {
       "id": "doj-justice-news-bcd7afa22e19674424e8",
       "title": "Kansas City Man Sentenced to 28 Years for Hobbs Act Robbery and Firearm Violations",
       "url": "https://www.justice.gov/usao-wdmo/pr/kansas-city-man-sentenced-28-years-hobbs-act-robbery-and-firearm-violations",
@@ -394,6 +428,23 @@
       "legalStage": "report",
       "topics": [
         "drug markets"
+      ],
+      "countries": [],
+      "publicationAllowed": true
+    },
+    {
+      "id": "doj-justice-news-d55289552bfa30fb0dc1",
+      "title": "Three Individuals Indicted on Firearm Charges After One Allegedly Made Threats of Violence",
+      "url": "https://www.justice.gov/usao-ndal/pr/three-individuals-indicted-firearm-charges-after-one-allegedly-made-threats-violence",
+      "sourceId": "doj-justice-news",
+      "sourceName": "U.S. Department of Justice · Justice News",
+      "publishedAt": "2026-10-08T12:00:00.000Z",
+      "retrievedAt": "2026-10-09T13:39:24.135Z",
+      "evidenceClass": "official-action",
+      "verificationState": "source-published",
+      "legalStage": "charge",
+      "topics": [
+        "arms trafficking"
       ],
       "countries": [],
       "publicationAllowed": true
@@ -671,57 +722,6 @@
       "publicationAllowed": true
     },
     {
-      "id": "doj-justice-news-195206aee40117563ebc",
-      "title": "Pike County Man Sentenced To 18 Months’ Imprisonment For Possessing An Unregistered Firearm",
-      "url": "https://www.justice.gov/usao-mdpa/pr/pike-county-man-sentenced-18-months-imprisonment-possessing-unregistered-firearm",
-      "sourceId": "doj-justice-news",
-      "sourceName": "U.S. Department of Justice · Justice News",
-      "publishedAt": "2026-10-07T12:00:00.000Z",
-      "retrievedAt": "2026-10-07T19:08:51.423Z",
-      "evidenceClass": "official-action",
-      "verificationState": "source-published",
-      "legalStage": "sentencing",
-      "topics": [
-        "arms trafficking"
-      ],
-      "countries": [],
-      "publicationAllowed": true
-    },
-    {
-      "id": "doj-justice-news-2c112413e4d4c9f18c33",
-      "title": "Fall River Man Pleads Guilty to Distribution of Crack Cocaine",
-      "url": "https://www.justice.gov/usao-ma/pr/fall-river-man-pleads-guilty-distribution-crack-cocaine",
-      "sourceId": "doj-justice-news",
-      "sourceName": "U.S. Department of Justice · Justice News",
-      "publishedAt": "2026-10-07T12:00:00.000Z",
-      "retrievedAt": "2026-10-07T21:44:46.111Z",
-      "evidenceClass": "official-action",
-      "verificationState": "source-published",
-      "legalStage": "conviction",
-      "topics": [
-        "drug markets"
-      ],
-      "countries": [],
-      "publicationAllowed": true
-    },
-    {
-      "id": "doj-justice-news-339424904c4e2b6aa9ca",
-      "title": "Brockton Man Arrested for Attempted Sex Trafficking of a Child",
-      "url": "https://www.justice.gov/usao-ma/pr/brockton-man-arrested-attempted-sex-trafficking-child",
-      "sourceId": "doj-justice-news",
-      "sourceName": "U.S. Department of Justice · Justice News",
-      "publishedAt": "2026-10-07T12:00:00.000Z",
-      "retrievedAt": "2026-10-08T06:16:09.138Z",
-      "evidenceClass": "official-action",
-      "verificationState": "source-published",
-      "legalStage": "charge",
-      "topics": [
-        "human trafficking"
-      ],
-      "countries": [],
-      "publicationAllowed": true
-    },
-    {
       "id": "europol-news-46330623dbe46830ca61",
       "title": "Seven arrests in Brazil during crackdown on South America-Europe cocaine pipeline",
       "url": "https://www.europol.europa.eu/media-press/newsroom/news/seven-arrests-in-brazil-during-crackdown-south-america-europe-cocaine-pipeline",
@@ -745,7 +745,7 @@
       "sourceId": "un-news-law-crime",
       "sourceName": "United Nations News · Law and crime prevention",
       "publishedAt": "2026-10-03T12:00:00.000Z",
-      "retrievedAt": "2026-10-09T13:30:33.820Z",
+      "retrievedAt": "2026-10-09T13:39:24.135Z",
       "evidenceClass": "official-release",
       "verificationState": "source-published",
       "legalStage": "not-applicable",
@@ -762,7 +762,7 @@
       "sourceId": "treasury-press",
       "sourceName": "U.S. Treasury · Press releases",
       "publishedAt": "2026-10-02T19:30:00.000Z",
-      "retrievedAt": "2026-10-09T13:30:33.820Z",
+      "retrievedAt": "2026-10-09T13:39:24.135Z",
       "evidenceClass": "official-action",
       "verificationState": "source-published",
       "legalStage": "designation",
@@ -1139,7 +1139,7 @@
       "sourceId": "un-news-law-crime",
       "sourceName": "United Nations News · Law and crime prevention",
       "publishedAt": "2026-08-19T12:00:00.000Z",
-      "retrievedAt": "2026-10-09T13:30:33.820Z",
+      "retrievedAt": "2026-10-09T13:39:24.135Z",
       "evidenceClass": "official-release",
       "verificationState": "source-published",
       "legalStage": "not-applicable",
@@ -1156,7 +1156,7 @@
       "sourceId": "un-news-law-crime",
       "sourceName": "United Nations News · Law and crime prevention",
       "publishedAt": "2026-07-05T12:00:00.000Z",
-      "retrievedAt": "2026-10-09T13:30:33.820Z",
+      "retrievedAt": "2026-10-09T13:39:24.135Z",
       "evidenceClass": "official-release",
       "verificationState": "source-published",
       "legalStage": "not-applicable",
@@ -1173,7 +1173,7 @@
       "sourceId": "un-news-law-crime",
       "sourceName": "United Nations News · Law and crime prevention",
       "publishedAt": "2026-06-26T12:00:00.000Z",
-      "retrievedAt": "2026-10-09T13:30:33.820Z",
+      "retrievedAt": "2026-10-09T13:39:24.135Z",
       "evidenceClass": "official-release",
       "verificationState": "source-published",
       "legalStage": "not-applicable",
@@ -1189,21 +1189,21 @@
       "id": "doj-justice-news",
       "name": "U.S. Department of Justice · Justice News",
       "url": "https://www.justice.gov/news/rss",
-      "status": "aging",
-      "checkedAt": "2026-10-09T13:30:33.820Z",
-      "lastSuccessAt": "2026-10-09T13:09:56.989Z",
+      "status": "fresh",
+      "checkedAt": "2026-10-09T13:39:24.135Z",
+      "lastSuccessAt": "2026-10-09T13:39:24.135Z",
       "cadenceMinutes": 15,
       "staleAfterMinutes": 120,
       "rights": "Public U.S. government release metadata; NarcoScope republishes titles, links and source clocks only.",
-      "detail": "Bounded fetch failed: HTTP 403"
+      "detail": "25 source items read · 3 current in-scope · 40 retained metadata items published"
     },
     {
       "id": "un-news-law-crime",
       "name": "United Nations News · Law and crime prevention",
       "url": "https://news.un.org/feed/subscribe/en/news/topic/law-and-crime-prevention/feed/rss.xml",
       "status": "fresh",
-      "checkedAt": "2026-10-09T13:30:33.820Z",
-      "lastSuccessAt": "2026-10-09T13:30:33.820Z",
+      "checkedAt": "2026-10-09T13:39:24.135Z",
+      "lastSuccessAt": "2026-10-09T13:39:24.135Z",
       "cadenceMinutes": 30,
       "staleAfterMinutes": 180,
       "rights": "Public United Nations feed metadata; NarcoScope republishes titles, links and source clocks only.",
@@ -1214,8 +1214,8 @@
       "name": "Europol · Newsroom",
       "url": "https://www.europol.europa.eu/cms/api/rss/news",
       "status": "fresh",
-      "checkedAt": "2026-10-09T13:30:33.820Z",
-      "lastSuccessAt": "2026-10-09T13:30:33.820Z",
+      "checkedAt": "2026-10-09T13:39:24.135Z",
+      "lastSuccessAt": "2026-10-09T13:39:24.135Z",
       "cadenceMinutes": 30,
       "staleAfterMinutes": 180,
       "rights": "Public European Union agency feed metadata; NarcoScope republishes titles, links and source clocks only.",
@@ -1226,8 +1226,8 @@
       "name": "U.S. Treasury · Press releases",
       "url": "https://home.treasury.gov/news/press-releases",
       "status": "fresh",
-      "checkedAt": "2026-10-09T13:30:33.820Z",
-      "lastSuccessAt": "2026-10-09T13:30:33.820Z",
+      "checkedAt": "2026-10-09T13:39:24.135Z",
+      "lastSuccessAt": "2026-10-09T13:39:24.135Z",
       "cadenceMinutes": 30,
       "staleAfterMinutes": 240,
       "rights": "Public U.S. government release metadata; NarcoScope republishes titles, links and source clocks only.",
@@ -1238,8 +1238,8 @@
       "name": "Palimpsest · newswire publication-rights receipt",
       "url": "https://www.palimpsest.info/readings/newswire-latest.json",
       "status": "restricted",
-      "checkedAt": "2026-10-09T13:30:33.820Z",
-      "lastSuccessAt": "2026-10-09T13:30:33.820Z",
+      "checkedAt": "2026-10-09T13:39:24.135Z",
+      "lastSuccessAt": "2026-10-09T13:39:24.135Z",
       "cadenceMinutes": 15,
       "staleAfterMinutes": 90,
       "rights": "Receipt only. Source content remains suppressed whenever Palimpsest publication_allowed is false.",
@@ -1250,7 +1250,7 @@
       "name": "Seiche · global money-market context",
       "url": "https://api.seiche.info/api/v2/money-markets",
       "status": "stale",
-      "checkedAt": "2026-10-09T13:30:33.820Z",
+      "checkedAt": "2026-10-09T13:39:24.135Z",
       "lastSuccessAt": "2026-10-06T07:01:59.134Z",
       "cadenceMinutes": 15,
       "staleAfterMinutes": 90,
@@ -1262,8 +1262,8 @@
       "name": "Seiche · capital-market context",
       "url": "https://api.seiche.info/api/v2/world-markets?section=capital_markets",
       "status": "fresh",
-      "checkedAt": "2026-10-09T13:30:33.820Z",
-      "lastSuccessAt": "2026-10-09T13:30:33.820Z",
+      "checkedAt": "2026-10-09T13:39:24.135Z",
+      "lastSuccessAt": "2026-10-09T13:39:24.135Z",
       "cadenceMinutes": 15,
       "staleAfterMinutes": 90,
       "rights": "Read-only economic context receipt. Values never become NarcoScope illicit-market facts or person-level inferences.",
