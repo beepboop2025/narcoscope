@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { readResearchNetwork, RESEARCH_NETWORK_URL } from '../lib/research-network.mjs'
 import { TOOLS } from './mcp.mjs'
-import { resource } from './lib/narcoscope.mjs'
+import { resource } from './_lib/narcoscope.mjs'
 
 function payload() {
   return { schema: 'seiche.research-network.v1', status: 'stale', context_only: true,

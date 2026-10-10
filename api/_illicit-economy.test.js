@@ -2,7 +2,7 @@ import { readFile } from 'node:fs/promises'
 
 import { describe, expect, it } from 'vitest'
 
-import { getAtlas, getEntities } from './lib/illicit-economy.mjs'
+import { getAtlas, getEntities } from './_lib/illicit-economy.mjs'
 import { dispatch, toolOutputIsValid } from './mcp.mjs'
 import { createV1Handler } from './v1.mjs'
 

@@ -298,6 +298,10 @@ The repo is Vercel-ready (`vercel.json` pins the Vite framework). Either:
 - **Dashboard:** import the Git repo at vercel.com — zero config, auto-detected.
 - **CLI:** `npx vercel` (preview) / `npx vercel --prod` (production).
 
+Only `api/mcp.mjs` and `api/v1.mjs` are function entrypoints. API helpers and
+tests use underscore-prefixed paths so Vercel does not publish them as functions.
+`npm run build` checks this boundary against `vercel.json` before building.
+
 ## Data pipeline
 
 `npm run data:refresh` fetches the automatable open sources (UNODC WDR

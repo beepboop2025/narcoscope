@@ -584,6 +584,8 @@ describe('Railway HTTP server', () => {
     ['GET', '/scripts//bridge/palimpsest-bri-source-pin.json'],
     ['HEAD', '/ScRiPtS/bridge/source-pin'],
     ['GET', '/api/lib/palimpsest-bri.mjs'],
+    ['GET', '/api/_lib/palimpsest-bri.mjs'],
+    ['GET', '/api/_surfaces.test.js'],
     ['HEAD', '/server.mjs'],
     ['GET', '/PACKAGE.JSON'],
     ['HEAD', '/public/data/narcoscope-palimpsest-bri-v1.json'],

@@ -1,5 +1,5 @@
 import { gzipSync } from 'node:zlib'
-import { resource, SITE_URL } from './lib/narcoscope.mjs'
+import { resource, SITE_URL } from './_lib/narcoscope.mjs'
 
 const CACHE = 'public, max-age=60, s-maxage=300, stale-while-revalidate=3600'
 const API_CATALOG_URL = `${SITE_URL}/.well-known/api-catalog`

@@ -6,7 +6,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { getMarketCatalog, queryMarketObservations, validateMarketDataset } from '../lib/global-markets.mjs'
 import { MARKET_CATALOG_OUTPUT_SCHEMA, MARKET_QUERY_OUTPUT_SCHEMA } from '../lib/global-market-schemas.mjs'
 import { dispatch, TOOLS, toolInputIsValid, toolOutputIsValid } from './mcp.mjs'
-import { capabilities } from './lib/narcoscope.mjs'
+import { capabilities } from './_lib/narcoscope.mjs'
 import { createV1Handler } from './v1.mjs'
 
 const directories = []
