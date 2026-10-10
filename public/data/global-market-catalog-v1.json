@@ -1,13 +1,13 @@
 {
   "schema": "narcoscope.global-market-catalog.v1",
   "status": "available",
-  "generatedAt": "2026-10-08T05:28:39.505Z",
+  "generatedAt": "2026-10-10T16:14:51.165Z",
   "datasets": [
     {
       "id": "global-drugs",
       "title": "Drug markets: global reported supply, treatment, prices and monthly wastewater",
-      "generatedAt": "2026-09-23T05:38:10.541Z",
-      "sha256": "e6cbb3f4b0b45327c17e2bdc25ef859e19d3cc1f3fa0b2889ff858962a4ed6a6",
+      "generatedAt": "2026-10-10T16:14:51.165Z",
+      "sha256": "807d45be136f48bbf73079115d64468bd5774fe3ba62037d48dafef631b16466",
       "sources": [
         {
           "id": "statcan-13100820",
@@ -17,7 +17,7 @@
           "downloadUrl": "https://www150.statcan.gc.ca/n1/tbl/csv/13100820-eng.zip",
           "license": "Statistics Canada Open Licence; reproduction and distribution permitted with source acknowledgement.",
           "licenseUrl": "https://www.statcan.gc.ca/en/reference/licence",
-          "retrievedAt": "2026-09-23T05:38:04.039Z",
+          "retrievedAt": "2026-10-10T16:14:45.256Z",
           "sha256": "5d601ea9e3a6b8d983394a0dd4715ef493e892147c7f192d7b5659ba35278f5e",
           "bytes": 134183,
           "notes": [
@@ -34,7 +34,7 @@
           "downloadUrl": "https://www150.statcan.gc.ca/n1/tbl/csv/13100871-eng.zip",
           "license": "Statistics Canada Open Licence; reproduction and distribution permitted with source acknowledgement.",
           "licenseUrl": "https://www.statcan.gc.ca/en/reference/licence",
-          "retrievedAt": "2026-09-23T05:38:04.493Z",
+          "retrievedAt": "2026-10-10T16:14:45.425Z",
           "sha256": "ecb434c38c00d7d6193bf862faafd599a60d16e8e188aeea2700515ff31d3c1d",
           "bytes": 85197,
           "notes": [
@@ -51,7 +51,7 @@
           "downloadUrl": "https://www.unodc.org/documents/data-and-analysis/WDR_2026/Annex/9.1_clandestine_laboratories_detected_and_dismantled.xlsx",
           "license": "Educational/non-profit reproduction with source acknowledgement is permitted by UNODC World Drug Report 2026. No resale or other commercial use without prior written permission from UNODC. Copyright remains United Nations; this dataset is not sublicensed under the repository MIT licence.",
           "licenseUrl": "https://www.unodc.org/documents/data-and-analysis/WDR_2026/WDR26_Highlights.pdf",
-          "retrievedAt": "2026-09-08T17:10:40.781441Z",
+          "retrievedAt": "2026-10-10T16:14:44.650Z",
           "sha256": "65ccd637fee2f01f05d5bf9c5af8bb135cd6821754c77974b7d6c95932a97458",
           "bytes": 105219,
           "notes": [
@@ -69,7 +69,7 @@
           "downloadUrl": "https://www.unodc.org/documents/data-and-analysis/WDR_2026/Annex/8.1_Prices_and_purities_of_drugs.xlsx",
           "license": "Educational/non-profit reproduction with source acknowledgement is permitted by UNODC World Drug Report 2026. No resale or other commercial use without prior written permission from UNODC. Copyright remains United Nations; this dataset is not sublicensed under the repository MIT licence.",
           "licenseUrl": "https://www.unodc.org/documents/data-and-analysis/WDR_2026/WDR26_Highlights.pdf",
-          "retrievedAt": "2026-09-08T17:10:38.894468Z",
+          "retrievedAt": "2026-10-10T16:14:42.784Z",
           "sha256": "7a72676b22b2ba8f44da9850f45e654d1f310c5bb568642193c6667e4ddccebb",
           "bytes": 436595,
           "notes": [
@@ -87,7 +87,7 @@
           "downloadUrl": "https://www.unodc.org/documents/data-and-analysis/WDR_2026/Annex/7.1_Drug_seizures_2015-2024.xlsx",
           "license": "Educational/non-profit reproduction with source acknowledgement is permitted by UNODC World Drug Report 2026. No resale or other commercial use without prior written permission from UNODC. Copyright remains United Nations; this dataset is not sublicensed under the repository MIT licence.",
           "licenseUrl": "https://www.unodc.org/documents/data-and-analysis/WDR_2026/WDR26_Highlights.pdf",
-          "retrievedAt": "2026-09-08T17:10:35.347884Z",
+          "retrievedAt": "2026-10-10T16:14:41.548Z",
           "sha256": "5511c9a3bdbe3b7ec47af3d97a29fade98574eb4578629b787716cd74640c45e",
           "bytes": 976101,
           "notes": [
@@ -106,7 +106,7 @@
           "downloadUrl": "https://www.unodc.org/documents/data-and-analysis/WDR_2026/Annex/5.1_treatment_by_primary_drug_of_use.xlsx",
           "license": "Educational/non-profit reproduction with source acknowledgement is permitted by UNODC World Drug Report 2026. No resale or other commercial use without prior written permission from UNODC. Copyright remains United Nations; this dataset is not sublicensed under the repository MIT licence.",
           "licenseUrl": "https://www.unodc.org/documents/data-and-analysis/WDR_2026/WDR26_Highlights.pdf",
-          "retrievedAt": "2026-09-08T17:10:23.599229Z",
+          "retrievedAt": "2026-10-10T16:14:44.177Z",
           "sha256": "459f71cef4509d8153b017fa221c0bc3470ca40801b414c41b6841282d5c81c9",
           "bytes": 528785,
           "notes": [
@@ -214397,8 +214397,8 @@
     {
       "id": "global-arms-economy",
       "title": "Arms transfers, informal economies and firm-reported corruption",
-      "generatedAt": "2026-10-08T05:28:39.505Z",
-      "sha256": "17e3de61456aa3cd7b7a24aad8c2551f01c1c19aa0765028be6651bdb3d80ca1",
+      "generatedAt": "2026-10-10T16:14:16.566Z",
+      "sha256": "f927c515ccbca713efdabe9c25cc5f149ded3689aa55370423de50dea2067fa6",
       "sources": [
         {
           "id": "wb-informality",
@@ -214408,7 +214408,7 @@
           "downloadUrl": "https://thedocs.worldbank.org/en/doc/37511318c092e6fd4ca3c60f0af0bea3-0350012021/related/informal-economy-database.xlsx",
           "license": "CC BY 4.0 with World Bank dataset terms; attribution retained; selected World Bank model and enterprise-survey tables only",
           "licenseUrl": "https://datacatalog.worldbank.org/public-licenses",
-          "retrievedAt": "2026-09-08T17:08:01.129232Z",
+          "retrievedAt": "2026-10-10T16:14:12.672Z",
           "sha256": "6dad9f83402e152007b2d6aead34e0eb3cb63a48f18e0a838de067bfd03a1346",
           "bytes": 301857,
           "notes": [
@@ -214427,7 +214427,7 @@
           "downloadUrl": "https://api.worldbank.org/v2/country?format=json&per_page=400",
           "license": "CC BY 4.0 with World Bank dataset terms",
           "licenseUrl": "https://datacatalog.worldbank.org/public-licenses",
-          "retrievedAt": "2026-10-08T05:28:39.505Z",
+          "retrievedAt": "2026-10-10T16:14:13.366Z",
           "sha256": "c9acf3932785191a649cbc04c3056af4cf64a236e5c3b49d49be25ddb0440bce",
           "bytes": 113954,
           "notes": [
@@ -214442,13 +214442,13 @@
           "downloadUrl": "https://api.worldbank.org/v2/country/all/indicator/MS.MIL.MPRT.KD?format=json&per_page=20000&date=1960:2025",
           "license": "CC BY 4.0, explicitly stated on the individual World Bank indicator and metadata pages",
           "licenseUrl": "https://databank.worldbank.org/metadataglossary/world-development-indicators/series/MS.MIL.MPRT.KD",
-          "retrievedAt": "2026-09-08T17:15:10.228834Z",
-          "sha256": "0629a1ea0f2e496491f6bc0b862f949cf938af9dc3363f863fca313b0f4d5a9b",
-          "bytes": 4005184,
+          "retrievedAt": "2026-10-10T16:14:14.643Z",
+          "sha256": "bbfd17cdb8d26c933ec7734bf5814be7e75fea4eea57e7b4564de799fbd252a6",
+          "bytes": 4023705,
           "notes": [
             "Source methodology and individual-series license: https://databank.worldbank.org/metadataglossary/world-development-indicators/series/MS.MIL.MPRT.KD",
             "Normalized the official WDI API response into individual observations. Nulls and original units are retained; no currency conversion or interpolation.",
-            "WDI source last updated: 2026-07-13. This is separate from the original retrieval clock."
+            "WDI source last updated: 2026-10-08. This is separate from the original retrieval clock."
           ]
         },
         {
@@ -214459,13 +214459,13 @@
           "downloadUrl": "https://api.worldbank.org/v2/country/all/indicator/MS.MIL.XPRT.KD?format=json&per_page=20000&date=1960:2025",
           "license": "CC BY 4.0, explicitly stated on the individual World Bank indicator and metadata pages",
           "licenseUrl": "https://databank.worldbank.org/metadataglossary/world-development-indicators/series/MS.MIL.XPRT.KD",
-          "retrievedAt": "2026-09-08T17:17:46.234Z",
-          "sha256": "fe93b0fc402f03e6e12b5fd8bcfc3c39677e8f50653abf3d90118286b0a1711f",
-          "bytes": 3977476,
+          "retrievedAt": "2026-10-10T16:14:15.917Z",
+          "sha256": "d4b0c835dd50d16ed3a523ba94145bb46ae0e036a0ca2ca37d4e5bd4d3678ff6",
+          "bytes": 3995418,
           "notes": [
             "Source methodology and individual-series license: https://databank.worldbank.org/metadataglossary/world-development-indicators/series/MS.MIL.XPRT.KD",
             "Normalized the official WDI API response into individual observations. Nulls and original units are retained; no currency conversion or interpolation.",
-            "WDI source last updated: 2026-07-13. This is separate from the original retrieval clock."
+            "WDI source last updated: 2026-10-08. This is separate from the original retrieval clock."
           ]
         },
         {
@@ -214476,13 +214476,13 @@
           "downloadUrl": "https://api.worldbank.org/v2/country/all/indicator/IC.FRM.CORR.ZS?format=json&per_page=10000&date=2002:2025",
           "license": "CC BY 4.0, explicitly stated on the individual World Bank indicator and metadata pages",
           "licenseUrl": "https://databank.worldbank.org/metadataglossary/world-development-indicators/series/IC.FRM.CORR.ZS",
-          "retrievedAt": "2026-09-08T17:17:47.239Z",
-          "sha256": "240b454b9f341d4ee4c9de2aed99b02af3c7e2c8c1ce3d3c53b2939bf664386f",
-          "bytes": 1488913,
+          "retrievedAt": "2026-10-10T16:14:16.566Z",
+          "sha256": "44e01bcae283188bbeca989f6a731be194bc90c346ffc6a22be19277e3db7ae5",
+          "bytes": 1495427,
           "notes": [
             "Source methodology and individual-series license: https://databank.worldbank.org/metadataglossary/world-development-indicators/series/IC.FRM.CORR.ZS",
             "Normalized the official WDI API response into individual observations. Nulls and original units are retained; no currency conversion or interpolation.",
-            "WDI source last updated: 2026-07-13. This is separate from the original retrieval clock."
+            "WDI source last updated: 2026-10-08. This is separate from the original retrieval clock."
           ]
         }
       ],
@@ -219339,15 +219339,15 @@
           ],
           "featured": true,
           "coverage": {
-            "observations": 17490,
-            "numericObservations": 9462,
+            "observations": 17556,
+            "numericObservations": 9672,
             "reported": 0,
-            "estimated": 9462,
-            "unavailable": 8028,
+            "estimated": 9672,
+            "unavailable": 7884,
             "firstPeriod": "1960",
             "lastPeriod": "2025",
             "firstNumericPeriod": "1960",
-            "lastNumericPeriod": "2024"
+            "lastNumericPeriod": "2025"
           },
           "dimensions": {
             "geographies": [
@@ -219760,6 +219760,11 @@
                 "code": "FIN",
                 "name": "Finland",
                 "level": "country"
+              },
+              {
+                "code": "FCV",
+                "name": "Fragility, Conflict, and Violence (FCV) situations",
+                "level": "region"
               },
               {
                 "code": "FRA",
@@ -220689,8 +220694,8 @@
                 "subgroup": "",
                 "firstPeriod": "1960",
                 "lastPeriod": "2025",
-                "lastNumericPeriod": "2024",
-                "latestNumericObservations": 147
+                "lastNumericPeriod": "2025",
+                "latestNumericObservations": 155
               }
             ]
           }
@@ -220711,15 +220716,15 @@
           ],
           "featured": false,
           "coverage": {
-            "observations": 17490,
-            "numericObservations": 3477,
+            "observations": 17556,
+            "numericObservations": 3547,
             "reported": 0,
-            "estimated": 3477,
-            "unavailable": 14013,
+            "estimated": 3547,
+            "unavailable": 14009,
             "firstPeriod": "1960",
             "lastPeriod": "2025",
             "firstNumericPeriod": "1960",
-            "lastNumericPeriod": "2024"
+            "lastNumericPeriod": "2025"
           },
           "dimensions": {
             "geographies": [
@@ -221132,6 +221137,11 @@
                 "code": "FIN",
                 "name": "Finland",
                 "level": "country"
+              },
+              {
+                "code": "FCV",
+                "name": "Fragility, Conflict, and Violence (FCV) situations",
+                "level": "region"
               },
               {
                 "code": "FRA",
@@ -222061,8 +222071,8 @@
                 "subgroup": "",
                 "firstPeriod": "1960",
                 "lastPeriod": "2025",
-                "lastNumericPeriod": "2024",
-                "latestNumericObservations": 62
+                "lastNumericPeriod": "2025",
+                "latestNumericObservations": 60
               }
             ]
           }
@@ -222082,11 +222092,11 @@
           ],
           "featured": false,
           "coverage": {
-            "observations": 6360,
-            "numericObservations": 595,
-            "reported": 595,
+            "observations": 6384,
+            "numericObservations": 596,
+            "reported": 596,
             "estimated": 0,
-            "unavailable": 5765,
+            "unavailable": 5788,
             "firstPeriod": "2002",
             "lastPeriod": "2025",
             "firstNumericPeriod": "2002",
@@ -222503,6 +222513,11 @@
                 "code": "FIN",
                 "name": "Finland",
                 "level": "country"
+              },
+              {
+                "code": "FCV",
+                "name": "Fragility, Conflict, and Violence (FCV) situations",
+                "level": "region"
               },
               {
                 "code": "FRA",
@@ -223433,18 +223448,18 @@
                 "firstPeriod": "2002",
                 "lastPeriod": "2025",
                 "lastNumericPeriod": "2025",
-                "latestNumericObservations": 109
+                "latestNumericObservations": 110
               }
             ]
           }
         }
       ],
       "coverage": {
-        "observations": 69612,
-        "numericObservations": 23951,
-        "reported": 1754,
-        "estimated": 22197,
-        "unavailable": 45661,
+        "observations": 69768,
+        "numericObservations": 24232,
+        "reported": 1755,
+        "estimated": 22477,
+        "unavailable": 45536,
         "firstPeriod": "1960",
         "lastPeriod": "2025",
         "firstNumericPeriod": "1960",
