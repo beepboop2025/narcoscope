@@ -56,3 +56,12 @@ signed commit using `assemble.py` and the existing trusted signers file, run the
 image's Linux isolation tests, attach the `/data` volume, and deploy that exact
 assembly. Updating ordinary application source alone does not update the pinned
 controller. The image already supplies Python 3 and Node for these collectors.
+
+Before activation, inspect the exact Railway service's volume mounts rather
+than relying on a successful image build: build-time isolation tests cannot
+prove that runtime `/data` is mounted. Preserve the quarterly schedule, the
+create-only proposal policy and the existing credentials. Retain the signed
+assembly manifest, provider image digest and a terminal controller event from
+the same deployment; Railway's initial `SUCCESS` state is not proof that the
+pipeline finished. An existing proposal is a `PENDING_REVIEW` result, not a new
+collection or publication.
