@@ -4,8 +4,8 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { CONNECTED_FILE, connectedSha256, loadConnectedResearch, validateConnectedResearch } from '../lib/connected-research.mjs'
 import { TOOLS, toolOutputIsValid } from './mcp.mjs'
-import { capabilities } from './lib/narcoscope.mjs'
-import { observatoryFixture } from './observatory-fixture.js'
+import { capabilities } from './_lib/narcoscope.mjs'
+import { observatoryFixture } from './_observatory-fixture.js'
 
 describe('shared economic and regional research', () => {
   it('returns evidence from the same hash-bound snapshot through MCP discovery', async () => {

@@ -14,7 +14,7 @@ import {
 import {
   loadVerifiedPalimpsestBriArtifact,
   verifiedPalimpsestBriEnvelope,
-} from './lib/palimpsest-bri.mjs'
+} from './_lib/palimpsest-bri.mjs'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const canonicalDataDir = path.join(root, 'public/data')

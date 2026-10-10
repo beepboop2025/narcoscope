@@ -3,7 +3,7 @@ import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, expect, it, vi } from 'vitest'
 import artifact from '../../public/data/palimpsest-connected-research-v1.json'
 import ConnectedResearch from './ConnectedResearch'
-import { observatoryFixture } from '../../api/observatory-fixture.js'
+import { observatoryFixture } from '../../api/_observatory-fixture.js'
 
 afterEach(() => { cleanup(); vi.unstubAllGlobals() })
 

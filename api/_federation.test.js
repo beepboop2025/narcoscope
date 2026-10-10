@@ -7,8 +7,8 @@ import {
   getFederation,
   validateGlobalMoneyAtlas,
   validateWorldMarkets,
-} from './lib/federation.mjs'
-import { getPalimpsestBriContext } from './lib/narcoscope.mjs'
+} from './_lib/federation.mjs'
+import { getPalimpsestBriContext } from './_lib/narcoscope.mjs'
 import { dispatch, toolOutputIsValid } from './mcp.mjs'
 import { createV1Handler } from './v1.mjs'
 

@@ -10,7 +10,7 @@ import {
   getPalimpsestBriContext,
   getPalimpsestCorridors,
   getStory,
-} from './lib/narcoscope.mjs'
+} from './_lib/narcoscope.mjs'
 import handler, {
   dispatch,
   LEGACY_PROTOCOL_VERSION,

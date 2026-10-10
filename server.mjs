@@ -11,7 +11,7 @@ import { fileURLToPath } from 'node:url'
 
 import mcpHandler from './api/mcp.mjs'
 import v1Handler from './api/v1.mjs'
-import { loadVerifiedPalimpsestBriArtifact } from './api/lib/palimpsest-bri.mjs'
+import { loadVerifiedPalimpsestBriArtifact } from './api/_lib/palimpsest-bri.mjs'
 
 const ROOT = fileURLToPath(new URL('.', import.meta.url))
 const DEFAULT_DIST = resolve(ROOT, 'dist')

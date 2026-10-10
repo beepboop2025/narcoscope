@@ -13,10 +13,10 @@ import {
   getPalimpsestCorridors,
   getStory,
   SITE_URL,
-} from './lib/narcoscope.mjs'
-import { TOOL_OUTPUT_SCHEMAS } from './lib/mcp-output-schemas.mjs'
+} from './_lib/narcoscope.mjs'
+import { TOOL_OUTPUT_SCHEMAS } from './_lib/mcp-output-schemas.mjs'
 import { readResearchNetwork, RESEARCH_NETWORK_INPUT_SCHEMA, RESEARCH_NETWORK_OUTPUT_SCHEMA } from '../lib/research-network.mjs'
-import { PALIMPSEST_BRI_OUTPUT_SCHEMA } from './lib/palimpsest-bri.mjs'
+import { PALIMPSEST_BRI_OUTPUT_SCHEMA } from './_lib/palimpsest-bri.mjs'
 import { CONNECTED_OUTPUT_SCHEMA, loadConnectedResearch } from '../lib/connected-research.mjs'
 import { getMarketCatalog, queryMarketObservations, MARKET_QUERY_INPUT_SCHEMA } from '../lib/global-markets.mjs'
 import { MARKET_CATALOG_OUTPUT_SCHEMA, MARKET_QUERY_OUTPUT_SCHEMA } from '../lib/global-market-schemas.mjs'
