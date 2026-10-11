@@ -1,10 +1,10 @@
 {
   "schema": "narcoscope.evidence-wire.v1",
-  "generatedAt": "2026-10-11T21:28:50.141Z",
+  "generatedAt": "2026-10-11T23:54:22.009Z",
   "status": "partial",
   "window": {
     "start": "2026-07-05T12:00:00.000Z",
-    "end": "2026-10-09T12:00:00.000Z"
+    "end": "2026-10-11T12:00:00.000Z"
   },
   "items": [
     {
@@ -14,7 +14,7 @@
       "sourceId": "europol-news",
       "sourceName": "Europol · Newsroom",
       "publishedAt": null,
-      "retrievedAt": "2026-10-11T21:28:50.141Z",
+      "retrievedAt": "2026-10-11T23:54:22.009Z",
       "evidenceClass": "official-release",
       "verificationState": "source-published",
       "legalStage": "not-applicable",
@@ -31,12 +31,46 @@
       "sourceId": "europol-news",
       "sourceName": "Europol · Newsroom",
       "publishedAt": null,
-      "retrievedAt": "2026-10-11T21:28:50.141Z",
+      "retrievedAt": "2026-10-11T23:54:22.009Z",
       "evidenceClass": "official-release",
       "verificationState": "source-published",
       "legalStage": "not-applicable",
       "topics": [
         "drug markets"
+      ],
+      "countries": [],
+      "publicationAllowed": true
+    },
+    {
+      "id": "doj-justice-news-ca043012888897cb1777",
+      "title": "Homeland Security Task Force Arrests Alvaro Pulido Vargas to Face Charges in Multibillion-Dollar Venezuelan Money Laundering and Bribery Schemes",
+      "url": "https://www.justice.gov/opa/pr/homeland-security-task-force-arrests-alvaro-pulido-vargas-face-charges-multibillion-dollar",
+      "sourceId": "doj-justice-news",
+      "sourceName": "U.S. Department of Justice · Justice News",
+      "publishedAt": "2026-10-11T12:00:00.000Z",
+      "retrievedAt": "2026-10-11T23:54:22.009Z",
+      "evidenceClass": "official-action",
+      "verificationState": "source-published",
+      "legalStage": "charge",
+      "topics": [
+        "illicit finance"
+      ],
+      "countries": [],
+      "publicationAllowed": true
+    },
+    {
+      "id": "doj-justice-news-d6c38a0f980d04f09f39",
+      "title": "Homeland Security Task Force Arrests Alvaro Pulido Vargas to Face Charges in Multibillion-Dollar Venezuelan Money Laundering and Bribery Schemes",
+      "url": "https://www.justice.gov/usao-sdfl/pr/homeland-security-task-force-arrests-alvaro-pulido-vargas-face-charges-multibillion",
+      "sourceId": "doj-justice-news",
+      "sourceName": "U.S. Department of Justice · Justice News",
+      "publishedAt": "2026-10-11T12:00:00.000Z",
+      "retrievedAt": "2026-10-11T23:54:22.009Z",
+      "evidenceClass": "official-action",
+      "verificationState": "source-published",
+      "legalStage": "charge",
+      "topics": [
+        "illicit finance"
       ],
       "countries": [],
       "publicationAllowed": true
@@ -48,7 +82,7 @@
       "sourceId": "doj-justice-news",
       "sourceName": "U.S. Department of Justice · Justice News",
       "publishedAt": "2026-10-09T12:00:00.000Z",
-      "retrievedAt": "2026-10-11T21:07:33.148Z",
+      "retrievedAt": "2026-10-11T22:31:45.997Z",
       "evidenceClass": "official-action",
       "verificationState": "source-published",
       "legalStage": "sentencing",
@@ -65,12 +99,29 @@
       "sourceId": "doj-justice-news",
       "sourceName": "U.S. Department of Justice · Justice News",
       "publishedAt": "2026-10-09T12:00:00.000Z",
-      "retrievedAt": "2026-10-11T21:07:33.148Z",
+      "retrievedAt": "2026-10-11T22:31:45.997Z",
       "evidenceClass": "official-action",
       "verificationState": "source-published",
       "legalStage": "charge",
       "topics": [
         "arms trafficking"
+      ],
+      "countries": [],
+      "publicationAllowed": true
+    },
+    {
+      "id": "doj-justice-news-16b602cbb416ac2b56a5",
+      "title": "Homeland Security Task Force Investigation Leads To Conviction of Albany Man For Crack Cocaine Sales",
+      "url": "https://www.justice.gov/usao-ndny/pr/homeland-security-task-force-investigation-leads-conviction-albany-man-crack-cocaine",
+      "sourceId": "doj-justice-news",
+      "sourceName": "U.S. Department of Justice · Justice News",
+      "publishedAt": "2026-10-09T12:00:00.000Z",
+      "retrievedAt": "2026-10-11T23:54:22.009Z",
+      "evidenceClass": "official-action",
+      "verificationState": "source-published",
+      "legalStage": "conviction",
+      "topics": [
+        "drug markets"
       ],
       "countries": [],
       "publicationAllowed": true
@@ -82,7 +133,7 @@
       "sourceId": "doj-justice-news",
       "sourceName": "U.S. Department of Justice · Justice News",
       "publishedAt": "2026-10-09T12:00:00.000Z",
-      "retrievedAt": "2026-10-11T21:28:50.141Z",
+      "retrievedAt": "2026-10-11T23:44:04.875Z",
       "evidenceClass": "official-action",
       "verificationState": "source-published",
       "legalStage": "sentencing",
@@ -99,12 +150,29 @@
       "sourceId": "doj-justice-news",
       "sourceName": "U.S. Department of Justice · Justice News",
       "publishedAt": "2026-10-09T12:00:00.000Z",
-      "retrievedAt": "2026-10-11T21:28:50.141Z",
+      "retrievedAt": "2026-10-11T23:44:04.875Z",
       "evidenceClass": "official-action",
       "verificationState": "source-published",
       "legalStage": "conviction",
       "topics": [
         "illicit finance"
+      ],
+      "countries": [],
+      "publicationAllowed": true
+    },
+    {
+      "id": "doj-justice-news-4a0afbdb8ce8a0d4b9e7",
+      "title": "Four Additional Defendants Plead Guilty in Gun Trafficking Conspiracy",
+      "url": "https://www.justice.gov/usao-nh/pr/four-additional-defendants-plead-guilty-gun-trafficking-conspiracy",
+      "sourceId": "doj-justice-news",
+      "sourceName": "U.S. Department of Justice · Justice News",
+      "publishedAt": "2026-10-09T12:00:00.000Z",
+      "retrievedAt": "2026-10-11T23:54:22.009Z",
+      "evidenceClass": "official-action",
+      "verificationState": "source-published",
+      "legalStage": "conviction",
+      "topics": [
+        "arms trafficking"
       ],
       "countries": [],
       "publicationAllowed": true
@@ -116,12 +184,30 @@
       "sourceId": "doj-justice-news",
       "sourceName": "U.S. Department of Justice · Justice News",
       "publishedAt": "2026-10-09T12:00:00.000Z",
-      "retrievedAt": "2026-10-11T21:07:33.148Z",
+      "retrievedAt": "2026-10-11T22:31:45.997Z",
       "evidenceClass": "official-action",
       "verificationState": "source-published",
       "legalStage": "sentencing",
       "topics": [
         "drug markets"
+      ],
+      "countries": [],
+      "publicationAllowed": true
+    },
+    {
+      "id": "doj-justice-news-687580d4b832ff54ed95",
+      "title": "Previously Removed Illegal Alien Sentenced to 10 Years in Federal Prison for Methamphetamine Trafficking and Ammunition Offense",
+      "url": "https://www.justice.gov/usao-cdca/pr/previously-removed-illegal-alien-sentenced-10-years-federal-prison-methamphetamine",
+      "sourceId": "doj-justice-news",
+      "sourceName": "U.S. Department of Justice · Justice News",
+      "publishedAt": "2026-10-09T12:00:00.000Z",
+      "retrievedAt": "2026-10-11T23:54:22.009Z",
+      "evidenceClass": "official-action",
+      "verificationState": "source-published",
+      "legalStage": "sentencing",
+      "topics": [
+        "drug markets",
+        "arms trafficking"
       ],
       "countries": [],
       "publicationAllowed": true
@@ -133,7 +219,7 @@
       "sourceId": "doj-justice-news",
       "sourceName": "U.S. Department of Justice · Justice News",
       "publishedAt": "2026-10-09T12:00:00.000Z",
-      "retrievedAt": "2026-10-11T21:07:33.148Z",
+      "retrievedAt": "2026-10-11T22:31:45.997Z",
       "evidenceClass": "official-action",
       "verificationState": "source-published",
       "legalStage": "sentencing",
@@ -150,7 +236,7 @@
       "sourceId": "doj-justice-news",
       "sourceName": "U.S. Department of Justice · Justice News",
       "publishedAt": "2026-10-09T12:00:00.000Z",
-      "retrievedAt": "2026-10-11T21:07:33.148Z",
+      "retrievedAt": "2026-10-11T22:31:45.997Z",
       "evidenceClass": "official-action",
       "verificationState": "source-published",
       "legalStage": "sentencing",
@@ -167,7 +253,7 @@
       "sourceId": "doj-justice-news",
       "sourceName": "U.S. Department of Justice · Justice News",
       "publishedAt": "2026-10-09T12:00:00.000Z",
-      "retrievedAt": "2026-10-11T21:28:50.141Z",
+      "retrievedAt": "2026-10-11T23:44:04.875Z",
       "evidenceClass": "official-action",
       "verificationState": "source-published",
       "legalStage": "sentencing",
@@ -184,7 +270,7 @@
       "sourceId": "doj-justice-news",
       "sourceName": "U.S. Department of Justice · Justice News",
       "publishedAt": "2026-10-09T12:00:00.000Z",
-      "retrievedAt": "2026-10-11T21:28:50.141Z",
+      "retrievedAt": "2026-10-11T23:44:04.875Z",
       "evidenceClass": "official-action",
       "verificationState": "source-published",
       "legalStage": "report",
@@ -201,12 +287,29 @@
       "sourceId": "doj-justice-news",
       "sourceName": "U.S. Department of Justice · Justice News",
       "publishedAt": "2026-10-09T12:00:00.000Z",
-      "retrievedAt": "2026-10-11T21:28:50.141Z",
+      "retrievedAt": "2026-10-11T23:44:04.875Z",
       "evidenceClass": "official-action",
       "verificationState": "source-published",
       "legalStage": "charge",
       "topics": [
         "drug markets",
+        "arms trafficking"
+      ],
+      "countries": [],
+      "publicationAllowed": true
+    },
+    {
+      "id": "doj-justice-news-f67a59b4bfc84d3a8db3",
+      "title": "Former National Guard task force member sentenced for illegal firearm possession offenses that came to light during an investigation into leaks of sensitive operational information",
+      "url": "https://www.justice.gov/usao-edca/pr/former-national-guard-task-force-member-sentenced-illegal-firearm-possession-offenses",
+      "sourceId": "doj-justice-news",
+      "sourceName": "U.S. Department of Justice · Justice News",
+      "publishedAt": "2026-10-09T12:00:00.000Z",
+      "retrievedAt": "2026-10-11T23:54:22.009Z",
+      "evidenceClass": "official-action",
+      "verificationState": "source-published",
+      "legalStage": "sentencing",
+      "topics": [
         "arms trafficking"
       ],
       "countries": [],
@@ -219,7 +322,7 @@
       "sourceId": "un-news-law-crime",
       "sourceName": "United Nations News · Law and crime prevention",
       "publishedAt": "2026-10-09T12:00:00.000Z",
-      "retrievedAt": "2026-10-11T21:28:50.141Z",
+      "retrievedAt": "2026-10-11T23:54:22.009Z",
       "evidenceClass": "official-release",
       "verificationState": "source-published",
       "legalStage": "not-applicable",
@@ -638,108 +741,6 @@
       "publicationAllowed": true
     },
     {
-      "id": "doj-justice-news-dad32cab32885bf7339f",
-      "title": "Mississippi Man Sentenced to Federal Prison for Possession of a Firearm by a Prohibited Person",
-      "url": "https://www.justice.gov/usao-sd/pr/mississippi-man-sentenced-federal-prison-possession-firearm-prohibited-person",
-      "sourceId": "doj-justice-news",
-      "sourceName": "U.S. Department of Justice · Justice News",
-      "publishedAt": "2026-10-08T12:00:00.000Z",
-      "retrievedAt": "2026-10-08T17:27:06.012Z",
-      "evidenceClass": "official-action",
-      "verificationState": "source-published",
-      "legalStage": "sentencing",
-      "topics": [
-        "arms trafficking"
-      ],
-      "countries": [],
-      "publicationAllowed": true
-    },
-    {
-      "id": "doj-justice-news-db2689c48b36aa62c250",
-      "title": "Drug Trafficker Sentenced to More Than 22 years in Federal Prison for Distributing Methamphetamine Near Fayetteville Softball Complex",
-      "url": "https://www.justice.gov/usao-wdar/pr/drug-trafficker-sentenced-more-22-years-federal-prison-distributing-methamphetamine",
-      "sourceId": "doj-justice-news",
-      "sourceName": "U.S. Department of Justice · Justice News",
-      "publishedAt": "2026-10-08T12:00:00.000Z",
-      "retrievedAt": "2026-10-08T19:09:56.136Z",
-      "evidenceClass": "official-action",
-      "verificationState": "source-published",
-      "legalStage": "sentencing",
-      "topics": [
-        "drug markets"
-      ],
-      "countries": [],
-      "publicationAllowed": true
-    },
-    {
-      "id": "doj-justice-news-dc67a085421a8cb72a2d",
-      "title": "Dominican National Previously Convicted of Drug Trafficking Offense Sentenced to 21 Months in Prison for Illegally Reentering U.S.",
-      "url": "https://www.justice.gov/usao-ct/pr/dominican-national-previously-convicted-drug-trafficking-offense-sentenced-21-months",
-      "sourceId": "doj-justice-news",
-      "sourceName": "U.S. Department of Justice · Justice News",
-      "publishedAt": "2026-10-08T12:00:00.000Z",
-      "retrievedAt": "2026-10-08T20:53:11.446Z",
-      "evidenceClass": "official-action",
-      "verificationState": "source-published",
-      "legalStage": "sentencing",
-      "topics": [
-        "drug markets"
-      ],
-      "countries": [],
-      "publicationAllowed": true
-    },
-    {
-      "id": "doj-justice-news-e5192d8eb1fdec5d2616",
-      "title": "PROLIFIC NORTENOGANG MEMBER AND DRUG TRAFFICKER SENTENCED TO 12 YEARS IN FEDERAL PRISON",
-      "url": "https://www.justice.gov/usao-edwa/pr/prolific-nortenogang-member-and-drug-trafficker-sentenced-12-years-federal-prison",
-      "sourceId": "doj-justice-news",
-      "sourceName": "U.S. Department of Justice · Justice News",
-      "publishedAt": "2026-10-08T12:00:00.000Z",
-      "retrievedAt": "2026-10-08T18:49:22.005Z",
-      "evidenceClass": "official-action",
-      "verificationState": "source-published",
-      "legalStage": "sentencing",
-      "topics": [
-        "drug markets"
-      ],
-      "countries": [],
-      "publicationAllowed": true
-    },
-    {
-      "id": "doj-justice-news-ed162286b17990978db3",
-      "title": "Ukrainian-Russian Dual Citizen Pleads Guilty to Running International Money Laundering Organization for Cybercriminals",
-      "url": "https://www.justice.gov/opa/pr/ukrainian-russian-dual-citizen-pleads-guilty-running-international-money-laundering",
-      "sourceId": "doj-justice-news",
-      "sourceName": "U.S. Department of Justice · Justice News",
-      "publishedAt": "2026-10-08T12:00:00.000Z",
-      "retrievedAt": "2026-10-08T19:20:34.963Z",
-      "evidenceClass": "official-action",
-      "verificationState": "source-published",
-      "legalStage": "conviction",
-      "topics": [
-        "illicit finance"
-      ],
-      "countries": [],
-      "publicationAllowed": true
-    },
-    {
-      "id": "doj-justice-news-f0adab3eba39e88bfdf0",
-      "title": "Career Criminal Netted by Homeland Security Task Force Investigation Sentenced on Federal Drug Charges",
-      "url": "https://www.justice.gov/usao-edla/pr/career-criminal-netted-homeland-security-task-force-investigation-sentenced-federal",
-      "sourceId": "doj-justice-news",
-      "sourceName": "U.S. Department of Justice · Justice News",
-      "publishedAt": "2026-10-08T12:00:00.000Z",
-      "retrievedAt": "2026-10-08T18:49:22.005Z",
-      "evidenceClass": "official-action",
-      "verificationState": "source-published",
-      "legalStage": "sentencing",
-      "topics": [
-        "drug markets"
-      ],
-      "countries": [],
-      "publicationAllowed": true
-    },
-    {
       "id": "europol-news-46330623dbe46830ca61",
       "title": "Seven arrests in Brazil during crackdown on South America-Europe cocaine pipeline",
       "url": "https://www.europol.europa.eu/media-press/newsroom/news/seven-arrests-in-brazil-during-crackdown-south-america-europe-cocaine-pipeline",
@@ -763,7 +764,7 @@
       "sourceId": "un-news-law-crime",
       "sourceName": "United Nations News · Law and crime prevention",
       "publishedAt": "2026-10-03T12:00:00.000Z",
-      "retrievedAt": "2026-10-11T21:28:50.141Z",
+      "retrievedAt": "2026-10-11T23:54:22.009Z",
       "evidenceClass": "official-release",
       "verificationState": "source-published",
       "legalStage": "not-applicable",
@@ -780,7 +781,7 @@
       "sourceId": "treasury-press",
       "sourceName": "U.S. Treasury · Press releases",
       "publishedAt": "2026-10-02T19:30:00.000Z",
-      "retrievedAt": "2026-10-11T21:28:50.141Z",
+      "retrievedAt": "2026-10-11T23:54:22.009Z",
       "evidenceClass": "official-action",
       "verificationState": "source-published",
       "legalStage": "designation",
@@ -1157,7 +1158,7 @@
       "sourceId": "un-news-law-crime",
       "sourceName": "United Nations News · Law and crime prevention",
       "publishedAt": "2026-08-19T12:00:00.000Z",
-      "retrievedAt": "2026-10-11T21:28:50.141Z",
+      "retrievedAt": "2026-10-11T23:54:22.009Z",
       "evidenceClass": "official-release",
       "verificationState": "source-published",
       "legalStage": "not-applicable",
@@ -1174,7 +1175,7 @@
       "sourceId": "un-news-law-crime",
       "sourceName": "United Nations News · Law and crime prevention",
       "publishedAt": "2026-07-05T12:00:00.000Z",
-      "retrievedAt": "2026-10-11T21:28:50.141Z",
+      "retrievedAt": "2026-10-11T23:54:22.009Z",
       "evidenceClass": "official-release",
       "verificationState": "source-published",
       "legalStage": "not-applicable",
@@ -1191,20 +1192,20 @@
       "name": "U.S. Department of Justice · Justice News",
       "url": "https://www.justice.gov/news/rss",
       "status": "fresh",
-      "checkedAt": "2026-10-11T21:28:50.141Z",
-      "lastSuccessAt": "2026-10-11T21:28:50.141Z",
+      "checkedAt": "2026-10-11T23:54:22.009Z",
+      "lastSuccessAt": "2026-10-11T23:54:22.009Z",
       "cadenceMinutes": 15,
       "staleAfterMinutes": 120,
       "rights": "Public U.S. government release metadata; NarcoScope republishes titles, links and source clocks only.",
-      "detail": "25 source items read · 5 current in-scope · 40 retained metadata items published"
+      "detail": "25 source items read · 6 current in-scope · 40 retained metadata items published"
     },
     {
       "id": "un-news-law-crime",
       "name": "United Nations News · Law and crime prevention",
       "url": "https://news.un.org/feed/subscribe/en/news/topic/law-and-crime-prevention/feed/rss.xml",
       "status": "fresh",
-      "checkedAt": "2026-10-11T21:28:50.141Z",
-      "lastSuccessAt": "2026-10-11T21:28:50.141Z",
+      "checkedAt": "2026-10-11T23:54:22.009Z",
+      "lastSuccessAt": "2026-10-11T23:54:22.009Z",
       "cadenceMinutes": 30,
       "staleAfterMinutes": 180,
       "rights": "Public United Nations feed metadata; NarcoScope republishes titles, links and source clocks only.",
@@ -1215,8 +1216,8 @@
       "name": "Europol · Newsroom",
       "url": "https://www.europol.europa.eu/cms/api/rss/news",
       "status": "fresh",
-      "checkedAt": "2026-10-11T21:28:50.141Z",
-      "lastSuccessAt": "2026-10-11T21:28:50.141Z",
+      "checkedAt": "2026-10-11T23:54:22.009Z",
+      "lastSuccessAt": "2026-10-11T23:54:22.009Z",
       "cadenceMinutes": 30,
       "staleAfterMinutes": 180,
       "rights": "Public European Union agency feed metadata; NarcoScope republishes titles, links and source clocks only.",
@@ -1227,8 +1228,8 @@
       "name": "U.S. Treasury · Press releases",
       "url": "https://home.treasury.gov/news/press-releases",
       "status": "fresh",
-      "checkedAt": "2026-10-11T21:28:50.141Z",
-      "lastSuccessAt": "2026-10-11T21:28:50.141Z",
+      "checkedAt": "2026-10-11T23:54:22.009Z",
+      "lastSuccessAt": "2026-10-11T23:54:22.009Z",
       "cadenceMinutes": 30,
       "staleAfterMinutes": 240,
       "rights": "Public U.S. government release metadata; NarcoScope republishes titles, links and source clocks only.",
@@ -1239,8 +1240,8 @@
       "name": "Palimpsest · newswire publication-rights receipt",
       "url": "https://www.palimpsest.info/readings/newswire-latest.json",
       "status": "restricted",
-      "checkedAt": "2026-10-11T21:28:50.141Z",
-      "lastSuccessAt": "2026-10-11T21:28:50.141Z",
+      "checkedAt": "2026-10-11T23:54:22.009Z",
+      "lastSuccessAt": "2026-10-11T23:54:22.009Z",
       "cadenceMinutes": 15,
       "staleAfterMinutes": 90,
       "rights": "Receipt only. Source content remains suppressed whenever Palimpsest publication_allowed is false.",
@@ -1251,7 +1252,7 @@
       "name": "Seiche · global money-market context",
       "url": "https://api.seiche.info/api/v2/money-markets",
       "status": "stale",
-      "checkedAt": "2026-10-11T21:28:50.141Z",
+      "checkedAt": "2026-10-11T23:54:22.009Z",
       "lastSuccessAt": "2026-10-06T07:01:59.134Z",
       "cadenceMinutes": 15,
       "staleAfterMinutes": 90,
@@ -1263,12 +1264,12 @@
       "name": "Seiche · capital-market context",
       "url": "https://api.seiche.info/api/v2/world-markets?section=capital_markets",
       "status": "fresh",
-      "checkedAt": "2026-10-11T21:28:50.141Z",
-      "lastSuccessAt": "2026-10-11T21:28:50.141Z",
+      "checkedAt": "2026-10-11T23:54:22.009Z",
+      "lastSuccessAt": "2026-10-11T23:54:22.009Z",
       "cadenceMinutes": 15,
       "staleAfterMinutes": 90,
       "rights": "Read-only economic context receipt. Values never become NarcoScope illicit-market facts or person-level inferences.",
-      "detail": "seiche.world-markets.v1 · generated 2026-10-11T21:25:47.000Z"
+      "detail": "seiche.world-markets.v1 · generated 2026-10-11T23:45:45.000Z"
     }
   ],
   "caveats": [
