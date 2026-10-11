@@ -12,7 +12,6 @@ import ResearchNav from './components/ResearchNav'
 import NetworkRelay from './components/NetworkRelay'
 import AuthorityBar from './components/AuthorityBar'
 import EvidenceCorridor from './components/EvidenceCorridor'
-import NetworkFlow from './components/NetworkFlow'
 import { TABS, type TabId } from './navigation'
 
 export { resolveCorridorTabIndex } from './components/EvidenceCorridor'
@@ -131,15 +130,17 @@ export default function App() {
           <div className="evidence-header">
             <div>
 
-              <h1>World markets, in detail.</h1>
-              <p className="lede">Explore drugs, arms and the black economy through reported observations, historical comparisons and source-linked records.</p>
+              <p className="entry-kicker">NarcoScope / the public evidence atlas</p>
+              <h1>A closer look at<br/>the hidden economy.</h1>
+              <p className="lede">Explore reported drug, arms and informal-economy observations. Move from a country or research question to its history, original sources and limits.</p>
               <p className="data-badge">{isSample ? 'Published data · source dates vary' : 'Local data loaded'}</p>
               <nav className="hero-actions" aria-label="NarcoScope entry points">
                 <button type="button" className="hero-action hero-action--primary" onClick={() => selectTab('data', true)}>Explore data</button>
                 <button type="button" className="hero-action" onClick={() => selectTab('wire', true)}>Latest evidence</button>
+                <a className="hero-action" href="/developers/#first-result">Connect API or MCP</a>
               </nav>
             </div>
-            <NetworkFlow />
+            <aside className="entry-atlas" aria-label="Choose a research lane"><p>Start with a question</p><button type="button" onClick={() => selectTab('drugs', true)}><span>Drugs and public health</span><strong>What do the reported measures show?</strong><small>Prices, seizures, cultivation and harms.</small></button><button type="button" onClick={() => selectTab('arms', true)}><span>Arms and enforcement</span><strong>How do sources describe the flows?</strong><small>Reported transfers, tracing and their limits.</small></button><button type="button" onClick={() => selectTab('economy', true)}><span>Informal economies</span><strong>What is being measured?</strong><small>Keep model estimates and official records distinct.</small></button><p className="entry-atlas-note">Sources, units and observation periods remain visible in each research view.</p></aside>
             <AuthorityBar tab={tab} label={TABS.find((item) => item.id === tab)?.label ?? 'Illicit-economy evidence'} />
           </div>
         </div>
