@@ -18,8 +18,8 @@ import { TOOL_OUTPUT_SCHEMAS } from './_lib/mcp-output-schemas.mjs'
 import { readResearchNetwork, RESEARCH_NETWORK_INPUT_SCHEMA, RESEARCH_NETWORK_OUTPUT_SCHEMA } from '../lib/research-network.mjs'
 import { PALIMPSEST_BRI_OUTPUT_SCHEMA } from './_lib/palimpsest-bri.mjs'
 import { CONNECTED_OUTPUT_SCHEMA, loadConnectedResearch } from '../lib/connected-research.mjs'
-import { getMarketCatalog, queryMarketObservations, MARKET_QUERY_INPUT_SCHEMA } from '../lib/global-markets.mjs'
-import { MARKET_CATALOG_OUTPUT_SCHEMA, MARKET_QUERY_OUTPUT_SCHEMA } from '../lib/global-market-schemas.mjs'
+import { getMarketCatalogPage, queryMarketObservations, MARKET_CATALOG_INPUT_SCHEMA, MARKET_QUERY_INPUT_SCHEMA } from '../lib/global-markets.mjs'
+import { MARKET_CATALOG_PAGE_OUTPUT_SCHEMA, MARKET_QUERY_OUTPUT_SCHEMA } from '../lib/global-market-schemas.mjs'
 
 export const PROTOCOL_VERSION = '2026-07-28'
 export const LEGACY_PROTOCOL_VERSION = '2025-06-18'
@@ -184,10 +184,10 @@ export const TOOLS = Object.freeze({
   },
   get_market_catalog: {
     title: 'Discover granular global market evidence',
-    description: 'List drugs, arms and informal-economy datasets, native indicator units, exact country/category/subgroup dimensions, numeric and unavailable coverage, source hashes and source-specific reuse restrictions. Legacy atlas and price histories remain distinct resources.',
-    inputSchema: { type: 'object', additionalProperties: false },
-    outputSchema: MARKET_CATALOG_OUTPUT_SCHEMA,
-    call: getMarketCatalog,
+    description: 'Page drugs, arms and informal-economy indicators (page/limit, maximum 4), with native units, full coverage totals and licenses for sources on the page. Country/category/subgroup/selection lists have independent dimensionPagination; follow dimensionPage with the same dataset/indicator filters (dimensionLimit maximum 50). Retain dataset hashes across pages. Legacy atlas and prices remain distinct resources.',
+    inputSchema: MARKET_CATALOG_INPUT_SCHEMA,
+    outputSchema: MARKET_CATALOG_PAGE_OUTPUT_SCHEMA,
+    call: getMarketCatalogPage,
   },
   query_market_observations: {
     title: 'Query granular market observations',
