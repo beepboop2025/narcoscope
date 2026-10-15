@@ -358,6 +358,8 @@ The new library contains 129,217 source cells (74,373 numerical observations and
 
 `npm run markets:check` verifies the public source-bound catalog and contracts; `npm run workspace:build` produces the portable explorer used by Palimpsest. `/api/v1/markets` discovers coverage and valid filter combinations; `/api/v1/market-observations` returns paginated measurements. The MCP equivalents are `get_market_catalog` and `query_market_observations`. The source datasets remain external to the initial JavaScript bundle.
 
+The MCP catalog uses `narcoscope.global-market-catalog-page.v1`: `page` and `limit` select up to four indicators in stable dataset/indicator order. Dataset coverage, hashes and total indicator/source counts remain complete; source details and reuse restrictions accompany the indicators on that page. Each indicator's geography, category, subgroup and observed-selection lists have separate `dimensionPagination` totals and next-page markers. Set `dataset` and `indicator`, then follow `dimensionPage` with the same `dimensionLimit` (default 25, maximum 50) to enumerate every value, including explicit blanks. Retain dataset hashes across pages and restart enumeration if they change. The full REST catalog and browser explorer retain their existing contract. MCP measures both protocol copies against a 1 MiB response budget and returns a bounded error with smaller-page guidance if future metadata exceeds it.
+
 ## Connected research
 
 The Seiche `research_network` tool and `/api/v2/research-network` endpoint

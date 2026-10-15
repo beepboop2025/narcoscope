@@ -3,7 +3,7 @@ import { mkdtemp, readFile, rename, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
-import { getMarketCatalog, queryMarketObservations, validateMarketDataset } from '../lib/global-markets.mjs'
+import { getMarketCatalog, getMarketCatalogPage, queryMarketObservations, validateMarketDataset } from '../lib/global-markets.mjs'
 import { MARKET_CATALOG_OUTPUT_SCHEMA, MARKET_QUERY_OUTPUT_SCHEMA } from '../lib/global-market-schemas.mjs'
 import { dispatch, TOOLS, toolInputIsValid, toolOutputIsValid } from './mcp.mjs'
 import { capabilities } from './_lib/narcoscope.mjs'
@@ -96,7 +96,7 @@ describe('Granular global market provenance and validation', () => {
     expect(indicator.dimensions.geographies.map(row => row.code)).toEqual(['AAA', 'BBB'])
     expect(catalog.relatedResources.map(row => row.id)).toContain('existing-atlas')
     expect(catalog.datasets).toHaveLength(1)
-    expect(toolOutputIsValid('get_market_catalog', catalog)).toBe(true)
+    expect(toolOutputIsValid('get_market_catalog', await getMarketCatalogPage({}, await files()))).toBe(true)
   })
   it('only offers category and breakdown combinations observed in the source', async () => {
     const catalog = await getMarketCatalog({}, await files())
@@ -203,18 +203,97 @@ describe('Granular market REST, MCP and OpenAPI parity', () => {
     const dependencies = await files([])
     const response = await rest('/api/v1/markets', dependencies)
     expect(response.statusCode).toBe(503)
-    expect(toolOutputIsValid('get_market_catalog', response.data.data)).toBe(true)
+    expect(response.data.data.status).toBe('unavailable')
     const mcp = await dispatch({ jsonrpc: '2.0', id: 2, method: 'tools/call', params: { name: 'get_market_catalog', arguments: {} } }, dependencies)
     expect(mcp.result.isError).toBe(true)
     expect(mcp.result.structuredContent.status).toBe('unavailable')
   })
   it('rejects nested private fields in published output contracts', async () => {
     const dependencies = await files()
-    const catalog = await getMarketCatalog({}, dependencies)
+    const catalog = await getMarketCatalogPage({}, dependencies)
     catalog.datasets[0].sources[0].privateResponse = 'sensitive'
     expect(toolOutputIsValid('get_market_catalog', catalog)).toBe(false)
     const query = await queryMarketObservations({}, dependencies)
     query.observations[0].preciseLocation = 'sensitive'
     expect(toolOutputIsValid('query_market_observations', query)).toBe(false)
   })
+})
+
+describe('MCP market catalog transport budgets', () => {
+  it('pages indicators without losing coverage, source restrictions or dataset hashes', async () => {
+    const dependencies = await files([fixture(), fixture('global-arms-economy')])
+    const complete = await getMarketCatalog({}, dependencies)
+    const collected = []
+    for (let page = 1; page <= 4; page += 1) {
+      const result = await getMarketCatalogPage({ page, limit: 1 }, dependencies)
+      expect(toolOutputIsValid('get_market_catalog', result)).toBe(true)
+      expect(result.pagination).toEqual({ page, limit: 1, total: 4, pages: 4, nextPage: page === 4 ? null : page + 1 })
+      for (const dataset of result.datasets) {
+        const original = complete.datasets.find(row => row.id === dataset.id)
+        expect(dataset.coverage).toEqual(original.coverage)
+        expect(dataset.sha256).toBe(original.sha256)
+        expect(dataset.sourceCount).toBe(original.sources.length)
+        expect(dataset.indicatorCount).toBe(original.indicators.length)
+        for (const indicator of dataset.indicators) {
+          collected.push(`${dataset.id}:${indicator.id}`)
+          expect(dataset.sources.find(source => source.id === indicator.sourceId)).toEqual(original.sources.find(source => source.id === indicator.sourceId))
+        }
+      }
+    }
+    expect(collected).toEqual(complete.datasets.flatMap(dataset => dataset.indicators.map(row => `${dataset.id}:${row.id}`).sort()))
+    expect((await getMarketCatalogPage({ page: 5, limit: 1 }, dependencies)).pagination.nextPage).toBeNull()
+  })
+  it('recovers every dimension and observed selection through independent page totals', async () => {
+    const dependencies = await files()
+    const full = (await getMarketCatalog({}, dependencies)).datasets[0].indicators.find(row => row.id === 'seizure-kg')
+    const collected = Object.fromEntries(Object.keys(full.dimensions).map(key => [key, []]))
+    for (let dimensionPage = 1; dimensionPage <= 3; dimensionPage += 1) {
+      const result = await getMarketCatalogPage({ dataset: 'global-drugs', indicator: 'seizure-kg', dimensionPage, dimensionLimit: 1 }, dependencies)
+      expect(result.pagination.total).toBe(1)
+      expect(toolOutputIsValid('get_market_catalog', result)).toBe(true)
+      const indicator = result.datasets[0].indicators[0]
+      for (const key of Object.keys(collected)) {
+        collected[key].push(...indicator.dimensions[key])
+        expect(indicator.dimensionPagination[key]).toMatchObject({ total: full.dimensions[key].length, nextPage: dimensionPage < full.dimensions[key].length ? dimensionPage + 1 : null })
+      }
+    }
+    expect(collected).toEqual(full.dimensions)
+    expect(collected.categories).toContain('')
+    const mutated = await getMarketCatalogPage({}, dependencies)
+    mutated.datasets[0].coverage.numericObservations = -1
+    mutated.datasets[0].indicators[0].dimensions.categories.push('not-in-source')
+    expect(await getMarketCatalog({}, dependencies)).toEqual(await getMarketCatalog({}, await files()))
+  })
+  it.each([{ limit: 5 }, { page: 0 }, { dimensionPage: -1 }, { dimensionLimit: 51 }, { dimensionLimit: true }, { dataset: 'private' }, { indicator: '' }, { private: true }])('rejects invalid pagination %j', async args => {
+    expect(toolInputIsValid('get_market_catalog', args)).toBe(false)
+    await expect(getMarketCatalogPage(args, await files())).rejects.toThrow(TypeError)
+  })
+  it('distinguishes a missing dataset from an invalid indicator', async () => {
+    const dependencies = await files()
+    expect(await getMarketCatalogPage({ dataset: 'global-arms-economy' }, dependencies)).toMatchObject({ status: 'unavailable', datasets: [], pagination: { total: 0, nextPage: null } })
+    await expect(getMarketCatalogPage({ indicator: 'unknown' }, dependencies)).rejects.toThrow(TypeError)
+  })
+  it('returns an actionable bounded error for pathological future metadata', async () => {
+    const data = fixture()
+    data.sources[0].notes = Array(60).fill('漢'.repeat(2000))
+    data.indicators[0].limitations = Array(60).fill('漢'.repeat(2000))
+    const response = await dispatch({ jsonrpc: '2.0', id: 1, method: 'tools/call', params: { name: 'get_market_catalog', arguments: {} } }, await files([data]))
+    expect(response.result.isError).toBe(true)
+    expect(response.result.content[0].text).toContain('reduce limit and dimensionLimit')
+    expect(Buffer.byteLength(JSON.stringify(response))).toBeLessThan(1024)
+  })
+  it('keeps every production catalog page within the hosted client budget', async () => {
+    const complete = await getMarketCatalog()
+    const collected = []
+    let page = 1
+    do {
+      const response = await dispatch({ jsonrpc: '2.0', id: 1, method: 'tools/call', params: { name: 'get_market_catalog', arguments: { page, dimensionLimit: 50 } } })
+      expect(response.result.isError).toBe(false)
+      expect(JSON.parse(response.result.content[0].text)).toEqual(response.result.structuredContent)
+      expect(Buffer.byteLength(JSON.stringify(response))).toBeLessThan(1024 * 1024 + 1024)
+      collected.push(...response.result.structuredContent.datasets.flatMap(dataset => dataset.indicators.map(row => `${dataset.id}:${row.id}`)))
+      page = response.result.structuredContent.pagination.nextPage
+    } while (page !== null)
+    expect(collected).toEqual(complete.datasets.flatMap(dataset => dataset.indicators.map(row => `${dataset.id}:${row.id}`).sort()))
+  }, 30000)
 })
