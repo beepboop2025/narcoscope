@@ -1,7 +1,7 @@
 {
   "schema": "narcoscope.global-market-catalog.v1",
   "status": "available",
-  "generatedAt": "2026-10-08T05:28:39.505Z",
+  "generatedAt": "2026-10-15T05:29:59.746Z",
   "datasets": [
     {
       "id": "global-drugs",
@@ -214397,8 +214397,8 @@
     {
       "id": "global-arms-economy",
       "title": "Arms transfers, informal economies and firm-reported corruption",
-      "generatedAt": "2026-10-08T05:28:39.505Z",
-      "sha256": "17e3de61456aa3cd7b7a24aad8c2551f01c1c19aa0765028be6651bdb3d80ca1",
+      "generatedAt": "2026-10-15T05:29:59.746Z",
+      "sha256": "67ec4a5590a7199276d749947e720c50351a71027a7dfeb7e0b6bb452a2a84ff",
       "sources": [
         {
           "id": "wb-informality",
@@ -214442,13 +214442,13 @@
           "downloadUrl": "https://api.worldbank.org/v2/country/all/indicator/MS.MIL.MPRT.KD?format=json&per_page=20000&date=1960:2025",
           "license": "CC BY 4.0, explicitly stated on the individual World Bank indicator and metadata pages",
           "licenseUrl": "https://databank.worldbank.org/metadataglossary/world-development-indicators/series/MS.MIL.MPRT.KD",
-          "retrievedAt": "2026-09-08T17:15:10.228834Z",
-          "sha256": "0629a1ea0f2e496491f6bc0b862f949cf938af9dc3363f863fca313b0f4d5a9b",
-          "bytes": 4005184,
+          "retrievedAt": "2026-10-15T05:29:57.627Z",
+          "sha256": "bbfd17cdb8d26c933ec7734bf5814be7e75fea4eea57e7b4564de799fbd252a6",
+          "bytes": 4023705,
           "notes": [
             "Source methodology and individual-series license: https://databank.worldbank.org/metadataglossary/world-development-indicators/series/MS.MIL.MPRT.KD",
             "Normalized the official WDI API response into individual observations. Nulls and original units are retained; no currency conversion or interpolation.",
-            "WDI source last updated: 2026-07-13. This is separate from the original retrieval clock."
+            "WDI source last updated: 2026-10-08. This is separate from the original retrieval clock."
           ]
         },
         {
@@ -214459,13 +214459,13 @@
           "downloadUrl": "https://api.worldbank.org/v2/country/all/indicator/MS.MIL.XPRT.KD?format=json&per_page=20000&date=1960:2025",
           "license": "CC BY 4.0, explicitly stated on the individual World Bank indicator and metadata pages",
           "licenseUrl": "https://databank.worldbank.org/metadataglossary/world-development-indicators/series/MS.MIL.XPRT.KD",
-          "retrievedAt": "2026-09-08T17:17:46.234Z",
-          "sha256": "fe93b0fc402f03e6e12b5fd8bcfc3c39677e8f50653abf3d90118286b0a1711f",
-          "bytes": 3977476,
+          "retrievedAt": "2026-10-15T05:29:58.751Z",
+          "sha256": "d4b0c835dd50d16ed3a523ba94145bb46ae0e036a0ca2ca37d4e5bd4d3678ff6",
+          "bytes": 3995418,
           "notes": [
             "Source methodology and individual-series license: https://databank.worldbank.org/metadataglossary/world-development-indicators/series/MS.MIL.XPRT.KD",
             "Normalized the official WDI API response into individual observations. Nulls and original units are retained; no currency conversion or interpolation.",
-            "WDI source last updated: 2026-07-13. This is separate from the original retrieval clock."
+            "WDI source last updated: 2026-10-08. This is separate from the original retrieval clock."
           ]
         },
         {
@@ -214476,13 +214476,13 @@
           "downloadUrl": "https://api.worldbank.org/v2/country/all/indicator/IC.FRM.CORR.ZS?format=json&per_page=10000&date=2002:2025",
           "license": "CC BY 4.0, explicitly stated on the individual World Bank indicator and metadata pages",
           "licenseUrl": "https://databank.worldbank.org/metadataglossary/world-development-indicators/series/IC.FRM.CORR.ZS",
-          "retrievedAt": "2026-09-08T17:17:47.239Z",
-          "sha256": "240b454b9f341d4ee4c9de2aed99b02af3c7e2c8c1ce3d3c53b2939bf664386f",
-          "bytes": 1488913,
+          "retrievedAt": "2026-10-15T05:29:59.746Z",
+          "sha256": "44e01bcae283188bbeca989f6a731be194bc90c346ffc6a22be19277e3db7ae5",
+          "bytes": 1495427,
           "notes": [
             "Source methodology and individual-series license: https://databank.worldbank.org/metadataglossary/world-development-indicators/series/IC.FRM.CORR.ZS",
             "Normalized the official WDI API response into individual observations. Nulls and original units are retained; no currency conversion or interpolation.",
-            "WDI source last updated: 2026-07-13. This is separate from the original retrieval clock."
+            "WDI source last updated: 2026-10-08. This is separate from the original retrieval clock."
           ]
         }
       ],
@@ -219339,15 +219339,15 @@
           ],
           "featured": true,
           "coverage": {
-            "observations": 17490,
-            "numericObservations": 9462,
+            "observations": 17556,
+            "numericObservations": 9672,
             "reported": 0,
-            "estimated": 9462,
-            "unavailable": 8028,
+            "estimated": 9672,
+            "unavailable": 7884,
             "firstPeriod": "1960",
             "lastPeriod": "2025",
             "firstNumericPeriod": "1960",
-            "lastNumericPeriod": "2024"
+            "lastNumericPeriod": "2025"
           },
           "dimensions": {
             "geographies": [
@@ -219760,6 +219760,11 @@
                 "code": "FIN",
                 "name": "Finland",
                 "level": "country"
+              },
+              {
+                "code": "FCV",
+                "name": "Fragility, Conflict, and Violence (FCV) situations",
+                "level": "region"
               },
               {
                 "code": "FRA",
@@ -220689,8 +220694,8 @@
                 "subgroup": "",
                 "firstPeriod": "1960",
                 "lastPeriod": "2025",
-                "lastNumericPeriod": "2024",
-                "latestNumericObservations": 147
+                "lastNumericPeriod": "2025",
+                "latestNumericObservations": 155
               }
             ]
           }
@@ -220711,15 +220716,15 @@
           ],
           "featured": false,
           "coverage": {
-            "observations": 17490,
-            "numericObservations": 3477,
+            "observations": 17556,
+            "numericObservations": 3547,
             "reported": 0,
-            "estimated": 3477,
-            "unavailable": 14013,
+            "estimated": 3547,
+            "unavailable": 14009,
             "firstPeriod": "1960",
             "lastPeriod": "2025",
             "firstNumericPeriod": "1960",
-            "lastNumericPeriod": "2024"
+            "lastNumericPeriod": "2025"
           },
           "dimensions": {
             "geographies": [
@@ -221132,6 +221137,11 @@
                 "code": "FIN",
                 "name": "Finland",
                 "level": "country"
+              },
+              {
+                "code": "FCV",
+                "name": "Fragility, Conflict, and Violence (FCV) situations",
+                "level": "region"
               },
               {
                 "code": "FRA",
@@ -222061,8 +222071,8 @@
                 "subgroup": "",
                 "firstPeriod": "1960",
                 "lastPeriod": "2025",
-                "lastNumericPeriod": "2024",
-                "latestNumericObservations": 62
+                "lastNumericPeriod": "2025",
+                "latestNumericObservations": 60
               }
             ]
           }
@@ -222082,11 +222092,11 @@
           ],
           "featured": false,
           "coverage": {
-            "observations": 6360,
-            "numericObservations": 595,
-            "reported": 595,
+            "observations": 6384,
+            "numericObservations": 596,
+            "reported": 596,
             "estimated": 0,
-            "unavailable": 5765,
+            "unavailable": 5788,
             "firstPeriod": "2002",
             "lastPeriod": "2025",
             "firstNumericPeriod": "2002",
@@ -222503,6 +222513,11 @@
                 "code": "FIN",
                 "name": "Finland",
                 "level": "country"
+              },
+              {
+                "code": "FCV",
+                "name": "Fragility, Conflict, and Violence (FCV) situations",
+                "level": "region"
               },
               {
                 "code": "FRA",
@@ -223433,18 +223448,18 @@
                 "firstPeriod": "2002",
                 "lastPeriod": "2025",
                 "lastNumericPeriod": "2025",
-                "latestNumericObservations": 109
+                "latestNumericObservations": 110
               }
             ]
           }
         }
       ],
       "coverage": {
-        "observations": 69612,
-        "numericObservations": 23951,
-        "reported": 1754,
-        "estimated": 22197,
-        "unavailable": 45661,
+        "observations": 69768,
+        "numericObservations": 24232,
+        "reported": 1755,
+        "estimated": 22477,
+        "unavailable": 45536,
         "firstPeriod": "1960",
         "lastPeriod": "2025",
         "firstNumericPeriod": "1960",
