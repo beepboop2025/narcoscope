@@ -1,10 +1,10 @@
 {
   "schemaVersion": "narcoscope.newsroom.manifest.v1",
   "pipelineVersion": "narcoscope.newsroom.pipeline.v2",
-  "generatedAt": "2026-10-15T00:00:00.000Z",
+  "generatedAt": "2026-10-16T00:00:00.000Z",
   "articleId": "narcoscope.newsroom.china-linked-precursor-incidents-official-record",
-  "revisionHash": "b460d6b499fe0abdb2d30695a70d2810ccdfb1774cae5fe55210ebe4afd47a83",
-  "contentHash": "347c31680f4054a82d136fbf70807acff67b11ccbd707f513b85dbad5211999d",
+  "revisionHash": "56f2211259ddcbe7d001049106f8034cc353cc998eea9b825f088cadc3d76405",
+  "contentHash": "79dd77e07989f2dcaba9386f1d8a61a4be75232bc134bd22633bf7893746d47b",
   "verificationReceipt": {
     "receiptVersion": "narcoscope.newsroom.verification-receipt.v1",
     "evaluationProfile": {
@@ -659,7 +659,7 @@
     },
     "editorialCompleteness": {
       "correctionsStatus": "none_recorded",
-      "updateHistoryEventCount": 66,
+      "updateHistoryEventCount": 67,
       "initialPublicationRecorded": true,
       "rightToReplyStatus": "not_required",
       "outreachPerformed": false,
@@ -681,10 +681,10 @@
     },
     "deterministicHashes": {
       "algorithm": "sha256",
-      "revisionHash": "b460d6b499fe0abdb2d30695a70d2810ccdfb1774cae5fe55210ebe4afd47a83",
-      "machineBriefContentHash": "8632e674761465149c8ef84e79201f9fef58b0446bf9b7b69eecdec42b65ca5e",
+      "revisionHash": "56f2211259ddcbe7d001049106f8034cc353cc998eea9b825f088cadc3d76405",
+      "machineBriefContentHash": "06c9fee37397ea5dbed05fea2ee87a2f13a6a3b03fe226ceb37ac3e841712863",
       "dossierContentHashScope": "canonical JSON of the dossier including this receipt and excluding the top-level contentHash field",
-      "dossierContentHash": "347c31680f4054a82d136fbf70807acff67b11ccbd707f513b85dbad5211999d"
+      "dossierContentHash": "79dd77e07989f2dcaba9386f1d8a61a4be75232bc134bd22633bf7893746d47b"
     },
     "failures": [],
     "passed": true
@@ -694,13 +694,13 @@
       "id": "china-public-aggregate-bridge",
       "path": "public/data/narcoscope-palimpsest-v1.json",
       "bytes": 25199,
-      "sha256": "3118014f40a4f1bb18198e6fe8f353188f6b0ff9895d14032b4f5c757f2d6848"
+      "sha256": "51e3134bea529d558ddfb695c73107955300753d8f575a9335b194a286580549"
     },
     {
       "id": "cdc-vsrr-offline-snapshot",
       "path": "src/data/overdose.json",
       "bytes": 490386,
-      "sha256": "627629e1660d9bb13862b10b414b4d465fafda0f9f956495130b38a02384b6dc"
+      "sha256": "f4d6a0dac1b13e816eb6acc66ae9a7684d851a660e49d7246600ad3353e588da"
     },
     {
       "id": "official-source-capabilities",
@@ -733,33 +733,33 @@
   "artifacts": [
     {
       "file": "china-linked-precursor-incidents-official-record.dossier.json",
-      "bytes": 94475,
-      "sha256": "725158575ad5af580493164ff8b676984e4a368f9a15fb63af18a3a73f3481bc"
+      "bytes": 94768,
+      "sha256": "74c886060a2ee7791ef882963d31bbba9b1f889d3f0d930c85a170c33f7a8b4c"
     },
     {
       "file": "china-linked-precursor-incidents-official-record.html",
-      "bytes": 68441,
-      "sha256": "a94551252be42233db07e1cf0d09b63ab4bc9d3275a5dd32ac3e8bd51788ea9e"
+      "bytes": 68759,
+      "sha256": "b7f9765d2f0687f0b566350ae0e216726414a77cec778eb35f38195e513b1654"
     },
     {
       "file": "china-linked-precursor-incidents-official-record.machine-brief.json",
       "bytes": 8666,
-      "sha256": "962d537d7216d91238cd5a563278403c8cf87d3842cc90b27cd635e80efe242c"
+      "sha256": "1aca80ace5e3ce3d1cdd1e59cd2146e87931b2809d858b971fcf97f39bb450ac"
     },
     {
       "file": "feed.json",
-      "bytes": 63991,
-      "sha256": "13dffc5303b71d69057fab9640037e0f04c4ac98881de05c75ba66c7c3616a4c"
+      "bytes": 64317,
+      "sha256": "d2bf961773c61e5fa6eb94690e1f6e3a31064a6f1b6e32021210a1be4c59eb62"
     },
     {
       "file": "feed.xml",
-      "bytes": 77764,
-      "sha256": "5c429a18cb0bf74ecb1161ae0b664779decad419e3543125ff39644764e794cd"
+      "bytes": 78152,
+      "sha256": "b11094a3c691adf8411fd808973fe898f9d5982ca7590f7eecc9a2a1aa7e5b9c"
     },
     {
       "file": "index.json",
       "bytes": 1746,
-      "sha256": "b81bab5d9ffcf43b763d3980614676c3dd2ff7002b81132251c9511101ec79d1"
+      "sha256": "6162f0d3423f45fdf29d5ac1f7626ccbe606a85588398551144f00266a467727"
     }
   ]
 }
