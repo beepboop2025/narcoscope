@@ -1,6 +1,6 @@
 {
   "schema": "narcoscope.evidence-wire.v1",
-  "generatedAt": "2026-10-16T17:12:13.996Z",
+  "generatedAt": "2026-10-16T18:35:20.072Z",
   "status": "partial",
   "window": {
     "start": "2026-08-19T12:00:00.000Z",
@@ -14,7 +14,7 @@
       "sourceId": "europol-news",
       "sourceName": "Europol · Newsroom",
       "publishedAt": null,
-      "retrievedAt": "2026-10-16T17:12:13.996Z",
+      "retrievedAt": "2026-10-16T18:35:20.072Z",
       "evidenceClass": "official-release",
       "verificationState": "source-published",
       "legalStage": "not-applicable",
@@ -31,7 +31,7 @@
       "sourceId": "europol-news",
       "sourceName": "Europol · Newsroom",
       "publishedAt": null,
-      "retrievedAt": "2026-10-16T17:12:13.996Z",
+      "retrievedAt": "2026-10-16T18:35:20.072Z",
       "evidenceClass": "official-release",
       "verificationState": "source-published",
       "legalStage": "not-applicable",
@@ -48,12 +48,63 @@
       "sourceId": "doj-justice-news",
       "sourceName": "U.S. Department of Justice · Justice News",
       "publishedAt": "2026-10-16T12:00:00.000Z",
-      "retrievedAt": "2026-10-16T17:12:13.996Z",
+      "retrievedAt": "2026-10-16T17:53:58.496Z",
       "evidenceClass": "official-action",
       "verificationState": "source-published",
       "legalStage": "conviction",
       "topics": [
         "arms trafficking"
+      ],
+      "countries": [],
+      "publicationAllowed": true
+    },
+    {
+      "id": "doj-justice-news-1fe127c886442c84b9b1",
+      "title": "Lincoln Man Sentenced for Possession with Intent to Distribute Methamphetamine",
+      "url": "https://www.justice.gov/usao-ne/pr/lincoln-man-sentenced-possession-intent-distribute-methamphetamine-19",
+      "sourceId": "doj-justice-news",
+      "sourceName": "U.S. Department of Justice · Justice News",
+      "publishedAt": "2026-10-16T12:00:00.000Z",
+      "retrievedAt": "2026-10-16T18:35:20.072Z",
+      "evidenceClass": "official-action",
+      "verificationState": "source-published",
+      "legalStage": "sentencing",
+      "topics": [
+        "drug markets"
+      ],
+      "countries": [],
+      "publicationAllowed": true
+    },
+    {
+      "id": "doj-justice-news-296dea4df5bd8fbad436",
+      "title": "Lincoln Man Sentenced for Conspiracy to Distribute Methamphetamine",
+      "url": "https://www.justice.gov/usao-ne/pr/lincoln-man-sentenced-conspiracy-distribute-methamphetamine-55",
+      "sourceId": "doj-justice-news",
+      "sourceName": "U.S. Department of Justice · Justice News",
+      "publishedAt": "2026-10-16T12:00:00.000Z",
+      "retrievedAt": "2026-10-16T18:35:20.072Z",
+      "evidenceClass": "official-action",
+      "verificationState": "source-published",
+      "legalStage": "sentencing",
+      "topics": [
+        "drug markets"
+      ],
+      "countries": [],
+      "publicationAllowed": true
+    },
+    {
+      "id": "doj-justice-news-786987d2779acb657a4b",
+      "title": "Mobile Man Sentenced to More Than Five Years in Prison for a Cocaine and Crack Cocaine-Trafficking Conspiracy",
+      "url": "https://www.justice.gov/usao-sdal/pr/mobile-man-sentenced-more-five-years-prison-cocaine-and-crack-cocaine-trafficking",
+      "sourceId": "doj-justice-news",
+      "sourceName": "U.S. Department of Justice · Justice News",
+      "publishedAt": "2026-10-16T12:00:00.000Z",
+      "retrievedAt": "2026-10-16T18:35:20.072Z",
+      "evidenceClass": "official-action",
+      "verificationState": "source-published",
+      "legalStage": "sentencing",
+      "topics": [
+        "drug markets"
       ],
       "countries": [],
       "publicationAllowed": true
@@ -65,10 +116,27 @@
       "sourceId": "doj-justice-news",
       "sourceName": "U.S. Department of Justice · Justice News",
       "publishedAt": "2026-10-16T12:00:00.000Z",
-      "retrievedAt": "2026-10-16T17:12:13.996Z",
+      "retrievedAt": "2026-10-16T17:53:58.496Z",
       "evidenceClass": "official-action",
       "verificationState": "source-published",
       "legalStage": "conviction",
+      "topics": [
+        "drug markets"
+      ],
+      "countries": [],
+      "publicationAllowed": true
+    },
+    {
+      "id": "doj-justice-news-f26ca871859887398502",
+      "title": "East Hartford Man Charged with Drug Distribution and Gun Possession Offenses",
+      "url": "https://www.justice.gov/usao-ct/pr/east-hartford-man-charged-drug-distribution-and-gun-possession-offenses",
+      "sourceId": "doj-justice-news",
+      "sourceName": "U.S. Department of Justice · Justice News",
+      "publishedAt": "2026-10-16T12:00:00.000Z",
+      "retrievedAt": "2026-10-16T18:35:20.072Z",
+      "evidenceClass": "official-action",
+      "verificationState": "source-published",
+      "legalStage": "charge",
       "topics": [
         "drug markets"
       ],
@@ -690,82 +758,13 @@
       "publicationAllowed": true
     },
     {
-      "id": "doj-justice-news-859a355705663f4a24fa",
-      "title": "Phoenix Man Sentenced to 10 Years in Prison for $2.2 Million Covid-19 Fraud Scheme and Firearm Offenses",
-      "url": "https://www.justice.gov/usao-az/pr/phoenix-man-sentenced-10-years-prison-22-million-covid-19-fraud-scheme-and-firearm",
-      "sourceId": "doj-justice-news",
-      "sourceName": "U.S. Department of Justice · Justice News",
-      "publishedAt": "2026-10-14T12:00:00.000Z",
-      "retrievedAt": "2026-10-14T18:32:33.005Z",
-      "evidenceClass": "official-action",
-      "verificationState": "source-published",
-      "legalStage": "sentencing",
-      "topics": [
-        "arms trafficking"
-      ],
-      "countries": [],
-      "publicationAllowed": true
-    },
-    {
-      "id": "doj-justice-news-923b22d231016a5f8975",
-      "title": "Illegal Alien from Nicaragua Sentenced to Prison for Trafficking Approximately 23 Pounds of Fentanyl in the District of Utah",
-      "url": "https://www.justice.gov/usao-ut/pr/illegal-alien-nicaragua-sentenced-prison-trafficking-approximately-23-pounds-fentanyl",
-      "sourceId": "doj-justice-news",
-      "sourceName": "U.S. Department of Justice · Justice News",
-      "publishedAt": "2026-10-14T12:00:00.000Z",
-      "retrievedAt": "2026-10-15T13:47:25.478Z",
-      "evidenceClass": "official-action",
-      "verificationState": "source-published",
-      "legalStage": "sentencing",
-      "topics": [
-        "drug markets"
-      ],
-      "countries": [],
-      "publicationAllowed": true
-    },
-    {
-      "id": "doj-justice-news-9f4de6688864d858c128",
-      "title": "Mobile County Man Sentenced to 15 Years in Prison for Methamphetamine Trafficking and Firearm Offense",
-      "url": "https://www.justice.gov/usao-sdal/pr/mobile-county-man-sentenced-15-years-prison-methamphetamine-trafficking-and-firearm",
-      "sourceId": "doj-justice-news",
-      "sourceName": "U.S. Department of Justice · Justice News",
-      "publishedAt": "2026-10-14T12:00:00.000Z",
-      "retrievedAt": "2026-10-15T15:44:02.162Z",
-      "evidenceClass": "official-action",
-      "verificationState": "source-published",
-      "legalStage": "sentencing",
-      "topics": [
-        "drug markets",
-        "arms trafficking"
-      ],
-      "countries": [],
-      "publicationAllowed": true
-    },
-    {
-      "id": "doj-justice-news-a62a08032f3ecd394f11",
-      "title": "New Haven Man Sentenced to 7 Years in Federal Prison for Trafficking Fentanyl",
-      "url": "https://www.justice.gov/usao-ct/pr/new-haven-man-sentenced-7-years-federal-prison-trafficking-fentanyl",
-      "sourceId": "doj-justice-news",
-      "sourceName": "U.S. Department of Justice · Justice News",
-      "publishedAt": "2026-10-14T12:00:00.000Z",
-      "retrievedAt": "2026-10-14T18:32:33.005Z",
-      "evidenceClass": "official-action",
-      "verificationState": "source-published",
-      "legalStage": "sentencing",
-      "topics": [
-        "drug markets"
-      ],
-      "countries": [],
-      "publicationAllowed": true
-    },
-    {
       "id": "treasury-press-9f0f6cdea3d7ec63258b",
       "title": "Treasury Targets Cartel del Noreste’s Horse Racing Enterprise and Expansive Criminal Network",
       "url": "https://home.treasury.gov/news/press-releases/sb0656/",
       "sourceId": "treasury-press",
       "sourceName": "U.S. Treasury · Press releases",
       "publishedAt": "2026-10-13T14:00:00.000Z",
-      "retrievedAt": "2026-10-16T17:12:13.996Z",
+      "retrievedAt": "2026-10-16T18:35:20.072Z",
       "evidenceClass": "official-action",
       "verificationState": "source-published",
       "legalStage": "designation",
@@ -782,7 +781,7 @@
       "sourceId": "un-news-law-crime",
       "sourceName": "United Nations News · Law and crime prevention",
       "publishedAt": "2026-10-09T12:00:00.000Z",
-      "retrievedAt": "2026-10-16T17:12:13.996Z",
+      "retrievedAt": "2026-10-16T18:35:20.072Z",
       "evidenceClass": "official-release",
       "verificationState": "source-published",
       "legalStage": "not-applicable",
@@ -816,7 +815,7 @@
       "sourceId": "un-news-law-crime",
       "sourceName": "United Nations News · Law and crime prevention",
       "publishedAt": "2026-10-03T12:00:00.000Z",
-      "retrievedAt": "2026-10-16T17:12:13.996Z",
+      "retrievedAt": "2026-10-16T18:35:20.072Z",
       "evidenceClass": "official-release",
       "verificationState": "source-published",
       "legalStage": "not-applicable",
@@ -1210,7 +1209,7 @@
       "sourceId": "un-news-law-crime",
       "sourceName": "United Nations News · Law and crime prevention",
       "publishedAt": "2026-08-19T12:00:00.000Z",
-      "retrievedAt": "2026-10-16T17:12:13.996Z",
+      "retrievedAt": "2026-10-16T18:35:20.072Z",
       "evidenceClass": "official-release",
       "verificationState": "source-published",
       "legalStage": "not-applicable",
@@ -1227,20 +1226,20 @@
       "name": "U.S. Department of Justice · Justice News",
       "url": "https://www.justice.gov/news/rss",
       "status": "fresh",
-      "checkedAt": "2026-10-16T17:12:13.996Z",
-      "lastSuccessAt": "2026-10-16T17:12:13.996Z",
+      "checkedAt": "2026-10-16T18:35:20.072Z",
+      "lastSuccessAt": "2026-10-16T18:35:20.072Z",
       "cadenceMinutes": 15,
       "staleAfterMinutes": 120,
       "rights": "Public U.S. government release metadata; NarcoScope republishes titles, links and source clocks only.",
-      "detail": "25 source items read · 2 current in-scope · 40 retained metadata items published"
+      "detail": "25 source items read · 4 current in-scope · 40 retained metadata items published"
     },
     {
       "id": "un-news-law-crime",
       "name": "United Nations News · Law and crime prevention",
       "url": "https://news.un.org/feed/subscribe/en/news/topic/law-and-crime-prevention/feed/rss.xml",
       "status": "fresh",
-      "checkedAt": "2026-10-16T17:12:13.996Z",
-      "lastSuccessAt": "2026-10-16T17:12:13.996Z",
+      "checkedAt": "2026-10-16T18:35:20.072Z",
+      "lastSuccessAt": "2026-10-16T18:35:20.072Z",
       "cadenceMinutes": 30,
       "staleAfterMinutes": 180,
       "rights": "Public United Nations feed metadata; NarcoScope republishes titles, links and source clocks only.",
@@ -1251,8 +1250,8 @@
       "name": "Europol · Newsroom",
       "url": "https://www.europol.europa.eu/cms/api/rss/news",
       "status": "fresh",
-      "checkedAt": "2026-10-16T17:12:13.996Z",
-      "lastSuccessAt": "2026-10-16T17:12:13.996Z",
+      "checkedAt": "2026-10-16T18:35:20.072Z",
+      "lastSuccessAt": "2026-10-16T18:35:20.072Z",
       "cadenceMinutes": 30,
       "staleAfterMinutes": 180,
       "rights": "Public European Union agency feed metadata; NarcoScope republishes titles, links and source clocks only.",
@@ -1263,8 +1262,8 @@
       "name": "U.S. Treasury · Press releases",
       "url": "https://home.treasury.gov/news/press-releases",
       "status": "fresh",
-      "checkedAt": "2026-10-16T17:12:13.996Z",
-      "lastSuccessAt": "2026-10-16T17:12:13.996Z",
+      "checkedAt": "2026-10-16T18:35:20.072Z",
+      "lastSuccessAt": "2026-10-16T18:35:20.072Z",
       "cadenceMinutes": 30,
       "staleAfterMinutes": 240,
       "rights": "Public U.S. government release metadata; NarcoScope republishes titles, links and source clocks only.",
@@ -1275,8 +1274,8 @@
       "name": "Palimpsest · newswire publication-rights receipt",
       "url": "https://www.palimpsest.info/readings/newswire-latest.json",
       "status": "restricted",
-      "checkedAt": "2026-10-16T17:12:13.996Z",
-      "lastSuccessAt": "2026-10-16T17:12:13.996Z",
+      "checkedAt": "2026-10-16T18:35:20.072Z",
+      "lastSuccessAt": "2026-10-16T18:35:20.072Z",
       "cadenceMinutes": 15,
       "staleAfterMinutes": 90,
       "rights": "Receipt only. Source content remains suppressed whenever Palimpsest publication_allowed is false.",
@@ -1287,7 +1286,7 @@
       "name": "Seiche · global money-market context",
       "url": "https://api.seiche.info/api/v2/money-markets",
       "status": "stale",
-      "checkedAt": "2026-10-16T17:12:13.996Z",
+      "checkedAt": "2026-10-16T18:35:20.072Z",
       "lastSuccessAt": "2026-10-06T07:01:59.134Z",
       "cadenceMinutes": 15,
       "staleAfterMinutes": 90,
@@ -1299,12 +1298,12 @@
       "name": "Seiche · capital-market context",
       "url": "https://api.seiche.info/api/v2/world-markets?section=capital_markets",
       "status": "fresh",
-      "checkedAt": "2026-10-16T17:12:13.996Z",
-      "lastSuccessAt": "2026-10-16T17:12:13.996Z",
+      "checkedAt": "2026-10-16T18:35:20.072Z",
+      "lastSuccessAt": "2026-10-16T18:35:20.072Z",
       "cadenceMinutes": 15,
       "staleAfterMinutes": 90,
       "rights": "Read-only economic context receipt. Values never become NarcoScope illicit-market facts or person-level inferences.",
-      "detail": "seiche.world-markets.v1 · generated 2026-10-16T17:06:20.000Z"
+      "detail": "seiche.world-markets.v1 · generated 2026-10-16T18:31:14.000Z"
     }
   ],
   "caveats": [
