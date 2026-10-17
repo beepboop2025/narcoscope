@@ -164,8 +164,7 @@ The line it holds:
 - The designation graph has **no entity-to-entity edges**, because OFAC
   publishes none. Inventing them and running centrality over the result would
   produce confident rankings of private individuals from a graph this tool made
-  up. `docs/ROADMAP-PARALLEL-ECONOMY.md` records the methods excluded on these
-  grounds, and why.
+  up. These methods are outside the published aggregate-data scope.
 
 ## Data provenance
 
@@ -314,25 +313,13 @@ manual and API-key sources not yet wired in) lives in
 [`scripts/pipeline/sources.json`](./scripts/pipeline/sources.json); the
 playbook is [`docs/DATA_PIPELINE.md`](./docs/DATA_PIPELINE.md).
 
-## Status / TODO
+## Current coverage limits
 
-- ~~`purityAdjustedPrice()` is an intentional stub~~ **done** — it now returns
-  price per pure gram and refuses to adjust when purity is unknown (an honest
-  `n/a` beats comparing a cut street price against a pure one). See the editorial
-  note in `src/lib/metrics.ts`.
-- ~~Load and **verify** real UNODC/INCB data~~ **Street prices and qualified
-  precursor-flow records: done** (WDR 2025 Annex 8.1 and the paragraph-located
-  INCB 2025 precursor report). Remaining: a citable precursor-price series and
-  the Myanmar dataset.
-- **Wastewater now ships (Canada).** Extending it to Europe or Australia still
-  needs a manually-fetched EUDA or ACIC export — both publishers block
-  automation. Each one added is another country where divergence detection works.
-- A **second designating authority** for the Designations tab (it is OFAC-only
-  today). The UN Consolidated list was evaluated and ruled out — it is a
-  counter-terrorism instrument with almost no narcotics designations; EU
-  Sanctions Map is the live candidate. See [`docs/ROADMAP-PARALLEL-ECONOMY.md`](./docs/ROADMAP-PARALLEL-ECONOMY.md)
-  for the ordered backlog and for the methods excluded on ethical or
-  data-quality grounds.
+Price-per-pure-gram calculations require known purity. Street-price and
+qualified precursor-flow records retain their cited UNODC and INCB sources;
+a citable precursor-price series and the Myanmar dataset remain unavailable.
+Wastewater coverage is Canada. The Designations tab uses OFAC as its sole
+designating authority. These limits are not estimates of missing observations.
 
 ## License
 
