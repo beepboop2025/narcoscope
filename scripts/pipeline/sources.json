@@ -610,7 +610,7 @@
       "cadence": "irregular",
       "license": "GFI, attribution",
       "automation": "manual",
-      "feeds": "Trade-misinvoicing and illicit-flow estimates. Candidate input if a financial-flows layer is ever built; see docs/ROADMAP-PARALLEL-ECONOMY.md."
+      "feeds": "Trade-misinvoicing and illicit-flow estimates; registered reference, not an ingested dataset."
     },
     {
       "id": "the-sentry",
