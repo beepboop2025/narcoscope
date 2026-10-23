@@ -1,10 +1,14 @@
 # Railway portable CI
 
 This credential-free build runs the existing tests workflow on Node 20:
-`npm ci`, `npm test -- --coverage`, and `npm run build`, including the checked-in
+`npm ci`, `npm test -- --coverage --maxWorkers=2`, and `npm run build`, including the checked-in
 bridge/news/wire contracts and TypeScript/Vite production build. Failures stop
 the image build and fail Railway's native commit check. The finite runtime
 verifies the successful build receipt against its exact source commit.
+
+The two-worker limit keeps cold dataset validation from competing with dozens
+of other suites on a shared builder. Test assertions, timeouts, coverage and
+the overall build deadline are unchanged.
 
 The tested PR head must already include current main; stale branches fail
 admission rather than claim integration coverage. The Dockerfile-specific ignore
