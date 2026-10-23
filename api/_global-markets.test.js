@@ -62,6 +62,7 @@ describe('Granular global market provenance and validation', () => {
     ['private source fields', data => { data.sources[0].apiKey = 'private' }],
     ['private nested fields', data => { data.sources[0].notes = [{ value: 999 }] }],
     ['private observation fields', data => { data.observations[0].address = 'private' }],
+    ['same-sized observation field substitution', data => { delete data.observations[0].sourceLocator; data.observations[0].address = 'private' }],
     ['row unit override', data => { data.observations[0].unit = 'tonnes' }],
     ['duplicate grains', data => { data.observations.push({ ...data.observations[0], id: 'another-id' }) }],
     ['duplicate identities', data => { data.observations[1].id = data.observations[0].id }],
@@ -116,6 +117,19 @@ describe('Granular global market provenance and validation', () => {
     const data = fixture(); data.observations[1].period = '2025'
     const catalog = await getMarketCatalog({}, await files([data]))
     expect(catalog.datasets[0].coverage).toMatchObject({ lastPeriod: '2025', lastNumericPeriod: '2024-06' })
+  })
+  it('keeps empty and wholly unavailable coverage distinct from numeric zero', async () => {
+    const data = fixture()
+    data.observations = data.observations.filter(row => row.indicatorId === 'seizure-kg').reverse()
+      .map(row => ({ ...row, value: null, status: 'unavailable' }))
+    const catalog = await getMarketCatalog({}, await files([data]))
+    expect(catalog.datasets[0].coverage).toEqual({ observations: 5, numericObservations: 0, reported: 0,
+      estimated: 0, unavailable: 5, firstPeriod: '2023', lastPeriod: '2024-06',
+      firstNumericPeriod: null, lastNumericPeriod: null })
+    expect(catalog.datasets[0].indicators.find(row => row.id === 'informal-share').coverage).toEqual({
+      observations: 0, numericObservations: 0, reported: 0, estimated: 0, unavailable: 0,
+      firstPeriod: null, lastPeriod: null, firstNumericPeriod: null, lastNumericPeriod: null,
+    })
   })
 })
 
