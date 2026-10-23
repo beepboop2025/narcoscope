@@ -723,7 +723,8 @@ describe('Global market Node transport', () => {
     const body = await response.json()
     expect(body.resource).toBe('markets')
     expect(body.data.datasets).toHaveLength(2)
-  })
+  // Cold validation and full-catalog transport are included under coverage.
+  }, 15_000)
   it('preserves exact empty dimensions and rejects duplicate parameters', async () => {
     const response = await fetch(baseUrl + '/api/v1/market-observations?dataset=global-arms-economy&indicator=wb-informal-dge-p&geo=CHN&category=&subgroup=&limit=2')
     expect(response.status).toBe(200)
