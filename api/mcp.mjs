@@ -155,7 +155,7 @@ export const TOOLS = Object.freeze({
     call: getStory,
   },
   get_palimpsest_bridge: {
-    title: 'Read the Palimpsest bridge',
+    title: 'Read official China drug and enforcement aggregates',
     description: 'Return the official-only China aggregate shared with the Intelligence Commons, including disclosure and causal boundaries.',
     inputSchema: { type: 'object', additionalProperties: false },
     outputSchema: TOOL_OUTPUT_SCHEMAS.get_palimpsest_bridge,

@@ -149,6 +149,10 @@ describe('NarcoScope public surfaces', () => {
       cacheScope: 'public',
     })
     expect(modernList.result.tools.map((tool) => tool.name)).toEqual(Object.keys(TOOLS))
+    for (const response of [listed, modernList]) {
+      const china = response.result.tools.find((tool) => tool.name === 'get_palimpsest_bridge')
+      expect(china.title).toBe('Read official China drug and enforcement aggregates')
+    }
     const called = await dispatch({
       jsonrpc: '2.0', id: 3, method: 'tools/call',
       params: { name: 'get_newsroom', arguments: { limit: 1 } },
