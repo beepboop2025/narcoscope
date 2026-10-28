@@ -1948,7 +1948,8 @@
             "enum": [
               "available",
               "partial",
-              "unavailable"
+              "unavailable",
+              "metadata_only"
             ]
           },
           "generatedAt": {
@@ -1992,6 +1993,7 @@
                 "title",
                 "sha256",
                 "generatedAt",
+                "publication",
                 "sources",
                 "indicators",
                 "coverage",
@@ -2017,6 +2019,48 @@
                 "generatedAt": {
                   "type": "string",
                   "format": "date-time"
+                },
+                "publication": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "policyId",
+                    "status",
+                    "sourceIds",
+                    "permissionEvidence",
+                    "observationScope",
+                    "reason"
+                  ],
+                  "properties": {
+                    "policyId": {
+                      "const": "narcoscope.publication-rights.2026-10-28.v1"
+                    },
+                    "status": {
+                      "enum": [
+                        "published",
+                        "partial",
+                        "metadata_only"
+                      ]
+                    },
+                    "sourceIds": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "uniqueItems": true
+                    },
+                    "permissionEvidence": {
+                      "type": "null"
+                    },
+                    "observationScope": {
+                      "const": "published_rows_only"
+                    },
+                    "reason": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
                 },
                 "sources": {
                   "type": "array",
@@ -2113,6 +2157,7 @@
                       "measureType",
                       "description",
                       "limitations",
+                      "publication",
                       "featured",
                       "coverage",
                       "dimensions"
@@ -2163,6 +2208,48 @@
                         },
                         "maxItems": 60
                       },
+                      "publication": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "policyId",
+                          "status",
+                          "sourceIds",
+                          "permissionEvidence",
+                          "observationScope",
+                          "reason"
+                        ],
+                        "properties": {
+                          "policyId": {
+                            "const": "narcoscope.publication-rights.2026-10-28.v1"
+                          },
+                          "status": {
+                            "enum": [
+                              "published",
+                              "partial",
+                              "metadata_only"
+                            ]
+                          },
+                          "sourceIds": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "uniqueItems": true
+                          },
+                          "permissionEvidence": {
+                            "type": "null"
+                          },
+                          "observationScope": {
+                            "const": "published_rows_only"
+                          },
+                          "reason": {
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        }
+                      },
                       "featured": {
                         "type": "boolean"
                       },
@@ -2182,24 +2269,59 @@
                         ],
                         "properties": {
                           "observations": {
-                            "type": "integer",
-                            "minimum": 0
+                            "anyOf": [
+                              {
+                                "type": "integer",
+                                "minimum": 0
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           },
                           "numericObservations": {
-                            "type": "integer",
-                            "minimum": 0
+                            "anyOf": [
+                              {
+                                "type": "integer",
+                                "minimum": 0
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           },
                           "reported": {
-                            "type": "integer",
-                            "minimum": 0
+                            "anyOf": [
+                              {
+                                "type": "integer",
+                                "minimum": 0
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           },
                           "estimated": {
-                            "type": "integer",
-                            "minimum": 0
+                            "anyOf": [
+                              {
+                                "type": "integer",
+                                "minimum": 0
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           },
                           "unavailable": {
-                            "type": "integer",
-                            "minimum": 0
+                            "anyOf": [
+                              {
+                                "type": "integer",
+                                "minimum": 0
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           },
                           "firstPeriod": {
                             "anyOf": [
@@ -2396,24 +2518,59 @@
                   ],
                   "properties": {
                     "observations": {
-                      "type": "integer",
-                      "minimum": 0
+                      "anyOf": [
+                        {
+                          "type": "integer",
+                          "minimum": 0
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
                     },
                     "numericObservations": {
-                      "type": "integer",
-                      "minimum": 0
+                      "anyOf": [
+                        {
+                          "type": "integer",
+                          "minimum": 0
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
                     },
                     "reported": {
-                      "type": "integer",
-                      "minimum": 0
+                      "anyOf": [
+                        {
+                          "type": "integer",
+                          "minimum": 0
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
                     },
                     "estimated": {
-                      "type": "integer",
-                      "minimum": 0
+                      "anyOf": [
+                        {
+                          "type": "integer",
+                          "minimum": 0
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
                     },
                     "unavailable": {
-                      "type": "integer",
-                      "minimum": 0
+                      "anyOf": [
+                        {
+                          "type": "integer",
+                          "minimum": 0
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
                     },
                     "firstPeriod": {
                       "anyOf": [
@@ -2520,6 +2677,7 @@
           "generatedAt",
           "unavailableDatasets",
           "limitations",
+          "publication",
           "filters",
           "pagination",
           "datasets",
@@ -2536,7 +2694,8 @@
             "enum": [
               "available",
               "partial",
-              "unavailable"
+              "unavailable",
+              "metadata_only"
             ]
           },
           "generatedAt": {
@@ -2569,6 +2728,48 @@
               "maxLength": 2000
             },
             "maxItems": 60
+          },
+          "publication": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "policyId",
+              "status",
+              "sourceIds",
+              "permissionEvidence",
+              "observationScope",
+              "reason"
+            ],
+            "properties": {
+              "policyId": {
+                "const": "narcoscope.publication-rights.2026-10-28.v1"
+              },
+              "status": {
+                "enum": [
+                  "published",
+                  "partial",
+                  "metadata_only"
+                ]
+              },
+              "sourceIds": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "uniqueItems": true
+              },
+              "permissionEvidence": {
+                "type": "null"
+              },
+              "observationScope": {
+                "const": "published_rows_only"
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
           },
           "filters": {
             "type": "object",
@@ -2691,12 +2892,26 @@
                 "maximum": 500
               },
               "total": {
-                "type": "integer",
-                "minimum": 0
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
               },
               "pages": {
-                "type": "integer",
-                "minimum": 0
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
               },
               "nextPage": {
                 "anyOf": [

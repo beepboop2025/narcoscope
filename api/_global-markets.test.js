@@ -1,3 +1,4 @@
+import { projectMarketDataset, serializePublicData } from '../lib/publication-rights.mjs'
 import { createHash } from 'node:crypto'
 import { mkdtemp, readFile, rename, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
@@ -53,7 +54,7 @@ describe('Granular global market provenance and validation', () => {
     expect(data.observations.find(row => row.id === 'e1')).toMatchObject({ value: 20, lower: 15, upper: 25, unit: '% of official GDP', status: 'estimated' })
     expect(data.sources[0].license).toContain('commercial reuse requires permission')
     expect(data.sources[0].notes).toEqual(fixture().sources[0].notes)
-    expect(data.datasets[0].sha256).toBe(sha256(await readFile(join(dependencies.marketDataDir, 'global-drugs-v1.json'))))
+    expect(data.datasets[0].sha256).toBe(sha256(serializePublicData(projectMarketDataset(JSON.parse(await readFile(join(dependencies.marketDataDir, 'global-drugs-v1.json'), 'utf8'))))))
     expect(toolOutputIsValid('query_market_observations', data)).toBe(true)
   })
 

@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react'
-import overview from '../data/overview.json'
+import retainedOverview from '../data/overview.json'
+import { projectOverview } from '../../lib/publication-rights.mjs'
+const overview = projectOverview(retainedOverview) as typeof retainedOverview
 import type { TabId } from '../navigation'
 
 type EvidenceLayer = {
@@ -48,14 +50,14 @@ export default function HeroEvidenceStack({ onOpen }: { onOpen: (tab: TabId) => 
       id: 'supply',
       index: '02',
       label: 'Recorded supply',
-      metric: `${overview.headline.worldSeizureTonnes.toLocaleString()} t`,
+      metric: 'Withheld',
       unit: `reported world seizures · ${overview.headline.seizureYear}`,
-      finding: `${overview.headline.seizureCountries} countries appear in the latest annual aggregate; reporting intensity differs by jurisdiction.`,
-      boundary: 'A seizure is enforcement visibility, not total market volume.',
+      finding: 'Source metadata is available. WDR measurements and derived profiles require documented publication permission.',
+      boundary: 'Withheld is not zero or an absence of source observations.',
       source: 'UNODC WDR 2025 · Annex 7.1',
       tab: 'seizuretrends',
       action: 'Open seizure trends',
-      values: overview.topSeizureCountries.map((country) => country.kg),
+      values: [],
     },
     {
       id: 'networks',
@@ -104,7 +106,7 @@ export default function HeroEvidenceStack({ onOpen }: { onOpen: (tab: TabId) => 
           <strong>{active.metric}</strong>
           <span>{active.unit}</span>
         </div>
-        <svg viewBox="0 0 360 98" role="img" aria-label={`${active.label} relative profile`}>
+        {active.values.length > 0 && <svg viewBox="0 0 360 98" role="img" aria-label={`${active.label} relative profile`}>
           <defs>
             <linearGradient id={`hero-line-${active.id}`} x1="0" x2="1">
               <stop offset="0" stopColor="var(--hot)" />
@@ -114,7 +116,7 @@ export default function HeroEvidenceStack({ onOpen }: { onOpen: (tab: TabId) => 
           <path className="evidence-stack__grid" d="M8 24H352 M8 52H352 M8 80H352" />
           <path className="evidence-stack__area" d={`${path} L352,90 L8,90 Z`} />
           <path className="evidence-stack__line" d={path} stroke={`url(#hero-line-${active.id})`} />
-        </svg>
+        </svg>}
         <p>{active.finding}</p>
         <small><b>Claim boundary:</b> {active.boundary}</small>
         <button type="button" onClick={() => onOpen(active.tab)}>

@@ -1,3 +1,4 @@
+import { PUBLICATION_SCHEMA } from '../../lib/publication-rights.mjs'
 import palimpsestBridgeSchema from '../../public/data/narcoscope-palimpsest-v1.schema.json' with { type: 'json' }
 import palimpsestCorridorsSchema from '../../public/data/narcoscope-palimpsest-corridors-v2.schema.json' with { type: 'json' }
 
@@ -151,6 +152,7 @@ export const OVERVIEW_OUTPUT_SCHEMA = Object.freeze({
     'schema',
     'generated_at',
     'note',
+    'publication',
     'headline',
     'overdose_by_substance',
     'top_seizure_countries',
@@ -160,6 +162,7 @@ export const OVERVIEW_OUTPUT_SCHEMA = Object.freeze({
   ],
   properties: {
     schema: { const: 'narcoscope.api.overview.v1' },
+    publication: PUBLICATION_SCHEMA,
     generated_at: { type: ['string', 'null'], format: 'date' },
     note: NULLABLE_STRING,
     headline: {

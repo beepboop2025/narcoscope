@@ -1,3 +1,4 @@
+import WdrRightsNotice from './components/WdrRightsNotice'
 import { useEffect, useState, lazy, Suspense, type ReactNode } from 'react'
 import { useSpring, animated } from '@react-spring/web'
 import Overview from './components/Overview'
@@ -156,13 +157,13 @@ export default function App() {
             {tab === 'atlas' && <IllicitEconomyAtlas />}
             {tab === 'wire' && <LiveEvidenceWire />}
             {tab === 'overview' && <Overview />}
-            {tab === 'prices' && <Explorer />}
-            {tab === 'pricehistory' && <PriceHistory />}
+            {tab === 'prices' && <WdrRightsNotice title="Street-price source metadata" />}
+            {tab === 'pricehistory' && <WdrRightsNotice title="Historical drug-price source metadata" />}
             {tab === 'flows' && <Flows />}
-            {tab === 'map' && <WorldMap />}
-            {tab === 'seizuretrends' && <SeizureTrends />}
+            {tab === 'map' && <WdrRightsNotice title="Drug-seizure source metadata" />}
+            {tab === 'seizuretrends' && <WdrRightsNotice title="Drug-seizure trends: publication restriction" />}
             {tab === 'states' && <StateOverdose />}
-            {tab === 'triangulate' && <Triangulation />}
+            {tab === 'triangulate' && <WdrRightsNotice title="Cross-source comparison: restricted WDR inputs" />}
             {tab === 'designations' && <Designations />}
             {tab === 'illicitfinance' && <IllicitFinance />}
             {tab === 'wildlife' && <WildlifeSeizures />}
@@ -203,7 +204,7 @@ export default function App() {
           <details className="local-data-import"><summary>Import your own research data</summary><DataLoader /></details>
           <p className="disclaimer tk-degraded">
             {isSample
-              ? 'Official data: street prices (UNODC WDR 2026 Annex 8.1 + retained World Bank GDP), the seizure globe (WDR 2025 Annex 7.1), overdose mortality (CDC NCHS VSRR, provisional), sanctions designations (US Treasury OFAC SDN), Myanmar opium cultivation (UNODC Myanmar Opium Survey 2025), Myanmar conflict pressure (Data: ACLED), and precursor trafficking corridors (INCB Precursors Report 2025). Still illustrative: Myanmar region-level flow volumes and precursor prices. '
+              ? 'WDR price and seizure measurements are withheld pending publication permission; source metadata remains discoverable. Separate evidence: overdose mortality (CDC NCHS VSRR, provisional), sanctions designations (US Treasury OFAC SDN), Myanmar opium cultivation (UNODC Myanmar Opium Survey 2025), Myanmar conflict pressure (Data: ACLED), and precursor trafficking corridors (INCB Precursors Report 2025). Still illustrative: Myanmar region-level flow volumes and precursor prices. '
               : 'Showing loaded data — verify against the cited official sources. '}
             This tool reports aggregate, published statistics (country and, for focus
             regions, province level) for awareness and research. It does not provide

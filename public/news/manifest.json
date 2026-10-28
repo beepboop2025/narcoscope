@@ -3,8 +3,8 @@
   "pipelineVersion": "narcoscope.newsroom.pipeline.v2",
   "generatedAt": "2026-10-28T00:00:00.000Z",
   "articleId": "narcoscope.newsroom.china-linked-precursor-incidents-official-record",
-  "revisionHash": "bf059b267d7255ac520040e6b90b9d894e707a60d77810197d2f01a3254ae907",
-  "contentHash": "6e3eb304e6ea2db658ed1480e72da47116836eb06b2186f161344d0f2c9879b4",
+  "revisionHash": "72f5d90c61b7836cf58d7b116313ee4a660846c33b1bc1738e7372f09f0bbcb3",
+  "contentHash": "a14f38d87f296540e288e08da145eb992607fd9f9c0f5915c96ec14954bbfc16",
   "verificationReceipt": {
     "receiptVersion": "narcoscope.newsroom.verification-receipt.v1",
     "evaluationProfile": {
@@ -659,7 +659,7 @@
     },
     "editorialCompleteness": {
       "correctionsStatus": "none_recorded",
-      "updateHistoryEventCount": 77,
+      "updateHistoryEventCount": 79,
       "initialPublicationRecorded": true,
       "rightToReplyStatus": "not_required",
       "outreachPerformed": false,
@@ -681,10 +681,10 @@
     },
     "deterministicHashes": {
       "algorithm": "sha256",
-      "revisionHash": "bf059b267d7255ac520040e6b90b9d894e707a60d77810197d2f01a3254ae907",
-      "machineBriefContentHash": "9eed7c4f9fb1d073839f4b0bb464ec3e7cc3d763568ef75a0da1eda6d0909576",
+      "revisionHash": "72f5d90c61b7836cf58d7b116313ee4a660846c33b1bc1738e7372f09f0bbcb3",
+      "machineBriefContentHash": "ad4ae3e5ab45762e0d24263041d747a84423209f19997d276be182145a4d1faf",
       "dossierContentHashScope": "canonical JSON of the dossier including this receipt and excluding the top-level contentHash field",
-      "dossierContentHash": "6e3eb304e6ea2db658ed1480e72da47116836eb06b2186f161344d0f2c9879b4"
+      "dossierContentHash": "a14f38d87f296540e288e08da145eb992607fd9f9c0f5915c96ec14954bbfc16"
     },
     "failures": [],
     "passed": true
@@ -693,8 +693,8 @@
     {
       "id": "china-public-aggregate-bridge",
       "path": "public/data/narcoscope-palimpsest-v1.json",
-      "bytes": 25199,
-      "sha256": "89e18c6d7d61a41e6898f5867e4a8fd8905c626cb49f2cb2bc15a254c3f4bb95"
+      "bytes": 16462,
+      "sha256": "996603b5ccb4cf033ce9ef1c6179d9cb17c1365406302fa358cb235ae58c6805"
     },
     {
       "id": "cdc-vsrr-offline-snapshot",
@@ -733,33 +733,33 @@
   "artifacts": [
     {
       "file": "china-linked-precursor-incidents-official-record.dossier.json",
-      "bytes": 97698,
-      "sha256": "1936de37238a8329e7773eb2f1c58ff84efc95fa7d369c3559ae504bedece9a3"
+      "bytes": 98284,
+      "sha256": "1b397f2b59b027b7d1b0e741130f75f785fe6b2b098a670da87758e409b3dc87"
     },
     {
       "file": "china-linked-precursor-incidents-official-record.html",
-      "bytes": 71939,
-      "sha256": "e7e9bf73ebcb8391fdbf0bae7a11a3156a59ec852c8ba87c41f69dc022988405"
+      "bytes": 72575,
+      "sha256": "225cc6fae55b995cd90011ebf9710cbcaa8943357f00e90a51242d5faefa236f"
     },
     {
       "file": "china-linked-precursor-incidents-official-record.machine-brief.json",
       "bytes": 8666,
-      "sha256": "511d825e1816a6b28a176e4e4cf65440b6a445ef2e6a9c6c047bf32684fca5c0"
+      "sha256": "e997c6035490c620b5137264385d9b864c9ec521c59ad7598a82048c14e240c6"
     },
     {
       "file": "feed.json",
-      "bytes": 67577,
-      "sha256": "e8285a97a513470a2ed37d0ec0f2b77f8d0e5852b5ed07c92f047593006f8930"
+      "bytes": 68229,
+      "sha256": "817e2507ed2d83e14c8e1a1647d973be6fdc068366ccad0a018a1089fc1c9452"
     },
     {
       "file": "feed.xml",
-      "bytes": 82032,
-      "sha256": "a5010201714243ea1f9a346aa4669aed47ef9bc445dc6d301b1e6e105108474f"
+      "bytes": 82808,
+      "sha256": "a01274a35ef59501f6639d3025893ed4bba9059ca95f92c9578890d78a052b20"
     },
     {
       "file": "index.json",
       "bytes": 1746,
-      "sha256": "0f7f8ccb75eb8072c0b498a64066a720cf46e067780f524619f3d2a195cb1eb1"
+      "sha256": "42976826b2fdc416bce3ac7bece5bdedbcb8fa90b809c68b79793bdf5b167549"
     }
   ]
 }

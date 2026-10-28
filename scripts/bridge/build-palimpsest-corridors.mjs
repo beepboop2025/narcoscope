@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { projectBridge } from '../../lib/publication-rights.mjs'
 
 import fs from 'node:fs/promises'
 import path from 'node:path'
@@ -460,7 +461,7 @@ export function buildPalimpsestCorridorArtifact(inputs) {
     .map((dataset) => dataset.provenance.localDataDate)
     .filter(Boolean)
     .sort(compareText)
-  return assertCorridorBridgeBoundary({
+  return projectBridge(assertCorridorBridgeBoundary({
     $schema: `./${CORRIDOR_SCHEMA_FILE}`,
     schemaVersion: CORRIDOR_SCHEMA_VERSION,
     artifactId: 'narcoscope.china-pakistan-myanmar.official-coverage',
@@ -512,7 +513,7 @@ export function buildPalimpsestCorridorArtifact(inputs) {
       'Official source status describes provenance and does not make a source complete or convert an allegation into a finding.',
       'Palimpsest must byte-pin and review a changed artifact before using it in a public claim.',
     ],
-  })
+  }))
 }
 
 export function serializePalimpsestCorridorArtifact(artifact) {

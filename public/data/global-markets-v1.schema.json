@@ -297,6 +297,48 @@
         "maxLength": 2000
       },
       "maxItems": 60
+    },
+    "publication": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "policyId",
+        "status",
+        "sourceIds",
+        "permissionEvidence",
+        "observationScope",
+        "reason"
+      ],
+      "properties": {
+        "policyId": {
+          "const": "narcoscope.publication-rights.2026-10-28.v1"
+        },
+        "status": {
+          "enum": [
+            "published",
+            "partial",
+            "metadata_only"
+          ]
+        },
+        "sourceIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "permissionEvidence": {
+          "type": "null"
+        },
+        "observationScope": {
+          "const": "published_rows_only"
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
     }
   }
 }
