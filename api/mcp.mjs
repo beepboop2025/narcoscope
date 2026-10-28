@@ -155,15 +155,15 @@ export const TOOLS = Object.freeze({
     call: getStory,
   },
   get_palimpsest_bridge: {
-    title: 'Read official China drug and enforcement aggregates',
-    description: 'Return the official-only China aggregate shared with the Intelligence Commons, including disclosure and causal boundaries.',
+    title: 'Inspect China drug data coverage',
+    description: 'Inspect official China evidence coverage and source metadata. WDR prices and seizures are withheld pending publication permission; independently available precursor, designation and wildlife aggregates retain their provenance, disclosure and causal boundaries.',
     inputSchema: { type: 'object', additionalProperties: false },
     outputSchema: TOOL_OUTPUT_SCHEMAS.get_palimpsest_bridge,
     call: async () => getPalimpsestBridge(),
   },
   get_palimpsest_corridors: {
     title: 'Read the Palimpsest corridor overlay',
-    description: 'Return official country-level China, Pakistan, and Myanmar aggregates with missing-data, provenance, disclosure, and geography-and-time-only join rules.',
+    description: 'Inspect official China, Pakistan and Myanmar evidence coverage. WDR prices and seizures are metadata-only pending publication permission; other available aggregates retain provenance, missing-data and geography-and-time-only join rules.',
     inputSchema: { type: 'object', additionalProperties: false },
     outputSchema: TOOL_OUTPUT_SCHEMAS.get_palimpsest_corridors,
     call: async () => getPalimpsestCorridors(),

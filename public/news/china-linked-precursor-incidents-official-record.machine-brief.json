@@ -7,13 +7,13 @@
   "publishability": "not_publishable_as_analysis_without_second_gate",
   "dataAsOf": "2026-10-28",
   "generatedAt": "2026-10-28T00:00:00.000Z",
-  "revisionHash": "bf059b267d7255ac520040e6b90b9d894e707a60d77810197d2f01a3254ae907",
+  "revisionHash": "72f5d90c61b7836cf58d7b116313ee4a660846c33b1bc1738e7372f09f0bbcb3",
   "inputArtifacts": [
     {
       "id": "china-public-aggregate-bridge",
       "path": "public/data/narcoscope-palimpsest-v1.json",
-      "bytes": 25199,
-      "sha256": "89e18c6d7d61a41e6898f5867e4a8fd8905c626cb49f2cb2bc15a254c3f4bb95"
+      "bytes": 16462,
+      "sha256": "996603b5ccb4cf033ce9ef1c6179d9cb17c1365406302fa358cb235ae58c6805"
     },
     {
       "id": "cdc-vsrr-offline-snapshot",
@@ -235,5 +235,5 @@
     "gateId": "machine-brief-gate.v1",
     "status": "passed"
   },
-  "contentHash": "9eed7c4f9fb1d073839f4b0bb464ec3e7cc3d763568ef75a0da1eda6d0909576"
+  "contentHash": "ad4ae3e5ab45762e0d24263041d747a84423209f19997d276be182145a4d1faf"
 }

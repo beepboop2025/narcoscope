@@ -147,11 +147,13 @@ describe('Designations tab', () => {
 })
 
 describe('Overview landing', () => {
-  it('renders the headline stats, divergence alerts, and dense panels', () => {
+  it('renders independent evidence and explicitly withholds WDR derivatives', () => {
     render(<Overview />)
-    // The divergence alert cards are the flagship — both known cases present.
-    expect(screen.getByText('US methamphetamine')).toBeTruthy()
-    expect(screen.getByText('Canada cannabis')).toBeTruthy()
+    // Restricted derivatives are withheld, not recalculated from absent rows.
+    expect(screen.queryByText('US methamphetamine')).toBeNull()
+    expect(screen.queryByText('Canada cannabis')).toBeNull()
+    expect(screen.getAllByText('Withheld')).toHaveLength(2)
+    expect(screen.getByText(/WDR-derived comparisons are withheld/)).toBeTruthy()
     // Dense panels all render with their bar rows.
     expect(screen.getByText(/overdose deaths by substance/i)).toBeTruthy()
     expect(document.querySelectorAll('.bar-row').length).toBeGreaterThan(10)

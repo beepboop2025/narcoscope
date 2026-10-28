@@ -1,3 +1,4 @@
+import { projectMarketDataset, projectBridge, serializePublicData } from './lib/publication-rights.mjs'
 import { createHash } from 'node:crypto'
 import { lookup as lookupDns } from 'node:dns/promises'
 import { createReadStream } from 'node:fs'
@@ -457,6 +458,24 @@ async function serveStatic(req, res, requestUrl, distDir) {
     return
   }
 
+  // Defend old/copied dist artifacts as well as build-time projection. No raw fallback.
+  const projectedRelativePath = candidate.slice(allowedPrefix.length).split(sep).join('/')
+  const publicProjector = {
+    'data/global-drugs-v1.json': projectMarketDataset,
+    'data/global-arms-economy-v1.json': projectMarketDataset,
+    'data/narcoscope-palimpsest-v1.json': projectBridge,
+    'data/narcoscope-palimpsest-corridors-v2.json': projectBridge,
+  }[projectedRelativePath]
+  if (publicProjector) {
+    const body = Buffer.from(serializePublicData(publicProjector(JSON.parse(await readFile(candidate, 'utf8')))))
+    setBaseHeaders(res)
+    res.statusCode = 200
+    res.setHeader('Content-Type', 'application/json; charset=utf-8')
+    res.setHeader('Content-Length', String(body.length))
+    res.setHeader('Cache-Control', 'no-store')
+    res.end(req.method === 'HEAD' ? undefined : body)
+    return
+  }
   const extension = extname(candidate).toLowerCase()
   const immutableAsset = relativePath.startsWith('assets/') && /-[A-Za-z0-9_-]{8,}\./.test(relativePath)
   setBaseHeaders(res)

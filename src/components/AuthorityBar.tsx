@@ -172,7 +172,7 @@ export default function AuthorityBar({ tab, label }: { tab: string; label: strin
       <button type="button" onClick={() => void share().catch(() => report('Share cancelled'))}>Share view</button>
       <button type="button" onClick={() => void copy(viewCitation(label, tab, undefined, liveBase), 'Citation copied').catch(() => report('Copy unavailable'))}>Copy citation</button>
       <button type="button" onClick={() => void copy(trackedViewUrl(tab, 'copy_link', liveBase), 'Tracked link copied').catch(() => report('Copy unavailable'))}>Copy link</button>
-      {!palimpsestDossier ? (
+      {!palimpsestDossier && !['prices', 'pricehistory', 'map', 'seizuretrends', 'triangulate'].includes(tab) ? (
         <button type="button" onClick={() => {
           try { downloadVisibleChart(label); report('Chart SVG saved') } catch { report('Open a chart first') }
         }}>Download chart SVG</button>

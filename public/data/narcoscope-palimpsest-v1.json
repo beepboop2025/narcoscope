@@ -46,84 +46,25 @@
           "sha256": "a60d0b74d2ae3ad94dfd7eb6a1c2e31db5af6164976e1e1185e6758a3427e261"
         }
       },
-      "data": {
-        "recordCount": 11,
-        "observations": [
-          {
-            "drug": "cannabis",
-            "year": 2021,
-            "priceUsdPerGram": 55.59,
-            "purityPct": null
-          },
-          {
-            "drug": "cannabis",
-            "year": 2023,
-            "priceUsdPerGram": 47.21,
-            "purityPct": null
-          },
-          {
-            "drug": "heroin",
-            "year": 2020,
-            "priceUsdPerGram": 122.84,
-            "purityPct": 44
-          },
-          {
-            "drug": "heroin",
-            "year": 2021,
-            "priceUsdPerGram": 141.38,
-            "purityPct": null
-          },
-          {
-            "drug": "heroin",
-            "year": 2022,
-            "priceUsdPerGram": 187.82,
-            "purityPct": null
-          },
-          {
-            "drug": "heroin",
-            "year": 2023,
-            "priceUsdPerGram": 207.08,
-            "purityPct": null
-          },
-          {
-            "drug": "heroin",
-            "year": 2024,
-            "priceUsdPerGram": 222.35,
-            "purityPct": null
-          },
-          {
-            "drug": "methamphetamine",
-            "year": 2020,
-            "priceUsdPerGram": 123.42,
-            "purityPct": 90
-          },
-          {
-            "drug": "methamphetamine",
-            "year": 2022,
-            "priceUsdPerGram": 179.77,
-            "purityPct": null
-          },
-          {
-            "drug": "methamphetamine",
-            "year": 2023,
-            "priceUsdPerGram": 228.35,
-            "purityPct": null
-          },
-          {
-            "drug": "methamphetamine",
-            "year": 2024,
-            "priceUsdPerGram": 291.83,
-            "purityPct": null
-          }
-        ]
-      },
+      "data": null,
       "limitations": [
         "Country and drug reporting is incomplete across years; absent rows are unavailable, and no missing year is interpolated.",
         "This legacy four-drug summary pools reviewed forms and reports; use the global drugs dataset for separate source entries and original units.",
         "WDR data reproduction is limited to educational and non-profit use with attribution; commercial reuse requires prior written UNODC permission.",
         "Prices are nominal reported retail values and do not estimate market size or transaction volume.",
-        "A missing purity value means the source did not provide a usable value at the retained grain."
-      ]
+        "A missing purity value means the source did not provide a usable value at the retained grain.",
+        "UNODC World Drug Report measurements and derived values are withheld pending documented permission for this public commercial product. Source metadata remains available; withheld is not zero or missing source coverage."
+      ],
+      "publication": {
+        "policyId": "narcoscope.publication-rights.2026-10-28.v1",
+        "status": "metadata_only",
+        "sourceIds": [
+          "wdr2026-prices"
+        ],
+        "permissionEvidence": null,
+        "observationScope": "published_rows_only",
+        "reason": "UNODC World Drug Report measurements and derived values are withheld pending documented permission for this public commercial product. Source metadata remains available; withheld is not zero or missing source coverage."
+      }
     },
     "drugSeizures": {
       "datasetId": "drug_seizures",
@@ -153,289 +94,23 @@
           "sha256": "c0536294fbc104016f0d4cdb4a5add8766a4f72e968fed925de6f05e34cd0fc1"
         }
       },
-      "data": {
-        "sourceRowCount": 102,
-        "quantityKg": 152336.66,
-        "byYear": [
-          {
-            "year": 2019,
-            "sourceRowCount": 33,
-            "quantityKg": 61104,
-            "byDrugGroup": [
-              {
-                "drugGroup": "Amphetamine-type stimulants (excluding “ecstasy”)",
-                "sourceRowCount": 5,
-                "quantityKg": 25306
-              },
-              {
-                "drugGroup": "Any other drugs/substances",
-                "sourceRowCount": 3,
-                "quantityKg": 4499
-              },
-              {
-                "drugGroup": "Cannabis-type drugs (excluding synthetic cannabinoids)",
-                "sourceRowCount": 5,
-                "quantityKg": 14942
-              },
-              {
-                "drugGroup": "Cocaine-type",
-                "sourceRowCount": 1,
-                "quantityKg": 155
-              },
-              {
-                "drugGroup": "Hallucinogens",
-                "sourceRowCount": 1,
-                "quantityKg": 0
-              },
-              {
-                "drugGroup": "NPS",
-                "sourceRowCount": 2,
-                "quantityKg": 1768
-              },
-              {
-                "drugGroup": "Opioids",
-                "sourceRowCount": 10,
-                "quantityKg": 13945
-              },
-              {
-                "drugGroup": "Sedatives and tranquillizers",
-                "sourceRowCount": 5,
-                "quantityKg": 417
-              },
-              {
-                "drugGroup": "“Ecstasy”-type substances",
-                "sourceRowCount": 1,
-                "quantityKg": 72
-              }
-            ]
-          },
-          {
-            "year": 2020,
-            "sourceRowCount": 20,
-            "quantityKg": 31625.61,
-            "byDrugGroup": [
-              {
-                "drugGroup": "Amphetamine-type stimulants (excluding “ecstasy”)",
-                "sourceRowCount": 4,
-                "quantityKg": 21985.13
-              },
-              {
-                "drugGroup": "Cannabis-type drugs (excluding synthetic cannabinoids)",
-                "sourceRowCount": 4,
-                "quantityKg": 816.35
-              },
-              {
-                "drugGroup": "Cocaine-type",
-                "sourceRowCount": 1,
-                "quantityKg": 582.2
-              },
-              {
-                "drugGroup": "Hallucinogens",
-                "sourceRowCount": 1,
-                "quantityKg": 0
-              },
-              {
-                "drugGroup": "NPS",
-                "sourceRowCount": 1,
-                "quantityKg": 1406.8
-              },
-              {
-                "drugGroup": "Opioids",
-                "sourceRowCount": 7,
-                "quantityKg": 6686.94
-              },
-              {
-                "drugGroup": "Sedatives and tranquillizers",
-                "sourceRowCount": 1,
-                "quantityKg": 0.96
-              },
-              {
-                "drugGroup": "“Ecstasy”-type substances",
-                "sourceRowCount": 1,
-                "quantityKg": 147.23
-              }
-            ]
-          },
-          {
-            "year": 2021,
-            "sourceRowCount": 10,
-            "quantityKg": 22663.61,
-            "byDrugGroup": [
-              {
-                "drugGroup": "Amphetamine-type stimulants (excluding “ecstasy”)",
-                "sourceRowCount": 1,
-                "quantityKg": 16385.59
-              },
-              {
-                "drugGroup": "Cannabis-type drugs (excluding synthetic cannabinoids)",
-                "sourceRowCount": 4,
-                "quantityKg": 1206.03
-              },
-              {
-                "drugGroup": "Cocaine-type",
-                "sourceRowCount": 1,
-                "quantityKg": 690.5
-              },
-              {
-                "drugGroup": "NPS",
-                "sourceRowCount": 1,
-                "quantityKg": 456.6
-              },
-              {
-                "drugGroup": "Opioids",
-                "sourceRowCount": 2,
-                "quantityKg": 3837.1
-              },
-              {
-                "drugGroup": "“Ecstasy”-type substances",
-                "sourceRowCount": 1,
-                "quantityKg": 87.79
-              }
-            ]
-          },
-          {
-            "year": 2022,
-            "sourceRowCount": 19,
-            "quantityKg": 15640.15,
-            "byDrugGroup": [
-              {
-                "drugGroup": "Amphetamine-type stimulants (excluding “ecstasy”)",
-                "sourceRowCount": 1,
-                "quantityKg": 10100
-              },
-              {
-                "drugGroup": "Cannabis-type drugs (excluding synthetic cannabinoids)",
-                "sourceRowCount": 3,
-                "quantityKg": 588.5
-              },
-              {
-                "drugGroup": "Cocaine-type",
-                "sourceRowCount": 1,
-                "quantityKg": 176.6
-              },
-              {
-                "drugGroup": "Hallucinogens",
-                "sourceRowCount": 1,
-                "quantityKg": 0.71
-              },
-              {
-                "drugGroup": "NPS",
-                "sourceRowCount": 1,
-                "quantityKg": 1299.6
-              },
-              {
-                "drugGroup": "Opioids",
-                "sourceRowCount": 10,
-                "quantityKg": 2983.84
-              },
-              {
-                "drugGroup": "Sedatives and tranquillizers",
-                "sourceRowCount": 1,
-                "quantityKg": 81.5
-              },
-              {
-                "drugGroup": "“Ecstasy”-type substances",
-                "sourceRowCount": 1,
-                "quantityKg": 409.4
-              }
-            ]
-          },
-          {
-            "year": 2023,
-            "sourceRowCount": 20,
-            "quantityKg": 21303.29,
-            "byDrugGroup": [
-              {
-                "drugGroup": "Amphetamine-type stimulants (excluding “ecstasy”)",
-                "sourceRowCount": 1,
-                "quantityKg": 14246.23
-              },
-              {
-                "drugGroup": "Cannabis-type drugs (excluding synthetic cannabinoids)",
-                "sourceRowCount": 4,
-                "quantityKg": 526.32
-              },
-              {
-                "drugGroup": "Cocaine-type",
-                "sourceRowCount": 1,
-                "quantityKg": 2568.39
-              },
-              {
-                "drugGroup": "Hallucinogens",
-                "sourceRowCount": 1,
-                "quantityKg": 0.04
-              },
-              {
-                "drugGroup": "NPS",
-                "sourceRowCount": 1,
-                "quantityKg": 735
-              },
-              {
-                "drugGroup": "Opioids",
-                "sourceRowCount": 10,
-                "quantityKg": 3223.94
-              },
-              {
-                "drugGroup": "Sedatives and tranquillizers",
-                "sourceRowCount": 2,
-                "quantityKg": 3.37
-              }
-            ]
-          }
-        ],
-        "byDrugGroup": [
-          {
-            "drugGroup": "Amphetamine-type stimulants (excluding “ecstasy”)",
-            "sourceRowCount": 12,
-            "quantityKg": 88022.95
-          },
-          {
-            "drugGroup": "Any other drugs/substances",
-            "sourceRowCount": 3,
-            "quantityKg": 4499
-          },
-          {
-            "drugGroup": "Cannabis-type drugs (excluding synthetic cannabinoids)",
-            "sourceRowCount": 20,
-            "quantityKg": 18079.2
-          },
-          {
-            "drugGroup": "Cocaine-type",
-            "sourceRowCount": 5,
-            "quantityKg": 4172.69
-          },
-          {
-            "drugGroup": "Hallucinogens",
-            "sourceRowCount": 4,
-            "quantityKg": 0.75
-          },
-          {
-            "drugGroup": "NPS",
-            "sourceRowCount": 6,
-            "quantityKg": 5666
-          },
-          {
-            "drugGroup": "Opioids",
-            "sourceRowCount": 39,
-            "quantityKg": 30676.82
-          },
-          {
-            "drugGroup": "Sedatives and tranquillizers",
-            "sourceRowCount": 9,
-            "quantityKg": 502.83
-          },
-          {
-            "drugGroup": "“Ecstasy”-type substances",
-            "sourceRowCount": 4,
-            "quantityKg": 716.42
-          }
-        ]
-      },
+      "data": null,
       "limitations": [
         "Seizures measure detected and reported enforcement events, not total production, movement or consumption.",
         "Changes can reflect enforcement capacity, reporting practice and drug classification as well as underlying activity.",
-        "Summed kilograms combine drug categories and should not be interpreted as equivalent harm or value."
-      ]
+        "Summed kilograms combine drug categories and should not be interpreted as equivalent harm or value.",
+        "UNODC World Drug Report measurements and derived values are withheld pending documented permission for this public commercial product. Source metadata remains available; withheld is not zero or missing source coverage."
+      ],
+      "publication": {
+        "policyId": "narcoscope.publication-rights.2026-10-28.v1",
+        "status": "metadata_only",
+        "sourceIds": [
+          "wdr2025-seizures"
+        ],
+        "permissionEvidence": null,
+        "observationScope": "published_rows_only",
+        "reason": "UNODC World Drug Report measurements and derived values are withheld pending documented permission for this public commercial product. Source metadata remains available; withheld is not zero or missing source coverage."
+      }
     },
     "precursorCorridorIncidents": {
       "datasetId": "precursor_corridor_incidents",

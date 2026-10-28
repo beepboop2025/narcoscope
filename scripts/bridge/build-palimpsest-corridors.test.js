@@ -47,21 +47,12 @@ describe('Palimpsest China-Pakistan-Myanmar corridor bridge', () => {
   })
 
   it('adds official country coverage without converting missing rows to zero', () => {
-    const prices = artifact.datasets.retailDrugPrices.data.countries
-    expect(prices.map((row) => [row.geography.iso3, row.recordCount])).toEqual([
-      ['CHN', 11], ['MMR', 14], ['PAK', 0],
-    ])
-    expect(prices.find(row=>row.geography.iso3==='PAK')).toMatchObject({coverageStatus:'no_matching_rows_in_snapshot',observations:[]})
+    expect(artifact.datasets.retailDrugPrices.data).toBeNull()
+    expect(artifact.datasets.drugSeizures.data).toBeNull()
     expect(artifact.datasets.retailDrugPrices.provenance.sourceEdition).toBe('2026')
     expect(artifact.datasets.retailDrugPrices.temporalCoverage).toMatchObject({fromYear:2020,toYear:2024})
-    expect(prices.find(row=>row.geography.iso3==='MMR').observations.filter(row=>row.year===2024)).toEqual([
-      {drug:'cannabis',year:2024,priceUsdPerGram:0.09,purityPct:null},
-      {drug:'heroin',year:2024,priceUsdPerGram:9.33,purityPct:null},
-    ])
-    const seizures = artifact.datasets.drugSeizures.data.countries
-    expect(seizures.map((row) => [row.geography.iso3, row.sourceRowCount])).toEqual([
-      ['CHN', 102], ['MMR', 86], ['PAK', 95],
-    ])
+    expect(artifact.datasets.retailDrugPrices.publication.status).toBe('metadata_only')
+    expect(artifact.geographies.map(row => row.iso3)).toEqual(['CHN', 'MMR', 'PAK'])
     const wildlife = artifact.datasets.wildlifeConfiscations.data.countries
     const myanmar = wildlife.find((row) => row.geography.iso3 === 'MMR')
     expect(myanmar.exporterOfRecord).toEqual({

@@ -61,201 +61,26 @@
           "sha256": "a60d0b74d2ae3ad94dfd7eb6a1c2e31db5af6164976e1e1185e6758a3427e261"
         }
       },
-      "data": {
-        "recordCount": 25,
-        "countries": [
-          {
-            "geography": {
-              "country": "China",
-              "iso2": "CN",
-              "iso3": "CHN"
-            },
-            "coverageStatus": "observed",
-            "recordCount": 11,
-            "observations": [
-              {
-                "drug": "cannabis",
-                "year": 2021,
-                "priceUsdPerGram": 55.59,
-                "purityPct": null
-              },
-              {
-                "drug": "cannabis",
-                "year": 2023,
-                "priceUsdPerGram": 47.21,
-                "purityPct": null
-              },
-              {
-                "drug": "heroin",
-                "year": 2020,
-                "priceUsdPerGram": 122.84,
-                "purityPct": 44
-              },
-              {
-                "drug": "heroin",
-                "year": 2021,
-                "priceUsdPerGram": 141.38,
-                "purityPct": null
-              },
-              {
-                "drug": "heroin",
-                "year": 2022,
-                "priceUsdPerGram": 187.82,
-                "purityPct": null
-              },
-              {
-                "drug": "heroin",
-                "year": 2023,
-                "priceUsdPerGram": 207.08,
-                "purityPct": null
-              },
-              {
-                "drug": "heroin",
-                "year": 2024,
-                "priceUsdPerGram": 222.35,
-                "purityPct": null
-              },
-              {
-                "drug": "methamphetamine",
-                "year": 2020,
-                "priceUsdPerGram": 123.42,
-                "purityPct": 90
-              },
-              {
-                "drug": "methamphetamine",
-                "year": 2022,
-                "priceUsdPerGram": 179.77,
-                "purityPct": null
-              },
-              {
-                "drug": "methamphetamine",
-                "year": 2023,
-                "priceUsdPerGram": 228.35,
-                "purityPct": null
-              },
-              {
-                "drug": "methamphetamine",
-                "year": 2024,
-                "priceUsdPerGram": 291.83,
-                "purityPct": null
-              }
-            ]
-          },
-          {
-            "geography": {
-              "country": "Myanmar",
-              "iso2": "MM",
-              "iso3": "MMR"
-            },
-            "coverageStatus": "observed",
-            "recordCount": 14,
-            "observations": [
-              {
-                "drug": "cannabis",
-                "year": 2020,
-                "priceUsdPerGram": 0.25,
-                "purityPct": null
-              },
-              {
-                "drug": "cannabis",
-                "year": 2021,
-                "priceUsdPerGram": 0.22,
-                "purityPct": null
-              },
-              {
-                "drug": "cannabis",
-                "year": 2022,
-                "priceUsdPerGram": 0.18,
-                "purityPct": null
-              },
-              {
-                "drug": "cannabis",
-                "year": 2023,
-                "priceUsdPerGram": 0.16,
-                "purityPct": null
-              },
-              {
-                "drug": "cannabis",
-                "year": 2024,
-                "priceUsdPerGram": 0.09,
-                "purityPct": null
-              },
-              {
-                "drug": "heroin",
-                "year": 2020,
-                "priceUsdPerGram": 25.35,
-                "purityPct": null
-              },
-              {
-                "drug": "heroin",
-                "year": 2021,
-                "priceUsdPerGram": 22.09,
-                "purityPct": null
-              },
-              {
-                "drug": "heroin",
-                "year": 2022,
-                "priceUsdPerGram": 1.82,
-                "purityPct": null
-              },
-              {
-                "drug": "heroin",
-                "year": 2023,
-                "priceUsdPerGram": 15.95,
-                "purityPct": null
-              },
-              {
-                "drug": "heroin",
-                "year": 2024,
-                "priceUsdPerGram": 9.33,
-                "purityPct": null
-              },
-              {
-                "drug": "methamphetamine",
-                "year": 2020,
-                "priceUsdPerGram": 1.45,
-                "purityPct": null
-              },
-              {
-                "drug": "methamphetamine",
-                "year": 2021,
-                "priceUsdPerGram": 12.62,
-                "purityPct": null
-              },
-              {
-                "drug": "methamphetamine",
-                "year": 2022,
-                "priceUsdPerGram": 10.39,
-                "purityPct": null
-              },
-              {
-                "drug": "methamphetamine",
-                "year": 2023,
-                "priceUsdPerGram": 9.12,
-                "purityPct": null
-              }
-            ]
-          },
-          {
-            "geography": {
-              "country": "Pakistan",
-              "iso2": "PK",
-              "iso3": "PAK"
-            },
-            "coverageStatus": "no_matching_rows_in_snapshot",
-            "recordCount": 0,
-            "observations": []
-          }
-        ]
-      },
+      "data": null,
       "limitations": [
         "Country and drug reporting is incomplete across years; absent rows are unavailable, and no missing year is interpolated.",
         "Pakistan has no matching retail per-gram observations in this retained edition; this is not evidence of a zero price or absent drug market.",
         "This legacy four-drug summary pools reviewed forms and reports; use the global drugs dataset for separate source entries and original units.",
         "WDR data reproduction is limited to educational and non-profit use with attribution; commercial reuse requires prior written UNODC permission.",
         "Prices are nominal reported retail values, not market-size, availability or transaction-volume estimates.",
-        "Cross-country price comparisons require exchange-rate, purchasing-power, purity and reporting-context caveats."
-      ]
+        "Cross-country price comparisons require exchange-rate, purchasing-power, purity and reporting-context caveats.",
+        "UNODC World Drug Report measurements and derived values are withheld pending documented permission for this public commercial product. Source metadata remains available; withheld is not zero or missing source coverage."
+      ],
+      "publication": {
+        "policyId": "narcoscope.publication-rights.2026-10-28.v1",
+        "status": "metadata_only",
+        "sourceIds": [
+          "wdr2026-prices"
+        ],
+        "permissionEvidence": null,
+        "observationScope": "published_rows_only",
+        "reason": "UNODC World Drug Report measurements and derived values are withheld pending documented permission for this public commercial product. Source metadata remains available; withheld is not zero or missing source coverage."
+      }
     },
     "drugSeizures": {
       "datasetId": "drug_seizures",
@@ -285,258 +110,23 @@
           "sha256": "c0536294fbc104016f0d4cdb4a5add8766a4f72e968fed925de6f05e34cd0fc1"
         }
       },
-      "data": {
-        "sourceRowCount": 283,
-        "countries": [
-          {
-            "geography": {
-              "country": "China",
-              "iso2": "CN",
-              "iso3": "CHN"
-            },
-            "coverageStatus": "observed",
-            "sourceRowCount": 102,
-            "quantityKg": 152336.66,
-            "byYear": [
-              {
-                "year": 2019,
-                "sourceRowCount": 33,
-                "quantityKg": 61104
-              },
-              {
-                "year": 2020,
-                "sourceRowCount": 20,
-                "quantityKg": 31625.61
-              },
-              {
-                "year": 2021,
-                "sourceRowCount": 10,
-                "quantityKg": 22663.61
-              },
-              {
-                "year": 2022,
-                "sourceRowCount": 19,
-                "quantityKg": 15640.15
-              },
-              {
-                "year": 2023,
-                "sourceRowCount": 20,
-                "quantityKg": 21303.29
-              }
-            ],
-            "byDrugGroup": [
-              {
-                "drugGroup": "Amphetamine-type stimulants (excluding “ecstasy”)",
-                "sourceRowCount": 12,
-                "quantityKg": 88022.95
-              },
-              {
-                "drugGroup": "Any other drugs/substances",
-                "sourceRowCount": 3,
-                "quantityKg": 4499
-              },
-              {
-                "drugGroup": "Cannabis-type drugs (excluding synthetic cannabinoids)",
-                "sourceRowCount": 20,
-                "quantityKg": 18079.2
-              },
-              {
-                "drugGroup": "Cocaine-type",
-                "sourceRowCount": 5,
-                "quantityKg": 4172.69
-              },
-              {
-                "drugGroup": "Hallucinogens",
-                "sourceRowCount": 4,
-                "quantityKg": 0.75
-              },
-              {
-                "drugGroup": "NPS",
-                "sourceRowCount": 6,
-                "quantityKg": 5666
-              },
-              {
-                "drugGroup": "Opioids",
-                "sourceRowCount": 39,
-                "quantityKg": 30676.82
-              },
-              {
-                "drugGroup": "Sedatives and tranquillizers",
-                "sourceRowCount": 9,
-                "quantityKg": 502.83
-              },
-              {
-                "drugGroup": "“Ecstasy”-type substances",
-                "sourceRowCount": 4,
-                "quantityKg": 716.42
-              }
-            ]
-          },
-          {
-            "geography": {
-              "country": "Myanmar",
-              "iso2": "MM",
-              "iso3": "MMR"
-            },
-            "coverageStatus": "observed",
-            "sourceRowCount": 86,
-            "quantityKg": 231058.14,
-            "byYear": [
-              {
-                "year": 2019,
-                "sourceRowCount": 16,
-                "quantityKg": 29070
-              },
-              {
-                "year": 2020,
-                "sourceRowCount": 19,
-                "quantityKg": 64839.05
-              },
-              {
-                "year": 2021,
-                "sourceRowCount": 22,
-                "quantityKg": 40338.13
-              },
-              {
-                "year": 2022,
-                "sourceRowCount": 14,
-                "quantityKg": 44949.9
-              },
-              {
-                "year": 2023,
-                "sourceRowCount": 15,
-                "quantityKg": 51861.06
-              }
-            ],
-            "byDrugGroup": [
-              {
-                "drugGroup": "Amphetamine-type stimulants (excluding “ecstasy”)",
-                "sourceRowCount": 16,
-                "quantityKg": 182604.6
-              },
-              {
-                "drugGroup": "Any other drugs/substances",
-                "sourceRowCount": 1,
-                "quantityKg": 2543
-              },
-              {
-                "drugGroup": "Cannabis-type drugs (excluding synthetic cannabinoids)",
-                "sourceRowCount": 13,
-                "quantityKg": 3632.21
-              },
-              {
-                "drugGroup": "NPS",
-                "sourceRowCount": 14,
-                "quantityKg": 23710.34
-              },
-              {
-                "drugGroup": "Opioids",
-                "sourceRowCount": 28,
-                "quantityKg": 18200.33
-              },
-              {
-                "drugGroup": "Sedatives and tranquillizers",
-                "sourceRowCount": 9,
-                "quantityKg": 93.04
-              },
-              {
-                "drugGroup": "“Ecstasy”-type substances",
-                "sourceRowCount": 5,
-                "quantityKg": 274.62
-              }
-            ]
-          },
-          {
-            "geography": {
-              "country": "Pakistan",
-              "iso2": "PK",
-              "iso3": "PAK"
-            },
-            "coverageStatus": "observed",
-            "sourceRowCount": 95,
-            "quantityKg": 1469663.17,
-            "byYear": [
-              {
-                "year": 2019,
-                "sourceRowCount": 21,
-                "quantityKg": 307801
-              },
-              {
-                "year": 2020,
-                "sourceRowCount": 32,
-                "quantityKg": 515449
-              },
-              {
-                "year": 2021,
-                "sourceRowCount": 16,
-                "quantityKg": 288746.46
-              },
-              {
-                "year": 2022,
-                "sourceRowCount": 16,
-                "quantityKg": 220927.92
-              },
-              {
-                "year": 2023,
-                "sourceRowCount": 10,
-                "quantityKg": 136738.79
-              }
-            ],
-            "byDrugGroup": [
-              {
-                "drugGroup": "Amphetamine-type stimulants (excluding “ecstasy”)",
-                "sourceRowCount": 10,
-                "quantityKg": 18489.07
-              },
-              {
-                "drugGroup": "Any other drugs/substances",
-                "sourceRowCount": 6,
-                "quantityKg": 43843.62
-              },
-              {
-                "drugGroup": "Cannabis-type drugs (excluding synthetic cannabinoids)",
-                "sourceRowCount": 11,
-                "quantityKg": 997504.95
-              },
-              {
-                "drugGroup": "Cocaine-type",
-                "sourceRowCount": 5,
-                "quantityKg": 338.58
-              },
-              {
-                "drugGroup": "NPS",
-                "sourceRowCount": 5,
-                "quantityKg": 2832.46
-              },
-              {
-                "drugGroup": "Opioids",
-                "sourceRowCount": 20,
-                "quantityKg": 289253.99
-              },
-              {
-                "drugGroup": "Precursors",
-                "sourceRowCount": 18,
-                "quantityKg": 116934.97
-              },
-              {
-                "drugGroup": "Sedatives and tranquillizers",
-                "sourceRowCount": 16,
-                "quantityKg": 167.14
-              },
-              {
-                "drugGroup": "“Ecstasy”-type substances",
-                "sourceRowCount": 4,
-                "quantityKg": 298.39
-              }
-            ]
-          }
-        ]
-      },
+      "data": null,
       "limitations": [
         "Seizures measure detected and reported enforcement events, not total production, movement or consumption.",
         "Country totals are not added across countries because reporting systems and drug composition differ.",
-        "A change can reflect enforcement capacity, classification or reporting practice as well as underlying activity."
-      ]
+        "A change can reflect enforcement capacity, classification or reporting practice as well as underlying activity.",
+        "UNODC World Drug Report measurements and derived values are withheld pending documented permission for this public commercial product. Source metadata remains available; withheld is not zero or missing source coverage."
+      ],
+      "publication": {
+        "policyId": "narcoscope.publication-rights.2026-10-28.v1",
+        "status": "metadata_only",
+        "sourceIds": [
+          "wdr2025-seizures"
+        ],
+        "permissionEvidence": null,
+        "observationScope": "published_rows_only",
+        "reason": "UNODC World Drug Report measurements and derived values are withheld pending documented permission for this public commercial product. Source metadata remains available; withheld is not zero or missing source coverage."
+      }
     },
     "precursorCorridorIncidents": {
       "datasetId": "precursor_corridor_incidents",

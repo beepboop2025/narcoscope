@@ -59,8 +59,10 @@ describe('Palimpsest China aggregate bridge', () => {
   })
 
   it('pins the expected China aggregates without publishing subject records', () => {
-    expect(artifact.datasets.retailDrugPrices.data.recordCount).toBe(11)
-    expect(artifact.datasets.drugSeizures.data.sourceRowCount).toBe(102)
+    expect(artifact.datasets.retailDrugPrices.data).toBeNull()
+    expect(artifact.datasets.retailDrugPrices.publication.status).toBe('metadata_only')
+    expect(artifact.datasets.drugSeizures.data).toBeNull()
+    expect(artifact.datasets.drugSeizures.publication.status).toBe('metadata_only')
     expect(artifact.datasets.precursorCorridorIncidents.data).toMatchObject({
       includedQuantitativeRecordCount: 1,
       includedContextRecordCount: 1,
@@ -92,16 +94,13 @@ describe('Palimpsest China aggregate bridge', () => {
     expect(() => assertPublicBridgeBoundary(artifact)).not.toThrow()
   })
 
-  it('retains the reviewed 2026 price edition, 2024 values and reporting gaps', () => {
+  it('retains the reviewed 2026 edition and coverage metadata while withholding values', () => {
     const prices=artifact.datasets.retailDrugPrices
     expect(prices.provenance).toMatchObject({sourceEdition:'2026',title:'World Drug Report 2026, Statistical Annex 8.1: Prices and purities of drugs'})
     expect(prices.provenance.url).toContain('/WDR_2026/')
     expect(prices.temporalCoverage).toMatchObject({fromYear:2020,toYear:2024})
-    expect(prices.data.observations.filter(row=>row.year===2024)).toEqual([
-      {drug:'heroin',year:2024,priceUsdPerGram:222.35,purityPct:null},
-      {drug:'methamphetamine',year:2024,priceUsdPerGram:291.83,purityPct:null},
-    ])
-    expect(prices.data.observations.some(row=>row.drug==='methamphetamine'&&row.year===2021)).toBe(false)
+    expect(prices.data).toBeNull()
+    expect(prices.publication).toMatchObject({status:'metadata_only',permissionEvidence:null})
     expect(prices.limitations.join(' ')).not.toContain('one China year')
   })
 

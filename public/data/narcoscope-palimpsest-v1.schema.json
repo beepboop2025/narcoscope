@@ -26,17 +26,30 @@
       "const": "narcoscope.china.official-coverage"
     },
     "dataAsOf": {
-      "type": ["string", "null"],
+      "type": [
+        "string",
+        "null"
+      ],
       "format": "date"
     },
     "geography": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["country", "iso2", "iso3"],
+      "required": [
+        "country",
+        "iso2",
+        "iso3"
+      ],
       "properties": {
-        "country": { "const": "China" },
-        "iso2": { "const": "CN" },
-        "iso3": { "const": "CHN" }
+        "country": {
+          "const": "China"
+        },
+        "iso2": {
+          "const": "CN"
+        },
+        "iso3": {
+          "const": "CHN"
+        }
       }
     },
     "disclosure": {
@@ -52,13 +65,27 @@
         "runtimeCoupling"
       ],
       "properties": {
-        "level": { "const": "public_aggregate" },
-        "sourcePolicy": { "const": "official_only" },
-        "subjectEntityDisclosure": { "const": "none" },
-        "exactAddressDisclosure": { "const": "none" },
-        "identifierDisclosure": { "const": "none" },
-        "illustrativeDataIncluded": { "const": false },
-        "runtimeCoupling": { "const": "none_static_artifact" }
+        "level": {
+          "const": "public_aggregate"
+        },
+        "sourcePolicy": {
+          "const": "official_only"
+        },
+        "subjectEntityDisclosure": {
+          "const": "none"
+        },
+        "exactAddressDisclosure": {
+          "const": "none"
+        },
+        "identifierDisclosure": {
+          "const": "none"
+        },
+        "illustrativeDataIncluded": {
+          "const": false
+        },
+        "runtimeCoupling": {
+          "const": "none_static_artifact"
+        }
       }
     },
     "datasets": {
@@ -74,26 +101,79 @@
       "properties": {
         "retailDrugPrices": {
           "allOf": [
-            { "$ref": "#/$defs/dataset" },
-            { "type": "object", "properties": { "datasetId": { "const": "retail_drug_prices" } } }
+            {
+              "$ref": "#/$defs/dataset"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "datasetId": {
+                  "const": "retail_drug_prices"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "required": [
+                "publication"
+              ],
+              "properties": {
+                "data": {
+                  "type": "null"
+                },
+                "publication": {
+                  "$ref": "#/$defs/publication"
+                }
+              }
+            }
           ]
         },
         "drugSeizures": {
           "allOf": [
-            { "$ref": "#/$defs/dataset" },
-            { "type": "object", "properties": { "datasetId": { "const": "drug_seizures" } } }
+            {
+              "$ref": "#/$defs/dataset"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "datasetId": {
+                  "const": "drug_seizures"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "required": [
+                "publication"
+              ],
+              "properties": {
+                "data": {
+                  "type": "null"
+                },
+                "publication": {
+                  "$ref": "#/$defs/publication"
+                }
+              }
+            }
           ]
         },
         "precursorCorridorIncidents": {
           "allOf": [
-            { "$ref": "#/$defs/dataset" },
+            {
+              "$ref": "#/$defs/dataset"
+            },
             {
               "type": "object",
               "properties": {
-                "datasetId": { "const": "precursor_corridor_incidents" },
+                "datasetId": {
+                  "const": "precursor_corridor_incidents"
+                },
                 "provenance": {
                   "type": "object",
-                  "required": ["documentSha256", "retrievedAt"],
+                  "required": [
+                    "documentSha256",
+                    "retrievedAt"
+                  ],
                   "properties": {
                     "url": {
                       "const": "https://www.incb.org/incb/uploads/documents/Publications/AnnualReports/AR2025/Precursors_Report/E_INCB_2025_4_eng.pdf"
@@ -101,30 +181,49 @@
                     "documentSha256": {
                       "const": "8397f2799116fe33ce6851ec2c7e03a042886fb9c048f72cdb259724de5ddd6e"
                     },
-                    "retrievedAt": { "const": "2026-08-12T13:50:25Z" }
+                    "retrievedAt": {
+                      "const": "2026-08-12T13:50:25Z"
+                    }
                   }
                 },
-                "data": { "$ref": "#/$defs/precursorCorridorData" }
+                "data": {
+                  "$ref": "#/$defs/precursorCorridorData"
+                }
               }
             }
           ]
         },
         "ofacDesignations": {
           "allOf": [
-            { "$ref": "#/$defs/dataset" },
+            {
+              "$ref": "#/$defs/dataset"
+            },
             {
               "type": "object",
               "properties": {
-                "datasetId": { "const": "ofac_designations" },
-                "data": { "$ref": "#/$defs/ofacDesignationData" }
+                "datasetId": {
+                  "const": "ofac_designations"
+                },
+                "data": {
+                  "$ref": "#/$defs/ofacDesignationData"
+                }
               }
             }
           ]
         },
         "wildlifeConfiscations": {
           "allOf": [
-            { "$ref": "#/$defs/dataset" },
-            { "type": "object", "properties": { "datasetId": { "const": "wildlife_confiscations" } } }
+            {
+              "$ref": "#/$defs/dataset"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "datasetId": {
+                  "const": "wildlife_confiscations"
+                }
+              }
+            }
           ]
         }
       }
@@ -134,9 +233,16 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["component", "classification", "reason"],
+        "required": [
+          "component",
+          "classification",
+          "reason"
+        ],
         "properties": {
-          "component": { "type": "string", "minLength": 1 },
+          "component": {
+            "type": "string",
+            "minLength": 1
+          },
           "classification": {
             "enum": [
               "illustrative",
@@ -145,14 +251,20 @@
               "privacy_minimized"
             ]
           },
-          "reason": { "type": "string", "minLength": 1 }
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          }
         }
       }
     },
     "limitations": {
       "type": "array",
       "minItems": 1,
-      "items": { "type": "string", "minLength": 1 }
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
     }
   },
   "$defs": {
@@ -170,75 +282,195 @@
         "limitations"
       ],
       "properties": {
-        "datasetId": { "type": "string", "minLength": 1 },
-        "topic": { "type": "string", "minLength": 1 },
-        "sourceStatus": { "const": "official" },
+        "datasetId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "topic": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sourceStatus": {
+          "const": "official"
+        },
         "measurement": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["status", "valueType", "method", "unit", "grain"],
+          "required": [
+            "status",
+            "valueType",
+            "method",
+            "unit",
+            "grain"
+          ],
           "properties": {
-            "status": { "enum": ["official_reported", "official_action_record"] },
-            "valueType": {
-              "enum": ["statistical_measurement", "administrative_measurement", "administrative_action"]
+            "status": {
+              "enum": [
+                "official_reported",
+                "official_action_record"
+              ]
             },
-            "method": { "type": "string", "minLength": 1 },
-            "unit": { "type": "string", "minLength": 1 },
-            "grain": { "type": "string", "minLength": 1 }
+            "valueType": {
+              "enum": [
+                "statistical_measurement",
+                "administrative_measurement",
+                "administrative_action"
+              ]
+            },
+            "method": {
+              "type": "string",
+              "minLength": 1
+            },
+            "unit": {
+              "type": "string",
+              "minLength": 1
+            },
+            "grain": {
+              "type": "string",
+              "minLength": 1
+            }
           }
         },
         "temporalCoverage": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["kind", "fromYear", "toYear", "snapshotDate"],
+          "required": [
+            "kind",
+            "fromYear",
+            "toYear",
+            "snapshotDate"
+          ],
           "properties": {
-            "kind": { "enum": ["year_range", "snapshot"] },
-            "fromYear": { "type": ["integer", "null"] },
-            "toYear": { "type": ["integer", "null"] },
-            "snapshotDate": { "type": ["string", "null"], "format": "date" }
+            "kind": {
+              "enum": [
+                "year_range",
+                "snapshot"
+              ]
+            },
+            "fromYear": {
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "toYear": {
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "snapshotDate": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date"
+            }
           }
         },
         "provenance": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["publisher", "title", "url", "sourceEdition", "localDataDate", "input"],
+          "required": [
+            "publisher",
+            "title",
+            "url",
+            "sourceEdition",
+            "localDataDate",
+            "input"
+          ],
           "properties": {
-            "publisher": { "type": "string", "minLength": 1 },
-            "title": { "type": "string", "minLength": 1 },
-            "url": { "type": "string", "format": "uri" },
-            "sourceEdition": { "type": "string", "minLength": 1 },
-            "localDataDate": { "type": ["string", "null"], "format": "date" },
-            "documentSha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
-            "retrievedAt": { "type": "string", "format": "date-time" },
+            "publisher": {
+              "type": "string",
+              "minLength": 1
+            },
+            "title": {
+              "type": "string",
+              "minLength": 1
+            },
+            "url": {
+              "type": "string",
+              "format": "uri"
+            },
+            "sourceEdition": {
+              "type": "string",
+              "minLength": 1
+            },
+            "localDataDate": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date"
+            },
+            "documentSha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "retrievedAt": {
+              "type": "string",
+              "format": "date-time"
+            },
             "input": {
               "type": "object",
               "additionalProperties": false,
-              "required": ["path", "sha256"],
+              "required": [
+                "path",
+                "sha256"
+              ],
               "properties": {
-                "path": { "type": "string", "minLength": 1 },
-                "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+                "path": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "sha256": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                }
               }
             }
           }
         },
         "data": {
-          "type": "object"
+          "type": [
+            "object",
+            "null"
+          ]
         },
         "limitations": {
           "type": "array",
           "minItems": 1,
-          "items": { "type": "string", "minLength": 1 }
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "publication": {
+          "$ref": "#/$defs/publication"
         }
       }
     },
     "sourceLocator": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["pdfPage", "printedPage", "paragraph"],
+      "required": [
+        "pdfPage",
+        "printedPage",
+        "paragraph"
+      ],
       "properties": {
-        "pdfPage": { "type": "integer", "minimum": 1 },
-        "printedPage": { "type": "integer", "minimum": 1 },
-        "paragraph": { "type": "integer", "minimum": 1 }
+        "pdfPage": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "printedPage": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "paragraph": {
+          "type": "integer",
+          "minimum": 1
+        }
       }
     },
     "precursorCorridorData": {
@@ -252,8 +484,14 @@
         "contextRecords"
       ],
       "properties": {
-        "includedQuantitativeRecordCount": { "type": "integer", "minimum": 0 },
-        "includedContextRecordCount": { "type": "integer", "minimum": 0 },
+        "includedQuantitativeRecordCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "includedContextRecordCount": {
+          "type": "integer",
+          "minimum": 0
+        },
         "quantityAggregation": {
           "type": "object",
           "additionalProperties": false,
@@ -276,10 +514,22 @@
                 "not_computed_no_records"
               ]
             },
-            "exactRecordCount": { "type": "integer", "minimum": 0 },
-            "nonExactRecordCount": { "type": "integer", "minimum": 0 },
-            "eligibleRecordCount": { "type": "integer", "minimum": 0 },
-            "excludedRecordCount": { "type": "integer", "minimum": 0 },
+            "exactRecordCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "nonExactRecordCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "eligibleRecordCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "excludedRecordCount": {
+              "type": "integer",
+              "minimum": 0
+            },
             "aggregationGroup": {
               "oneOf": [
                 {
@@ -291,20 +541,37 @@
                     "pseudoephedrine_preparation_mass"
                   ]
                 },
-                { "type": "null" }
+                {
+                  "type": "null"
+                }
               ]
             },
-            "summedQuantityKg": { "type": ["number", "null"], "minimum": 0 }
+            "summedQuantityKg": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0
+            }
           },
           "allOf": [
             {
               "if": {
-                "properties": { "status": { "const": "computed_exact_only" } },
-                "required": ["status"]
+                "properties": {
+                  "status": {
+                    "const": "computed_exact_only"
+                  }
+                },
+                "required": [
+                  "status"
+                ]
               },
               "then": {
                 "properties": {
-                  "eligibleRecordCount": { "type": "integer", "minimum": 1 },
+                  "eligibleRecordCount": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
                   "aggregationGroup": {
                     "enum": [
                       "mdma_precursor_substance_mass",
@@ -314,13 +581,19 @@
                       "pseudoephedrine_preparation_mass"
                     ]
                   },
-                  "summedQuantityKg": { "type": "number" }
+                  "summedQuantityKg": {
+                    "type": "number"
+                  }
                 }
               },
               "else": {
                 "properties": {
-                  "aggregationGroup": { "const": null },
-                  "summedQuantityKg": { "const": null }
+                  "aggregationGroup": {
+                    "const": null
+                  },
+                  "summedQuantityKg": {
+                    "const": null
+                  }
                 }
               }
             }
@@ -349,18 +622,58 @@
               "sourceLocator"
             ],
             "properties": {
-              "originAttribution": { "enum": ["china_only", "joint_origin_includes_china"] },
-              "reportedOrigin": { "type": "string", "minLength": 1 },
-              "transit": { "type": ["string", "null"], "minLength": 1 },
-              "destination": { "type": "string", "minLength": 1 },
-              "seizureLocation": { "type": ["string", "null"], "minLength": 1 },
-              "year": { "type": "integer", "minimum": 1900 },
-              "precursor": { "type": "string", "minLength": 1 },
-              "quantityKg": { "type": "number", "minimum": 0 },
-              "quantityRelation": {
-                "enum": ["exact", "approx", "less_than", "greater_than"]
+              "originAttribution": {
+                "enum": [
+                  "china_only",
+                  "joint_origin_includes_china"
+                ]
               },
-              "quantityBasis": { "type": "string", "minLength": 1 },
+              "reportedOrigin": {
+                "type": "string",
+                "minLength": 1
+              },
+              "transit": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "minLength": 1
+              },
+              "destination": {
+                "type": "string",
+                "minLength": 1
+              },
+              "seizureLocation": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "minLength": 1
+              },
+              "year": {
+                "type": "integer",
+                "minimum": 1900
+              },
+              "precursor": {
+                "type": "string",
+                "minLength": 1
+              },
+              "quantityKg": {
+                "type": "number",
+                "minimum": 0
+              },
+              "quantityRelation": {
+                "enum": [
+                  "exact",
+                  "approx",
+                  "less_than",
+                  "greater_than"
+                ]
+              },
+              "quantityBasis": {
+                "type": "string",
+                "minLength": 1
+              },
               "recordKind": {
                 "enum": [
                   "single_incident",
@@ -388,73 +701,139 @@
                       "pseudoephedrine_preparation_mass"
                     ]
                   },
-                  { "type": "null" }
+                  {
+                    "type": "null"
+                  }
                 ]
               },
-              "incidentCount": { "type": ["integer", "null"], "minimum": 1 },
-              "sourceLocator": { "$ref": "#/$defs/sourceLocator" }
+              "incidentCount": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 1
+              },
+              "sourceLocator": {
+                "$ref": "#/$defs/sourceLocator"
+              }
             },
             "allOf": [
               {
                 "if": {
-                  "properties": { "aggregationEligibility": { "const": "eligible" } },
-                  "required": ["aggregationEligibility"]
+                  "properties": {
+                    "aggregationEligibility": {
+                      "const": "eligible"
+                    }
+                  },
+                  "required": [
+                    "aggregationEligibility"
+                  ]
                 },
                 "then": {
                   "properties": {
-                    "quantityRelation": { "const": "exact" },
-                    "recordKind": { "not": { "const": "derived_subtotal" } },
-                    "aggregationGroup": { "type": "string" }
+                    "quantityRelation": {
+                      "const": "exact"
+                    },
+                    "recordKind": {
+                      "not": {
+                        "const": "derived_subtotal"
+                      }
+                    },
+                    "aggregationGroup": {
+                      "type": "string"
+                    }
                   }
                 }
               },
               {
                 "if": {
-                  "properties": { "quantityRelation": { "const": "exact" } },
-                  "required": ["quantityRelation"]
+                  "properties": {
+                    "quantityRelation": {
+                      "const": "exact"
+                    }
+                  },
+                  "required": [
+                    "quantityRelation"
+                  ]
                 },
                 "then": {
                   "properties": {
-                    "aggregationEligibility": { "not": { "const": "ineligible_non_exact" } }
+                    "aggregationEligibility": {
+                      "not": {
+                        "const": "ineligible_non_exact"
+                      }
+                    }
                   }
                 },
                 "else": {
                   "properties": {
-                    "aggregationEligibility": { "const": "ineligible_non_exact" }
+                    "aggregationEligibility": {
+                      "const": "ineligible_non_exact"
+                    }
                   }
                 }
               },
               {
                 "if": {
-                  "properties": { "recordKind": { "const": "derived_subtotal" } },
-                  "required": ["recordKind"]
+                  "properties": {
+                    "recordKind": {
+                      "const": "derived_subtotal"
+                    }
+                  },
+                  "required": [
+                    "recordKind"
+                  ]
                 },
                 "then": {
                   "properties": {
-                    "aggregationEligibility": { "const": "ineligible_derived" },
-                    "aggregationGroup": { "const": null }
+                    "aggregationEligibility": {
+                      "const": "ineligible_derived"
+                    },
+                    "aggregationGroup": {
+                      "const": null
+                    }
                   }
                 }
               },
               {
                 "if": {
-                  "properties": { "aggregationEligibility": { "const": "ineligible_derived" } },
-                  "required": ["aggregationEligibility"]
+                  "properties": {
+                    "aggregationEligibility": {
+                      "const": "ineligible_derived"
+                    }
+                  },
+                  "required": [
+                    "aggregationEligibility"
+                  ]
                 },
                 "then": {
                   "properties": {
-                    "recordKind": { "const": "derived_subtotal" },
-                    "aggregationGroup": { "const": null }
+                    "recordKind": {
+                      "const": "derived_subtotal"
+                    },
+                    "aggregationGroup": {
+                      "const": null
+                    }
                   }
                 }
               },
               {
                 "if": {
-                  "properties": { "aggregationEligibility": { "const": "ineligible_incompatible_basis" } },
-                  "required": ["aggregationEligibility"]
+                  "properties": {
+                    "aggregationEligibility": {
+                      "const": "ineligible_incompatible_basis"
+                    }
+                  },
+                  "required": [
+                    "aggregationEligibility"
+                  ]
                 },
                 "then": {
-                  "properties": { "aggregationGroup": { "const": null } }
+                  "properties": {
+                    "aggregationGroup": {
+                      "const": null
+                    }
+                  }
                 }
               }
             ]
@@ -479,27 +858,56 @@
               "sourceLocator"
             ],
             "properties": {
-              "contextId": { "type": "string", "minLength": 1 },
-              "precursor": { "type": "string", "minLength": 1 },
+              "contextId": {
+                "type": "string",
+                "minLength": 1
+              },
+              "precursor": {
+                "type": "string",
+                "minLength": 1
+              },
               "origins": {
                 "type": "array",
                 "minItems": 1,
                 "uniqueItems": true,
-                "items": { "type": "string", "minLength": 1 }
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
               },
               "destinations": {
                 "type": "array",
                 "minItems": 1,
                 "uniqueItems": true,
-                "items": { "type": "string", "minLength": 1 }
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
               },
-              "year": { "type": "integer", "minimum": 1900 },
-              "recordKind": { "const": "qualitative_context" },
-              "allocationStatus": { "const": "not_reported_by_origin_destination_pair" },
-              "operationReportedSeizureCount": { "type": "integer", "minimum": 1 },
-              "countScope": { "const": "four_reporting_countries_operation_total" },
-              "summary": { "type": "string", "minLength": 1 },
-              "sourceLocator": { "$ref": "#/$defs/sourceLocator" }
+              "year": {
+                "type": "integer",
+                "minimum": 1900
+              },
+              "recordKind": {
+                "const": "qualitative_context"
+              },
+              "allocationStatus": {
+                "const": "not_reported_by_origin_destination_pair"
+              },
+              "operationReportedSeizureCount": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "countScope": {
+                "const": "four_reporting_countries_operation_total"
+              },
+              "summary": {
+                "type": "string",
+                "minLength": 1
+              },
+              "sourceLocator": {
+                "$ref": "#/$defs/sourceLocator"
+              }
             }
           }
         }
@@ -517,18 +925,36 @@
         "multiCountryRecordCount"
       ],
       "properties": {
-        "recordCount": { "type": "integer", "minimum": 0 },
-        "narcoticsSpecificProgramRecordCount": { "type": "integer", "minimum": 0 },
-        "tcoOnlyRecordCount": { "type": "integer", "minimum": 0 },
+        "recordCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "narcoticsSpecificProgramRecordCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "tcoOnlyRecordCount": {
+          "type": "integer",
+          "minimum": 0
+        },
         "byEntityType": {
           "type": "array",
           "items": {
             "type": "object",
             "additionalProperties": false,
-            "required": ["entityType", "count"],
+            "required": [
+              "entityType",
+              "count"
+            ],
             "properties": {
-              "entityType": { "type": "string", "minLength": 1 },
-              "count": { "type": "integer", "minimum": 0 }
+              "entityType": {
+                "type": "string",
+                "minLength": 1
+              },
+              "count": {
+                "type": "integer",
+                "minimum": 0
+              }
             }
           }
         },
@@ -537,15 +963,68 @@
           "items": {
             "type": "object",
             "additionalProperties": false,
-            "required": ["program", "label", "count"],
+            "required": [
+              "program",
+              "label",
+              "count"
+            ],
             "properties": {
-              "program": { "type": "string", "minLength": 1 },
-              "label": { "type": "string", "minLength": 1 },
-              "count": { "type": "integer", "minimum": 0 }
+              "program": {
+                "type": "string",
+                "minLength": 1
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1
+              },
+              "count": {
+                "type": "integer",
+                "minimum": 0
+              }
             }
           }
         },
-        "multiCountryRecordCount": { "type": "integer", "minimum": 0 }
+        "multiCountryRecordCount": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "publication": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "policyId",
+        "status",
+        "sourceIds",
+        "permissionEvidence",
+        "reason",
+        "observationScope"
+      ],
+      "properties": {
+        "policyId": {
+          "const": "narcoscope.publication-rights.2026-10-28.v1"
+        },
+        "status": {
+          "const": "metadata_only"
+        },
+        "sourceIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        },
+        "permissionEvidence": {
+          "type": "null"
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "observationScope": {
+          "const": "published_rows_only"
+        }
       }
     }
   }

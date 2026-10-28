@@ -16,15 +16,29 @@
     "limitations"
   ],
   "properties": {
-    "$schema": { "const": "./narcoscope-palimpsest-corridors-v2.schema.json" },
-    "schemaVersion": { "const": "narcoscope.palimpsest.corridor-aggregate.v2" },
-    "artifactId": { "const": "narcoscope.china-pakistan-myanmar.official-coverage" },
-    "dataAsOf": { "type": ["string", "null"], "format": "date" },
+    "$schema": {
+      "const": "./narcoscope-palimpsest-corridors-v2.schema.json"
+    },
+    "schemaVersion": {
+      "const": "narcoscope.palimpsest.corridor-aggregate.v2"
+    },
+    "artifactId": {
+      "const": "narcoscope.china-pakistan-myanmar.official-coverage"
+    },
+    "dataAsOf": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date"
+    },
     "geographies": {
       "type": "array",
       "minItems": 3,
       "maxItems": 3,
-      "items": { "$ref": "#/$defs/geography" }
+      "items": {
+        "$ref": "#/$defs/geography"
+      }
     },
     "disclosure": {
       "type": "object",
@@ -42,16 +56,36 @@
         "politicalOrArmedActorInference"
       ],
       "properties": {
-        "level": { "const": "public_country_aggregate" },
-        "sourcePolicy": { "const": "official_only" },
-        "subjectEntityDisclosure": { "const": "none" },
-        "exactAddressDisclosure": { "const": "none" },
-        "preciseCoordinateDisclosure": { "const": "none" },
-        "identifierDisclosure": { "const": "none" },
-        "illustrativeDataIncluded": { "const": false },
-        "runtimeCoupling": { "const": "none_static_artifact" },
-        "joinPolicy": { "const": "geography_and_time_only" },
-        "politicalOrArmedActorInference": { "const": "prohibited" }
+        "level": {
+          "const": "public_country_aggregate"
+        },
+        "sourcePolicy": {
+          "const": "official_only"
+        },
+        "subjectEntityDisclosure": {
+          "const": "none"
+        },
+        "exactAddressDisclosure": {
+          "const": "none"
+        },
+        "preciseCoordinateDisclosure": {
+          "const": "none"
+        },
+        "identifierDisclosure": {
+          "const": "none"
+        },
+        "illustrativeDataIncluded": {
+          "const": false
+        },
+        "runtimeCoupling": {
+          "const": "none_static_artifact"
+        },
+        "joinPolicy": {
+          "const": "geography_and_time_only"
+        },
+        "politicalOrArmedActorInference": {
+          "const": "prohibited"
+        }
       }
     },
     "datasets": {
@@ -67,37 +101,103 @@
       "properties": {
         "retailDrugPrices": {
           "allOf": [
-            { "$ref": "#/$defs/dataset" },
-            { "properties": { "datasetId": { "const": "retail_drug_prices" } } }
+            {
+              "$ref": "#/$defs/dataset"
+            },
+            {
+              "properties": {
+                "datasetId": {
+                  "const": "retail_drug_prices"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "required": [
+                "publication"
+              ],
+              "properties": {
+                "data": {
+                  "type": "null"
+                },
+                "publication": {
+                  "$ref": "#/$defs/publication"
+                }
+              }
+            }
           ]
         },
         "drugSeizures": {
           "allOf": [
-            { "$ref": "#/$defs/dataset" },
-            { "properties": { "datasetId": { "const": "drug_seizures" } } }
+            {
+              "$ref": "#/$defs/dataset"
+            },
+            {
+              "properties": {
+                "datasetId": {
+                  "const": "drug_seizures"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "required": [
+                "publication"
+              ],
+              "properties": {
+                "data": {
+                  "type": "null"
+                },
+                "publication": {
+                  "$ref": "#/$defs/publication"
+                }
+              }
+            }
           ]
         },
         "precursorCorridorIncidents": {
           "allOf": [
-            { "$ref": "#/$defs/dataset" },
+            {
+              "$ref": "#/$defs/dataset"
+            },
             {
               "properties": {
-                "datasetId": { "const": "precursor_corridor_incidents" },
-                "data": { "$ref": "#/$defs/precursorData" }
+                "datasetId": {
+                  "const": "precursor_corridor_incidents"
+                },
+                "data": {
+                  "$ref": "#/$defs/precursorData"
+                }
               }
             }
           ]
         },
         "ofacDesignations": {
           "allOf": [
-            { "$ref": "#/$defs/dataset" },
-            { "properties": { "datasetId": { "const": "ofac_designations" } } }
+            {
+              "$ref": "#/$defs/dataset"
+            },
+            {
+              "properties": {
+                "datasetId": {
+                  "const": "ofac_designations"
+                }
+              }
+            }
           ]
         },
         "wildlifeConfiscations": {
           "allOf": [
-            { "$ref": "#/$defs/dataset" },
-            { "properties": { "datasetId": { "const": "wildlife_confiscations" } } }
+            {
+              "$ref": "#/$defs/dataset"
+            },
+            {
+              "properties": {
+                "datasetId": {
+                  "const": "wildlife_confiscations"
+                }
+              }
+            }
           ]
         }
       }
@@ -105,19 +205,45 @@
     "exclusions": {
       "type": "array",
       "minItems": 5,
-      "items": { "$ref": "#/$defs/exclusion" }
+      "items": {
+        "$ref": "#/$defs/exclusion"
+      }
     },
-    "limitations": { "$ref": "#/$defs/limitations" }
+    "limitations": {
+      "$ref": "#/$defs/limitations"
+    }
   },
   "$defs": {
     "geography": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["country", "iso2", "iso3"],
+      "required": [
+        "country",
+        "iso2",
+        "iso3"
+      ],
       "properties": {
-        "country": { "enum": ["China", "Myanmar", "Pakistan"] },
-        "iso2": { "enum": ["CN", "MM", "PK"] },
-        "iso3": { "enum": ["CHN", "MMR", "PAK"] }
+        "country": {
+          "enum": [
+            "China",
+            "Myanmar",
+            "Pakistan"
+          ]
+        },
+        "iso2": {
+          "enum": [
+            "CN",
+            "MM",
+            "PK"
+          ]
+        },
+        "iso3": {
+          "enum": [
+            "CHN",
+            "MMR",
+            "PAK"
+          ]
+        }
       }
     },
     "dataset": {
@@ -134,60 +260,174 @@
         "limitations"
       ],
       "properties": {
-        "datasetId": { "type": "string", "minLength": 1 },
-        "topic": { "type": "string", "minLength": 1 },
-        "sourceStatus": { "const": "official" },
-        "measurement": { "$ref": "#/$defs/measurement" },
-        "temporalCoverage": { "$ref": "#/$defs/temporalCoverage" },
-        "provenance": { "$ref": "#/$defs/provenance" },
-        "data": { "type": "object" },
-        "limitations": { "$ref": "#/$defs/limitations" }
+        "datasetId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "topic": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sourceStatus": {
+          "const": "official"
+        },
+        "measurement": {
+          "$ref": "#/$defs/measurement"
+        },
+        "temporalCoverage": {
+          "$ref": "#/$defs/temporalCoverage"
+        },
+        "provenance": {
+          "$ref": "#/$defs/provenance"
+        },
+        "data": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "limitations": {
+          "$ref": "#/$defs/limitations"
+        },
+        "publication": {
+          "$ref": "#/$defs/publication"
+        }
       }
     },
     "measurement": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["status", "valueType", "method", "unit", "grain"],
+      "required": [
+        "status",
+        "valueType",
+        "method",
+        "unit",
+        "grain"
+      ],
       "properties": {
-        "status": { "enum": ["official_reported", "official_action_record"] },
-        "valueType": {
-          "enum": ["statistical_measurement", "administrative_measurement", "administrative_action"]
+        "status": {
+          "enum": [
+            "official_reported",
+            "official_action_record"
+          ]
         },
-        "method": { "type": "string", "minLength": 1 },
-        "unit": { "type": "string", "minLength": 1 },
-        "grain": { "type": "string", "minLength": 1 }
+        "valueType": {
+          "enum": [
+            "statistical_measurement",
+            "administrative_measurement",
+            "administrative_action"
+          ]
+        },
+        "method": {
+          "type": "string",
+          "minLength": 1
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "grain": {
+          "type": "string",
+          "minLength": 1
+        }
       }
     },
     "temporalCoverage": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["kind", "fromYear", "toYear", "snapshotDate"],
+      "required": [
+        "kind",
+        "fromYear",
+        "toYear",
+        "snapshotDate"
+      ],
       "properties": {
-        "kind": { "enum": ["year_range", "snapshot"] },
-        "fromYear": { "type": ["integer", "null"] },
-        "toYear": { "type": ["integer", "null"] },
-        "snapshotDate": { "type": ["string", "null"], "format": "date" }
+        "kind": {
+          "enum": [
+            "year_range",
+            "snapshot"
+          ]
+        },
+        "fromYear": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "toYear": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "snapshotDate": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date"
+        }
       }
     },
     "provenance": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["publisher", "title", "url", "sourceEdition", "localDataDate", "input"],
+      "required": [
+        "publisher",
+        "title",
+        "url",
+        "sourceEdition",
+        "localDataDate",
+        "input"
+      ],
       "properties": {
-        "publisher": { "type": "string", "minLength": 1 },
-        "title": { "type": "string", "minLength": 1 },
-        "url": { "type": "string", "format": "uri" },
-        "sourceEdition": { "type": "string", "minLength": 1 },
-        "localDataDate": { "type": ["string", "null"], "format": "date" },
-        "documentSha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
-        "retrievedAt": { "type": "string", "format": "date-time" },
+        "publisher": {
+          "type": "string",
+          "minLength": 1
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "sourceEdition": {
+          "type": "string",
+          "minLength": 1
+        },
+        "localDataDate": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date"
+        },
+        "documentSha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "retrievedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
         "input": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["path", "sha256"],
+          "required": [
+            "path",
+            "sha256"
+          ],
           "properties": {
-            "path": { "type": "string", "minLength": 1 },
-            "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+            "path": {
+              "type": "string",
+              "minLength": 1
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
           }
         }
       }
@@ -204,21 +444,50 @@
         "contextRecords"
       ],
       "properties": {
-        "includedQuantitativeRecordCount": { "type": "integer", "minimum": 0 },
-        "includedContextRecordCount": { "type": "integer", "minimum": 0 },
-        "crossTargetBilateralRecordCount": { "const": 0 },
+        "includedQuantitativeRecordCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "includedContextRecordCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "crossTargetBilateralRecordCount": {
+          "const": 0
+        },
         "quantityAggregation": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["status", "summedQuantityKg", "reason"],
+          "required": [
+            "status",
+            "summedQuantityKg",
+            "reason"
+          ],
           "properties": {
-            "status": { "const": "not_computed_mixed_claim_semantics" },
-            "summedQuantityKg": { "const": null },
-            "reason": { "type": "string", "minLength": 1 }
+            "status": {
+              "const": "not_computed_mixed_claim_semantics"
+            },
+            "summedQuantityKg": {
+              "const": null
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            }
           }
         },
-        "corridors": { "type": "array", "items": { "$ref": "#/$defs/precursorRecord" } },
-        "contextRecords": { "type": "array", "items": { "type": "object" } }
+        "corridors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/precursorRecord"
+          }
+        },
+        "contextRecords": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
       }
     },
     "precursorRecord": {
@@ -245,45 +514,128 @@
         "geographyMatches": {
           "type": "array",
           "minItems": 1,
-          "items": { "enum": ["CHN", "MMR", "PAK"] },
+          "items": {
+            "enum": [
+              "CHN",
+              "MMR",
+              "PAK"
+            ]
+          },
           "uniqueItems": true
         },
-        "reportedOrigin": { "type": "string", "minLength": 1 },
-        "transit": { "type": ["string", "null"] },
-        "destination": { "type": "string", "minLength": 1 },
-        "seizureLocation": { "type": ["string", "null"] },
-        "year": { "type": "integer" },
-        "precursor": { "type": "string", "minLength": 1 },
-        "quantityKg": { "type": "number", "minimum": 0 },
-        "quantityRelation": { "enum": ["exact", "approx", "less_than", "greater_than"] },
-        "quantityBasis": { "type": "string", "minLength": 1 },
+        "reportedOrigin": {
+          "type": "string",
+          "minLength": 1
+        },
+        "transit": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "destination": {
+          "type": "string",
+          "minLength": 1
+        },
+        "seizureLocation": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "year": {
+          "type": "integer"
+        },
+        "precursor": {
+          "type": "string",
+          "minLength": 1
+        },
+        "quantityKg": {
+          "type": "number",
+          "minimum": 0
+        },
+        "quantityRelation": {
+          "enum": [
+            "exact",
+            "approx",
+            "less_than",
+            "greater_than"
+          ]
+        },
+        "quantityBasis": {
+          "type": "string",
+          "minLength": 1
+        },
         "recordKind": {
-          "enum": ["single_incident", "multi_incident_aggregate", "annual_aggregate", "derived_subtotal"]
+          "enum": [
+            "single_incident",
+            "multi_incident_aggregate",
+            "annual_aggregate",
+            "derived_subtotal"
+          ]
         },
         "aggregationEligibility": {
-          "enum": ["eligible", "ineligible_non_exact", "ineligible_derived", "ineligible_incompatible_basis"]
+          "enum": [
+            "eligible",
+            "ineligible_non_exact",
+            "ineligible_derived",
+            "ineligible_incompatible_basis"
+          ]
         },
-        "aggregationGroup": { "type": ["string", "null"] },
-        "incidentCount": { "type": ["integer", "null"], "minimum": 1 },
-        "sourceLocator": { "$ref": "#/$defs/sourceLocator" }
+        "aggregationGroup": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "incidentCount": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1
+        },
+        "sourceLocator": {
+          "$ref": "#/$defs/sourceLocator"
+        }
       }
     },
     "sourceLocator": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["pdfPage", "printedPage", "paragraph"],
+      "required": [
+        "pdfPage",
+        "printedPage",
+        "paragraph"
+      ],
       "properties": {
-        "pdfPage": { "type": "integer", "minimum": 1 },
-        "printedPage": { "type": "integer", "minimum": 1 },
-        "paragraph": { "type": "integer", "minimum": 1 }
+        "pdfPage": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "printedPage": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "paragraph": {
+          "type": "integer",
+          "minimum": 1
+        }
       }
     },
     "exclusion": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["component", "classification", "reason"],
+      "required": [
+        "component",
+        "classification",
+        "reason"
+      ],
       "properties": {
-        "component": { "type": "string", "minLength": 1 },
+        "component": {
+          "type": "string",
+          "minLength": 1
+        },
         "classification": {
           "enum": [
             "illustrative_or_constructed",
@@ -293,13 +645,56 @@
             "safety_minimized"
           ]
         },
-        "reason": { "type": "string", "minLength": 1 }
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        }
       }
     },
     "limitations": {
       "type": "array",
       "minItems": 1,
-      "items": { "type": "string", "minLength": 1 }
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "publication": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "policyId",
+        "status",
+        "sourceIds",
+        "permissionEvidence",
+        "reason",
+        "observationScope"
+      ],
+      "properties": {
+        "policyId": {
+          "const": "narcoscope.publication-rights.2026-10-28.v1"
+        },
+        "status": {
+          "const": "metadata_only"
+        },
+        "sourceIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        },
+        "permissionEvidence": {
+          "type": "null"
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "observationScope": {
+          "const": "published_rows_only"
+        }
+      }
     }
   }
 }

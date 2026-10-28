@@ -1,3 +1,4 @@
+import { projectBridge, projectOverview } from '../../lib/publication-rights.mjs'
 import { readFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 
@@ -136,11 +137,12 @@ export function capabilities() {
 }
 
 export async function getOverview() {
-  const source = await readJson(PUBLIC_FILES.overview)
+  const source = projectOverview(await readJson(PUBLIC_FILES.overview))
   return {
     schema: 'narcoscope.api.overview.v1',
     generated_at: source.meta?.generated ?? null,
     note: source.meta?.note ?? null,
+    publication: source.publication,
     headline: source.headline ?? {},
     overdose_by_substance: source.overdoseBySubstance ?? [],
     top_seizure_countries: (source.topSeizureCountries ?? []).slice(0, 10),
@@ -214,7 +216,7 @@ export async function getStory({ slug, artifact = 'machine-brief' } = {}) {
 }
 
 export async function getPalimpsestBridge() {
-  const bridge = await readJson(PUBLIC_FILES.palimpsestBridge)
+  const bridge = projectBridge(await readJson(PUBLIC_FILES.palimpsestBridge))
   return {
     ...bridge,
     canonicalUrl: `${SITE_URL}/data/narcoscope-palimpsest-v1.json`,
@@ -223,7 +225,7 @@ export async function getPalimpsestBridge() {
 }
 
 export async function getPalimpsestCorridors() {
-  const bridge = await readJson(PUBLIC_FILES.palimpsestCorridors)
+  const bridge = projectBridge(await readJson(PUBLIC_FILES.palimpsestCorridors))
   return {
     ...bridge,
     canonicalUrl: `${SITE_URL}/data/narcoscope-palimpsest-corridors-v2.json`,

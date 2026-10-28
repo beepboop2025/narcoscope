@@ -1,7 +1,9 @@
 import {
   ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, Legend, ReferenceLine,
 } from 'recharts'
-import overview from '../data/overview.json'
+import retainedOverview from '../data/overview.json'
+import { projectOverview } from '../../lib/publication-rights.mjs'
+const overview = projectOverview(retainedOverview) as typeof retainedOverview
 import CountUp from '../motion/CountUp'
 import Reveal from '../motion/Reveal'
 import DataTableViewport from './DataTableViewport'
@@ -69,7 +71,7 @@ export default function Overview() {
           </span>
         </div>
         <div className="stat">
-          <span className="stat-value"><CountUp value={h.worldSeizureTonnes} suffix=" t" /></span>
+          <span className="stat-value">Withheld</span>
           <span className="stat-label">World drug seizures ({h.seizureYear})</span>
         </div>
         <div className="stat">
@@ -77,8 +79,8 @@ export default function Overview() {
           <span className="stat-label">OFAC-designated entities</span>
         </div>
         <div className="stat">
-          <span className="stat-value"><CountUp value={h.seizureCountries} group={false} /></span>
-          <span className="stat-label">Countries tracked</span>
+          <span className="stat-value">Withheld</span>
+          <span className="stat-label">WDR country coverage requires publication permission</span>
         </div>
       </div>
 
@@ -122,6 +124,7 @@ export default function Overview() {
           A seizure figure alone cannot tell you whether more drugs moved or more officers looked.
           Read against consumption — measured by <em>different</em> institutions — the gaps are the story.
         </p>
+        <p role="status">WDR-derived comparisons are withheld pending publication permission. Independent harm and wastewater evidence remains available.</p>
         <div className="alert-grid">
           {overview.divergences.map((d) => (
             <div className="alert-card" key={d.label}>
@@ -160,7 +163,7 @@ export default function Overview() {
 
         <Reveal delay={80}>
           <div className="panel">
-            <h4>Top seizure countries ({h.seizureYear}, all drugs)</h4>
+            <h4>Seizure country metadata ({h.seizureYear})</h4><p>Rankings and quantities withheld pending publication permission.</p>
             <Bars rows={overview.topSeizureCountries.map((c) => ({
               label: c.name.length > 20 ? `${c.name.slice(0, 19)}…` : c.name,
               value: c.kg,

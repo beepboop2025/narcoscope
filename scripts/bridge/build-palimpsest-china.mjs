@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { projectBridge } from '../../lib/publication-rights.mjs'
 
 import { createHash } from 'node:crypto'
 import fs from 'node:fs/promises'
@@ -844,7 +845,7 @@ export function buildPalimpsestChinaArtifact(inputs) {
     .filter(Boolean)
     .sort(compareText)
 
-  return assertPublicBridgeBoundary({
+  return projectBridge(assertPublicBridgeBoundary({
     $schema: `./${BRIDGE_SCHEMA_FILE}`,
     schemaVersion: BRIDGE_SCHEMA_VERSION,
     artifactId: 'narcoscope.china.official-coverage',
@@ -897,7 +898,7 @@ export function buildPalimpsestChinaArtifact(inputs) {
       'Official source status describes provenance, not completeness, truth of an allegation or adjudicated guilt.',
       'Palimpsest should pin and verify input hashes before promoting a changed artifact.',
     ],
-  })
+  }))
 }
 
 export function serializePalimpsestChinaArtifact(artifact) {
