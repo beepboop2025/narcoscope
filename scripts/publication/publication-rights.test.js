@@ -28,6 +28,21 @@ describe('WDR publication enforcement', () => {
     expect(JSON.stringify(rawDrugs)).toBe(before)
   })
 
+  it.each([
+    ['orphan observation', data => { data.observations.push({ ...data.observations[0], id: 'unresolved-row', indicatorId: 'not-registered', value: 123456789 }) }],
+    ['orphan source', data => { data.indicators[0].sourceId = 'not-registered' }],
+    ['duplicate source', data => { data.sources.push({ ...data.sources[0] }) }],
+    ['duplicate indicator', data => { data.indicators.push({ ...data.indicators[0] }) }],
+    ['duplicate observation', data => { data.observations.push({ ...data.observations[0] }) }],
+    ['unknown permission', data => { data.sources[0].license = 'unknown' }],
+    ['restricted permission', data => { data.sources[0].license = ' restricted ' }],
+    ['unestablished permission', data => { data.sources[0].license = 'not established' }],
+  ])('fails closed at the shared boundary for %s', (_name, mutate) => {
+    const data = structuredClone(rawDrugs)
+    mutate(data)
+    expect(() => projectMarketDataset(data)).toThrow(/Publication/)
+  })
+
   it('withholds old artifacts on first load and cache hits; denied queries retain exact source IDs and no fake zero total', async () => {
     for (let hit = 0; hit < 2; hit++) {
       const result = await queryMarketObservations({ dataset: 'global-drugs', indicator: 'wdr2026-seizures-kg', limit: 20 })
@@ -86,6 +101,20 @@ describe('WDR publication enforcement', () => {
       const body = await response.json()
       expect(body.data.datasets.retailDrugPrices.data).toBeNull()
     }
+    const invalid = structuredClone(rawDrugs)
+    invalid.observations.push({ ...invalid.observations[0], id: 'unresolved-row', indicatorId: 'not-registered', value: 123456789 })
+    await writeFile(join(dir, 'data/global-drugs-v1.json'), JSON.stringify(invalid))
+    await expect(projectPublicDirectory(dir)).rejects.toThrow(/Publication observation/)
+    const rejected = await fetch(origin + '/data//global-drugs-v1.json')
+    expect(rejected.status).toBe(500)
+    expect(await rejected.text()).not.toContain('123456789')
+    invalid.observations.pop()
+    invalid.sources[0].license = 'unknown'
+    await writeFile(join(dir, 'data/global-drugs-v1.json'), JSON.stringify(invalid))
+    await expect(projectPublicDirectory(dir)).rejects.toThrow(/Publication source permission/)
+    const unknown = await fetch(origin + '/data/global-drugs-v1.json/')
+    expect(unknown.status).toBe(500)
+    expect(await unknown.text()).not.toContain('observations')
     for (const path of ['/src/data/prices.ts', '/public/data/global-drugs-v1.json', '/.git/config', '/assets/old-wdr-12345678.js']) expect((await fetch(origin + path)).status).toBe(404)
   })
 
