@@ -1,10 +1,10 @@
 {
   "schema": "narcoscope.evidence-wire.v1",
-  "generatedAt": "2026-10-29T23:01:34.499Z",
+  "generatedAt": "2026-10-30T13:22:17.501Z",
   "status": "partial",
   "window": {
     "start": "2026-08-19T12:00:00.000Z",
-    "end": "2026-10-29T12:00:00.000Z"
+    "end": "2026-10-30T12:00:00.000Z"
   },
   "items": [
     {
@@ -14,7 +14,7 @@
       "sourceId": "europol-news",
       "sourceName": "Europol · Newsroom",
       "publishedAt": null,
-      "retrievedAt": "2026-10-29T23:01:34.499Z",
+      "retrievedAt": "2026-10-30T13:22:17.501Z",
       "evidenceClass": "official-release",
       "verificationState": "source-published",
       "legalStage": "not-applicable",
@@ -31,12 +31,46 @@
       "sourceId": "europol-news",
       "sourceName": "Europol · Newsroom",
       "publishedAt": null,
-      "retrievedAt": "2026-10-29T23:01:34.499Z",
+      "retrievedAt": "2026-10-30T13:22:17.501Z",
       "evidenceClass": "official-release",
       "verificationState": "source-published",
       "legalStage": "not-applicable",
       "topics": [
         "drug markets"
+      ],
+      "countries": [],
+      "publicationAllowed": true
+    },
+    {
+      "id": "doj-justice-news-2d75b5a1c2357860f776",
+      "title": "Pensacola Felon Indicted on Federal Firearm & Machinegun Charges",
+      "url": "https://www.justice.gov/usao-ndfl/pr/pensacola-felon-indicted-federal-firearm-machinegun-charges",
+      "sourceId": "doj-justice-news",
+      "sourceName": "U.S. Department of Justice · Justice News",
+      "publishedAt": "2026-10-30T12:00:00.000Z",
+      "retrievedAt": "2026-10-30T13:22:17.501Z",
+      "evidenceClass": "official-action",
+      "verificationState": "source-published",
+      "legalStage": "charge",
+      "topics": [
+        "arms trafficking"
+      ],
+      "countries": [],
+      "publicationAllowed": true
+    },
+    {
+      "id": "doj-justice-news-0fea9db6b707263b7735",
+      "title": "Alleged Engineer of CJNG Cartel’s Cross-Border Tunnel Indicted for Providing Material Support to Foreign Terrorist Organization",
+      "url": "https://www.justice.gov/usao-sdca/pr/alleged-engineer-cjng-cartels-cross-border-tunnel-indicted-providing-material-support",
+      "sourceId": "doj-justice-news",
+      "sourceName": "U.S. Department of Justice · Justice News",
+      "publishedAt": "2026-10-29T12:00:00.000Z",
+      "retrievedAt": "2026-10-30T13:22:17.501Z",
+      "evidenceClass": "official-action",
+      "verificationState": "source-published",
+      "legalStage": "charge",
+      "topics": [
+        "organized crime"
       ],
       "countries": [],
       "publicationAllowed": true
@@ -82,7 +116,7 @@
       "sourceId": "doj-justice-news",
       "sourceName": "U.S. Department of Justice · Justice News",
       "publishedAt": "2026-10-29T12:00:00.000Z",
-      "retrievedAt": "2026-10-29T23:01:34.499Z",
+      "retrievedAt": "2026-10-30T13:22:17.501Z",
       "evidenceClass": "official-action",
       "verificationState": "source-published",
       "legalStage": "sentencing",
@@ -99,7 +133,7 @@
       "sourceId": "doj-justice-news",
       "sourceName": "U.S. Department of Justice · Justice News",
       "publishedAt": "2026-10-29T12:00:00.000Z",
-      "retrievedAt": "2026-10-29T23:01:34.499Z",
+      "retrievedAt": "2026-10-30T13:22:17.501Z",
       "evidenceClass": "official-action",
       "verificationState": "source-published",
       "legalStage": "charge",
@@ -133,7 +167,7 @@
       "sourceId": "doj-justice-news",
       "sourceName": "U.S. Department of Justice · Justice News",
       "publishedAt": "2026-10-29T12:00:00.000Z",
-      "retrievedAt": "2026-10-29T23:01:34.499Z",
+      "retrievedAt": "2026-10-30T13:11:37.015Z",
       "evidenceClass": "official-action",
       "verificationState": "source-published",
       "legalStage": "sentencing",
@@ -243,6 +277,23 @@
       "topics": [
         "illicit finance",
         "human smuggling"
+      ],
+      "countries": [],
+      "publicationAllowed": true
+    },
+    {
+      "id": "doj-justice-news-9a8c05d31eeb485c5609",
+      "title": "Chinese national sentenced to 12 years in prison for narcotics trafficking, money laundering, and material support to terrorism",
+      "url": "https://www.justice.gov/usao-edva/pr/chinese-national-sentenced-12-years-prison-narcotics-trafficking-money-laundering-and",
+      "sourceId": "doj-justice-news",
+      "sourceName": "U.S. Department of Justice · Justice News",
+      "publishedAt": "2026-10-29T12:00:00.000Z",
+      "retrievedAt": "2026-10-30T13:22:17.501Z",
+      "evidenceClass": "official-action",
+      "verificationState": "source-published",
+      "legalStage": "sentencing",
+      "topics": [
+        "illicit finance"
       ],
       "countries": [],
       "publicationAllowed": true
@@ -676,64 +727,13 @@
       "publicationAllowed": true
     },
     {
-      "id": "doj-justice-news-1d7ca9f9635bfd149c2b",
-      "title": "West Mifflin Felon Sentenced to Prison for Unlawful Possession of Ammunition",
-      "url": "https://www.justice.gov/usao-wdpa/pr/west-mifflin-felon-sentenced-prison-unlawful-possession-ammunition",
-      "sourceId": "doj-justice-news",
-      "sourceName": "U.S. Department of Justice · Justice News",
-      "publishedAt": "2026-10-27T12:00:00.000Z",
-      "retrievedAt": "2026-10-27T17:29:08.865Z",
-      "evidenceClass": "official-action",
-      "verificationState": "source-published",
-      "legalStage": "sentencing",
-      "topics": [
-        "arms trafficking"
-      ],
-      "countries": [],
-      "publicationAllowed": true
-    },
-    {
-      "id": "doj-justice-news-214e6ad8c99401591693",
-      "title": "Alien Smuggling Facilitator Sentenced in El Paso to 9 Years in Federal Prison",
-      "url": "https://www.justice.gov/usao-wdtx/pr/alien-smuggling-facilitator-sentenced-el-paso-9-years-federal-prison",
-      "sourceId": "doj-justice-news",
-      "sourceName": "U.S. Department of Justice · Justice News",
-      "publishedAt": "2026-10-27T12:00:00.000Z",
-      "retrievedAt": "2026-10-27T19:01:51.010Z",
-      "evidenceClass": "official-action",
-      "verificationState": "source-published",
-      "legalStage": "sentencing",
-      "topics": [
-        "human smuggling"
-      ],
-      "countries": [],
-      "publicationAllowed": true
-    },
-    {
-      "id": "doj-justice-news-41460f419475e0d72530",
-      "title": "Texas Woman Sentenced to Prison for Conspiracy to Distribute Fentanyl Pills",
-      "url": "https://www.justice.gov/usao-nv/pr/texas-woman-sentenced-prison-conspiracy-distribute-fentanyl-pills",
-      "sourceId": "doj-justice-news",
-      "sourceName": "U.S. Department of Justice · Justice News",
-      "publishedAt": "2026-10-27T12:00:00.000Z",
-      "retrievedAt": "2026-10-28T17:37:20.999Z",
-      "evidenceClass": "official-action",
-      "verificationState": "source-published",
-      "legalStage": "sentencing",
-      "topics": [
-        "drug markets"
-      ],
-      "countries": [],
-      "publicationAllowed": true
-    },
-    {
       "id": "treasury-press-098541b4b5331de1c6af",
       "title": "Treasury Sanctions Rwandan Ministry of Defence and Financial Institution Supporting M23",
       "url": "https://home.treasury.gov/news/press-releases/sb0668/",
       "sourceId": "treasury-press",
       "sourceName": "U.S. Treasury · Press releases",
       "publishedAt": "2026-10-22T21:00:00.000Z",
-      "retrievedAt": "2026-10-29T23:01:34.499Z",
+      "retrievedAt": "2026-10-30T13:22:17.501Z",
       "evidenceClass": "official-action",
       "verificationState": "source-published",
       "legalStage": "designation",
@@ -801,7 +801,7 @@
       "sourceId": "un-news-law-crime",
       "sourceName": "United Nations News · Law and crime prevention",
       "publishedAt": "2026-10-09T12:00:00.000Z",
-      "retrievedAt": "2026-10-29T23:01:34.499Z",
+      "retrievedAt": "2026-10-30T13:22:17.501Z",
       "evidenceClass": "official-release",
       "verificationState": "source-published",
       "legalStage": "not-applicable",
@@ -835,7 +835,7 @@
       "sourceId": "un-news-law-crime",
       "sourceName": "United Nations News · Law and crime prevention",
       "publishedAt": "2026-10-03T12:00:00.000Z",
-      "retrievedAt": "2026-10-29T23:01:34.499Z",
+      "retrievedAt": "2026-10-30T13:22:17.501Z",
       "evidenceClass": "official-release",
       "verificationState": "source-published",
       "legalStage": "not-applicable",
@@ -1091,7 +1091,7 @@
       "sourceId": "un-news-law-crime",
       "sourceName": "United Nations News · Law and crime prevention",
       "publishedAt": "2026-08-19T12:00:00.000Z",
-      "retrievedAt": "2026-10-29T23:01:34.499Z",
+      "retrievedAt": "2026-10-30T13:22:17.501Z",
       "evidenceClass": "official-release",
       "verificationState": "source-published",
       "legalStage": "not-applicable",
@@ -1108,20 +1108,20 @@
       "name": "U.S. Department of Justice · Justice News",
       "url": "https://www.justice.gov/news/rss",
       "status": "fresh",
-      "checkedAt": "2026-10-29T23:01:34.499Z",
-      "lastSuccessAt": "2026-10-29T23:01:34.499Z",
+      "checkedAt": "2026-10-30T13:22:17.501Z",
+      "lastSuccessAt": "2026-10-30T13:22:17.501Z",
       "cadenceMinutes": 15,
       "staleAfterMinutes": 120,
       "rights": "Public U.S. government release metadata; NarcoScope republishes titles, links and source clocks only.",
-      "detail": "25 source items read · 3 current in-scope · 40 retained metadata items published"
+      "detail": "25 source items read · 5 current in-scope · 40 retained metadata items published"
     },
     {
       "id": "un-news-law-crime",
       "name": "United Nations News · Law and crime prevention",
       "url": "https://news.un.org/feed/subscribe/en/news/topic/law-and-crime-prevention/feed/rss.xml",
       "status": "fresh",
-      "checkedAt": "2026-10-29T23:01:34.499Z",
-      "lastSuccessAt": "2026-10-29T23:01:34.499Z",
+      "checkedAt": "2026-10-30T13:22:17.501Z",
+      "lastSuccessAt": "2026-10-30T13:22:17.501Z",
       "cadenceMinutes": 30,
       "staleAfterMinutes": 180,
       "rights": "Public United Nations feed metadata; NarcoScope republishes titles, links and source clocks only.",
@@ -1132,8 +1132,8 @@
       "name": "Europol · Newsroom",
       "url": "https://www.europol.europa.eu/cms/api/rss/news",
       "status": "fresh",
-      "checkedAt": "2026-10-29T23:01:34.499Z",
-      "lastSuccessAt": "2026-10-29T23:01:34.499Z",
+      "checkedAt": "2026-10-30T13:22:17.501Z",
+      "lastSuccessAt": "2026-10-30T13:22:17.501Z",
       "cadenceMinutes": 30,
       "staleAfterMinutes": 180,
       "rights": "Public European Union agency feed metadata; NarcoScope republishes titles, links and source clocks only.",
@@ -1144,8 +1144,8 @@
       "name": "U.S. Treasury · Press releases",
       "url": "https://home.treasury.gov/news/press-releases",
       "status": "fresh",
-      "checkedAt": "2026-10-29T23:01:34.499Z",
-      "lastSuccessAt": "2026-10-29T23:01:34.499Z",
+      "checkedAt": "2026-10-30T13:22:17.501Z",
+      "lastSuccessAt": "2026-10-30T13:22:17.501Z",
       "cadenceMinutes": 30,
       "staleAfterMinutes": 240,
       "rights": "Public U.S. government release metadata; NarcoScope republishes titles, links and source clocks only.",
@@ -1156,8 +1156,8 @@
       "name": "Palimpsest · newswire publication-rights receipt",
       "url": "https://www.palimpsest.info/readings/newswire-latest.json",
       "status": "restricted",
-      "checkedAt": "2026-10-29T23:01:34.499Z",
-      "lastSuccessAt": "2026-10-29T23:01:34.499Z",
+      "checkedAt": "2026-10-30T13:22:17.501Z",
+      "lastSuccessAt": "2026-10-30T13:22:17.501Z",
       "cadenceMinutes": 15,
       "staleAfterMinutes": 90,
       "rights": "Receipt only. Source content remains suppressed whenever Palimpsest publication_allowed is false.",
@@ -1168,7 +1168,7 @@
       "name": "Seiche · global money-market context",
       "url": "https://api.seiche.info/api/v2/money-markets",
       "status": "stale",
-      "checkedAt": "2026-10-29T23:01:34.499Z",
+      "checkedAt": "2026-10-30T13:22:17.501Z",
       "lastSuccessAt": "2026-10-06T07:01:59.134Z",
       "cadenceMinutes": 15,
       "staleAfterMinutes": 90,
@@ -1180,12 +1180,12 @@
       "name": "Seiche · capital-market context",
       "url": "https://api.seiche.info/api/v2/world-markets?section=capital_markets",
       "status": "fresh",
-      "checkedAt": "2026-10-29T23:01:34.499Z",
-      "lastSuccessAt": "2026-10-29T23:01:34.499Z",
+      "checkedAt": "2026-10-30T13:22:17.501Z",
+      "lastSuccessAt": "2026-10-30T13:22:17.501Z",
       "cadenceMinutes": 15,
       "staleAfterMinutes": 90,
       "rights": "Read-only economic context receipt. Values never become NarcoScope illicit-market facts or person-level inferences.",
-      "detail": "seiche.world-markets.v1 · generated 2026-10-29T22:53:23.000Z"
+      "detail": "seiche.world-markets.v1 · generated 2026-10-30T13:13:26.000Z"
     }
   ],
   "caveats": [
