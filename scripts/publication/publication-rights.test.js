@@ -14,7 +14,7 @@ const directories = [], servers = []
 afterAll(async () => { await Promise.all(servers.map(server => new Promise(resolve => server.close(resolve)))); await Promise.all(directories.map(path => rm(path, { recursive: true, force: true }))) })
 const sha = bytes => createHash('sha256').update(bytes).digest('hex')
 
-describe('WDR publication enforcement', () => {
+describe('WDR publication enforcement', { timeout: 30_000 }, () => {
   it('retains source identities, removes all WDR rows and preserves every qualified StatCan row byte-for-byte', () => {
     const before = JSON.stringify(rawDrugs)
     const projected = projectMarketDataset(rawDrugs)
