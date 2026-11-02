@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { spawnSync } from 'node:child_process'
-import { mkdtempSync, mkdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdtempSync, mkdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { isRestrictedWdrSource } from '../../lib/publication-rights.mjs'
@@ -56,12 +56,32 @@ describe('withheld WDR values stay out of the public repository', () => {
     }
   })
 
-  it('never lets Git track the withheld originals', () => {
+  it('ignores the withheld directory in .gitignore and in every Docker build context, and publishes no path inside it', () => {
+    // Read the rules themselves, so this holds without Git (the Railway CI context excludes .git).
+    const rules = file => readFileSync(join(REPOSITORY_ROOT, file), 'utf8').split('\n').map(line => line.trim()).filter(line => line && !line.startsWith('#'))
+    const ignoresDirectory = file => rules(file).some(line => ['data-private', 'data-private/', '/data-private', '/data-private/'].includes(line))
+    for (const file of ['.gitignore', '.dockerignore', 'deploy/railway-ci/Dockerfile.dockerignore']) {
+      expect(ignoresDirectory(file), file).toBe(true)
+      // A negation could re-include an original below the ignored directory.
+      expect(rules(file).filter(line => line.startsWith('!') && line.includes('data-private')), file).toEqual([])
+    }
+    expect(WITHHELD_DIRECTORY.startsWith('data-private/')).toBe(true)
+    // What the collector commits, what the quarterly refresh may propose, and what
+    // the hosted functions and production image ship never name the directory.
+    for (const file of ['deploy/collector/collect.sh', 'deploy/railway-quarterly/refresh.py', 'vercel.json', 'Dockerfile.railway', 'package.json']) {
+      expect(readFileSync(join(REPOSITORY_ROOT, file), 'utf8'), file).not.toContain('data-private')
+    }
+  })
+
+  // Requires a Git checkout. The Railway CI build context excludes .git, so this
+  // runs in local and GitHub checkouts and the collector's worktree, and skips there.
+  it.skipIf(!existsSync(join(REPOSITORY_ROOT, '.git')))('lets Git neither track nor un-ignore the withheld originals (Git checkouts only; skipped where .git is absent)', () => {
     for (const path of Object.keys(TRACKED_PROJECTIONS)) {
       const ignored = spawnSync('git', ['check-ignore', '--no-index', '-q', join(WITHHELD_DIRECTORY, path)], { cwd: REPOSITORY_ROOT })
       expect(ignored.status, path).toBe(0)
     }
     const listed = spawnSync('git', ['ls-files', '--', WITHHELD_DIRECTORY], { cwd: REPOSITORY_ROOT, encoding: 'utf8' })
+    expect(listed.status).toBe(0)
     expect(listed.stdout).toBe('')
   })
 
