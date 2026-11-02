@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import {
+  FEDERATION_LANE_MAX_RESPONSE_BYTES,
   FEDERATION_MAX_RESPONSE_BYTES,
   FEDERATION_TIMEOUT_MS,
   fetchBoundedJson,
@@ -373,6 +374,33 @@ describe('NarcoScope Seiche and Palimpsest federation', () => {
     expect(rights.lanes[0].data).not.toHaveProperty('quarantined_paths')
     expect(rights.lanes[0].transport).toBeNull()
     expect(toolOutputIsValid('get_federation', rights)).toBe(true)
+  })
+
+  it('admits the measured 2,186,234-byte global atlas under its reviewed lane bound only', async () => {
+    // Pad a valid atlas to the size Seiche served on 2026-11-02.
+    const atlas = globalAtlasFixture()
+    atlas.caveats.push('x'.repeat(2_186_234 - JSON.stringify(atlas).length - 64))
+    const body = `${JSON.stringify(atlas)}\n`
+    expect(body.length).toBeGreaterThan(FEDERATION_MAX_RESPONSE_BYTES)
+    expect(body.length).toBeLessThan(FEDERATION_LANE_MAX_RESPONSE_BYTES['seiche-global-money-atlas'])
+    const fetchImpl = async () => new Response(body, { headers: { 'content-type': 'application/json' } })
+    const federation = await getFederation({ lane: 'seiche-global-money-atlas' }, { fetchImpl, now: FIXED_NOW })
+    expect(federation.lanes[0]).toMatchObject({ availability: 'available', error: null,
+      transport: { attempts: 1, timeout_ms: 15_000, max_response_bytes: 4 * 1024 * 1024 } })
+    expect(toolOutputIsValid('get_federation', federation)).toBe(true)
+
+    // The world-markets lanes keep the shared bound and still fail closed above it.
+    const world = worldFixture('money_markets')
+    world.money_markets.values = ['x'.repeat(2_000_001)]
+    const shared = await getFederation({ lane: 'seiche-money-markets' }, {
+      fetchImpl: async () => jsonResponse(world), now: FIXED_NOW })
+    expect(shared.lanes[0]).toMatchObject({ availability: 'unavailable', error: { code: 'response_too_large' },
+      transport: { max_response_bytes: 2_000_000 } })
+    expect(Object.keys(FEDERATION_LANE_MAX_RESPONSE_BYTES)).toEqual(['seiche-global-money-atlas'])
+
+    // An explicitly injected bound still applies to every lane, including the atlas.
+    const injected = await getFederation({ lane: 'seiche-global-money-atlas' }, { fetchImpl, now: FIXED_NOW, maxResponseBytes: 32 })
+    expect(injected.lanes[0]).toMatchObject({ error: { code: 'response_too_large' }, transport: { max_response_bytes: 32 } })
   })
 
   it('rejects invalid federation lane selectors before any fetch', async () => {

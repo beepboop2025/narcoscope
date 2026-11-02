@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises'
 import { describe, expect, it } from 'vitest'
-import { buildWire, legalStageFor, parseRss, parseTreasuryPress, validateWire, wiresSemanticallyEqual } from './collect.mjs'
+import { SOURCE_RESPONSE_CEILING_BYTES, buildWire, legalStageFor, parseRss, parseTreasuryPress, responseLimit, validateWire, wiresSemanticallyEqual } from './collect.mjs'
 
 const config = {
   maxResponseBytes: 20_000,
@@ -141,6 +141,61 @@ describe('evidence wire assembly', () => {
     expect(artifact.items).toHaveLength(0)
     expect(artifact.sources[0].status).toBe('unavailable')
     expect(artifact.sources[0].detail).toMatch(/ceiling/)
+  })
+
+  it('keeps one item per release when the http and https spellings of a link coexist', async () => {
+    const sourceConfig = JSON.parse(await readFile(new URL('./sources.json', import.meta.url), 'utf8'))
+    const europol = sourceConfig.sources.find((source) => source.id === 'europol-news')
+    const path = 'www.europol.europa.eu/media-press/newsroom/news/cannabis-smuggling-north-america-and-thailand-europe-europol-highlights-growing-threat'
+    const title = 'Cannabis smuggling from North America and Thailand into Europe: Europol highlights growing threat'
+    const prior = (id, scheme) => ({ id, title, url: `${scheme}://${path}`, sourceId: 'europol-news', sourceName: europol.name, publishedAt: null,
+      retrievedAt: '2026-11-01T09:00:00.000Z', evidenceClass: 'official-release', verificationState: 'source-published', legalStage: 'not-applicable',
+      topics: ['drug markets'], countries: [], publicationAllowed: true })
+    // The live artifact of 2026-11-02 carried both copies under these two IDs.
+    const previous = { items: [prior('europol-news-b5187494919d2c15ec82', 'http'), prior('europol-news-c9411b6786e13ddda652', 'https')],
+      sources: [{ id: 'europol-news', lastSuccessAt: '2026-11-01T09:00:00.000Z' }] }
+    const config = { ...sourceConfig, sources: [europol] }
+    const now = new Date('2026-11-02T10:00:00Z')
+
+    const feed = (...urls) => async () => new Response(`<rss><channel>${urls.map((url) => `<item><title>${title}</title><link>${url}</link></item>`).join('')}</channel></rss>`)
+    for (const fetchImpl of [feed(`https://${path}`), feed(`http://${path}`), feed(`http://${path}`, `https://${path}`)]) {
+      const artifact = await buildWire({ config, previous, now, fetchImpl })
+      expect(artifact.items.map((item) => [item.id, item.url])).toEqual([['europol-news-c9411b6786e13ddda652', `https://${path}`]])
+    }
+    // A failed fetch republishes retained items once each, not twice.
+    const failed = await buildWire({ config, previous, now, fetchImpl: async () => { throw new Error('offline') } })
+    expect(failed.items.map((item) => item.id)).toEqual(['europol-news-c9411b6786e13ddda652'])
+    // An item only ever seen over http keeps its address and its published ID.
+    const httpOnly = await buildWire({ config, previous: { ...previous, items: [previous.items[0]] }, now, fetchImpl: async () => { throw new Error('offline') } })
+    expect(httpOnly.items.map((item) => [item.id, item.url])).toEqual([['europol-news-b5187494919d2c15ec82', `http://${path}`]])
+  })
+
+  it('applies a reviewed per-source response bound to that source only', async () => {
+    const reviewed = { ...config.sources[0], id: 'large', url: 'https://example.test/large.xml', maxResponseBytes: 512, maxResponseBytesReview: 'Measured 300 bytes.' }
+    const ordinary = { ...config.sources[0], id: 'ordinary', url: 'https://example.test/ordinary.xml' }
+    const body = `<rss><channel><item><title>Officials charge cocaine network</title><link>https://example.test/a</link></item></channel></rss>${' '.repeat(200)}`
+    const artifact = await buildWire({ config: { ...config, maxResponseBytes: 256, sources: [reviewed, ordinary] }, now: new Date('2026-08-31T00:00:00Z'),
+      fetchImpl: async () => new Response(body) })
+    expect(body.length).toBeGreaterThan(256)
+    expect(artifact.sources.map((source) => [source.id, source.status])).toEqual([['large', 'fresh'], ['ordinary', 'unavailable']])
+    expect(artifact.sources[1].detail).toMatch(/256 byte ceiling/)
+
+    for (const invalid of [{ maxResponseBytes: 512 }, { maxResponseBytes: 128, maxResponseBytesReview: 'smaller than shared' },
+      { maxResponseBytes: SOURCE_RESPONSE_CEILING_BYTES + 1, maxResponseBytesReview: 'too large' }, { maxResponseBytesReview: 'no bound' }]) {
+      await expect(buildWire({ config: { ...config, maxResponseBytes: 256, sources: [{ ...ordinary, ...invalid }] }, fetchImpl: async () => new Response(body) }))
+        .rejects.toThrow(/invalid reviewed response bound/)
+    }
+  })
+
+  it('raises only the Seiche money-markets bound in production, above its measured size', async () => {
+    const sourceConfig = JSON.parse(await readFile(new URL('./sources.json', import.meta.url), 'utf8'))
+    const reviewed = sourceConfig.sources.filter((source) => source.maxResponseBytes !== undefined)
+    expect(reviewed.map((source) => source.id)).toEqual(['seiche-money-markets'])
+    expect(sourceConfig.maxResponseBytes).toBe(2_097_152)
+    expect(responseLimit(reviewed[0], sourceConfig)).toBe(4_194_304)
+    expect(responseLimit(reviewed[0], sourceConfig)).toBeGreaterThan(2_186_234)
+    expect(reviewed[0].maxResponseBytesReview).toMatch(/2,186,234 bytes/)
+    for (const source of sourceConfig.sources.filter((row) => row.id !== 'seiche-money-markets')) expect(responseLimit(source, sourceConfig)).toBe(2_097_152)
   })
 
   it('ignores collector heartbeat clocks but detects evidence and source-state changes', async () => {

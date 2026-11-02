@@ -129,7 +129,7 @@ export default function WildlifeSeizures() {
             {topTaxa.slice(0, 15).map((t) => (
               <tr key={t.taxon}>
                 <td><em>{t.taxon}</em></td>
-                <td>{taxonCommon(t.taxon) ?? '—'}</td>
+                <td>{taxonCommon(t.taxon) ?? 'No English name listed'}</td>
                 <td>{t.class}</td>
                 <td>{t.records.toLocaleString()}</td>
               </tr>

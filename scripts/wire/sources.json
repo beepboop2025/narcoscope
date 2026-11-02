@@ -77,6 +77,8 @@
       "url": "https://api.seiche.info/api/v2/money-markets",
       "cadenceMinutes": 15,
       "staleAfterMinutes": 90,
+      "maxResponseBytes": 4194304,
+      "maxResponseBytesReview": "Reviewed 2026-11-02. This response measured 2,186,234 bytes, above the shared 2,097,152-byte bound, so the card had been stale since 2026-10-06. 4 MiB is about 1.9 times the measured size. Every other source keeps the shared bound.",
       "evidenceClass": "economic-context",
       "verificationState": "context-only",
       "rights": "Read-only economic context receipt. Values never become NarcoScope illicit-market facts or person-level inferences.",

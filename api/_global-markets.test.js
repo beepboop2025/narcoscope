@@ -107,6 +107,29 @@ describe('Granular global market provenance and validation', () => {
     expect(selections[0].lastNumericPeriod).toBe('2024-06')
     expect(selections.some(row => row.category === '' && row.subgroup === 'Retail')).toBe(false)
   })
+  it('features the measure whose numeric values reach the latest period, not a discontinued table', async () => {
+    const data = fixture()
+    // A discontinued monthly table listed first, and a current one listed second.
+    data.indicators.unshift({ ...data.indicators[0], id: 'discontinued-monthly', label: 'Discontinued table' })
+    data.indicators.push({ ...data.indicators[0], id: 'current-annual', label: 'Current annual table' })
+    data.observations.push(
+      { ...data.observations[0], id: 'old1', indicatorId: 'discontinued-monthly', period: '2020-12', category: '', value: 3 },
+      { ...data.observations[0], id: 'old2', indicatorId: 'discontinued-monthly', period: '2026-01', category: '', value: null, status: 'unavailable' },
+      { ...data.observations[0], id: 'new1', indicatorId: 'current-annual', period: '2025', category: '', value: 4 },
+    )
+    const catalog = await getMarketCatalog({}, await files([data]))
+    const featured = catalog.datasets[0].indicators.filter(row => row.featured).map(row => [row.market, row.id])
+    // 2025 (an annual period ending in December) is later than 2024-06 and 2020-12; an unavailable later cell does not count.
+    expect(featured).toEqual([['economy', 'informal-share'], ['drugs', 'current-annual']])
+    expect(catalog.datasets[0].indicators.find(row => row.id === 'current-annual').coverage.lastNumericPeriod).toBe('2025')
+  })
+  it('compares annual and monthly reference periods by the month they end', async () => {
+    const { periodEndKey } = await import('../lib/global-markets.mjs')
+    expect(periodEndKey('2023')).toBe('2023-12')
+    expect(periodEndKey('2023-11') < periodEndKey('2023')).toBe(true)
+    expect(periodEndKey('2023') < periodEndKey('2024-01')).toBe(true)
+    expect(periodEndKey(null)).toBe('')
+  })
   it('preserves native country labels when different indicators use different names for the same code', async () => {
     const data = fixture()
     data.observations.find(row => row.id === 'e1').geoName = 'Country A source-native label'

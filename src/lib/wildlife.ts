@@ -40,23 +40,52 @@ const COUNTRY: Record<string, string> = {
 
 export const countryName = (code: string): string => COUNTRY[code] ?? code
 
-/** A few high-signal taxa mapped to what a non-specialist would recognise. */
+/**
+ * English common names for the taxa in the extract, so no row needs a dash.
+ *
+ * Names follow CITES, the authority whose records these are:
+ *  - species: the English convention-language name in Species+, the CITES and
+ *    UNEP-WCMC database of record (https://speciesplus.net/), read 2026-11-02;
+ *  - "spp." entries for a family or order: the reference name the CITES
+ *    Appendices print beside that family or order
+ *    (https://cites.org/eng/app/appendices.php, as published 2026-03-05);
+ *  - "spp." entries for a genus: the family's CITES reference name, marked with
+ *    the genus where the family holds other genera.
+ * Every name was checked against those two sources; none is invented here.
+ */
 const TAXON_COMMON: Record<string, string> = {
-  'Scleractinia spp.': 'Stony corals',
-  'Tridacnidae spp.': 'Giant clams',
-  'Cheloniidae spp.': 'Sea turtles',
+  // Species+ English names.
   'Saussurea costus': 'Costus root (medicinal)',
   'Loxodonta africana': 'African elephant',
   'Panax quinquefolius': 'American ginseng',
-  'Moschus spp.': 'Musk deer',
   'Alligator mississippiensis': 'American alligator',
   'Crocodylus niloticus': 'Nile crocodile',
+  'Malayopython reticulatus': 'Reticulated python',
   'Python reticulatus': 'Reticulated python',
-  'Acropora spp.': 'Staghorn coral',
+  'Python sebae': 'African rock python',
+  'Chelonia mydas': 'Green turtle',
+  'Eretmochelys imbricata': 'Hawksbill turtle',
+  'Caiman crocodilus': 'Spectacled caiman',
   'Strombus gigas': 'Queen conch',
   'Panthera pardus': 'Leopard',
+  'Panthera tigris': 'Tiger',
   'Ursus americanus': 'American black bear',
-  'Varanus salvator': 'Water monitor lizard',
+  'Varanus salvator': 'Water monitor',
+  // CITES Appendices reference names for orders and families.
+  'Scleractinia spp.': 'Stony corals',
+  'Tridacnidae spp.': 'Giant clams',
+  'Cheloniidae spp.': 'Sea turtles',
+  'Elephantidae spp.': 'Elephants',
+  'Crocodylidae spp.': 'Crocodiles (family)',
+  'Orchidaceae spp.': 'Orchids',
+  'Cactaceae spp.': 'Cacti',
+  // Genera: Moschus is the only musk deer genus, Varanus the only monitor
+  // lizard genus and Hippocampus the seahorses of the pipefish family.
+  'Moschus spp.': 'Musk deer',
+  'Varanus spp.': 'Monitor lizards',
+  'Hippocampus spp.': 'Seahorses',
+  'Crocodylus spp.': 'Crocodiles (genus Crocodylus)',
+  'Python spp.': 'Pythons (genus Python)',
 }
 
 export const taxonCommon = (taxon: string): string | null => TAXON_COMMON[taxon] ?? null
