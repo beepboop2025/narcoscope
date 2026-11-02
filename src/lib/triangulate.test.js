@@ -10,6 +10,11 @@ import {
   MIN_MODALITIES_FOR_VERDICT,
 } from './triangulate'
 import { SEIZURE_GROUPS } from './seizures'
+import { originalsPresent } from '../../lib/withheld-originals.mjs'
+// These tests read real UNODC WDR values, which the public repository no longer
+// tracks. They run where the withheld originals exist (the collector's pipeline
+// run, an owner's machine) and skip on a clone that holds only projections.
+const NEEDS_WDR_ORIGINALS = !originalsPresent()
 
 /**
  * Builds a triangulate() input where every modality is caller-controlled.
@@ -380,7 +385,7 @@ describe('triangulateSeries', () => {
     assert.isTrue(price.points.every((p) => p.index === null))
   })
 
-  it('draws the real divergence on the bundled US methamphetamine data', async () => {
+  it.skipIf(NEEDS_WDR_ORIGINALS)('draws the real divergence on the bundled US methamphetamine data', async () => {
     const { PRICE_RECORDS } = await import('../data/prices')
     const { BUNDLED_OVERDOSE_RECORDS, BUNDLED_WASTEWATER_RECORDS } = await import('../data/bundled')
     const s = triangulateSeries({
@@ -405,7 +410,7 @@ describe('triangulateSeries', () => {
 describe('scanDivergences', () => {
   const country = (iso3, name) => ({ iso3, name })
 
-  it('ranks genuine divergences ahead of concordant results', async () => {
+  it.skipIf(NEEDS_WDR_ORIGINALS)('ranks genuine divergences ahead of concordant results', async () => {
     const { PRICE_RECORDS } = await import('../data/prices')
     const { BUNDLED_OVERDOSE_RECORDS, BUNDLED_WASTEWATER_RECORDS } = await import('../data/bundled')
     const { SEIZURE_COUNTRIES } = await import('./seizures')

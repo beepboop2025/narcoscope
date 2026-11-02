@@ -12,6 +12,11 @@ import {
   serializePalimpsestChinaArtifact,
   sumExactQuantityKg,
 } from './build-palimpsest-china.mjs'
+import { originalsPresent } from '../../lib/withheld-originals.mjs'
+// These tests read real UNODC WDR values, which the public repository no longer
+// tracks. They run where the withheld originals exist (the collector's pipeline
+// run, an owner's machine) and skip on a clone that holds only projections.
+const NEEDS_WDR_ORIGINALS = !originalsPresent()
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 const publicDir = path.join(root, 'public/data')
@@ -24,7 +29,7 @@ beforeAll(async () => {
 })
 
 describe('Palimpsest China aggregate bridge', () => {
-  it('is deterministic and the checked-in artifact matches current source data', async () => {
+  it.skipIf(NEEDS_WDR_ORIGINALS)('is deterministic and the checked-in artifact matches current source data', async () => {
     const first = serializePalimpsestChinaArtifact(buildPalimpsestChinaArtifact(inputs))
     const second = serializePalimpsestChinaArtifact(buildPalimpsestChinaArtifact(inputs))
     const checkedIn = await fs.readFile(path.join(publicDir, BRIDGE_ARTIFACT_FILE), 'utf8')
@@ -94,7 +99,7 @@ describe('Palimpsest China aggregate bridge', () => {
     expect(() => assertPublicBridgeBoundary(artifact)).not.toThrow()
   })
 
-  it('retains the reviewed 2026 edition and coverage metadata while withholding values', () => {
+  it.skipIf(NEEDS_WDR_ORIGINALS)('retains the reviewed 2026 edition and coverage metadata while withholding values', () => {
     const prices=artifact.datasets.retailDrugPrices
     expect(prices.provenance).toMatchObject({sourceEdition:'2026',title:'World Drug Report 2026, Statistical Annex 8.1: Prices and purities of drugs'})
     expect(prices.provenance.url).toContain('/WDR_2026/')

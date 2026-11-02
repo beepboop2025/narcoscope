@@ -23,12 +23,14 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { originalPath, readWithheld, writeWithheld } from '../../lib/withheld-originals.mjs'
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 const readJson = (rel) => JSON.parse(fs.readFileSync(path.join(ROOT, rel), 'utf8'))
 
 const overdose = readJson('src/data/overdose.json')
-const seizures = readJson('src/data/seizures.json')
+// WDR seizures come from the withheld original when this checkout has it.
+const seizures = JSON.parse(readWithheld(ROOT, 'src/data/seizures.json'))
 const designations = readJson('src/data/designations.json')
 const wastewater = readJson('src/data/wastewater.json')
 
@@ -219,8 +221,9 @@ const overview = {
   freshness,
 }
 
-const OUT = path.join(ROOT, 'src/data/overview.json')
-fs.writeFileSync(OUT, `${JSON.stringify(overview)}\n`)
+// The WDR seizure aggregates are withheld; the tracked overview is their projection.
+writeWithheld(ROOT, 'src/data/overview.json', `${JSON.stringify(overview)}\n`)
+const OUT = originalPath(ROOT, 'src/data/overview.json')
 console.log(`✔ wrote overview.json (${(fs.statSync(OUT).size / 1024).toFixed(1)} kB)`)
 console.log(`  US overdose ${latestYear}: ${allDrugsLatest?.toLocaleString()} (${(overview.headline.usOverdoseYoY * 100).toFixed(1)}% YoY)`)
 console.log(`  world seizures ${seizureLatest}: ${overview.headline.worldSeizureTonnes.toLocaleString()} t`)

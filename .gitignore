@@ -34,3 +34,7 @@ pnpm-debug.log*
 
 # pipeline raw downloads (regenerable, see scripts/pipeline/)
 data-raw/
+
+# withheld WDR originals: generated beside their tracked projections, never committed
+# (see lib/withheld-originals.mjs and docs/publication-rights.md)
+data-private/

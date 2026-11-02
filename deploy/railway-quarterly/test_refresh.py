@@ -92,7 +92,9 @@ class BoundaryTests(unittest.TestCase):
             self.assertTrue(refresh.allowed_output(name), name)
         for name in [".github/workflows/pwn.yml", "src/data/../../package.json",
                      "src/data/.git/config.json", "public/product-card.json", "src/main.tsx",
-                     "public/data/evidence-wire-v1.json", "public/news/evil.sh"]:
+                     "public/data/evidence-wire-v1.json", "public/news/evil.sh",
+                     "data-private/withheld/src/data/prices.ts",
+                     "data-private/withheld/src/data/seizures.json"]:
             self.assertFalse(refresh.allowed_output(name), name)
 
     def test_global_market_allowlist_is_exact(self):

@@ -2,9 +2,12 @@
 import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 import { publicRightsVitePlugin } from './lib/publication-rights.mjs'
+import { withheldOriginalsForTests } from './lib/withheld-originals.mjs'
 
 export default defineConfig({
-  plugins: [publicRightsVitePlugin(), react()],
+  // Tests read untracked WDR originals when this checkout has them (a pipeline
+  // run or an owner's machine); a clone holding only projections skips them.
+  plugins: [publicRightsVitePlugin(), withheldOriginalsForTests(), react()],
   test: {
     // Default env is node — fast, and correct for the large pure-logic suite.
     // Component render tests opt into happy-dom per-file via a

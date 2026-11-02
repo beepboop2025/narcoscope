@@ -22,6 +22,7 @@
 
 import fs from 'node:fs'
 import path from 'node:path'
+import { originalPath, writeWithheld } from '../../lib/withheld-originals.mjs'
 
 const xlsxPath = process.argv[2]
 if (!xlsxPath) {
@@ -76,7 +77,8 @@ const out = {
   records,
 }
 
-const outPath = path.resolve('src/data/seizures.json')
-fs.writeFileSync(outPath, JSON.stringify(out))
+// WDR seizures are withheld from public surfaces; only the projection is tracked.
+writeWithheld(process.cwd(), 'src/data/seizures.json', JSON.stringify(out))
+const outPath = originalPath(process.cwd(), 'src/data/seizures.json')
 console.log(`groups: ${groups.length}, drugs: ${drugs.length}, countries: ${countries.length}, records: ${records.length}, dropped: ${dropped}`)
 console.log(`wrote ${outPath} (${(fs.statSync(outPath).size / 1024).toFixed(0)} kB)`)

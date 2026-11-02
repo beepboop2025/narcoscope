@@ -12,6 +12,11 @@ import {
   serializePalimpsestCorridorArtifact,
 } from './build-palimpsest-corridors.mjs'
 import { loadBridgeInputs } from './build-palimpsest-china.mjs'
+import { originalsPresent } from '../../lib/withheld-originals.mjs'
+// These tests read real UNODC WDR values, which the public repository no longer
+// tracks. They run where the withheld originals exist (the collector's pipeline
+// run, an owner's machine) and skip on a clone that holds only projections.
+const NEEDS_WDR_ORIGINALS = !originalsPresent()
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 const publicDir = path.join(root, 'public/data')
@@ -24,7 +29,7 @@ beforeAll(async () => {
 })
 
 describe('Palimpsest China-Pakistan-Myanmar corridor bridge', () => {
-  it('is deterministic and matches the checked-in artifact', async () => {
+  it.skipIf(NEEDS_WDR_ORIGINALS)('is deterministic and matches the checked-in artifact', async () => {
     const first = serializePalimpsestCorridorArtifact(buildPalimpsestCorridorArtifact(inputs))
     const second = serializePalimpsestCorridorArtifact(buildPalimpsestCorridorArtifact(inputs))
     const checkedIn = await fs.readFile(path.join(publicDir, CORRIDOR_ARTIFACT_FILE), 'utf8')
@@ -46,7 +51,7 @@ describe('Palimpsest China-Pakistan-Myanmar corridor bridge', () => {
     expect(() => assertCorridorBridgeBoundary(artifact)).not.toThrow()
   })
 
-  it('adds official country coverage without converting missing rows to zero', () => {
+  it.skipIf(NEEDS_WDR_ORIGINALS)('adds official country coverage without converting missing rows to zero', () => {
     expect(artifact.datasets.retailDrugPrices.data).toBeNull()
     expect(artifact.datasets.drugSeizures.data).toBeNull()
     expect(artifact.datasets.retailDrugPrices.provenance.sourceEdition).toBe('2026')

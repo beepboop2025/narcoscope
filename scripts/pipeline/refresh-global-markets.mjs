@@ -7,6 +7,7 @@ import { createHash } from 'node:crypto'
 import { spawnSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 import { validateMarketDataset } from '../../lib/global-markets.mjs'
+import { projectMarketDataset } from '../../lib/publication-rights.mjs'
 import { collect as collectArms } from '../global-markets/arms-economy.mjs'
 import { collect as collectDrugs } from '../global-markets/drugs.mjs'
 
@@ -20,8 +21,13 @@ const LANES = [
   { id: 'global-arms-economy', directory: 'arms-economy', marker: 'wb-informality.latest.json',
     files: ['arms-economy.mjs', 'arms-economy-wdi.mjs', 'arms-economy-xlsx.py'],
     collect: (store, out, offline) => collectArms({ rawDir: store, out, offline, publicOnly: offline, refresh: !offline }) },
+  // The drug lane carries UNODC WDR rows that are withheld from every public
+  // surface. Its tracked file is only the publishable projection; the private
+  // capture store can regenerate the original. The projection rules are part of
+  // this lane's processor, so a rule change replays the captures.
   { id: 'global-drugs', directory: 'drugs', marker: 'manifest.json',
-    files: ['drugs.mjs', 'drugs-workbooks.py', 'arms-economy-xlsx.py'],
+    files: ['drugs.mjs', 'drugs-workbooks.py', 'arms-economy-xlsx.py', '../../lib/publication-rights.mjs'],
+    project: projectMarketDataset,
     collect: (store, out, offline) => collectDrugs({ store, out, offline }) },
 ]
 
@@ -74,6 +80,20 @@ async function snapshot(filename, id) {
   } catch (error) { if (error.code === 'ENOENT') return null; throw error }
 }
 
+// Replace a freshly collected original with its projection before anything
+// reads or records it. Unchanged content keeps its earlier generation clock.
+async function publishProjection(lane, out, before) {
+  if (!lane.project) return
+  const original = await snapshot(out, lane.id)
+  if (!original) return
+  const projected = lane.project(original.dataset)
+  if (before && JSON.stringify({ ...before.dataset, generatedAt: null }) === JSON.stringify({ ...projected, generatedAt: null })) projected.generatedAt = before.dataset.generatedAt
+  validateMarketDataset(projected, lane.id)
+  const temporary = `${out}.${process.pid}.tmp`
+  await fs.writeFile(temporary, JSON.stringify(projected) + '\n', { flag: 'wx', mode: 0o644 })
+  await fs.rename(temporary, out)
+}
+
 export async function refreshLane(lane, { root, stateDir, offline, now }) {
   const store = await secureStateDirectory(path.join(stateDir, lane.directory), root)
   const out = path.join(root, 'public/data', lane.id + '-v1.json')
@@ -92,8 +112,10 @@ export async function refreshLane(lane, { root, stateDir, offline, now }) {
   const snapshotChanged = receipt && before?.sha256 !== receipt.snapshotSha256
   const replay = offline || ((processorChanged || snapshotChanged) && cached && withinWeek)
   if (replay) {
-    if (cached) await lane.collect(store, out, true)
-    else if (!before) throw new Error(`Offline captures and public snapshot are both missing for ${lane.id}`)
+    if (cached) {
+      await lane.collect(store, out, true)
+      await publishProjection(lane, out, before)
+    } else if (!before) throw new Error(`Offline captures and public snapshot are both missing for ${lane.id}`)
     const current = await snapshot(out, lane.id)
     if (!current) throw new Error(`Offline replay produced no ${lane.id} snapshot`)
     if (!offline && receipt) await atomicJson(receiptPath, { ...receipt, processorSha256, snapshotSha256: current.sha256 })
@@ -105,6 +127,7 @@ export async function refreshLane(lane, { root, stateDir, offline, now }) {
   const attemptedAt = new Date(now).toISOString()
   try {
     const result = await lane.collect(store, out, false)
+    await publishProjection(lane, out, before)
     const current = await snapshot(out, lane.id)
     if (!current) throw new Error(`Collector produced no ${lane.id} snapshot`)
     const partial = Array.isArray(result?.failures) && result.failures.length > 0

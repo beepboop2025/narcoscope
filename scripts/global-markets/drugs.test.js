@@ -37,11 +37,15 @@ describe('fixed-source drugs collector',()=>{
     const result=spawnSync('python3',['-B','scripts/global-markets/drugs_workbooks_test.py'],{encoding:'utf8'})
     expect(result.status,result.error?.message || result.stderr).toBe(0)
   })
-  it('validates the actual retained educational dataset and separates observed from unavailable cells',()=>{
+  it('tracks only the publishable projection: WDR sources and indicators, no WDR rows, observed and unavailable StatCan cells',()=>{
     const dataset=JSON.parse(fs.readFileSync('public/data/global-drugs-v1.json','utf8'))
     expect(()=>validateMarketDataset(dataset)).not.toThrow()
-    expect(dataset.observations.some(r=>r.period==='2024'&&r.indicatorId==='wdr2026-seizures-kg')).toBe(true)
+    const wdr=new Set(dataset.indicators.filter(i=>i.sourceId.startsWith('wdr2026-')).map(i=>i.id))
+    expect(wdr.has('wdr2026-seizures-kg')).toBe(true)
+    expect(dataset.observations.filter(r=>wdr.has(r.indicatorId))).toEqual([])
+    expect(dataset.publication).toMatchObject({status:'partial',sourceIds:['wdr2026-labs','wdr2026-prices','wdr2026-seizures','wdr2026-treatment']})
     expect(dataset.observations.some(r=>r.value===null&&r.status==='unavailable')).toBe(true)
+    expect(dataset.observations.some(r=>r.value!==null)).toBe(true)
     expect(dataset.sources.filter(s=>s.id.startsWith('wdr2026-')).every(s=>s.license.includes('commercial'))).toBe(true)
   })
 })

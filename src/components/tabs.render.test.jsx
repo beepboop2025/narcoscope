@@ -31,6 +31,11 @@ import Flows from './Flows'
 import DataLoader from './DataLoader'
 import { LOADABLE_DATASET_KEYS } from '../data/loadableDatasets'
 import overview from '../data/overview.json'
+import { originalsPresent } from '../../lib/withheld-originals.mjs'
+// These tests read real UNODC WDR values, which the public repository no longer
+// tracks. They run where the withheld originals exist (the collector's pipeline
+// run, an owner's machine) and skip on a clone that holds only projections.
+const NEEDS_WDR_ORIGINALS = !originalsPresent()
 
 beforeAll(() => {
   // recharts' ResponsiveContainer measures its parent; happy-dom reports 0, and
@@ -45,8 +50,10 @@ beforeAll(() => {
 
 afterEach(cleanup)
 
-describe('Triangulation tab', () => {
-  it('renders the divergence scan with real ranked rows', () => {
+// Each render scans every real country and drug; under a full parallel run that
+// exceeded the 5 s default and timed out, which would block the collector gate.
+describe('Triangulation tab', { timeout: 30_000 }, () => {
+  it.skipIf(NEEDS_WDR_ORIGINALS)('renders the divergence scan with real ranked rows', () => {
     render(<Triangulation />)
     // The scan must surface the known divergences. If the scan silently
     // returned nothing (a regression in scanDivergences), this fails.
@@ -68,7 +75,7 @@ describe('Triangulation tab', () => {
     }
   })
 
-  it('opens a country+drug when a scan row is clicked', () => {
+  it.skipIf(NEEDS_WDR_ORIGINALS)('opens a country+drug when a scan row is clicked', () => {
     render(<Triangulation />)
     const rows = [...document.querySelectorAll('.scan-row')]
     const target = rows.find((r) => !r.classList.contains('scan-row--active'))
@@ -78,7 +85,7 @@ describe('Triangulation tab', () => {
     expect(target.classList.contains('scan-row--active')).toBe(true)
   })
 
-  it('activates a scan row from the keyboard (Enter)', () => {
+  it.skipIf(NEEDS_WDR_ORIGINALS)('activates a scan row from the keyboard (Enter)', () => {
     render(<Triangulation />)
     const rows = [...document.querySelectorAll('.scan-row')]
     const target = rows.find((r) => !r.classList.contains('scan-row--active'))
@@ -200,7 +207,7 @@ describe('US Overdose Map', () => {
 })
 
 describe('Price History (30yr)', () => {
-  it('renders the long-run change table with real multi-decade falls', () => {
+  it.skipIf(NEEDS_WDR_ORIGINALS)('renders the long-run change table with real multi-decade falls', () => {
     render(<PriceHistory />)
     // The long-run change table is the payoff — default countries present.
     expect(screen.getAllByText('Germany').length).toBeGreaterThan(0)
@@ -217,7 +224,7 @@ describe('Price History (30yr)', () => {
 })
 
 describe('Seizure Trends', () => {
-  it('renders the world-by-group trend chart and the group + movers tables', () => {
+  it.skipIf(NEEDS_WDR_ORIGINALS)('renders the world-by-group trend chart and the group + movers tables', () => {
     render(<SeizureTrends />)
     expect(screen.getByText(/World seizures by drug group/i)).toBeTruthy()
     // Two tables: group change + country movers, both populated.
@@ -228,7 +235,7 @@ describe('Seizure Trends', () => {
 })
 
 describe('Street Prices chart (ranked, not a broken line)', () => {
-  it('renders ranked price bars, not a single-year line chart', () => {
+  it.skipIf(NEEDS_WDR_ORIGINALS)('renders ranked price bars, not a single-year line chart', () => {
     render(<Explorer />)
     // The fix: bars, sorted high to low, coloured by region — no recharts line.
     expect(document.querySelectorAll('.price-bar-row').length).toBeGreaterThan(20)
@@ -311,7 +318,7 @@ describe('DataLoader', () => {
 })
 
 describe('Explorer + Flows tabs mount and populate', () => {
-  it('Explorer renders a populated price table', () => {
+  it.skipIf(NEEDS_WDR_ORIGINALS)('Explorer renders a populated price table', () => {
     render(<Explorer />)
     const bodyRows = document.querySelectorAll('.data-table tbody tr')
     expect(bodyRows.length).toBeGreaterThan(0)

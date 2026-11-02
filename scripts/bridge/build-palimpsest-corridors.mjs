@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { projectBridge } from '../../lib/publication-rights.mjs'
+import { originalsPresent } from '../../lib/withheld-originals.mjs'
 
 import fs from 'node:fs/promises'
 import path from 'node:path'
@@ -524,6 +525,9 @@ export async function generatePalimpsestCorridorArtifact({
   root = defaultRoot,
   output = DEFAULT_CORRIDOR_OUTPUT,
 } = {}) {
+  // The bridge's coverage metadata comes from the WDR originals; from the tracked
+  // projections alone it would silently publish a poorer bridge.
+  if (!originalsPresent(root)) throw new Error('WDR originals are absent from data-private/withheld; run the data pipeline before regenerating this bridge')
   const inputs = await loadBridgeInputs(root)
   const artifact = buildPalimpsestCorridorArtifact(inputs)
   const serialized = serializePalimpsestCorridorArtifact(artifact)
