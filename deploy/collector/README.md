@@ -32,7 +32,8 @@ while small health receipts remain in `/var/lib/narcoscope-collector`.
    then runs `tsc` plus the full test suite as a **hard validation gate**.
 4. If `src/data` or its derived public Palimpsest artifact changed *and*
    validation passed, commits them together and pushes to `main`. Otherwise
-   pushes nothing.
+   pushes nothing. A push rejected because another writer advanced `main` is
+   retried as described below.
 5. Removes the detached worktree on success, validation failure, or termination.
 
 Bad or malformed upstream data fails the test gate and is never pushed. The one
@@ -53,8 +54,29 @@ Every accepted run atomically changes that receipt to `status: "ok"` and writes
 The systemd oneshot unit serializes timer and manual service starts. The script
 also holds an atomic runtime lock, so a direct shell invocation cannot race the
 unit. A colliding run exits with status 75 before fetching or generating data.
-The final Git push is non-forced, so it is rejected if `origin/main` advances
-after the collector fetches it. If a process is killed without running its exit
+
+The Git push is non-forced, so it is rejected when another writer advances
+`origin/main` during the run. The usual writer is the evidence wire
+(`deploy/wire`), which pushes its own disjoint files every 10 to 30 minutes. On a
+rejection the collector fetches `origin/main` and logs each step, with at most 3
+push attempts in all:
+
+- it pushes nothing and exits 1 if the new `origin/main` changed any collector
+  path (`GENERATED_PATHS`) since the commit the run was built on, or no longer
+  descends from that commit;
+- otherwise it rebases its single data commit onto the new `origin/main` under
+  the same collector identity, runs `npm ci` again if `package.json` or
+  `package-lock.json` changed, and re-runs the data:refresh validation gate
+  (`npm run typecheck`, then `npm test`) on the rebased tree before pushing
+  again. A failed re-validation pushes nothing;
+- if `origin/main` did not move, it retries the already validated commit, and
+  if `origin/main` already contains the commit, it records the push as done.
+
+Every pushed tree has passed validation. `bash deploy/collector/collect.test.sh`
+exercises these paths against a temporary local origin with a fake `npm` and no
+network, and the test suite runs it too.
+
+If a process is killed without running its exit
 trap, `/run/lock/narcoscope-collector` remains as a fail-closed lock. Confirm no
 collector process is alive before removing it; `/run` is cleared on reboot.
 
