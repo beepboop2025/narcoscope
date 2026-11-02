@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { projectBridge } from '../../lib/publication-rights.mjs'
+import { TRACKED_PROJECTIONS, originalsPresent, readWithheld } from '../../lib/withheld-originals.mjs'
 
 import { createHash } from 'node:crypto'
 import fs from 'node:fs/promises'
@@ -205,7 +206,11 @@ async function evaluateTypeScript(raw, fileName) {
 }
 
 async function readInput(root, relativePath) {
-  const raw = await fs.readFile(path.join(root, relativePath), 'utf8')
+  // WDR inputs come from the untracked withheld original when this checkout has
+  // one; the descriptor hashes the bytes actually read.
+  const raw = Object.hasOwn(TRACKED_PROJECTIONS, relativePath)
+    ? readWithheld(root, relativePath)
+    : await fs.readFile(path.join(root, relativePath), 'utf8')
   return { raw, input: inputDescriptor(relativePath, raw) }
 }
 
@@ -909,6 +914,9 @@ export async function generatePalimpsestChinaArtifact({
   root = defaultRoot,
   output = DEFAULT_BRIDGE_OUTPUT,
 } = {}) {
+  // The bridge's coverage metadata comes from the WDR originals; from the tracked
+  // projections alone it would silently publish a poorer bridge.
+  if (!originalsPresent(root)) throw new Error('WDR originals are absent from data-private/withheld; run the data pipeline before regenerating this bridge')
   const inputs = await loadBridgeInputs(root)
   const artifact = buildPalimpsestChinaArtifact(inputs)
   const serialized = serializePalimpsestChinaArtifact(artifact)

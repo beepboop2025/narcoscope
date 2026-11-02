@@ -4,6 +4,7 @@ import { resolve, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import assert from 'node:assert/strict'
 import { projectMarketDataset, projectBridge, serializePublicData } from '../../lib/publication-rights.mjs'
+import { readWithheld, trackedFilesProjected } from '../../lib/withheld-originals.mjs'
 const root = resolve(fileURLToPath(new URL('../..', import.meta.url)))
 const directory = resolve(root, process.argv[2] ?? 'dist')
 for (const name of ['global-drugs-v1.json', 'global-arms-economy-v1.json', 'narcoscope-palimpsest-v1.json', 'narcoscope-palimpsest-corridors-v2.json']) {
@@ -20,12 +21,16 @@ async function walk(path) {
   }
 }
 await walk(directory)
-const rawSeizures = JSON.parse(await readFile(join(root, 'src/data/seizures.json'), 'utf8'))
-const rowSentinel = JSON.stringify(rawSeizures.records.slice(0, 4)).slice(1, -1)
+// The public repository tracks only projections of WDR files.
+assert.ok(trackedFilesProjected(root), 'A tracked WDR file carries withheld values')
+// The row sentinel needs the withheld original, present only in a pipeline run;
+// a projection-only checkout has no rows that could leak.
+const rawSeizures = JSON.parse(readWithheld(root, 'src/data/seizures.json'))
+const rowSentinel = rawSeizures.records.length ? JSON.stringify(rawSeizures.records.slice(0, 4)).slice(1, -1) : null
 const forbidden = [/(?:["']?priceUsdPerGram["']?)\s*:\s*\d/, /(?:["']?worldSeizureTonnes["']?)\s*:\s*\d/, /(?:["']?seizureCountries["']?)\s*:\s*\d/]
 for (const file of names) {
   const text = await readFile(file, 'utf8')
-  assert.ok(!text.includes(rowSentinel), 'Retained WDR seizure rows in built asset: ' + file)
+  if (rowSentinel) assert.ok(!text.includes(rowSentinel), 'Retained WDR seizure rows in built asset: ' + file)
   for (const pattern of forbidden) assert.ok(!pattern.test(text), 'WDR measurement/derivative in built asset: ' + file)
 }
-console.log(JSON.stringify({ status: 'verified', projectedJson: 4, checkedAssets: names.length, originalSourceRetained: true }))
+console.log(JSON.stringify({ status: 'verified', projectedJson: 4, checkedAssets: names.length, trackedWdrFilesProjected: true, withheldOriginalsChecked: rowSentinel !== null }))

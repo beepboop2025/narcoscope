@@ -24,6 +24,7 @@ import { fileURLToPath } from 'node:url'
 import { DRUG_MAP, isPerGram, reviewedEdition, resolvePrice, retainedGdpSnapshot, refreshGdpSnapshot } from './wdr-price-rules.mjs'
 
 import { fetchJsonWithRetry } from '../lib/http.mjs'
+import { writeWithheld } from '../../lib/withheld-originals.mjs'
 
 const xlsxPath = process.argv[2]
 if (!xlsxPath) {
@@ -217,6 +218,8 @@ export const SOURCES: Source[] = [
   { name: 'World Bank — GDP per capita, NY.GDP.PCAP.CD', url: 'https://data.worldbank.org/indicator/NY.GDP.PCAP.CD' },
 ]
 `
-fs.writeFileSync('src/data/prices.ts', out)
+// WDR prices are withheld from public surfaces and this repository is public:
+// the original goes to the untracked withheld directory, the projection to src/data.
+writeWithheld(process.cwd(), 'src/data/prices.ts', out)
 console.log(`records: ${records.length}, countries: ${isoList.length}, with purity: ${records.filter((r) => r.purityPct !== null).length}, skipped: ${skipped}`)
-console.log('wrote src/data/prices.ts')
+console.log('wrote src/data/prices.ts (projection) and its withheld original')

@@ -8,6 +8,7 @@ import { getMarketCatalog, queryMarketObservations } from '../../lib/global-mark
 import { dispatch } from '../../api/mcp.mjs'
 import { createNarcoscopeServer } from '../../server.mjs'
 import { projectPublicDirectory } from './build-public-projection.mjs'
+import { REPOSITORY_ROOT as repositoryRoot, originalsPresent, readWithheld } from '../../lib/withheld-originals.mjs'
 const read = async path => JSON.parse(await readFile(new URL('../../' + path, import.meta.url), 'utf8'))
 const rawDrugs = await read('public/data/global-drugs-v1.json')
 const directories = [], servers = []
@@ -16,6 +17,11 @@ const sha = bytes => createHash('sha256').update(bytes).digest('hex')
 
 describe('WDR publication enforcement', { timeout: 30_000 }, () => {
   it('retains source identities, removes all WDR rows and preserves every qualified StatCan row byte-for-byte', () => {
+    // The tracked file is itself a projection, so give the projection a WDR row to remove.
+    const withWdr = structuredClone(rawDrugs)
+    withWdr.observations.push({ ...withWdr.observations[0], id: 'withheld-wdr-row', indicatorId: 'wdr2026-seizures-kg', value: 123456789 })
+    expect(projectMarketDataset(withWdr).observations.some(row => row.id === 'withheld-wdr-row')).toBe(false)
+    expect(projectMarketDataset(withWdr)).toEqual(projectMarketDataset(rawDrugs))
     const before = JSON.stringify(rawDrugs)
     const projected = projectMarketDataset(rawDrugs)
     expect(projected.sources).toEqual(rawDrugs.sources)
@@ -119,7 +125,9 @@ describe('WDR publication enforcement', { timeout: 30_000 }, () => {
   })
 
   it('removes derivative and bundle inputs without modifying retained originals or substituting zero measurements', async () => {
-    const rawOverview = await read('src/data/overview.json')
+    // Originals exist only beside a pipeline run; a clone holds the projections.
+    const original = name => JSON.parse(readWithheld(repositoryRoot, 'src/data/' + name))
+    const rawOverview = original('overview.json')
     const overview = projectOverview(rawOverview)
     expect(overview.headline.worldSeizureTonnes).toBeNull()
     expect(overview.topSeizureCountries).toEqual([])
@@ -127,14 +135,18 @@ describe('WDR publication enforcement', { timeout: 30_000 }, () => {
     expect(overview.overdoseTrend).toEqual(rawOverview.overdoseTrend)
     expect(projectOverview(overview)).toEqual(overview)
     for (const name of ['priceSeries.json', 'seizures.json']) {
-      const raw = await read('src/data/' + name)
-      expect(raw.records.length).toBeGreaterThan(0)
+      const raw = original(name)
+      if (originalsPresent(repositoryRoot)) expect(raw.records.length).toBeGreaterThan(0)
       expect(projectLegacyJson(name, raw).records).toEqual([])
+      expect(projectLegacyJson(name, projectLegacyJson(name, raw))).toEqual(projectLegacyJson(name, raw))
     }
-    const source = await readFile(new URL('../../src/data/prices.ts', import.meta.url), 'utf8')
+    const source = readWithheld(repositoryRoot, 'src/data/prices.ts')
     const projected = projectPriceModule(source)
     expect(projected).toContain('export const PRICE_RECORDS: PriceRecord[] = []')
     expect(projected).not.toMatch(/priceUsdPerGram: \d/)
+    expect(projectPriceModule(projected)).toBe(projected)
+    expect(projected).toContain('GDP_PER_CAPITA_USD')
     expect(() => projectPriceModule('export const renamed = []')).toThrow()
+    expect(() => projectPriceModule(projected + '\nexport const PRICE_RECORDS: PriceRecord[] = [\n]\n')).toThrow()
   })
 })

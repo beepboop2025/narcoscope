@@ -323,7 +323,7 @@ designating authority. These limits are not estimates of missing observations.
 
 ## License
 
-[MIT](./LICENSE) covers the application code. Data retains its source-specific license and attribution requirements. The WDR annexes are reproduced for this educational project; resale and other commercial reuse require publisher permission. The API and CSV exports preserve these terms.
+[MIT](./LICENSE) covers the application code. Data retains its source-specific license and attribution requirements. UNODC World Drug Report values need written UNODC permission for commercial use, so they are withheld from the hosted product, its API and exports, and from this repository's tracked files; their source metadata remains. See [docs/publication-rights.md](./docs/publication-rights.md).
 
 ## Connected China and regional research
 

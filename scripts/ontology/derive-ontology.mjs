@@ -35,13 +35,16 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { TRACKED_PROJECTIONS, readWithheld } from '../../lib/withheld-originals.mjs'
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 const args = process.argv.slice(2)
 const outFlag = args.indexOf('--out')
 const OUT_DIR = path.resolve(ROOT, outFlag >= 0 && args[outFlag + 1] ? args[outFlag + 1] : 'docs/ontology')
 
-const readJson = (rel) => JSON.parse(fs.readFileSync(path.join(ROOT, rel), 'utf8'))
+// WDR files are read from their untracked withheld originals when present.
+const readText = (rel) => Object.hasOwn(TRACKED_PROJECTIONS, rel) ? readWithheld(ROOT, rel) : fs.readFileSync(path.join(ROOT, rel), 'utf8')
+const readJson = (rel) => JSON.parse(readText(rel))
 
 /**
  * Extracts array-literal records from a generated .ts data module without
@@ -50,7 +53,7 @@ const readJson = (rel) => JSON.parse(fs.readFileSync(path.join(ROOT, rel), 'utf8
  * dragging a transpiler into the pipeline.
  */
 function countTsRecords(rel, exportName) {
-  const src = fs.readFileSync(path.join(ROOT, rel), 'utf8')
+  const src = readText(rel)
   const start = src.indexOf(`export const ${exportName}`)
   if (start === -1) return 0
   // Seek past the type annotation before looking for the array literal —

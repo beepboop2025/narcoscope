@@ -42,6 +42,27 @@ describe('weekly global-market acquisition and durable replay', () => {
     await refreshGlobalMarkets({ ...f.options, now: NOW + WEEK_MS })
     expect(f.lane.collect).toHaveBeenCalledTimes(2)
   })
+  it('publishes only the projection of a lane carrying withheld rows and records those bytes', async () => {
+    const f = await fixture(false)
+    // An original with one withheld row; the lane projection drops it.
+    const original = () => { const data = json(); data.observations.push({ ...data.observations[0], id: 'withheld', geoCode: 'IND', geoName: 'India', value: 99 }); return data }
+    const project = data => ({ ...data, observations: data.observations.filter(row => row.id !== 'withheld'), publication: { status: 'partial' } })
+    Object.assign(f.lane, { project, collect: vi.fn(async (store, target) => { await fs.writeFile(path.join(store, 'manifest.json'), '{}'); await fs.writeFile(target, JSON.stringify(original()) + '\n'); return {} }) })
+    const first = await refreshGlobalMarkets(f.options)
+    const published = await fs.readFile(f.out, 'utf8')
+    expect(JSON.parse(published).observations.map(row => row.id)).toEqual(['cell'])
+    expect(published).not.toContain('"withheld"')
+    // The receipt binds the projected bytes, so the next daily run does not replay.
+    expect(JSON.parse(await fs.readFile(f.receipt, 'utf8')).snapshotSha256).toBe(first.results[0].sha256)
+    const daily = await refreshGlobalMarkets({ ...f.options, now: NOW + 12 * 3600000 })
+    expect(daily.results[0].outcome).toBe('retained-within-week')
+    expect(f.lane.collect).toHaveBeenCalledTimes(1)
+    // A weekly re-acquisition with unchanged content keeps the earlier clock and bytes.
+    f.lane.collect.mockImplementation(async (store, target) => { const data = original(); data.generatedAt = '2026-02-01T00:00:00Z'; await fs.writeFile(target, JSON.stringify(data) + '\n'); return {} })
+    await refreshGlobalMarkets({ ...f.options, now: NOW + WEEK_MS })
+    expect(f.lane.collect).toHaveBeenCalledTimes(2)
+    expect(await fs.readFile(f.out, 'utf8')).toBe(published)
+  })
   it('retains a dated valid snapshot after a transport outage with a bounded retry cooldown', async () => {
     const f = await fixture(), before = await fs.readFile(f.out, 'utf8')
     f.lane.collect.mockRejectedValue(new SourceAcquisitionError('timeout'))

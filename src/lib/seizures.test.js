@@ -15,6 +15,11 @@ import {
   worldTotal,
 } from './seizures'
 import { COUNTRY_CENTROID } from '../data/countryGeo'
+import { originalsPresent } from '../../lib/withheld-originals.mjs'
+// These tests read real UNODC WDR values, which the public repository no longer
+// tracks. They run where the withheld originals exist (the collector's pipeline
+// run, an owner's machine) and skip on a clone that holds only projections.
+const NEEDS_WDR_ORIGINALS = !originalsPresent()
 
 describe('seizures dataset integrity', () => {
   it('covers the WDR 2025 reporting window', () => {
@@ -53,7 +58,7 @@ describe('seizure selectors', () => {
     }
   })
 
-  it('per-group country breakdown sums to the country total', () => {
+  it.skipIf(NEEDS_WDR_ORIGINALS)('per-group country breakdown sums to the country total', () => {
     const year = 2023
     const all = totalsByCountry(null, year)
     const iso3 = [...all.keys()][0]
@@ -68,7 +73,7 @@ describe('seizure selectors', () => {
     assert.equal(worldTotal(null, year), sum)
   })
 
-  it('topDrugs returns descending volumes from known groups', () => {
+  it.skipIf(NEEDS_WDR_ORIGINALS)('topDrugs returns descending volumes from known groups', () => {
     const top = topDrugs('USA', 2023, 5)
     assert.ok(top.length > 0, 'USA must report seizures in 2023')
     for (let i = 1; i < top.length; i++) assert.ok(top[i - 1].kg >= top[i].kg)

@@ -23,6 +23,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { createRequire } from 'node:module'
+import { originalPath, writeWithheld } from '../../lib/withheld-originals.mjs'
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 const require = createRequire(import.meta.url)
@@ -136,6 +137,7 @@ const out = {
   },
   records,
 }
-fs.writeFileSync(OUT, `${JSON.stringify(out)}\n`)
+// The WDR price history is withheld from public surfaces; only the projection is tracked.
+writeWithheld(ROOT, 'src/data/priceSeries.json', `${JSON.stringify(out)}\n`)
 console.log(`✔ wrote priceSeries.json — ${records.length} records, ${out.meta.countries.length} countries, ${minYear}–${maxYear}`)
-console.log(`  ${(fs.statSync(OUT).size / 1024).toFixed(1)} kB`)
+console.log(`  ${(fs.statSync(originalPath(ROOT, 'src/data/priceSeries.json')).size / 1024).toFixed(1)} kB original`)

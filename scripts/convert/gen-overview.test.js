@@ -5,6 +5,7 @@ import path from 'node:path'
 import { execFileSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 import { STATE_SUBSTANCES } from '../../src/lib/stateOverdose'
+import { originalPath } from '../../lib/withheld-originals.mjs'
 
 const root = fileURLToPath(new URL('../../', import.meta.url))
 const read = (name) => JSON.parse(fs.readFileSync(path.join(root, name), 'utf8'))
@@ -23,8 +24,19 @@ function generate(overdose = read('src/data/overdose.json')) {
   fs.mkdirSync(path.join(directory, 'src/data'), { recursive: true })
   const script = 'scripts/convert/gen-overview.mjs'
   fs.copyFileSync(path.join(root, script), path.join(directory, script))
+  fs.mkdirSync(path.join(directory, 'lib'), { recursive: true })
+  for (const name of ['withheld-originals.mjs', 'publication-rights.mjs']) {
+    fs.copyFileSync(path.join(root, 'lib', name), path.join(directory, 'lib', name))
+  }
   for (const name of ['seizures', 'designations', 'wastewater']) {
     fs.copyFileSync(path.join(root, `src/data/${name}.json`), path.join(directory, `src/data/${name}.json`))
+  }
+  // The WDR seizure original exists only in a pipeline run; without it the
+  // generator reads the projection and still reproduces the tracked overview.
+  const seizures = originalPath(root, 'src/data/seizures.json')
+  if (fs.existsSync(seizures)) {
+    fs.mkdirSync(path.dirname(originalPath(directory, 'src/data/seizures.json')), { recursive: true })
+    fs.copyFileSync(seizures, originalPath(directory, 'src/data/seizures.json'))
   }
   fs.writeFileSync(path.join(directory, 'src/data/overdose.json'), JSON.stringify(overdose))
   execFileSync(process.execPath, [path.join(directory, script)], { stdio: 'pipe' })

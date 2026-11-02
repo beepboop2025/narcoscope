@@ -3,7 +3,12 @@ import {
 } from 'recharts'
 import retainedOverview from '../data/overview.json'
 import { projectOverview } from '../../lib/publication-rights.mjs'
-const overview = projectOverview(retainedOverview) as typeof retainedOverview
+// The tracked overview is the publishable projection, whose WDR-derived lists
+// are empty, so their row shapes are declared here rather than inferred.
+type Divergence = { label: string; window: string; supplyLabel: string; supplyPct: number | null; demandLabel: string; demandPct: number | null; reading: string }
+type SeizureCountry = { iso3: string; name: string; kg: number }
+type OverviewData = Omit<typeof retainedOverview, 'divergences' | 'topSeizureCountries'> & { divergences: Divergence[]; topSeizureCountries: SeizureCountry[] }
+const overview = projectOverview(retainedOverview) as OverviewData
 import CountUp from '../motion/CountUp'
 import Reveal from '../motion/Reveal'
 import DataTableViewport from './DataTableViewport'
