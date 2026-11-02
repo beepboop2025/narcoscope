@@ -142,7 +142,7 @@
             "observationScope": "published_rows_only",
             "reason": "Retained under the existing source-specific publication contract; this status is not a grant of additional reuse rights."
           },
-          "featured": true,
+          "featured": false,
           "coverage": {
             "observations": 1540,
             "numericObservations": 1506,
@@ -340,7 +340,7 @@
             "observationScope": "published_rows_only",
             "reason": "Retained under the existing source-specific publication contract; this status is not a grant of additional reuse rights."
           },
-          "featured": false,
+          "featured": true,
           "coverage": {
             "observations": 1140,
             "numericObservations": 1140,
@@ -2601,7 +2601,7 @@
             "observationScope": "published_rows_only",
             "reason": "Retained under the existing source-specific publication contract; this status is not a grant of additional reuse rights."
           },
-          "featured": true,
+          "featured": false,
           "coverage": {
             "observations": 4836,
             "numericObservations": 4834,
@@ -10255,7 +10255,7 @@
             "observationScope": "published_rows_only",
             "reason": "Retained under the existing source-specific publication contract; this status is not a grant of additional reuse rights."
           },
-          "featured": false,
+          "featured": true,
           "coverage": {
             "observations": 6384,
             "numericObservations": 596,

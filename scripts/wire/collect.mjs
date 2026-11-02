@@ -53,8 +53,28 @@ function isoClock(value) {
   return Number.isNaN(parsed.getTime()) ? null : parsed.toISOString()
 }
 
+// The http and https spellings of one address are the same public release.
+// Europol's feed has served both, and the wire published each twice. Items are
+// identified by the https spelling, so an https address keeps its existing ID.
+export function itemKey(url) {
+  try {
+    const parsed = new URL(url)
+    if (parsed.protocol === 'http:') {
+      parsed.protocol = 'https:'
+      if (parsed.port === '80') parsed.port = ''
+    }
+    return parsed.toString()
+  } catch {
+    return url
+  }
+}
+
+function isHttps(url) {
+  return /^https:/i.test(url)
+}
+
 function stableId(sourceId, url) {
-  return `${sourceId}-${createHash('sha256').update(url).digest('hex').slice(0, 20)}`
+  return `${sourceId}-${createHash('sha256').update(itemKey(url)).digest('hex').slice(0, 20)}`
 }
 
 export function legalStageFor(title) {
@@ -116,6 +136,21 @@ async function readBoundedBody(response, maximumBytes) {
   return new TextDecoder('utf-8', { fatal: false }).decode(bytes)
 }
 
+// The shared response bound applies to every source unless that source carries
+// its own reviewed bound and the written reason for it. A reviewed bound never
+// applies to another source and cannot exceed this collector-wide ceiling.
+export const SOURCE_RESPONSE_CEILING_BYTES = 8 * 1024 * 1024
+
+export function responseLimit(source, config) {
+  if (source.maxResponseBytes === undefined && source.maxResponseBytesReview === undefined) return config.maxResponseBytes
+  const bound = source.maxResponseBytes
+  if (!Number.isSafeInteger(bound) || bound <= config.maxResponseBytes || bound > SOURCE_RESPONSE_CEILING_BYTES
+    || typeof source.maxResponseBytesReview !== 'string' || !source.maxResponseBytesReview.trim()) {
+    throw new Error(`source ${source.id} has an invalid reviewed response bound`)
+  }
+  return bound
+}
+
 async function fetchOnce(source, config, fetchImpl) {
   const controller = new AbortController()
   const timeout = setTimeout(() => controller.abort(new Error(`timeout after ${config.timeoutMs}ms`)), config.timeoutMs)
@@ -130,7 +165,7 @@ async function fetchOnce(source, config, fetchImpl) {
       },
     })
     if (!response.ok) throw new Error(`HTTP ${response.status}`)
-    const body = await readBoundedBody(response, config.maxResponseBytes)
+    const body = await readBoundedBody(response, responseLimit(source, config))
     return { body, finalUrl: response.url || source.url }
   } finally {
     clearTimeout(timeout)
@@ -147,10 +182,15 @@ function topicsFor(title, compiledRules) {
 
 function normalizeItems(source, parsed, retrievedAt, config) {
   const rules = topicRules(config)
-  const seen = new Set()
-  return parsed.flatMap((record) => {
-    if (seen.has(record.url)) return []
-    seen.add(record.url)
+  // One record per release, compared without the URL scheme. When a feed lists
+  // both spellings, the https one is published.
+  const unique = new Map()
+  for (const record of parsed) {
+    const key = itemKey(record.url)
+    const kept = unique.get(key)
+    if (!kept || (isHttps(record.url) && !isHttps(kept.url))) unique.set(key, record)
+  }
+  return [...unique.values()].flatMap((record) => {
     const topics = topicsFor(record.title, rules)
     if (source.requireRelevantTopic && topics.length === 0) return []
     return [{
@@ -208,9 +248,19 @@ function retainedItems(items, now, retentionDays) {
 }
 
 function mergeSourceItems(currentItems, priorItems, now, config) {
+  // Keyed by the scheme-free address, not the stored ID: artifacts published
+  // before this rule carry http and https copies of one release under two IDs,
+  // and both collapse into one entry on the next successful fetch.
   const merged = new Map()
-  for (const item of retainedItems(priorItems, now, config.retentionDays)) merged.set(item.id, item)
-  for (const item of currentItems) merged.set(item.id, item)
+  const add = (item, newer) => {
+    const key = itemKey(item.url)
+    const kept = merged.get(key)
+    if (!kept) merged.set(key, item)
+    else if (newer) merged.set(key, isHttps(kept.url) && !isHttps(item.url) ? { ...item, id: kept.id, url: kept.url } : item)
+    else if (isHttps(item.url) && !isHttps(kept.url)) merged.set(key, item)
+  }
+  for (const item of retainedItems(priorItems, now, config.retentionDays)) add(item, false)
+  for (const item of currentItems) add(item, true)
   return [...merged.values()]
     .sort((left, right) => {
       const timeDifference = new Date(right.publishedAt || right.retrievedAt).getTime()
@@ -229,6 +279,9 @@ function statusForFailure(source, oldReceipt, now) {
 }
 
 export async function buildWire({ config, previous = null, now = new Date(), fetchImpl = fetch }) {
+  // A malformed reviewed bound is a configuration error for the whole run, not
+  // a quiet per-source fetch failure.
+  for (const source of config.sources) responseLimit(source, config)
   const generatedAt = now.toISOString()
   const collected = await Promise.all(config.sources.map(async (source) => {
     try {
@@ -272,7 +325,7 @@ export async function buildWire({ config, previous = null, now = new Date(), fet
       }
     } catch (error) {
       const oldReceipt = previousSource(previous, source.id)
-      const oldItems = retainedItems(previousItems(previous, source.id), now, config.retentionDays)
+      const oldItems = mergeSourceItems([], previousItems(previous, source.id), now, config)
       return {
         items: oldItems,
         receipt: {

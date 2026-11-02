@@ -2,6 +2,22 @@ import { createHash } from 'node:crypto'
 
 export const FEDERATION_TIMEOUT_MS = 15_000
 export const FEDERATION_MAX_RESPONSE_BYTES = 2_000_000
+// Reviewed per-lane exception; every other lane keeps the shared bound. The
+// Seiche global money atlas (/api/v2/money-markets) measured 2,186,234 bytes on
+// 2026-11-02 and had failed closed as response_too_large since 2026-10-06.
+// 4 MiB is about 1.9 times that size.
+export const FEDERATION_LANE_MAX_RESPONSE_BYTES = Object.freeze({
+  'seiche-global-money-atlas': 4 * 1024 * 1024,
+})
+export const FEDERATION_LARGEST_RESPONSE_BYTES = Math.max(
+  FEDERATION_MAX_RESPONSE_BYTES,
+  ...Object.values(FEDERATION_LANE_MAX_RESPONSE_BYTES),
+)
+
+// An explicitly injected bound (tests, tighter callers) applies to every lane.
+function laneResponseBytes(id, injected) {
+  return injected ?? FEDERATION_LANE_MAX_RESPONSE_BYTES[id] ?? FEDERATION_MAX_RESPONSE_BYTES
+}
 
 const SEICHE_BASE_URL = 'https://api.seiche.info'
 const PALIMPSEST_RIGHTS_URL = 'https://www.palimpsest.info/readings/china-publication-rights-latest.json'
@@ -368,7 +384,7 @@ export function validateGlobalMoneyAtlas(payload) {
   return payload
 }
 
-function laneError(id, product, sourceUrl, error, retrievedAt) {
+function laneError(id, product, sourceUrl, error, retrievedAt, maxResponseBytes = laneResponseBytes(id)) {
   const safe = error instanceof UpstreamError ? error : new UpstreamError(
     'invalid_upstream_contract',
     'upstream response violated its public contract',
@@ -388,7 +404,7 @@ function laneError(id, product, sourceUrl, error, retrievedAt) {
     transport: id.startsWith('seiche-') ? {
       attempts: 1,
       timeout_ms: FEDERATION_TIMEOUT_MS,
-      max_response_bytes: FEDERATION_MAX_RESPONSE_BYTES,
+      max_response_bytes: maxResponseBytes,
     } : null,
     data: null,
     error: {
@@ -412,8 +428,9 @@ function worldUrl(section) {
 
 async function seicheWorldLane(id, section, dependencies, retrievedAt) {
   const url = worldUrl(section)
+  const maxResponseBytes = laneResponseBytes(id, dependencies.maxResponseBytes)
   try {
-    const response = await fetchBoundedJson(url, dependencies)
+    const response = await fetchBoundedJson(url, { ...dependencies, maxResponseBytes })
     const data = validateWorldMarkets(response.payload, section)
     const unavailable = response.httpStatus === 503 || data.status === 'unavailable'
     return {
@@ -431,7 +448,7 @@ async function seicheWorldLane(id, section, dependencies, retrievedAt) {
       transport: {
         attempts: 1,
         timeout_ms: dependencies.timeoutMs ?? FEDERATION_TIMEOUT_MS,
-        max_response_bytes: dependencies.maxResponseBytes ?? FEDERATION_MAX_RESPONSE_BYTES,
+        max_response_bytes: maxResponseBytes,
       },
       data,
       error: unavailable ? {
@@ -446,15 +463,16 @@ async function seicheWorldLane(id, section, dependencies, retrievedAt) {
       ],
     }
   } catch (error) {
-    return laneError(id, 'Seiche', url, error, retrievedAt)
+    return laneError(id, 'Seiche', url, error, retrievedAt, maxResponseBytes)
   }
 }
 
 async function seicheAtlasLane(dependencies, retrievedAt) {
   const id = 'seiche-global-money-atlas'
   const url = `${SEICHE_BASE_URL}/api/v2/money-markets`
+  const maxResponseBytes = laneResponseBytes(id, dependencies.maxResponseBytes)
   try {
-    const response = await fetchBoundedJson(url, dependencies)
+    const response = await fetchBoundedJson(url, { ...dependencies, maxResponseBytes })
     const data = validateGlobalMoneyAtlas(response.payload)
     const unavailable = response.httpStatus === 503 || data.status === 'UNAVAILABLE'
     return {
@@ -486,7 +504,7 @@ async function seicheAtlasLane(dependencies, retrievedAt) {
       transport: {
         attempts: 1,
         timeout_ms: dependencies.timeoutMs ?? FEDERATION_TIMEOUT_MS,
-        max_response_bytes: dependencies.maxResponseBytes ?? FEDERATION_MAX_RESPONSE_BYTES,
+        max_response_bytes: maxResponseBytes,
       },
       data,
       error: unavailable ? {
@@ -502,7 +520,7 @@ async function seicheAtlasLane(dependencies, retrievedAt) {
       ],
     }
   } catch (error) {
-    return laneError(id, 'Seiche', url, error, retrievedAt)
+    return laneError(id, 'Seiche', url, error, retrievedAt, maxResponseBytes)
   }
 }
 
@@ -641,7 +659,7 @@ function requestedLanes(lane) {
 export async function getFederation(params = {}, {
   fetchImpl = globalThis.fetch,
   getBriContext,
-  maxResponseBytes = FEDERATION_MAX_RESPONSE_BYTES,
+  maxResponseBytes,
   now = () => new Date(),
   timeoutMs = FEDERATION_TIMEOUT_MS,
 } = {}) {

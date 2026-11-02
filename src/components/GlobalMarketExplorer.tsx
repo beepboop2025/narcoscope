@@ -32,6 +32,44 @@ async function readApi<T>(url: string, signal: AbortSignal): Promise<T> {
   return result.data as T
 }
 
+// Annual periods end in December, so 2023 sorts after 2023-11 and before 2024-01.
+export const periodEnd = (period: string | null | undefined): string => period && /^\d{4}$/.test(period) ? period + '-12' : period ?? ''
+
+// Open on the most current record: the featured measure whose numeric values
+// reach the latest reference period. Equally current measures keep catalog order.
+export function defaultEntry<T extends { indicator: { featured?: boolean; coverage: { lastNumericPeriod: string | null } } }>(entries: T[]): T | undefined {
+  return entries.filter((entry) => entry.indicator.featured).reduce<T | undefined>((best, entry) => !best || periodEnd(entry.indicator.coverage.lastNumericPeriod) > periodEnd(best.indicator.coverage.lastNumericPeriod) ? entry : best, undefined) ?? entries[0]
+}
+
+export const OPTIONAL_COLUMNS = [
+  { key: 'category', label: 'Category' },
+  { key: 'subgroup', label: 'Breakdown' },
+  { key: 'interval', label: 'Reported interval' },
+] as const
+export type OptionalColumn = typeof OPTIONAL_COLUMNS[number]['key']
+
+// A column stays visible when at least one loaded record supplies it. A column
+// the source leaves empty in every row is hidden and named in a note instead of
+// filling the table with dashes. The CSV download keeps every source column.
+export function suppliedColumns(rows: Pick<MarketObservation, 'category' | 'subgroup' | 'lower' | 'upper'>[]): Record<OptionalColumn, boolean> {
+  return {
+    category: rows.some((row) => row.category !== ''),
+    subgroup: rows.some((row) => row.subgroup !== ''),
+    interval: rows.some((row) => row.lower != null || row.upper != null),
+  }
+}
+
+export function hiddenColumnsNote(rows: Pick<MarketObservation, 'category' | 'subgroup' | 'lower' | 'upper'>[]): string {
+  if (!rows.length) return ''
+  const shown = suppliedColumns(rows)
+  const hidden = OPTIONAL_COLUMNS.filter((column) => !shown[column.key]).map((column) => column.label)
+  if (!hidden.length) return ''
+  const names = hidden.length === 1 ? hidden[0] : hidden.slice(0, -1).join(', ') + ' and ' + hidden[hidden.length - 1]
+  const one = hidden.length === 1
+  const scope = rows.length === 1 ? 'this record' : 'any of these ' + rows.length + ' records'
+  return 'Hidden ' + (one ? 'column' : 'columns') + ': ' + names + '. The source supplies no value for ' + (one ? 'it' : 'them') + ' in ' + scope + ', so ' + (one ? 'it' : 'they') + ' would be blank in every row. The download keeps every source column.'
+}
+
 export function chartPeriods(observations: MarketObservation[]): string[] {
   const periods = [...new Set(observations.map((row) => row.period))].sort()
   if (!periods.length) return []
@@ -111,7 +149,7 @@ export default function GlobalMarketExplorer({ market = 'all', apiBase = '/api/v
   useEffect(() => { const controller = new AbortController(); setLoadError(''); readApi<Catalog>(apiBase + '/markets', controller.signal).then(setCatalog).catch((error) => { if (!controller.signal.aborted) setLoadError(error.message) }); return () => controller.abort() }, [apiBase, retry])
   const all = useMemo(() => (catalog?.datasets ?? []).flatMap((dataset) => dataset.indicators.map((indicator) => ({ dataset, indicator, key: dataset.id + ':' + indicator.id }))).filter((entry) => market === 'all' || entry.indicator.market === market), [catalog, market])
   const options = all.filter((entry) => (entry.indicator.label + ' ' + entry.dataset.title + ' ' + entry.indicator.description).toLowerCase().includes(search.toLowerCase()))
-  const current = all.find((entry) => entry.key === selection) ?? all.find((entry) => entry.indicator.featured) ?? all[0]
+  const current = all.find((entry) => entry.key === selection) ?? defaultEntry(all)
   const indicator = current?.indicator
   const withheld = indicator?.publication?.status === 'metadata_only'
   const validSelections = indicator?.dimensions.selections ?? []
@@ -152,8 +190,13 @@ export default function GlobalMarketExplorer({ market = 'all', apiBase = '/api/v
   const geographyName = (code: string) => indicator?.dimensions.geographies.find((geo) => geo.code === code)?.name ?? code
   const rankingLevel = ['country', 'city', 'region', 'world'].find((level) => snapshot?.observations.some((row) => row.geoLevel === level && row.value != null))
   const ranking = (snapshot?.observations ?? []).filter((row) => row.value != null && row.geoLevel === rankingLevel).sort((a, b) => (b.value ?? 0) - (a.value ?? 0)).slice(0, 10)
-  const records = (recordView === 'snapshot' ? snapshot?.observations ?? [] : histories).filter((row) => (row.geoName + ' ' + row.period + ' ' + row.category + ' ' + row.subgroup).toLowerCase().includes(recordSearch.toLowerCase()))
+  const loadedRecords = recordView === 'snapshot' ? snapshot?.observations ?? [] : histories
+  const records = loadedRecords.filter((row) => (row.geoName + ' ' + row.period + ' ' + row.category + ' ' + row.subgroup).toLowerCase().includes(recordSearch.toLowerCase()))
   const visibleRecords = records.slice(tablePage * 50, (tablePage + 1) * 50)
+  // Judged on every loaded record, not the filtered page, so columns do not
+  // appear and disappear while a reader types a filter or turns pages.
+  const columns = suppliedColumns(loadedRecords)
+  const hiddenNote = hiddenColumnsNote(loadedRecords)
   const periods = selectedDimensions?.firstPeriod && selectedDimensions.lastPeriod ? chartPeriods([{ period: selectedDimensions.firstPeriod }, { period: selectedDimensions.lastPeriod }] as MarketObservation[]) : []
   const allWithheld = all.length > 0 && all.every(entry => entry.indicator.publication?.status === 'metadata_only')
   const numerical = all.reduce((sum, entry) => sum + (entry.indicator.coverage.numericObservations ?? entry.indicator.coverage.reported + entry.indicator.coverage.estimated), 0)
@@ -169,7 +212,7 @@ export default function GlobalMarketExplorer({ market = 'all', apiBase = '/api/v
   if (!catalog) return <section className="market-explorer market-empty" role="status"><h1>Loading the research library…</h1><p>Reading dataset coverage and source definitions.</p></section>
   return <section className={'market-explorer market-explorer--' + market} aria-label="Global market data explorer">
     <header className="market-heading"><div><h2>{DOMAIN[market][0]}</h2><p>{DOMAIN[market][1]}</p></div><div className="market-coverage"><span><strong>{allWithheld ? 'Withheld' : number.format(numerical)}</strong> published numeric observations</span><span><strong>{all.length}</strong> measures</span><span><strong>{allWithheld ? 'Withheld' : coverageCountries.size}</strong> countries in published rows</span></div></header>
-    <div className="market-find"><label>Find a measure<input type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search by substance, statistic or source" /></label><label>Measure<select aria-label="Measure" value={current?.key ?? ''} onChange={(event) => setSelection(event.target.value)}>{current && !options.includes(current) && <option value={current.key}>{current.indicator.label}</option>}{options.map((entry) => <option key={entry.key} value={entry.key}>{entry.indicator.label} — {entry.indicator.unit}</option>)}</select></label></div>
+    <div className="market-find"><label>Find a measure<input type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search by substance, statistic or source" /></label><label>Measure<select aria-label="Measure" value={current?.key ?? ''} onChange={(event) => setSelection(event.target.value)}>{current && !options.includes(current) && <option value={current.key}>{current.indicator.label}</option>}{options.map((entry) => <option key={entry.key} value={entry.key}>{entry.indicator.label} ({entry.indicator.unit})</option>)}</select></label></div>
     {!all.length ? <div className="market-empty"><h3>No acquired dataset is available in this view yet</h3><p>Explore the existing source-defined atlas and specialist tables while additional data is being acquired.</p><a href={narcoscopeBase + '#atlas'}>Country atlas</a></div> : indicator && <>
       <div className="market-definition"><div><h3>{indicator.label}</h3><p>{indicator.description}</p></div><div><span>{source?.publisher}</span><strong>{indicator.unit}</strong><small>{indicator.coverage.firstPeriod} to {indicator.coverage.lastPeriod}</small></div></div>
       {withheld ? <div role="status" className="market-empty"><h3>Measurements withheld pending publication permission</h3><p>{indicator.publication?.reason}</p><p>Source identity, units, retrieval clock and publisher links remain below. No numeric CSV or chart is available for this source.</p></div> : <><div className="market-filters"><label>Category<select aria-label="Category" value={category} onChange={(event) => { selectDimensions(validSelections.find((entry) => entry.category === event.target.value)); setTablePage(0) }}>{indicator.dimensions.categories.map((value) => <option key={value} value={value}>{value || 'Not further specified'}</option>)}</select></label><label>Population / breakdown<select aria-label="Population / breakdown" value={subgroup} onChange={(event) => { selectDimensions(validSelections.find((entry) => entry.category === category && entry.subgroup === event.target.value)); setTablePage(0) }}>{validSelections.filter((entry) => entry.category === category).map((entry) => entry.subgroup).map((value) => <option key={value} value={value}>{value || 'Reported total'}</option>)}</select></label><label>Map reference period<select aria-label="Map reference period" value={period} onChange={(event) => setPeriod(event.target.value)}>{[...periods].reverse().map((value) => <option key={value}>{value}</option>)}</select></label><label>Primary location<select aria-label="Primary location" value={geos[0] ?? ''} onChange={(event) => setGeos([event.target.value, ...geos.slice(1).filter((geo) => geo !== event.target.value)])}><option value="">Choose a location</option>{indicator.dimensions.geographies.map((geo) => <option key={geo.level + geo.code} value={geo.code}>{geo.name}</option>)}</select></label></div>
@@ -182,7 +225,8 @@ export default function GlobalMarketExplorer({ market = 'all', apiBase = '/api/v
         <p className="market-note">Gaps remain gaps. Values use the same indicator, category and breakdown; they are not summed across sources.{historyLimit ? ' This chart is limited to the first 1,000 observations per location.' : ''} Reported intervals, where available, remain in the records below.</p>
       </article>
       <section className="market-records"><div className="market-panel-title"><div><h3>Inspect the observations</h3><p>{records.length} loaded records · {indicator.unit}</p></div><button className="market-button" type="button" onClick={csv} disabled={!records.length}>Download this selection</button></div><div className="market-record-tools"><div role="group" aria-label="Observation table view"><button className={recordView === 'snapshot' ? 'is-active' : ''} onClick={() => { setRecordView('snapshot'); setTablePage(0) }}>Map period</button><button className={recordView === 'history' ? 'is-active' : ''} onClick={() => { setRecordView('history'); setTablePage(0) }}>Selected histories</button></div><label>Filter records<input type="search" value={recordSearch} onChange={(event) => { setRecordSearch(event.target.value); setTablePage(0) }} placeholder="Location or period" /></label></div>
-        <DataTableViewport label="Source-defined market observations"><table className="data-table"><thead><tr><th>Location</th><th>Period</th><th>Category</th><th>Breakdown</th><th>Value</th><th>Reported interval</th><th>Record</th></tr></thead><tbody>{visibleRecords.map((row) => <tr key={row.id}><th scope="row">{row.geoName}<small>{row.geoLevel}</small></th><td>{row.period}</td><td>{row.category || '—'}</td><td>{row.subgroup || '—'}</td><td className="market-value">{row.value == null ? 'Unavailable' : number.format(row.value)}<small>{row.status}</small></td><td>{row.lower == null && row.upper == null ? 'Not supplied' : (row.lower == null ? '…' : number.format(row.lower)) + '–' + (row.upper == null ? '…' : number.format(row.upper))}</td><td><details><summary>Source record</summary><p>{row.sourceLocator}</p><a href={source?.url} target="_blank" rel="noreferrer">Original source</a><code>{row.id}</code></details></td></tr>)}</tbody></table></DataTableViewport>
+        <DataTableViewport label="Source-defined market observations"><table className="data-table"><thead><tr><th>Location</th><th>Period</th>{columns.category && <th>Category</th>}{columns.subgroup && <th>Breakdown</th>}<th>Value</th>{columns.interval && <th>Reported interval</th>}<th>Record</th></tr></thead><tbody>{visibleRecords.map((row) => <tr key={row.id}><th scope="row">{row.geoName}<small>{row.geoLevel}</small></th><td>{row.period}</td>{columns.category && <td>{row.category || 'Not further specified'}</td>}{columns.subgroup && <td>{row.subgroup || 'Reported total'}</td>}<td className="market-value">{row.value == null ? 'Unavailable' : number.format(row.value)}<small>{row.status}</small></td>{columns.interval && <td>{row.lower == null && row.upper == null ? 'Not supplied' : (row.lower == null ? '…' : number.format(row.lower)) + ' to ' + (row.upper == null ? '…' : number.format(row.upper))}</td>}<td><details><summary>Source record</summary><p>{row.sourceLocator}</p><a href={source?.url} target="_blank" rel="noreferrer">Original source</a><code>{row.id}</code></details></td></tr>)}</tbody></table></DataTableViewport>
+        {hiddenNote && <p className="market-note" role="note">{hiddenNote}</p>}
         {!records.length && <p className="market-note">No records match this selection. Missing observations are not zero values.</p>}<div className="market-pagination"><button disabled={tablePage === 0} onClick={() => setTablePage(tablePage - 1)}>Previous</button><span>Page {tablePage + 1} of {Math.max(1, Math.ceil(records.length / 50))}</span><button disabled={(tablePage + 1) * 50 >= records.length} onClick={() => setTablePage(tablePage + 1)}>Next</button></div>
       </section>
       </>}

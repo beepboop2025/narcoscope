@@ -1,4 +1,5 @@
 import { PUBLICATION_SCHEMA } from '../../lib/publication-rights.mjs'
+import { FEDERATION_LARGEST_RESPONSE_BYTES } from './federation.mjs'
 import palimpsestBridgeSchema from '../../public/data/narcoscope-palimpsest-v1.schema.json' with { type: 'json' }
 import palimpsestCorridorsSchema from '../../public/data/narcoscope-palimpsest-corridors-v2.schema.json' with { type: 'json' }
 
@@ -695,7 +696,8 @@ const FEDERATION_LANE_SCHEMA = Object.freeze({
           properties: {
             attempts: { const: 1 },
             timeout_ms: { type: 'integer', minimum: 1, maximum: 15000 },
-            max_response_bytes: { type: 'integer', minimum: 1, maximum: 2000000 },
+            // The largest reviewed lane bound; each lane reports its own.
+            max_response_bytes: { type: 'integer', minimum: 1, maximum: FEDERATION_LARGEST_RESPONSE_BYTES },
           },
         },
       ],
