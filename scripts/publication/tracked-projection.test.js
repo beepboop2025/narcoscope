@@ -60,7 +60,13 @@ describe('withheld WDR values stay out of the public repository', () => {
     // Read the rules themselves, so this holds without Git (the Railway CI context excludes .git).
     const rules = file => readFileSync(join(REPOSITORY_ROOT, file), 'utf8').split('\n').map(line => line.trim()).filter(line => line && !line.startsWith('#'))
     const ignoresDirectory = file => rules(file).some(line => ['data-private', 'data-private/', '/data-private', '/data-private/'].includes(line))
-    for (const file of ['.gitignore', '.dockerignore', 'deploy/railway-ci/Dockerfile.dockerignore']) {
+    // A Docker build may consume its own ignore file without copying it into the
+    // image, so the Docker ignore files are required wherever Git is (every real
+    // checkout) and checked wherever they are present.
+    const inGitCheckout = existsSync(join(REPOSITORY_ROOT, '.git'))
+    const dockerIgnores = ['.dockerignore', 'deploy/railway-ci/Dockerfile.dockerignore']
+      .filter(file => inGitCheckout || existsSync(join(REPOSITORY_ROOT, file)))
+    for (const file of ['.gitignore', ...dockerIgnores]) {
       expect(ignoresDirectory(file), file).toBe(true)
       // A negation could re-include an original below the ignored directory.
       expect(rules(file).filter(line => line.startsWith('!') && line.includes('data-private')), file).toEqual([])
