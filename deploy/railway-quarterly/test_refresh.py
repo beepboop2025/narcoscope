@@ -8,6 +8,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import os
 from pathlib import Path
 import subprocess
+import sys
 import tempfile
 import threading
 import unittest
@@ -148,6 +149,16 @@ class BoundaryTests(unittest.TestCase):
                      "data-private/withheld/src/data/seizures.json"]:
             self.assertFalse(refresh.allowed_output(name), name)
 
+    def test_tracked_private_scratch_is_rejected_before_checkout(self):
+        for path in ("data-private/file.json", "data-private/withheld/src/data/prices.ts"):
+            with self.subTest(path=path),tempfile.TemporaryDirectory() as directory:
+                entry=b"100644 blob "+b"a"*40+b"\t"+path.encode()+b"\0"
+                with patch.object(refresh,"git",return_value=entry) as git:
+                    with self.assertRaisesRegex(ValueError,"Unsafe source object"):
+                        refresh.checkout(None,{},"b"*40,Path(directory))
+                self.assertEqual(git.call_count,1)
+                self.assertEqual(list(Path(directory).iterdir()),[])
+
     def test_global_market_allowlist_is_exact(self):
         for name in ["global-arms-economy-v1.json", "global-drugs-v1.json", "global-market-catalog-v1.json"]:
             self.assertTrue(refresh.allowed_output("public/data/" + name))
@@ -221,6 +232,60 @@ class BoundaryTests(unittest.TestCase):
         with patch.object(api, "request", side_effect=[{"login": "beepboop2025"}, [pull]]):
             with self.assertRaisesRegex(ValueError, "mismatch"):
                 api.pending("data-refresh/railway-2026-q3")
+
+
+@unittest.skipUnless(os.geteuid() == 0 and Path("/proc").is_dir(), "Linux root private-scratch test")
+class LinuxPrivateScratchTests(unittest.TestCase):
+    def test_current_withheld_paths_are_writable_but_never_proposable(self):
+        # Exact path contract from lib/withheld-originals.mjs at current source
+        # 9df320b7e1d20204f5128219153aa061e7ec1cff. No real WDR values are used.
+        names=("src/data/prices.ts","src/data/priceSeries.json",
+               "src/data/seizures.json","src/data/overview.json")
+        contents={name:b"{}" for name in names}
+        contents.update({"package.json":b"{}","public/news/feed.xml":b"<feed/>"})
+        blobs={str(i)*40:body for i,body in enumerate(contents.values(),1)}
+        tree=b"".join(b"100644 blob "+(str(i)*40).encode()+b"\t"+name.encode()+b"\0"
+                      for i,name in enumerate(contents,1))
+        def git(mirror,env,*args):
+            if args[0]=="ls-tree":return tree
+            self.assertEqual(args[:2],("cat-file","blob"));return blobs[args[2]]
+        with tempfile.TemporaryDirectory(prefix="quarterly-private-scratch-test-") as directory:
+            root=Path(directory);root.chmod(0o755);work=root/"repo";work.mkdir(mode=0o755)
+            with patch.object(refresh,"git",side_effect=git):
+                baseline=refresh.checkout(None,{},"b"*40,work)
+            private=work/"data-private";info=private.stat()
+            self.assertEqual((info.st_uid,info.st_gid,info.st_mode&0o777),(65532,65532,0o700))
+            writer="""import os,sys
+from pathlib import Path
+root=Path(sys.argv[1]);assert os.getuid()==65532
+for name in sys.argv[2:]:
+ target=root/'data-private/withheld'/name
+ target.parent.mkdir(mode=0o700,parents=True,exist_ok=True)
+ fd=os.open(target,os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600)
+ with os.fdopen(fd,'wb') as stream:stream.write(b'WITHHELD_SYNTHETIC_MUST_NOT_PUBLISH')
+ (root/name).write_bytes(b'{"projected":true}')
+try:(root/'package.json').write_bytes(b'changed')
+except PermissionError:pass
+else:raise AssertionError('protected source writable')
+print('PRIVATE_SCRATCH_WRITER_PASS')
+"""
+            # No run_step/stop_collectors: only this bounded child is touched,
+            # so the fixture is safe on a host that also runs other UID65532 jobs.
+            result=subprocess.run([sys.executable,"-c",writer,str(work),*names],
+                env={"PATH":"/usr/bin:/bin","HOME":"/nonexistent","LANG":"C.UTF-8"},
+                stdin=subprocess.DEVNULL,close_fds=True,preexec_fn=isolation.drop_privileges,
+                capture_output=True,text=True,timeout=10)
+            self.assertEqual(result.returncode,0,result.stderr)
+            self.assertEqual(result.stdout.strip(),"PRIVATE_SCRATCH_WRITER_PASS")
+            for name in names:
+                target=private/"withheld"/name;info=target.stat()
+                self.assertEqual((info.st_uid,info.st_gid,info.st_mode&0o777),(65532,65532,0o600))
+                self.assertFalse(refresh.allowed_output("data-private/withheld/"+name))
+            changed=refresh.validate_outputs(work,baseline)
+            self.assertEqual(set(changed),set(names))
+            self.assertTrue(all(not name.startswith("data-private/") and
+                b"WITHHELD_SYNTHETIC_MUST_NOT_PUBLISH" not in body for name,body in changed.items()))
+            self.assertEqual((work/"package.json").read_bytes(),b"{}")
 
 
 @unittest.skipUnless(os.geteuid() == 0 and Path("/proc").is_dir(), "Linux root image test")

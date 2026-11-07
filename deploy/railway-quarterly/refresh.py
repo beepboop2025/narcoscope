@@ -19,7 +19,7 @@ from isolation import (COLLECTOR_UID, CONTROLLER, digest, drop_privileges, event
 REPOSITORY = "beepboop2025/narcoscope"
 REMOTE = "https://github.com/" + REPOSITORY + ".git"
 MAX_TREE_BYTES = 512 * 1024 * 1024
-DISPOSABLE = {"node_modules", "data-raw"}
+DISPOSABLE = {"node_modules", "data-raw", "data-private"}
 CONTROLLER_FILES = ("Dockerfile", "refresh.py", "isolation.py", "test_refresh.py", "github-known-hosts")
 PUBLIC_FILES = {
     "public/data/narcoscope-palimpsest-v1.json",
@@ -200,7 +200,9 @@ def checkout(mirror, env, source, work):
             path.parent.chmod(0o1777)
     for name in DISPOSABLE:
         path = work / name
-        path.mkdir(mode=0o755)
+        # Withheld originals are private, disposable inputs to rights-safe
+        # tracked projections. They are never part of the proposal tree.
+        path.mkdir(mode=0o700 if name == "data-private" else 0o755)
         os.chown(path, COLLECTOR_UID, COLLECTOR_UID)
     # The newsroom swaps its complete directory atomically. A root-owned sticky
     # parent permits its staging directory while protecting all other public
