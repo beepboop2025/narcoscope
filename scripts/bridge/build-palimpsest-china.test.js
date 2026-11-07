@@ -1,4 +1,5 @@
 import { beforeAll, describe, expect, it } from 'vitest'
+import { createHash } from 'node:crypto'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -27,6 +28,35 @@ beforeAll(async () => {
   inputs = await loadBridgeInputs(root)
   artifact = buildPalimpsestChinaArtifact(inputs)
 })
+
+// Deliberately synthetic: live OFAC snapshots may legitimately add records.
+// Explicit expected totals below test scope and overlapping program semantics.
+function syntheticDesignations({ extraTco = false, unsupportedChina = false } = {}) {
+  const rows = [
+    { countries: ['China'], entityType: 'individual', programs: ['SDNTK'] },
+    { countries: ['China', 'Mexico'], entityType: 'entity', programs: ['ILLICIT-DRUGS-EO14059', 'TCO'] },
+    { countries: ['China'], entityType: 'individual', programs: ['SDNT'] },
+    { countries: ['China'], entityType: 'entity', programs: ['TCO'] },
+    { countries: ['China'], entityType: 'entity', programs: ['TCO'] },
+    { countries: ['Mexico'], entityType: 'entity', programs: ['OTHER'] },
+    { countries: ['Hong Kong'], entityType: 'individual', programs: ['TCO'] },
+  ]
+  if (extraTco) rows.push({ countries: ['China'], entityType: 'entity', programs: ['TCO'] })
+  if (unsupportedChina) rows[0].programs = ['OTHER']
+  const data = {
+    meta: {
+      source: 'Synthetic OFAC aggregation fixture; not an official snapshot',
+      url: 'https://example.invalid/synthetic-ofac.csv',
+      downloaded: '2000-01-01',
+      programs: { SDNTK: 'Fixture SDNTK', SDNT: 'Fixture SDNT', TCO: 'Fixture TCO',
+        'ILLICIT-DRUGS-EO14059': 'Fixture EO14059' },
+    },
+    records: rows.map((row, index) => ({ ...row, entityNumber: 999990000 + index,
+      name: 'SYNTHETIC PRIVATE SUBJECT', aliases: ['SYNTHETIC PRIVATE ALIAS'] })),
+  }
+  return { data, input: { path: 'synthetic/ofac-designations.json',
+    sha256: createHash('sha256').update(JSON.stringify(data)).digest('hex') } }
+}
 
 describe('Palimpsest China aggregate bridge', () => {
   it.skipIf(NEEDS_WDR_ORIGINALS)('is deterministic and the checked-in artifact matches current source data', async () => {
@@ -63,7 +93,7 @@ describe('Palimpsest China aggregate bridge', () => {
     ]))
   })
 
-  it('pins the expected China aggregates without publishing subject records', () => {
+  it('pins reviewed China coverage and current OFAC lineage without publishing subject records', async () => {
     expect(artifact.datasets.retailDrugPrices.data).toBeNull()
     expect(artifact.datasets.retailDrugPrices.publication.status).toBe('metadata_only')
     expect(artifact.datasets.drugSeizures.data).toBeNull()
@@ -87,16 +117,63 @@ describe('Palimpsest China aggregate bridge', () => {
       toYear: 2025,
       snapshotDate: null,
     })
-    expect(artifact.datasets.ofacDesignations.data).toMatchObject({
-      recordCount: 118,
-      narcoticsSpecificProgramRecordCount: 79,
-      tcoOnlyRecordCount: 39,
+    const ofac = artifact.datasets.ofacDesignations
+    const rawDesignations = await fs.readFile(path.join(root, 'src/data/designations.json'))
+    expect(ofac.provenance).toMatchObject({
+      url: inputs.designations.data.meta.url,
+      sourceEdition: 'SDN snapshot',
+      localDataDate: inputs.designations.data.meta.downloaded,
+      input: { path: 'src/data/designations.json',
+        sha256: createHash('sha256').update(rawDesignations).digest('hex') },
     })
+    expect(ofac.temporalCoverage.snapshotDate).toBe(inputs.designations.data.meta.downloaded)
+    expect(ofac.data.recordCount).toBeGreaterThan(0)
+    expect(ofac.data.narcoticsSpecificProgramRecordCount + ofac.data.tcoOnlyRecordCount)
+      .toBe(ofac.data.recordCount)
+    expect(ofac.data.byEntityType.reduce((total, row) => total + row.count, 0))
+      .toBe(ofac.data.recordCount)
+    expect(ofac.data.multiCountryRecordCount).toBeLessThanOrEqual(ofac.data.recordCount)
     expect(artifact.datasets.wildlifeConfiscations.data).toMatchObject({
       exporterOfRecord: { recordCount: 20214, rankInRetainedTable: 2 },
       importerOfRecord: { recordCount: 2222, rankInRetainedTable: 5 },
     })
     expect(() => assertPublicBridgeBoundary(artifact)).not.toThrow()
+  })
+
+  it.each([
+    { extraTco: false, recordCount: 5, tcoOnly: 2, entityCount: 3, tcoProgramCount: 3 },
+    { extraTco: true, recordCount: 6, tcoOnly: 3, entityCount: 4, tcoProgramCount: 4 },
+  ])('pins synthetic OFAC scope and overlapping programs (additional TCO=$extraTco)',
+    ({ extraTco, recordCount, tcoOnly, entityCount, tcoProgramCount }) => {
+      const designations = syntheticDesignations({ extraTco })
+      const fixture = buildPalimpsestChinaArtifact({ ...inputs, designations })
+      const ofac = fixture.datasets.ofacDesignations
+      expect(ofac.data).toEqual({
+        recordCount,
+        narcoticsSpecificProgramRecordCount: 3,
+        tcoOnlyRecordCount: tcoOnly,
+        byEntityType: [{ entityType: 'entity', count: entityCount }, { entityType: 'individual', count: 2 }],
+        byProgram: [
+          { program: 'ILLICIT-DRUGS-EO14059', label: 'Fixture EO14059', count: 1 },
+          { program: 'SDNT', label: 'Fixture SDNT', count: 1 },
+          { program: 'SDNTK', label: 'Fixture SDNTK', count: 1 },
+          { program: 'TCO', label: 'Fixture TCO', count: tcoProgramCount },
+        ],
+        multiCountryRecordCount: 1,
+      })
+      expect(ofac.provenance.input).toEqual(designations.input)
+      expect(ofac.temporalCoverage.snapshotDate).toBe('2000-01-01')
+      const serialized = serializePalimpsestChinaArtifact(fixture)
+      expect(serialized).not.toContain('SYNTHETIC PRIVATE SUBJECT')
+      expect(serialized).not.toContain('SYNTHETIC PRIVATE ALIAS')
+      expect(serialized).not.toContain('99999000')
+      expect(() => assertPublicBridgeBoundary(fixture)).not.toThrow()
+    })
+
+  it('refuses a China designation outside the narcotics-specific or TCO-only scope', () => {
+    const designations = syntheticDesignations({ unsupportedChina: true })
+    expect(() => buildPalimpsestChinaArtifact({ ...inputs, designations }))
+      .toThrow(/outside the narcotics-specific\/TCO-only partition/)
   })
 
   it.skipIf(NEEDS_WDR_ORIGINALS)('retains the reviewed 2026 edition and coverage metadata while withholding values', () => {
