@@ -2,6 +2,8 @@
 
 from datetime import datetime, timezone
 import json
+import io
+from contextlib import redirect_stdout
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import os
 from pathlib import Path
@@ -18,6 +20,55 @@ import isolation
 
 
 class BoundaryTests(unittest.TestCase):
+    def native_environment(self):
+        return {"QUARTERLY_EXECUTION_PROVIDER":"hetzner","QUARTERLY_EXECUTION_ID":"a"*32,
+                "QUARTERLY_HOST_ID":"b"*64,"QUARTERLY_CONTROLLER_IMAGE":"sha256:"+"c"*64}
+
+    def test_native_identity_never_invents_a_railway_deployment(self):
+        execution=refresh.execution_identity(self.native_environment())
+        self.assertEqual(execution["provider"],"hetzner")
+        self.assertNotIn("Railway-Deployment:",refresh.provenance(execution))
+        self.assertNotIn("deployment",refresh.execution_fields(execution))
+        self.assertIn("Controller-Image: sha256:"+"c"*64,refresh.provenance(execution))
+        self.assertEqual(refresh.execution_identity({}),{"provider":"local","id":"local"})
+        legacy=refresh.execution_identity({"RAILWAY_DEPLOYMENT_ID":"existing-provider-deployment"})
+        self.assertEqual(refresh.execution_fields(legacy)["deployment"],"existing-provider-deployment")
+
+    def test_native_identity_rejects_mixed_missing_or_malformed_metadata(self):
+        for key,value in (("RAILWAY_DEPLOYMENT_ID","old"),("RAILWAY_PROJECT_ID","old"),
+                          ("QUARTERLY_EXECUTION_ID","invented"),("QUARTERLY_HOST_ID","short"),
+                          ("QUARTERLY_CONTROLLER_IMAGE","mutable:tag"),("QUARTERLY_EXECUTION_PROVIDER","other")):
+            with self.subTest(key=key),self.assertRaises(ValueError):
+                refresh.execution_identity({**self.native_environment(),key:value})
+        for key in self.native_environment():
+            value=self.native_environment();value.pop(key)
+            with self.subTest(missing=key),self.assertRaises(ValueError):refresh.execution_identity(value)
+
+    def test_native_pending_quarter_preserves_existing_review_without_collection(self):
+        environment={**self.native_environment(),"QUARTERLY_APPLY":"1",
+                     "GITHUB_TOKEN":"synthetic","GITHUB_DEPLOY_KEY":"synthetic"}
+        pending={"number":74,"head":{"sha":"d"*40}}
+        output=io.StringIO()
+        with patch.dict(os.environ,environment,clear=True),patch.object(refresh.os,"geteuid",return_value=0),\
+             patch.object(refresh.resource,"setrlimit"),patch.object(refresh,"verify_controller",return_value="e"*40),\
+             patch.object(refresh.GitHub,"pending",return_value=pending) as lookup,\
+             patch.object(refresh,"prepare_market_state") as state,patch.object(refresh,"run_step") as collect,\
+             patch.object(refresh,"propose") as propose,redirect_stdout(output):
+            self.assertEqual(refresh.main(),0)
+        self.assertTrue(lookup.call_args.args[0].startswith("data-refresh/railway-"))
+        state.assert_not_called();collect.assert_not_called();propose.assert_not_called()
+        receipt=json.loads(output.getvalue())
+        self.assertEqual(receipt["event"],"HETZNER_QUARTERLY_PENDING_REVIEW")
+        self.assertEqual(receipt["pull_request"],74);self.assertNotIn("deployment",receipt)
+
+    def test_native_execution_requires_a_real_volume_before_pipeline(self):
+        with patch.dict(os.environ,self.native_environment(),clear=True),patch.object(refresh.os,"geteuid",return_value=0),\
+             patch.object(refresh.resource,"setrlimit"),patch.object(refresh,"verify_controller",return_value="e"*40),\
+             patch.object(refresh,"prepare_market_state",side_effect=RuntimeError("fixture stop")) as state,\
+             patch.object(refresh,"run_step") as collect:
+            with self.assertRaisesRegex(RuntimeError,"fixture stop"):refresh.main()
+        state.assert_called_once_with(require_mount=True);collect.assert_not_called()
+
     def test_authenticated_redirect_never_reaches_target(self):
         received = []
 
@@ -206,7 +257,7 @@ class LinuxIsolationTests(unittest.TestCase):
                 + "for name in " + repr([str(locked), str(refresh.CONTROLLER / "refresh.py")]) + ":\n"
                 + " try: Path(name).write_text('injected')\n except PermissionError: pass\n else: raise AssertionError(name)\n"
                 + f"try: os.read({fd},32)\nexcept OSError: pass\nelse: raise AssertionError('inherited FD')\n"
-                + "assert not ({'GITHUB_TOKEN','GITHUB_DEPLOY_KEY','GIT_SSH_COMMAND','RAILWAY_TOKEN'} & set(os.environ))\n"
+                + "assert not ({'GITHUB_TOKEN','GITHUB_DEPLOY_KEY','GIT_SSH_COMMAND','RAILWAY_TOKEN','OPENAI_API_KEY','ANTHROPIC_API_KEY','GEMINI_API_KEY'} & set(os.environ))\n"
                 + "assert os.environ['PYTHONDONTWRITEBYTECODE']=='1'\n"
                 + "Path('allowed.json').write_text('{\"safe\":true}')\n"
                 + "copy=Path(os.environ['TMPDIR'])/'fixture-copy'; shutil.copy2('source.js',copy); copy.write_text('candidate-owned fixture')\n"
@@ -214,11 +265,11 @@ class LinuxIsolationTests(unittest.TestCase):
                 + "Path('public/.news.stage-test').mkdir()\nPath('public/news').rename('public/.news.backup-test')\nPath('public/.news.stage-test').rename('public/news')\nPath('public/.news.backup-test').rmdir()\n"
                 + "subprocess.Popen(['sleep','90'], start_new_session=True)\n"
                 + "print('QUARTERLY_CREDENTIAL_ISOLATION_PASS', flush=True)\n")
-            os.environ["GITHUB_TOKEN"] = "parent-token-fixture"
             try:
-                refresh.run_step(work, public_root / "scratch", ["python3", "probe.py"], 15)
+                with patch.dict(os.environ,{"GITHUB_TOKEN":"parent-token-fixture","OPENAI_API_KEY":"not-a-real-key",
+                                            "ANTHROPIC_API_KEY":"not-a-real-key","GEMINI_API_KEY":"not-a-real-key"}):
+                    refresh.run_step(work, public_root / "scratch", ["python3", "probe.py"], 15)
             finally:
-                os.environ.pop("GITHUB_TOKEN", None)
                 os.close(fd)
             self.assertEqual(json.loads(output.read_text()), {"safe": True})
             self.assertEqual(locked.read_text(), "immutable")
