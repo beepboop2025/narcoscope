@@ -59,7 +59,7 @@
     "@types/topojson-client": "^3.1.5",
     "@vitejs/plugin-react": "^6.0.3",
     "@vitest/coverage-v8": "^4.1.11",
-    "happy-dom": "^20.11.2",
+    "happy-dom": "^21.0.4",
     "pdfjs-dist": "^4.10.38",
     "railway": "3.11.0",
     "typescript": "^6.0.3",
