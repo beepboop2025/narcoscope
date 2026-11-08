@@ -2,7 +2,7 @@
   "$schema": "./narcoscope-palimpsest-v1.schema.json",
   "schemaVersion": "narcoscope.palimpsest.china-aggregate.v1",
   "artifactId": "narcoscope.china.official-coverage",
-  "dataAsOf": "2026-11-05",
+  "dataAsOf": "2026-11-08",
   "geography": {
     "country": "China",
     "iso2": "CN",
@@ -40,10 +40,10 @@
         "title": "World Drug Report 2026, Statistical Annex 8.1: Prices and purities of drugs",
         "url": "https://www.unodc.org/documents/data-and-analysis/WDR_2026/Annex/8.1_Prices_and_purities_of_drugs.xlsx",
         "sourceEdition": "2026",
-        "localDataDate": "2026-11-05",
+        "localDataDate": "2026-11-08",
         "input": {
           "path": "src/data/prices.ts",
-          "sha256": "96f3569e7bc0d508831aa1b4757d3d1d1db40dfc534f3ee730885b98191d8423"
+          "sha256": "e9a24a275e4c53c09cb623e6a7a07c5d19acf88bae81e6db17f5c472e265e6b5"
         }
       },
       "data": null,
@@ -225,31 +225,31 @@
         "kind": "snapshot",
         "fromYear": null,
         "toYear": null,
-        "snapshotDate": "2026-11-05"
+        "snapshotDate": "2026-11-08"
       },
       "provenance": {
         "publisher": "US Department of the Treasury, Office of Foreign Assets Control",
         "title": "US Treasury OFAC - Specially Designated Nationals List",
         "url": "https://sanctionslist.ofac.treas.gov/Home/SdnList",
         "sourceEdition": "SDN snapshot",
-        "localDataDate": "2026-11-05",
+        "localDataDate": "2026-11-08",
         "input": {
           "path": "src/data/designations.json",
-          "sha256": "f5c9aaa70131ac4ee36506aa927d45e40b39e432698feb942ec95da179a23cdc"
+          "sha256": "cece185a93617320197ddb3e37cb5c6019fdbc755e497af8e7aa808a48b4a5af"
         }
       },
       "data": {
-        "recordCount": 118,
+        "recordCount": 125,
         "narcoticsSpecificProgramRecordCount": 79,
-        "tcoOnlyRecordCount": 39,
+        "tcoOnlyRecordCount": 46,
         "byEntityType": [
           {
             "entityType": "individual",
-            "count": 52
+            "count": 53
           },
           {
             "entityType": "organization",
-            "count": 66
+            "count": 72
           }
         ],
         "byProgram": [
@@ -266,7 +266,7 @@
           {
             "program": "TCO",
             "label": "Transnational Criminal Organization",
-            "count": 39
+            "count": 46
           }
         ],
         "multiCountryRecordCount": 14
