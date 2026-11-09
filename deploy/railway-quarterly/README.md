@@ -1,6 +1,6 @@
 # Quarterly data proposals
 
-This trusted Railway controller runs the existing Node 20 `npm ci` and
+This trusted proposal controller runs the existing Node 20 `npm ci` and
 `scripts/pipeline/run.mjs` fetch, transform, TypeScript and dataset-integrity
 validation path. It proposes only the data paths previously allowed by
 `.github/workflows/data-refresh.yml`. It neither writes main nor publishes data.
@@ -65,3 +65,32 @@ assembly manifest, provider image digest and a terminal controller event from
 the same deployment; Railway's initial `SUCCESS` state is not proof that the
 pipeline finished. An existing proposal is a `PENDING_REVIEW` result, not a new
 collection or publication.
+
+## Native executor preparation
+
+Hetzner executions explicitly set `QUARTERLY_EXECUTION_PROVIDER=hetzner`, a
+32-character hexadecimal `QUARTERLY_EXECUTION_ID`, a SHA-256 host identity in
+`QUARTERLY_HOST_ID`, and the actual immutable `sha256:...` controller image in
+`QUARTERLY_CONTROLLER_IMAGE`. These fields are supplied by the reviewed host
+launcher, not by candidate source. Native execution rejects every `RAILWAY_*`
+environment variable. Its events and proposed commit/PR metadata identify
+Hetzner, the run, host and image; they do not invent a Railway deployment.
+Existing Railway execution remains identifiable by its real deployment ID.
+
+The legacy `data-refresh/railway-YYYY-qN` branch remains the quarter's stable
+review identity. A provider change must not duplicate an existing open draft.
+For the migration's 2026-Q4 invocation, an existing draft remains pending
+review before any collection. That result does not qualify state preservation
+or a fresh pipeline run. The proposal-only scope, current-main comparison,
+atomic create-only push, signed controller assembly and credential boundary
+are unchanged. The clean candidate environment also excludes all paid model
+API keys; this pipeline has no model-call authorization.
+
+Before native activation, retain the old volume, prove a complete independently
+read-back copy of its private state, and bind that copy to the exact original
+service, environment, volume and stopped deployment. Preserve raw bytes,
+refresh clocks, empty directories and hidden receipts; do not seed an empty
+cache or substitute the separate daily collector's state. Keep the old cron
+held before starting the native schedule. The prepared migration evidence
+must distinguish image/isolation qualification, state-copy verification,
+actual proposal execution and natural quarterly recurrence.

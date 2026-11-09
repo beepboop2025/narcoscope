@@ -19,7 +19,7 @@ from isolation import (COLLECTOR_UID, CONTROLLER, digest, drop_privileges, event
 REPOSITORY = "beepboop2025/narcoscope"
 REMOTE = "https://github.com/" + REPOSITORY + ".git"
 MAX_TREE_BYTES = 512 * 1024 * 1024
-DISPOSABLE = {"node_modules", "data-raw"}
+DISPOSABLE = {"node_modules", "data-raw", "data-private"}
 CONTROLLER_FILES = ("Dockerfile", "refresh.py", "isolation.py", "test_refresh.py", "github-known-hosts")
 PUBLIC_FILES = {
     "public/data/narcoscope-palimpsest-v1.json",
@@ -80,7 +80,50 @@ def allowed_output(name):
 
 
 def quarter_branch(now):
+    # Stable proposal identity survives executor migration. Existing quarters
+    # must remain pending review instead of producing a second provider branch.
     return f"data-refresh/railway-{now.year}-q{(now.month - 1) // 3 + 1}"
+
+
+def execution_identity(environment=None):
+    environment = os.environ if environment is None else environment
+    explicit = environment.get("QUARTERLY_EXECUTION_PROVIDER")
+    native_names = ("QUARTERLY_EXECUTION_ID", "QUARTERLY_HOST_ID", "QUARTERLY_CONTROLLER_IMAGE")
+    if explicit is None:
+        if any(name in environment for name in native_names):
+            raise ValueError("Native execution fields require an explicit provider")
+        deployment = environment.get("RAILWAY_DEPLOYMENT_ID")
+        return {"provider": "railway" if deployment else "local", "id": deployment or "local"}
+    if explicit != "hetzner" or any(name.startswith("RAILWAY_") for name in environment):
+        raise ValueError("Native execution cannot carry a different provider identity")
+    value = {"provider": "hetzner", "id": environment.get(native_names[0]),
+             "host_identity": environment.get(native_names[1]), "image_digest": environment.get(native_names[2])}
+    if (not isinstance(value["id"], str) or not re.fullmatch(r"[a-f0-9]{32}", value["id"])
+            or not isinstance(value["host_identity"], str) or not re.fullmatch(r"[a-f0-9]{64}", value["host_identity"])
+            or not isinstance(value["image_digest"], str) or not re.fullmatch(r"sha256:[a-f0-9]{64}", value["image_digest"])):
+        raise ValueError("Native execution needs exact run, host and image identities")
+    return value
+
+
+def execution_fields(execution):
+    value = {"execution": execution}
+    if execution["provider"] == "railway":
+        value["deployment"] = execution["id"]
+    return value
+
+
+def terminal_event(suffix, execution, **fields):
+    event(execution["provider"].upper() + "_QUARTERLY_" + suffix,
+          **fields, **execution_fields(execution))
+
+
+def provenance(execution):
+    lines = ["Execution-Provider: " + execution["provider"], "Execution-ID: " + execution["id"]]
+    if execution["provider"] == "railway":
+        lines.append("Railway-Deployment: " + execution["id"])
+    elif execution["provider"] == "hetzner":
+        lines += ["Execution-Host: " + execution["host_identity"], "Controller-Image: " + execution["image_digest"]]
+    return "\n".join(lines) + "\n"
 
 
 class NoRedirect(urllib.request.HTTPRedirectHandler):
@@ -99,7 +142,7 @@ class GitHub:
             data=None if body is None else json.dumps(body).encode(), headers={
                 "Authorization": "Bearer " + self.token,
                 "Accept": "application/vnd.github+json", "Content-Type": "application/json",
-                "X-GitHub-Api-Version": "2022-11-28", "User-Agent": "narcoscope-quarterly-railway"})
+                "X-GitHub-Api-Version": "2022-11-28", "User-Agent": "narcoscope-quarterly-controller"})
         try:
             with urllib.request.build_opener(NoRedirect()).open(request, timeout=30) as response:
                 raw = response.read(2 * 1024 * 1024 + 1)
@@ -157,7 +200,9 @@ def checkout(mirror, env, source, work):
             path.parent.chmod(0o1777)
     for name in DISPOSABLE:
         path = work / name
-        path.mkdir(mode=0o755)
+        # Withheld originals are private, disposable inputs to rights-safe
+        # tracked projections. They are never part of the proposal tree.
+        path.mkdir(mode=0o700 if name == "data-private" else 0o755)
         os.chown(path, COLLECTOR_UID, COLLECTOR_UID)
     # The newsroom swaps its complete directory atomically. A root-owned sticky
     # parent permits its staging directory while protecting all other public
@@ -224,14 +269,14 @@ def validate_outputs(work, baseline):
     return changed
 
 
-def propose(mirror, env, source, changed, branch, api, deployment, apply):
+def propose(mirror, env, source, changed, branch, api, execution, apply):
     if not re.fullmatch(r"data-refresh/railway-[0-9]{4}-q[1-4]", branch):
         raise ValueError("Only the quarterly review branch is permitted")
     current = git(mirror, env, "ls-remote", "origin", "refs/heads/main").decode().split()[0]
     if current != source:
         raise ValueError("Main advanced; refresh and validate again")
     if not changed:
-        event("RAILWAY_QUARTERLY_UNCHANGED", source=source, deployment=deployment)
+        terminal_event("UNCHANGED", execution, source=source)
         return None
     index_env = {**env, "GIT_INDEX_FILE": str(mirror.parent / "proposal-index")}
     git(mirror, index_env, "read-tree", source)
@@ -242,13 +287,14 @@ def propose(mirror, env, source, changed, branch, api, deployment, apply):
         git(mirror, index_env, "update-index", "--add", "--cacheinfo", f"100644,{blob},{name}")
     tree = git(mirror, index_env, "write-tree").decode().strip()
     message = ("data: propose quarterly open-source refresh\n\n"
-               f"Collection-Source: {source}\nRailway-Deployment: {deployment}\n"
+               f"Collection-Source: {source}\n" + provenance(execution) +
                f"Quarterly-Controller: {controller_digest()}\n")
     commit = git(mirror, env, "commit-tree", tree, "-p", source, data=message.encode()).decode().strip()
     paths = git(mirror, env, "diff-tree", "--no-commit-id", "--name-only", "-r", commit).decode().splitlines()
     if set(paths) != set(changed):
         raise ValueError("Proposal differs from validated bytes")
-    event("quarterly_proposal", source=source, commit=commit, branch=branch, paths=paths, apply=apply)
+    event("quarterly_proposal", source=source, commit=commit, branch=branch, paths=paths, apply=apply,
+          **execution_fields(execution))
     if not apply:
         return commit
     if git(mirror, env, "ls-remote", "origin", "refs/heads/" + branch).strip():
@@ -259,17 +305,17 @@ def propose(mirror, env, source, changed, branch, api, deployment, apply):
     # created after ls-remote cannot be overwritten or fast-forwarded here.
     git(mirror, env, "push", f"--force-with-lease=refs/heads/{branch}:",
         "git@github.com:" + REPOSITORY + ".git", f"{commit}:refs/heads/{branch}")
-    body = (f"Quarterly proposal generated from `{source}` by the isolated Railway controller.\n\n"
+    body = (f"Quarterly proposal generated from `{source}` by the isolated {execution['provider']} controller.\n\n"
             "The existing open-data fetch, transform, TypeScript and dataset-integrity tests passed. "
             "Review the data and source changes before merging; this job does not publish or merge.\n\n"
-            f"Controller: `{controller_digest()}`\nDeployment: `{deployment}`\n")
+            f"Controller: `{controller_digest()}`\n\n```text\n{provenance(execution)}```\n")
     pull = api.request("/repos/" + REPOSITORY + "/pulls", "POST", {
         "title": "Automated quarterly data refresh", "head": branch, "base": "main",
         "body": body, "draft": True, "maintainer_can_modify": False})
     if pull["head"]["sha"] != commit or pull["base"]["repo"]["full_name"] != REPOSITORY:
         raise ValueError("Created proposal identity mismatch")
-    event("RAILWAY_QUARTERLY_PROPOSAL_PASS", source=source, commit=commit,
-          pull_request=pull["number"], deployment=deployment)
+    terminal_event("PROPOSAL_PASS", execution, source=source, commit=commit,
+                   pull_request=pull["number"])
     return commit
 
 
@@ -281,7 +327,7 @@ def main():
     apply = os.getenv("QUARTERLY_APPLY") == "1"
     token = os.environ.pop("GITHUB_TOKEN", "")
     key = os.environ.pop("GITHUB_DEPLOY_KEY", "")
-    deployment = os.getenv("RAILWAY_DEPLOYMENT_ID", "local")
+    execution = execution_identity()
     branch = quarter_branch(datetime.now(timezone.utc))
     api = GitHub(token) if apply else None
     if apply:
@@ -289,10 +335,10 @@ def main():
             raise ValueError("Proposal credentials are missing")
         pending = api.pending(branch)
         if pending:
-            event("RAILWAY_QUARTERLY_PENDING_REVIEW", pull_request=pending["number"],
-                  source=pending["head"]["sha"], deployment=deployment)
+            terminal_event("PENDING_REVIEW", execution, pull_request=pending["number"],
+                           source=pending["head"]["sha"])
             return 0
-    market_state = prepare_market_state(require_mount=deployment != "local")
+    market_state = prepare_market_state(require_mount=execution["provider"] != "local")
     with tempfile.TemporaryDirectory(prefix="quarterly-private-") as private, \
             tempfile.TemporaryDirectory(prefix="quarterly-candidate-") as public:
         private_root, public_root = Path(private), Path(public)
@@ -312,16 +358,16 @@ def main():
         work = public_root / "repo"
         work.mkdir(mode=0o755)
         baseline = checkout(mirror, env, source, work)
-        event("quarterly_start", source=source, deployment=deployment,
-              controller=controller_digest(), controller_source=controller_source)
+        event("quarterly_start", source=source, controller=controller_digest(),
+              controller_source=controller_source, **execution_fields(execution))
         run_step(work, public_root / "npm", ["npm", "ci"], 300)
         run_step(work, public_root / "pipeline", ["node", "scripts/pipeline/run.mjs"], 1500,
                  market_state=market_state)
         changed = validate_outputs(work, baseline)
-        commit = propose(mirror, env, source, changed, branch, api, deployment, apply)
+        commit = propose(mirror, env, source, changed, branch, api, execution, apply)
         if not apply:
-            event("RAILWAY_QUARTERLY_DRY_RUN_PASS", source=source, commit=commit,
-                  changed_files=len(changed), deployment=deployment, controller=controller_digest())
+            terminal_event("DRY_RUN_PASS", execution, source=source, commit=commit,
+                           changed_files=len(changed), controller=controller_digest())
     return 0
 
 
