@@ -2,7 +2,7 @@
   "$schema": "./narcoscope-palimpsest-v1.schema.json",
   "schemaVersion": "narcoscope.palimpsest.china-aggregate.v1",
   "artifactId": "narcoscope.china.official-coverage",
-  "dataAsOf": "2026-11-14",
+  "dataAsOf": "2026-11-15",
   "geography": {
     "country": "China",
     "iso2": "CN",
@@ -40,10 +40,10 @@
         "title": "World Drug Report 2026, Statistical Annex 8.1: Prices and purities of drugs",
         "url": "https://www.unodc.org/documents/data-and-analysis/WDR_2026/Annex/8.1_Prices_and_purities_of_drugs.xlsx",
         "sourceEdition": "2026",
-        "localDataDate": "2026-11-14",
+        "localDataDate": "2026-11-15",
         "input": {
           "path": "src/data/prices.ts",
-          "sha256": "3b2c2a272f9d2e7013ee057f9c2fe6c95c0005f1eec5ac0c0060b801b80d7db3"
+          "sha256": "d3277202aecb9dad9446210a8732cd1c9f602785fcafa857e588cbd221d37b14"
         }
       },
       "data": null,
@@ -225,17 +225,17 @@
         "kind": "snapshot",
         "fromYear": null,
         "toYear": null,
-        "snapshotDate": "2026-11-14"
+        "snapshotDate": "2026-11-15"
       },
       "provenance": {
         "publisher": "US Department of the Treasury, Office of Foreign Assets Control",
         "title": "US Treasury OFAC - Specially Designated Nationals List",
         "url": "https://sanctionslist.ofac.treas.gov/Home/SdnList",
         "sourceEdition": "SDN snapshot",
-        "localDataDate": "2026-11-14",
+        "localDataDate": "2026-11-15",
         "input": {
           "path": "src/data/designations.json",
-          "sha256": "f8922c252a00ce17cd98dadd79dd4f5511342eb881043e4e6120cf440ea2f8bc"
+          "sha256": "a4423a93174a7e52fe468fca49e7502ec544e403546ba14e6e4376bdd57121aa"
         }
       },
       "data": {
