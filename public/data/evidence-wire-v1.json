@@ -1,10 +1,10 @@
 {
   "schema": "narcoscope.evidence-wire.v1",
-  "generatedAt": "2026-11-17T15:35:30.153Z",
+  "generatedAt": "2026-11-17T15:45:33.769Z",
   "status": "partial",
   "window": {
     "start": "2026-08-19T12:00:00.000Z",
-    "end": "2026-11-16T12:00:00.000Z"
+    "end": "2026-11-17T12:00:00.000Z"
   },
   "items": [
     {
@@ -14,10 +14,44 @@
       "sourceId": "europol-news",
       "sourceName": "Europol · Newsroom",
       "publishedAt": null,
-      "retrievedAt": "2026-11-17T15:35:30.153Z",
+      "retrievedAt": "2026-11-17T15:45:33.769Z",
       "evidenceClass": "official-release",
       "verificationState": "source-published",
       "legalStage": "not-applicable",
+      "topics": [
+        "drug markets"
+      ],
+      "countries": [],
+      "publicationAllowed": true
+    },
+    {
+      "id": "doj-justice-news-72133fcd99b3baddabdc",
+      "title": "Duquesne Felon Sentenced to Eight and a Half Years in Prison for Unlawful Possession of Firearms and Trafficking of Heroin and Fentanyl",
+      "url": "https://www.justice.gov/usao-wdpa/pr/duquesne-felon-sentenced-eight-and-half-years-prison-unlawful-possession-firearms-and",
+      "sourceId": "doj-justice-news",
+      "sourceName": "U.S. Department of Justice · Justice News",
+      "publishedAt": "2026-11-17T12:00:00.000Z",
+      "retrievedAt": "2026-11-17T15:45:33.769Z",
+      "evidenceClass": "official-action",
+      "verificationState": "source-published",
+      "legalStage": "sentencing",
+      "topics": [
+        "drug markets"
+      ],
+      "countries": [],
+      "publicationAllowed": true
+    },
+    {
+      "id": "doj-justice-news-d358552105a865fd9694",
+      "title": "Essex, Vermont Man Charged with Distribution of and Possession with Intent to Distribute Cocaine Base",
+      "url": "https://www.justice.gov/usao-vt/pr/essex-vermont-man-charged-distribution-and-possession-intent-distribute-cocaine-base",
+      "sourceId": "doj-justice-news",
+      "sourceName": "U.S. Department of Justice · Justice News",
+      "publishedAt": "2026-11-17T12:00:00.000Z",
+      "retrievedAt": "2026-11-17T15:45:33.769Z",
+      "evidenceClass": "official-action",
+      "verificationState": "source-published",
+      "legalStage": "charge",
       "topics": [
         "drug markets"
       ],
@@ -117,7 +151,7 @@
       "sourceId": "doj-justice-news",
       "sourceName": "U.S. Department of Justice · Justice News",
       "publishedAt": "2026-11-16T12:00:00.000Z",
-      "retrievedAt": "2026-11-17T15:03:49.167Z",
+      "retrievedAt": "2026-11-17T15:45:33.769Z",
       "evidenceClass": "official-action",
       "verificationState": "source-published",
       "legalStage": "sentencing",
@@ -186,7 +220,7 @@
       "sourceId": "doj-justice-news",
       "sourceName": "U.S. Department of Justice · Justice News",
       "publishedAt": "2026-11-16T12:00:00.000Z",
-      "retrievedAt": "2026-11-17T15:03:49.167Z",
+      "retrievedAt": "2026-11-17T15:45:33.769Z",
       "evidenceClass": "official-action",
       "verificationState": "source-published",
       "legalStage": "sentencing",
@@ -324,7 +358,7 @@
       "sourceId": "doj-justice-news",
       "sourceName": "U.S. Department of Justice · Justice News",
       "publishedAt": "2026-11-16T12:00:00.000Z",
-      "retrievedAt": "2026-11-17T15:03:49.167Z",
+      "retrievedAt": "2026-11-17T15:45:33.769Z",
       "evidenceClass": "official-action",
       "verificationState": "source-published",
       "legalStage": "conviction",
@@ -364,6 +398,24 @@
       "legalStage": "conviction",
       "topics": [
         "drug markets"
+      ],
+      "countries": [],
+      "publicationAllowed": true
+    },
+    {
+      "id": "doj-justice-news-db07cf2b3e03f2966670",
+      "title": "Jury Finds Dubuque Man Guilty of Sex Trafficking and Dealing Cocaine",
+      "url": "https://www.justice.gov/usao-ndia/pr/jury-finds-dubuque-man-guilty-sex-trafficking-and-dealing-cocaine",
+      "sourceId": "doj-justice-news",
+      "sourceName": "U.S. Department of Justice · Justice News",
+      "publishedAt": "2026-11-16T12:00:00.000Z",
+      "retrievedAt": "2026-11-17T15:45:33.769Z",
+      "evidenceClass": "official-action",
+      "verificationState": "source-published",
+      "legalStage": "report",
+      "topics": [
+        "drug markets",
+        "human trafficking"
       ],
       "countries": [],
       "publicationAllowed": true
@@ -681,23 +733,6 @@
       "publicationAllowed": true
     },
     {
-      "id": "doj-justice-news-fbc62a2bc77d7f9cdc20",
-      "title": "Monroe County Man and Lehigh County Woman Indicted for Drug Offenses",
-      "url": "https://www.justice.gov/usao-mdpa/pr/monroe-county-man-and-lehigh-county-woman-indicted-drug-offenses",
-      "sourceId": "doj-justice-news",
-      "sourceName": "U.S. Department of Justice · Justice News",
-      "publishedAt": "2026-11-13T12:00:00.000Z",
-      "retrievedAt": "2026-11-13T17:58:49.981Z",
-      "evidenceClass": "official-action",
-      "verificationState": "source-published",
-      "legalStage": "charge",
-      "topics": [
-        "drug markets"
-      ],
-      "countries": [],
-      "publicationAllowed": true
-    },
-    {
       "id": "europol-news-e13a34ed54b9ea716d58",
       "title": "European and Ecuadorian cooperation leads to 20 arrests in major hit against drug trafficking",
       "url": "https://www.europol.europa.eu/media-press/newsroom/news/european-and-ecuadorian-cooperation-leads-to-20-arrests-in-major-hit-against-drug-trafficking",
@@ -710,40 +745,6 @@
       "legalStage": "not-applicable",
       "topics": [
         "drug markets"
-      ],
-      "countries": [],
-      "publicationAllowed": true
-    },
-    {
-      "id": "doj-justice-news-02e01e6a126a6fcbf502",
-      "title": "Luzerne County Man Sentenced to 148 Months in Prison for Drug Trafficking and Dog Fighting",
-      "url": "https://www.justice.gov/usao-mdpa/pr/luzerne-county-man-sentenced-148-months-prison-drug-trafficking-and-dog-fighting",
-      "sourceId": "doj-justice-news",
-      "sourceName": "U.S. Department of Justice · Justice News",
-      "publishedAt": "2026-11-12T12:00:00.000Z",
-      "retrievedAt": "2026-11-12T18:34:26.160Z",
-      "evidenceClass": "official-action",
-      "verificationState": "source-published",
-      "legalStage": "sentencing",
-      "topics": [
-        "drug markets"
-      ],
-      "countries": [],
-      "publicationAllowed": true
-    },
-    {
-      "id": "doj-justice-news-03193f7c01b7b765db91",
-      "title": "Big Stone Gap Man Pleads Guilty to Illegal Possession of a Firearm",
-      "url": "https://www.justice.gov/usao-wdva/pr/big-stone-gap-man-pleads-guilty-illegal-possession-firearm",
-      "sourceId": "doj-justice-news",
-      "sourceName": "U.S. Department of Justice · Justice News",
-      "publishedAt": "2026-11-12T12:00:00.000Z",
-      "retrievedAt": "2026-11-12T18:34:26.160Z",
-      "evidenceClass": "official-action",
-      "verificationState": "source-published",
-      "legalStage": "conviction",
-      "topics": [
-        "arms trafficking"
       ],
       "countries": [],
       "publicationAllowed": true
@@ -772,7 +773,7 @@
       "sourceId": "treasury-press",
       "sourceName": "U.S. Treasury · Press releases",
       "publishedAt": "2026-11-11T01:15:00.000Z",
-      "retrievedAt": "2026-11-17T15:35:30.153Z",
+      "retrievedAt": "2026-11-17T15:45:33.769Z",
       "evidenceClass": "official-action",
       "verificationState": "source-published",
       "legalStage": "designation",
@@ -790,7 +791,7 @@
       "sourceId": "treasury-press",
       "sourceName": "U.S. Treasury · Press releases",
       "publishedAt": "2026-11-06T20:05:00.000Z",
-      "retrievedAt": "2026-11-17T15:35:30.153Z",
+      "retrievedAt": "2026-11-17T15:45:33.769Z",
       "evidenceClass": "official-action",
       "verificationState": "source-published",
       "legalStage": "report",
@@ -807,7 +808,7 @@
       "sourceId": "treasury-press",
       "sourceName": "U.S. Treasury · Press releases",
       "publishedAt": "2026-11-06T20:00:00.000Z",
-      "retrievedAt": "2026-11-17T15:35:30.153Z",
+      "retrievedAt": "2026-11-17T15:45:33.769Z",
       "evidenceClass": "official-action",
       "verificationState": "source-published",
       "legalStage": "designation",
@@ -909,7 +910,7 @@
       "sourceId": "un-news-law-crime",
       "sourceName": "United Nations News · Law and crime prevention",
       "publishedAt": "2026-10-09T12:00:00.000Z",
-      "retrievedAt": "2026-11-17T15:35:30.153Z",
+      "retrievedAt": "2026-11-17T15:45:33.769Z",
       "evidenceClass": "official-release",
       "verificationState": "source-published",
       "legalStage": "not-applicable",
@@ -943,7 +944,7 @@
       "sourceId": "un-news-law-crime",
       "sourceName": "United Nations News · Law and crime prevention",
       "publishedAt": "2026-10-03T12:00:00.000Z",
-      "retrievedAt": "2026-11-17T15:35:30.153Z",
+      "retrievedAt": "2026-11-17T15:45:33.769Z",
       "evidenceClass": "official-release",
       "verificationState": "source-published",
       "legalStage": "not-applicable",
@@ -960,7 +961,7 @@
       "sourceId": "un-news-law-crime",
       "sourceName": "United Nations News · Law and crime prevention",
       "publishedAt": "2026-08-19T12:00:00.000Z",
-      "retrievedAt": "2026-11-17T15:35:30.153Z",
+      "retrievedAt": "2026-11-17T15:45:33.769Z",
       "evidenceClass": "official-release",
       "verificationState": "source-published",
       "legalStage": "not-applicable",
@@ -976,21 +977,21 @@
       "id": "doj-justice-news",
       "name": "U.S. Department of Justice · Justice News",
       "url": "https://www.justice.gov/news/rss",
-      "status": "aging",
-      "checkedAt": "2026-11-17T15:35:30.153Z",
-      "lastSuccessAt": "2026-11-17T15:03:49.167Z",
+      "status": "fresh",
+      "checkedAt": "2026-11-17T15:45:33.769Z",
+      "lastSuccessAt": "2026-11-17T15:45:33.769Z",
       "cadenceMinutes": 15,
       "staleAfterMinutes": 120,
       "rights": "Public U.S. government release metadata; NarcoScope republishes titles, links and source clocks only.",
-      "detail": "Bounded fetch failed: HTTP 403"
+      "detail": "25 source items read · 6 current in-scope · 40 retained metadata items published"
     },
     {
       "id": "un-news-law-crime",
       "name": "United Nations News · Law and crime prevention",
       "url": "https://news.un.org/feed/subscribe/en/news/topic/law-and-crime-prevention/feed/rss.xml",
       "status": "fresh",
-      "checkedAt": "2026-11-17T15:35:30.153Z",
-      "lastSuccessAt": "2026-11-17T15:35:30.153Z",
+      "checkedAt": "2026-11-17T15:45:33.769Z",
+      "lastSuccessAt": "2026-11-17T15:45:33.769Z",
       "cadenceMinutes": 30,
       "staleAfterMinutes": 180,
       "rights": "Public United Nations feed metadata; NarcoScope republishes titles, links and source clocks only.",
@@ -1001,8 +1002,8 @@
       "name": "Europol · Newsroom",
       "url": "https://www.europol.europa.eu/cms/api/rss/news",
       "status": "fresh",
-      "checkedAt": "2026-11-17T15:35:30.153Z",
-      "lastSuccessAt": "2026-11-17T15:35:30.153Z",
+      "checkedAt": "2026-11-17T15:45:33.769Z",
+      "lastSuccessAt": "2026-11-17T15:45:33.769Z",
       "cadenceMinutes": 30,
       "staleAfterMinutes": 180,
       "rights": "Public European Union agency feed metadata; NarcoScope republishes titles, links and source clocks only.",
@@ -1013,8 +1014,8 @@
       "name": "U.S. Treasury · Press releases",
       "url": "https://home.treasury.gov/news/press-releases",
       "status": "fresh",
-      "checkedAt": "2026-11-17T15:35:30.153Z",
-      "lastSuccessAt": "2026-11-17T15:35:30.153Z",
+      "checkedAt": "2026-11-17T15:45:33.769Z",
+      "lastSuccessAt": "2026-11-17T15:45:33.769Z",
       "cadenceMinutes": 30,
       "staleAfterMinutes": 240,
       "rights": "Public U.S. government release metadata; NarcoScope republishes titles, links and source clocks only.",
@@ -1025,8 +1026,8 @@
       "name": "Palimpsest · newswire publication-rights receipt",
       "url": "https://www.palimpsest.info/readings/newswire-latest.json",
       "status": "restricted",
-      "checkedAt": "2026-11-17T15:35:30.153Z",
-      "lastSuccessAt": "2026-11-17T15:35:30.153Z",
+      "checkedAt": "2026-11-17T15:45:33.769Z",
+      "lastSuccessAt": "2026-11-17T15:45:33.769Z",
       "cadenceMinutes": 15,
       "staleAfterMinutes": 90,
       "rights": "Receipt only. Source content remains suppressed whenever Palimpsest publication_allowed is false.",
@@ -1037,7 +1038,7 @@
       "name": "Seiche · global money-market context",
       "url": "https://api.seiche.info/api/v2/money-markets",
       "status": "stale",
-      "checkedAt": "2026-11-17T15:35:30.153Z",
+      "checkedAt": "2026-11-17T15:45:33.769Z",
       "lastSuccessAt": "2026-10-06T07:01:59.134Z",
       "cadenceMinutes": 15,
       "staleAfterMinutes": 90,
@@ -1049,12 +1050,12 @@
       "name": "Seiche · capital-market context",
       "url": "https://api.seiche.info/api/v2/world-markets?section=capital_markets",
       "status": "fresh",
-      "checkedAt": "2026-11-17T15:35:30.153Z",
-      "lastSuccessAt": "2026-11-17T15:35:30.153Z",
+      "checkedAt": "2026-11-17T15:45:33.769Z",
+      "lastSuccessAt": "2026-11-17T15:45:33.769Z",
       "cadenceMinutes": 15,
       "staleAfterMinutes": 90,
       "rights": "Read-only economic context receipt. Values never become NarcoScope illicit-market facts or person-level inferences.",
-      "detail": "seiche.world-markets.v1 · generated 2026-11-17T15:17:58.000Z"
+      "detail": "seiche.world-markets.v1 · generated 2026-11-17T15:35:13.000Z"
     }
   ],
   "caveats": [
