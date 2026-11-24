@@ -1,10 +1,10 @@
 {
   "schema": "narcoscope.evidence-wire.v1",
-  "generatedAt": "2026-11-24T17:48:34.710Z",
+  "generatedAt": "2026-11-24T17:59:05.036Z",
   "status": "partial",
   "window": {
     "start": "2026-08-19T12:00:00.000Z",
-    "end": "2026-11-23T12:00:00.000Z"
+    "end": "2026-11-24T12:00:00.000Z"
   },
   "items": [
     {
@@ -14,7 +14,7 @@
       "sourceId": "europol-news",
       "sourceName": "Europol · Newsroom",
       "publishedAt": null,
-      "retrievedAt": "2026-11-24T17:48:34.710Z",
+      "retrievedAt": "2026-11-24T17:59:05.036Z",
       "evidenceClass": "official-release",
       "verificationState": "source-published",
       "legalStage": "not-applicable",
@@ -37,6 +37,74 @@
       "legalStage": "not-applicable",
       "topics": [
         "drug markets"
+      ],
+      "countries": [],
+      "publicationAllowed": true
+    },
+    {
+      "id": "doj-justice-news-31f80bf10776ca856dff",
+      "title": "Man Sentenced to 136 Months in Prison for Possession of More Than 500 Grams of Methamphetamine",
+      "url": "https://www.justice.gov/usao-mn/pr/man-sentenced-136-months-prison-possession-more-500-grams-methamphetamine",
+      "sourceId": "doj-justice-news",
+      "sourceName": "U.S. Department of Justice · Justice News",
+      "publishedAt": "2026-11-24T12:00:00.000Z",
+      "retrievedAt": "2026-11-24T17:59:05.036Z",
+      "evidenceClass": "official-action",
+      "verificationState": "source-published",
+      "legalStage": "sentencing",
+      "topics": [
+        "drug markets"
+      ],
+      "countries": [],
+      "publicationAllowed": true
+    },
+    {
+      "id": "doj-justice-news-64f7810bfb59d7b06907",
+      "title": "Rochester Man Sentenced to 70 Months in Prison for Unlawful Possession of Ammunition",
+      "url": "https://www.justice.gov/usao-ndin/pr/rochester-man-sentenced-70-months-prison-unlawful-possession-ammunition",
+      "sourceId": "doj-justice-news",
+      "sourceName": "U.S. Department of Justice · Justice News",
+      "publishedAt": "2026-11-24T12:00:00.000Z",
+      "retrievedAt": "2026-11-24T17:59:05.036Z",
+      "evidenceClass": "official-action",
+      "verificationState": "source-published",
+      "legalStage": "sentencing",
+      "topics": [
+        "arms trafficking"
+      ],
+      "countries": [],
+      "publicationAllowed": true
+    },
+    {
+      "id": "doj-justice-news-697f8d41e463e7a33c35",
+      "title": "Rochester Man Sentenced to 70 Months in Prison for Unlawful Possession of Ammunition",
+      "url": "https://www.justice.gov/usao-ndin/pr/rochester-man-sentenced-70-months-prison-unlawful-possession-ammunition-0",
+      "sourceId": "doj-justice-news",
+      "sourceName": "U.S. Department of Justice · Justice News",
+      "publishedAt": "2026-11-24T12:00:00.000Z",
+      "retrievedAt": "2026-11-24T17:59:05.036Z",
+      "evidenceClass": "official-action",
+      "verificationState": "source-published",
+      "legalStage": "sentencing",
+      "topics": [
+        "arms trafficking"
+      ],
+      "countries": [],
+      "publicationAllowed": true
+    },
+    {
+      "id": "doj-justice-news-9fc772abbe3557f17761",
+      "title": "Former Inland Empire Resident Sentenced to More Than 24 Years in Federal Prison for Sex Trafficking Victim on L.A.’s Figueroa Corridor",
+      "url": "https://www.justice.gov/usao-cdca/pr/former-inland-empire-resident-sentenced-more-24-years-federal-prison-sex-trafficking",
+      "sourceId": "doj-justice-news",
+      "sourceName": "U.S. Department of Justice · Justice News",
+      "publishedAt": "2026-11-24T12:00:00.000Z",
+      "retrievedAt": "2026-11-24T17:59:05.036Z",
+      "evidenceClass": "official-action",
+      "verificationState": "source-published",
+      "legalStage": "sentencing",
+      "topics": [
+        "human trafficking"
       ],
       "countries": [],
       "publicationAllowed": true
@@ -655,81 +723,13 @@
       "publicationAllowed": true
     },
     {
-      "id": "doj-justice-news-9d2cf901fbecd5656920",
-      "title": "Former Middle School Teacher Pleads Guilty to Money Laundering",
-      "url": "https://www.justice.gov/usao-wdtx/pr/former-middle-school-teacher-pleads-guilty-money-laundering",
-      "sourceId": "doj-justice-news",
-      "sourceName": "U.S. Department of Justice · Justice News",
-      "publishedAt": "2026-11-20T12:00:00.000Z",
-      "retrievedAt": "2026-11-23T15:03:14.568Z",
-      "evidenceClass": "official-action",
-      "verificationState": "source-published",
-      "legalStage": "conviction",
-      "topics": [
-        "illicit finance"
-      ],
-      "countries": [],
-      "publicationAllowed": true
-    },
-    {
-      "id": "doj-justice-news-9e03e7d501786b5a9e71",
-      "title": "Maryland Man Sentenced to 27 Years in Prison for Sex Trafficking Two Adult Women",
-      "url": "https://www.justice.gov/usao-sdfl/pr/maryland-man-sentenced-27-years-prison-sex-trafficking-two-adult-women",
-      "sourceId": "doj-justice-news",
-      "sourceName": "U.S. Department of Justice · Justice News",
-      "publishedAt": "2026-11-20T12:00:00.000Z",
-      "retrievedAt": "2026-11-20T20:40:22.154Z",
-      "evidenceClass": "official-action",
-      "verificationState": "source-published",
-      "legalStage": "sentencing",
-      "topics": [
-        "human trafficking"
-      ],
-      "countries": [],
-      "publicationAllowed": true
-    },
-    {
-      "id": "doj-justice-news-9f916973e2437df426c7",
-      "title": "Five Bronx Men Charged In Fentanyl And Crack Cocaine Distribution Conspiracy",
-      "url": "https://www.justice.gov/usao-sdny/pr/five-bronx-men-charged-fentanyl-and-crack-cocaine-distribution-conspiracy",
-      "sourceId": "doj-justice-news",
-      "sourceName": "U.S. Department of Justice · Justice News",
-      "publishedAt": "2026-11-20T12:00:00.000Z",
-      "retrievedAt": "2026-11-20T19:37:31.262Z",
-      "evidenceClass": "official-action",
-      "verificationState": "source-published",
-      "legalStage": "charge",
-      "topics": [
-        "drug markets"
-      ],
-      "countries": [],
-      "publicationAllowed": true
-    },
-    {
-      "id": "doj-justice-news-a1fe3f4aaa4aeab07650",
-      "title": "Federal jury finds Columbus man guilty of drug crimes",
-      "url": "https://www.justice.gov/usao-sdoh/pr/federal-jury-finds-columbus-man-guilty-drug-crimes",
-      "sourceId": "doj-justice-news",
-      "sourceName": "U.S. Department of Justice · Justice News",
-      "publishedAt": "2026-11-20T12:00:00.000Z",
-      "retrievedAt": "2026-11-20T19:37:31.262Z",
-      "evidenceClass": "official-action",
-      "verificationState": "source-published",
-      "legalStage": "report",
-      "topics": [
-        "drug markets"
-      ],
-      "countries": [],
-      "publicationAllowed": true
-    },
-    {
       "id": "treasury-press-e5036c717b949018b127",
       "title": "Treasury Sanctions Major Drug Trafficking Organizations Supporting Terrorist Cartels",
       "url": "https://home.treasury.gov/news/press-releases/sb0696/",
       "sourceId": "treasury-press",
       "sourceName": "U.S. Treasury · Press releases",
       "publishedAt": "2026-11-19T15:00:00.000Z",
-      "retrievedAt": "2026-11-24T17:48:34.710Z",
+      "retrievedAt": "2026-11-24T17:59:05.036Z",
       "evidenceClass": "official-action",
       "verificationState": "source-published",
       "legalStage": "designation",
@@ -918,7 +918,7 @@
       "sourceId": "un-news-law-crime",
       "sourceName": "United Nations News · Law and crime prevention",
       "publishedAt": "2026-10-09T12:00:00.000Z",
-      "retrievedAt": "2026-11-24T17:48:34.710Z",
+      "retrievedAt": "2026-11-24T17:59:05.036Z",
       "evidenceClass": "official-release",
       "verificationState": "source-published",
       "legalStage": "not-applicable",
@@ -935,7 +935,7 @@
       "sourceId": "un-news-law-crime",
       "sourceName": "United Nations News · Law and crime prevention",
       "publishedAt": "2026-10-03T12:00:00.000Z",
-      "retrievedAt": "2026-11-24T17:48:34.710Z",
+      "retrievedAt": "2026-11-24T17:59:05.036Z",
       "evidenceClass": "official-release",
       "verificationState": "source-published",
       "legalStage": "not-applicable",
@@ -952,7 +952,7 @@
       "sourceId": "un-news-law-crime",
       "sourceName": "United Nations News · Law and crime prevention",
       "publishedAt": "2026-08-19T12:00:00.000Z",
-      "retrievedAt": "2026-11-24T17:48:34.710Z",
+      "retrievedAt": "2026-11-24T17:59:05.036Z",
       "evidenceClass": "official-release",
       "verificationState": "source-published",
       "legalStage": "not-applicable",
@@ -969,20 +969,20 @@
       "name": "U.S. Department of Justice · Justice News",
       "url": "https://www.justice.gov/news/rss",
       "status": "fresh",
-      "checkedAt": "2026-11-24T17:48:34.710Z",
-      "lastSuccessAt": "2026-11-24T17:48:34.710Z",
+      "checkedAt": "2026-11-24T17:59:05.036Z",
+      "lastSuccessAt": "2026-11-24T17:59:05.036Z",
       "cadenceMinutes": 15,
       "staleAfterMinutes": 120,
       "rights": "Public U.S. government release metadata; NarcoScope republishes titles, links and source clocks only.",
-      "detail": "25 source items read · 11 current in-scope · 40 retained metadata items published"
+      "detail": "25 source items read · 4 current in-scope · 40 retained metadata items published"
     },
     {
       "id": "un-news-law-crime",
       "name": "United Nations News · Law and crime prevention",
       "url": "https://news.un.org/feed/subscribe/en/news/topic/law-and-crime-prevention/feed/rss.xml",
       "status": "fresh",
-      "checkedAt": "2026-11-24T17:48:34.710Z",
-      "lastSuccessAt": "2026-11-24T17:48:34.710Z",
+      "checkedAt": "2026-11-24T17:59:05.036Z",
+      "lastSuccessAt": "2026-11-24T17:59:05.036Z",
       "cadenceMinutes": 30,
       "staleAfterMinutes": 180,
       "rights": "Public United Nations feed metadata; NarcoScope republishes titles, links and source clocks only.",
@@ -993,8 +993,8 @@
       "name": "Europol · Newsroom",
       "url": "https://www.europol.europa.eu/cms/api/rss/news",
       "status": "fresh",
-      "checkedAt": "2026-11-24T17:48:34.710Z",
-      "lastSuccessAt": "2026-11-24T17:48:34.710Z",
+      "checkedAt": "2026-11-24T17:59:05.036Z",
+      "lastSuccessAt": "2026-11-24T17:59:05.036Z",
       "cadenceMinutes": 30,
       "staleAfterMinutes": 180,
       "rights": "Public European Union agency feed metadata; NarcoScope republishes titles, links and source clocks only.",
@@ -1005,8 +1005,8 @@
       "name": "U.S. Treasury · Press releases",
       "url": "https://home.treasury.gov/news/press-releases",
       "status": "fresh",
-      "checkedAt": "2026-11-24T17:48:34.710Z",
-      "lastSuccessAt": "2026-11-24T17:48:34.710Z",
+      "checkedAt": "2026-11-24T17:59:05.036Z",
+      "lastSuccessAt": "2026-11-24T17:59:05.036Z",
       "cadenceMinutes": 30,
       "staleAfterMinutes": 240,
       "rights": "Public U.S. government release metadata; NarcoScope republishes titles, links and source clocks only.",
@@ -1017,8 +1017,8 @@
       "name": "Palimpsest · newswire publication-rights receipt",
       "url": "https://www.palimpsest.info/readings/newswire-latest.json",
       "status": "restricted",
-      "checkedAt": "2026-11-24T17:48:34.710Z",
-      "lastSuccessAt": "2026-11-24T17:48:34.710Z",
+      "checkedAt": "2026-11-24T17:59:05.036Z",
+      "lastSuccessAt": "2026-11-24T17:59:05.036Z",
       "cadenceMinutes": 15,
       "staleAfterMinutes": 90,
       "rights": "Receipt only. Source content remains suppressed whenever Palimpsest publication_allowed is false.",
@@ -1029,7 +1029,7 @@
       "name": "Seiche · global money-market context",
       "url": "https://api.seiche.info/api/v2/money-markets",
       "status": "stale",
-      "checkedAt": "2026-11-24T17:48:34.710Z",
+      "checkedAt": "2026-11-24T17:59:05.036Z",
       "lastSuccessAt": "2026-10-06T07:01:59.134Z",
       "cadenceMinutes": 15,
       "staleAfterMinutes": 90,
@@ -1041,12 +1041,12 @@
       "name": "Seiche · capital-market context",
       "url": "https://api.seiche.info/api/v2/world-markets?section=capital_markets",
       "status": "fresh",
-      "checkedAt": "2026-11-24T17:48:34.710Z",
-      "lastSuccessAt": "2026-11-24T17:48:34.710Z",
+      "checkedAt": "2026-11-24T17:59:05.036Z",
+      "lastSuccessAt": "2026-11-24T17:59:05.036Z",
       "cadenceMinutes": 15,
       "staleAfterMinutes": 90,
       "rights": "Read-only economic context receipt. Values never become NarcoScope illicit-market facts or person-level inferences.",
-      "detail": "seiche.world-markets.v1 · generated 2026-11-24T17:32:43.000Z"
+      "detail": "seiche.world-markets.v1 · generated 2026-11-24T17:50:53.000Z"
     }
   ],
   "caveats": [
